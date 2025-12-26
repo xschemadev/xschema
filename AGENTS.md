@@ -122,40 +122,57 @@ The orchestrator. Does NOT do schema conversion itself.
 
 ### **2. Adapters**
 
-Each adapter is a package that tells the CLI how to generate code for a specific validation library.
+Each adapter is an npm package (or pip package, etc.) with a CLI entry point. The CLI reads JSON from stdin, converts schemas, and outputs JSON to stdout.
 
 **Adapter Structure:**
 
 ```
-@xschema/adapter-{name}/
-├── index.ts (or __init__.py, etc.)
-│   ├── {name}Adapter    # Identifier used in user code
-│   └── convert()        # Function that converts JSON Schema to native code
-├── package.json (or pyproject.toml, etc.)
-└── README.md
+@xschema/{name}/
+├── index.ts          # Exports adapter identifier + convert function
+├── cli.ts            # CLI entry point (reads stdin, writes stdout)
+└── package.json      # bin: { "@xschema/{name}": "./cli.ts" }
 ```
 
-**Adapter Identifier Interface:**
+**Adapter Identifier:**
 
-```
+```typescript
 interface XSchemaAdapter {
-  readonly __brand: 'xschema-adapter';
-  readonly name: string;           // e.g., 'zod', 'pydantic'
-  readonly package: string;        // e.g., '@xschema/adapter-zod'
-  readonly language: string;       // e.g., 'typescript', 'python'
-  readonly runtime: string;        // e.g., 'bun', 'node', 'python3'
+  readonly __brand: 'xschema-adapter';
+  readonly name: string;           // e.g., '@xschema/zod'
+  readonly language: string;       // e.g., 'typescript', 'python'
 }
 ```
 
-**Convert Function Interface:**
+**Convert Function:**
 
-```
+```typescript
+interface ConvertInput {
+  name: string;
+  schema: object;
+}
+
 interface ConvertResult {
-  code: string;        // The generated code expression
-  imports: string[];   // Required import statements
+  name: string;        // Schema name (passed through)
+  schema: string;      // Generated code expression
+  type: string;        // Type expression (e.g., "z.infer<typeof User>")
+  imports: string[];   // Required imports
 }
 
-type ConvertFunction = (schema: JSONSchema) => ConvertResult;
+function convert(name: string, schema: object): ConvertResult;
+```
+
+**CLI Communication:**
+
+The CLI invokes adapters via their package bin. Runner is auto-detected from lockfile (bun.lock → bunx, yarn.lock → yarn, etc.):
+
+```bash
+# CLI runs:
+echo '[{"name":"User","schema":{...}}]' | bunx @xschema/zod
+```
+
+Adapter CLI (cli.ts) reads stdin, calls convert() for each, outputs JSON array:
+```json
+[{"name":"User","schema":"z.object({...})","type":"z.infer<typeof User>","imports":["import { z } from \"zod\""]}]
 ```
 
 ### **3. Generated Output (.xschema/)**

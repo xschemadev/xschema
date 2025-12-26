@@ -5,6 +5,7 @@
     "start": "bun run main.ts"
   },
   "dependencies": {
+    "@xschema/zod": "^0.0.1",
     "zod": "^3.24.0"
   },
   "devDependencies": {

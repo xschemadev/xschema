@@ -1,0 +1,29 @@
+# Generated
+.xschema/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+uv.lock
+
+# TypeScript/Node
+node_modules/
+bun.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store

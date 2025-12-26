@@ -1,0 +1,16 @@
+{
+  "name": "@xschema/zod",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "bin": "./cli.ts",
+  "dependencies": {
+    "json-schema-to-zod": "^2.7.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.0.0"
+  }
+}

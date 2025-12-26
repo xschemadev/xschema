@@ -1,0 +1,7 @@
+{
+  "name": "generator-test",
+  "type": "module",
+  "dependencies": {
+    "@xschema/zod": "file:../../../adapters/typescript/zod"
+  }
+}
