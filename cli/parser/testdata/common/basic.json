@@ -1,0 +1,4 @@
+[
+  {"name": "User", "source": "url", "location": "https://api.example.com/user.json"},
+  {"name": "Post", "source": "file", "location": "./schemas/post.json"}
+]

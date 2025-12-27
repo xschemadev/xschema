@@ -1,0 +1,6 @@
+[
+  {"name": "ExtraSpaces", "source": "url", "location": "https://example.com/spaces.json"},
+  {"name": "Multiline", "source": "url", "location": "https://example.com/multiline.json"},
+  {"name": "LongURL", "source": "url", "location": "https://very-long-domain-name.example.com/api/v1/schemas/users/definitions/extended-profile.json"},
+  {"name": "Schéma", "source": "url", "location": "https://example.com/unicode.json"}
+]

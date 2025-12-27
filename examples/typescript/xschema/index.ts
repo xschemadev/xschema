@@ -66,17 +66,8 @@ function fromFile<N extends string>(
   return lookup(name);
 }
 
-function fromSchema<N extends string>(
-  name: N,
-  _schema: unknown,
-  _adapter: XSchemaAdapter
-): N extends SchemaName ? Schemas[N] : PleaseRunXSchemaGenerate {
-  return lookup(name);
-}
-
 export const xschema = {
   fromURL,
   fromFile,
-  fromSchema,
   ...schemas,
 } as const;

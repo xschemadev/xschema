@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
+
+	"github.com/xschema/cli/language"
 )
 
 type GenerateInput struct {
@@ -66,33 +66,10 @@ func Generate(input GenerateBatchInput) ([]GenerateOutput, error) {
 }
 
 // getRunner returns the command and args to run an adapter based on language
-func getRunner(language string) (string, []string, error) {
-	switch language {
-	case "typescript":
-		return detectTSRunner()
-	default:
-		return "", nil, fmt.Errorf("unsupported language: %s", language)
+func getRunner(langName string) (string, []string, error) {
+	lang := language.ByName(langName)
+	if lang == nil {
+		return "", nil, fmt.Errorf("unsupported language: %s", langName)
 	}
-}
-
-// detectTSRunner checks lockfiles to determine which runner to use
-func detectTSRunner() (string, []string, error) {
-	lockfiles := []struct {
-		file string
-		cmd  []string
-	}{
-		{"bun.lock", []string{"bunx"}},
-		{"bun.lockb", []string{"bunx"}},
-		{"pnpm-lock.yaml", []string{"pnpm", "exec"}},
-		{"yarn.lock", []string{"yarn"}},
-		{"package-lock.json", []string{"npx"}},
-	}
-
-	for _, lf := range lockfiles {
-		if _, err := os.Stat(filepath.Join(".", lf.file)); err == nil {
-			return lf.cmd[0], lf.cmd[1:], nil
-		}
-	}
-
-	return "", nil, fmt.Errorf("no lockfile found (bun.lock, yarn.lock, pnpm-lock.yaml, or package-lock.json)")
+	return lang.DetectRunner()
 }

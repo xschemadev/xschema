@@ -38,9 +38,6 @@ The result IS the native schema object. Not a wrapper. The actual Zod schema, Py
 │   // From file                                                              │
 │   xschema.fromFile('Post', './schemas/post.json', zodAdapter)               │
 │                                                                             │
-│   // From inline schema                                                     │
-│   xschema.fromSchema('Comment', { type: 'object', ... } as const, zodAdapter)│
-│                                                                             │
 │   // Use generated schemas                                                  │
 │   xschema.User.parse(data)                                                          │
 │                                                                             │
@@ -52,8 +49,8 @@ The result IS the native schema object. Not a wrapper. The actual Zod schema, Py
 │                              xschema-cli                                    │
 │                              (Go binary)                                    │
 │                                                                             │
-│   1. Parse codebase, find all FromURL/FromFile/FromSchema calls             │
-│   2. Extract schemas (inline / file / URL) and adapter identifiers          │
+│   1. Parse codebase, find all FromURL/FromFile calls                       │
+│   2. Extract schemas (file / URL) and adapter identifiers                   │
 │   3. Generate scripts in .xschema/generate/—one file per language needed:   │
 │                                                                             │
 │        .xschema/generate/                                                   │
@@ -108,8 +105,8 @@ The orchestrator. Does NOT do schema conversion itself.
 **Responsibilities:**
 
 - Parse codebases in any language
-- Find `xschema.fromURL()`, `xschema.fromFile()`, `xschema.fromSchema()` calls
-- Extract schema name, source (URL/file/inline), and adapter
+- Find `xschema.fromURL()`, `xschema.fromFile()` calls
+- Extract schema name, source (URL/file), and adapter
 - Identify which adapter each call uses
 - Generate the appropriate scripts in `.xschema/generate/`
 - Execute all scripts using their respective runtimes
@@ -201,7 +198,6 @@ import { xschema } from '.xschema';
 
 xschema.fromURL('User', 'https://api.example.com/user.json', zodAdapter);
 xschema.fromFile('Post', './schemas/post.json', zodAdapter);
-xschema.fromSchema('Comment', { type: 'object', ... } as const, zodAdapter);
 
 xschema.User.parse(data);
 type UserType = z.infer<typeof xschema.User>;
@@ -213,7 +209,6 @@ from .xschema import xschema
 
 xschema.from_url('User', 'https://...', pydantic_adapter)
 xschema.from_file('Post', './schemas/post.json', pydantic_adapter)
-xschema.from_schema('Comment', {...}, pydantic_adapter)
 
 user = xschema.User(name="Alice")
 ```
@@ -233,17 +228,14 @@ user := xschema.User{Name: "Alice"}
 // TypeScript
 xschema.fromURL(name, url, adapter)
 xschema.fromFile(name, path, adapter)
-xschema.fromSchema(name, schema, adapter)
 
 // Python
 xschema.from_url(name, url, adapter)
 xschema.from_file(name, path, adapter)
-xschema.from_schema(name, schema, adapter)
 
 // Go
 xschema.FromURL(name, url, adapter)
 xschema.FromFile(name, path, adapter)
-// FromSchema not available in Go
 ```
 
 The `name` is always required and determines the exported schema name.
@@ -353,7 +345,7 @@ xschema/
 **xschema is:**
 
 - A CLI that finds `xschema.fromURL/from_url/FromURL()` calls in your code
-- Extracts JSON Schemas (inline, file, URL)
+- Extracts JSON Schemas (file, URL)
 - Uses adapters to generate native validator code
 - Outputs typed schemas you import directly by name
 

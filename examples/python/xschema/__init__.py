@@ -96,19 +96,3 @@ class xschema:
     def from_file(name: str, path: str, adapter: XSchemaAdapter) -> type:
         _ = path, adapter
         return _lookup(name)
-
-    @staticmethod
-    @overload
-    def from_schema(
-        name: Literal["Comment"], schema: Any, adapter: XSchemaAdapter
-    ) -> type[Comment]: ...
-    @staticmethod
-    @overload
-    def from_schema(
-        name: str, schema: Any, adapter: XSchemaAdapter
-    ) -> type[PleaseRunXSchemaCli]: ...
-
-    @staticmethod
-    def from_schema(name: str, schema: Any, adapter: XSchemaAdapter) -> type:
-        _ = schema, adapter
-        return _lookup(name)
