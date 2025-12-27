@@ -3,14 +3,12 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
-	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/logger"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
@@ -70,7 +68,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
 		logger.Warn("no xschema declarations found")
-		return generateStub()
+		// TODO: Support client configuration (xschema.configure()) to determine language + outDir
+		// so we can generate a stub file even with 0 schema declarations.
+		// Currently we need at least one xschema.fromURL/fromFile/FromURL() call to know which language.
+		return nil
 	}
 
 	// 2. Retrieve
@@ -132,55 +133,6 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	logger.Info("complete")
 	return nil
-}
-
-// generateStub creates an empty schema file for the target language
-func generateStub() error {
-	lang := detectLanguage()
-	if lang == "" {
-		logger.Warn("no xschema declarations found")
-		return nil
-	}
-
-	if cfg.DryRun {
-		logger.Info("would generate stub", "language", lang, "output_dir", cfg.OutputDir)
-		return nil
-	}
-
-	logger.Info("generating stub", "language", lang)
-
-	err := injector.Inject(injector.InjectInput{
-		Language: lang,
-		Outputs:  []generator.GenerateOutput{}, // empty
-		OutDir:   cfg.OutputDir,
-	})
-	if err != nil {
-		return fmt.Errorf("inject stub (%s): %w", lang, err)
-	}
-
-	logger.Info("created stub", "path", cfg.OutputDir+"/"+language.ByName(lang).OutputFile)
-	return nil
-}
-
-// detectLanguage tries to detect the project language from common files
-func detectLanguage() string {
-	// Check for TypeScript/JavaScript
-	for _, f := range []string{"package.json", "tsconfig.json", "bun.lockb", "package-lock.json"} {
-		if _, err := os.Stat(f); err == nil {
-			return "typescript"
-		}
-	}
-	// Check for Python
-	for _, f := range []string{"pyproject.toml", "setup.py", "requirements.txt", "Pipfile"} {
-		if _, err := os.Stat(f); err == nil {
-			return "python"
-		}
-	}
-	// Check for Go
-	if _, err := os.Stat("go.mod"); err == nil {
-		return "go"
-	}
-	return ""
 }
 
 func buildParserOpts() (parser.Options, error) {
