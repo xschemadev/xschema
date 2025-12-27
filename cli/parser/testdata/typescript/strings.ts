@@ -1,5 +1,8 @@
 // String variations - testing different quote styles
-const adapter = { name: "zod" };
+import { createXSchemaClient } from "@xschema/client";
+import { adapter } from "@xschema/zod";
+
+const xschema = createXSchemaClient({});
 
 // Double quotes
 xschema.fromURL("DoubleQuote", "https://example.com/a.json", adapter);

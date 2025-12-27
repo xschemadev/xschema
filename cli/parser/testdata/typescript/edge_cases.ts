@@ -1,5 +1,8 @@
 // Edge cases - whitespace, comments, multiline
-const adapter = { name: "zod" };
+import { createXSchemaClient } from "@xschema/client";
+import { adapter } from "@xschema/zod";
+
+const xschema = createXSchemaClient({});
 
 // Extra whitespace
 xschema.fromURL(   "ExtraSpaces"   ,   "https://example.com/spaces.json"   ,   adapter   );
@@ -23,4 +26,3 @@ xschema.fromURL("Schéma", "https://example.com/unicode.json", adapter);
 //   "./schemas/commented.json", // file path
 //   adapter // // adapter
 // );
-

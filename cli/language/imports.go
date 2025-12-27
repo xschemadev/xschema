@@ -1,7 +1,6 @@
 package language
 
 import (
-	"path/filepath"
 	"regexp"
 	"slices"
 	"sort"
@@ -177,72 +176,6 @@ func MergePyImports(imports []string) string {
 	}
 
 	return strings.Join(result, "\n")
-}
-
-// MergeGoImports dedupes and formats Go imports
-// Input: ["import \"fmt\"", "import \"fmt\"", "import \"strings\""]
-// Output: "import (\n\t\"fmt\"\n\t\"strings\"\n)"
-func MergeGoImports(imports []string) string {
-	if len(imports) == 0 {
-		return ""
-	}
-
-	// Parse: import "path" or import name "path"
-	pathRe := regexp.MustCompile(`import\s+(?:(\w+)\s+)?"([^"]+)"`)
-
-	type goImport struct {
-		alias string
-		path  string
-	}
-	seen := make(map[string]bool)
-	var result []goImport
-
-	for _, imp := range imports {
-		imp = strings.TrimSpace(imp)
-		if imp == "" {
-			continue
-		}
-
-		if matches := pathRe.FindStringSubmatch(imp); matches != nil {
-			path := matches[2]
-			if !seen[path] {
-				seen[path] = true
-				result = append(result, goImport{alias: matches[1], path: path})
-			}
-		}
-	}
-
-	if len(result) == 0 {
-		return ""
-	}
-
-	// Sort by path
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].path < result[j].path
-	})
-
-	// Build output
-	if len(result) == 1 {
-		if result[0].alias != "" {
-			return `import ` + result[0].alias + ` "` + result[0].path + `"`
-		}
-		return `import "` + result[0].path + `"`
-	}
-
-	var lines []string
-	for _, imp := range result {
-		if imp.alias != "" {
-			lines = append(lines, "\t"+imp.alias+` "`+imp.path+`"`)
-		} else {
-			lines = append(lines, "\t\""+imp.path+"\"")
-		}
-	}
-	return "import (\n" + strings.Join(lines, "\n") + "\n)"
-}
-
-// BuildGoHeader returns the Go package declaration
-func BuildGoHeader(outDir string, _ []SchemaEntry) string {
-	return "package " + filepath.Base(outDir)
 }
 
 // BuildPythonFooter generates Python overload stubs for type safety

@@ -1,5 +1,8 @@
 # String variations - testing different quote styles
-adapter = {"name": "pydantic"}
+from xschema import create_xschema_client
+from xschema_pydantic import adapter
+
+xschema = create_xschema_client({})
 
 # Double quotes
 xschema.from_url("DoubleQuote", "https://example.com/a.json", adapter)

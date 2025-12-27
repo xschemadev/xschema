@@ -3,6 +3,14 @@ export type XSchemaAdapter = {
   readonly __brand: 'xschema-adapter';
 };
 
+// Configuration options parsed by CLI from createXSchemaClient call
+export type XSchemaConfig = {
+  output?: string;        // Output directory (default: .xschema)
+  concurrency?: number;   // Max concurrent HTTP requests (default: 10)
+  httpTimeout?: number;   // HTTP request timeout in milliseconds (default: 30000)
+  retries?: number;       // Max retry attempts for failed requests (default: 3)
+};
+
 // Declaration merging interface - extended by generated code
 export interface Register {
   // Populated by generated code via declare module
@@ -15,7 +23,7 @@ type PleaseRunXSchemaGenerate = {
   readonly __error: 'Run `xschema generate`';
 };
 
-export function createXSchemaClient<T extends Record<string, unknown>>(schemas: T) {
+export function createXSchemaClient<T extends Record<string, unknown>>(schemas: T, _config?: XSchemaConfig) {
   function lookup<N extends string>(name: N): N extends keyof T ? T[N] : PleaseRunXSchemaGenerate {
     if (!(name in schemas)) {
       throw new Error(`Run xschema generate - unknown schema: ${name}`);
