@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/xschema/cli/language"
@@ -152,7 +153,7 @@ func TestFilePath(t *testing.T) {
 }
 
 func TestParseDirectory(t *testing.T) {
-	decls, err := Parse(context.Background(), "testdata")
+	decls, err := Parse(context.Background(), "testdata", Options{})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -168,6 +169,67 @@ func TestParseDirectory(t *testing.T) {
 		}
 	}
 	t.Logf("Found declarations: %v", langCounts)
+}
+
+func TestParseWithInclude(t *testing.T) {
+	// Only include typescript files
+	opts := Options{
+		Include: regexp.MustCompile(`\.ts$`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if d.Adapter.Language != "typescript" {
+			t.Errorf("expected only typescript, got %s in %s", d.Adapter.Language, d.File)
+		}
+	}
+	if len(decls) == 0 {
+		t.Error("expected some typescript declarations")
+	}
+}
+
+func TestParseWithExclude(t *testing.T) {
+	// Exclude edge_cases files
+	opts := Options{
+		Exclude: regexp.MustCompile(`edge_cases`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if filepath.Base(d.File) == "edge_cases.ts" || filepath.Base(d.File) == "edge_cases.py" {
+			t.Errorf("should have excluded %s", d.File)
+		}
+	}
+}
+
+func TestParseWithBothFilters(t *testing.T) {
+	// Include only .ts, exclude strings.ts
+	opts := Options{
+		Include: regexp.MustCompile(`\.ts$`),
+		Exclude: regexp.MustCompile(`strings\.ts$`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if d.Adapter.Language != "typescript" {
+			t.Errorf("expected only typescript, got %s", d.Adapter.Language)
+		}
+		if filepath.Base(d.File) == "strings.ts" {
+			t.Errorf("should have excluded strings.ts")
+		}
+	}
+	if len(decls) == 0 {
+		t.Error("expected some declarations")
+	}
 }
 
 // assertDecls checks decls match expected (order matters)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -13,6 +14,12 @@ import (
 
 	"github.com/xschema/cli/language"
 )
+
+// Options configures parser behavior
+type Options struct {
+	Include *regexp.Regexp // files matching this are included
+	Exclude *regexp.Regexp // files matching this are excluded
+}
 
 // queryCache caches compiled queries per language
 var (
@@ -90,7 +97,7 @@ type Declaration struct {
 }
 
 // Parse finds all xschema declarations in the given directory
-func Parse(ctx context.Context, dir string) ([]Declaration, error) {
+func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error) {
 	files, err := getSourceFiles(ctx, dir)
 	if err != nil {
 		return nil, err
@@ -102,6 +109,14 @@ func Parse(ctx context.Context, dir string) ([]Declaration, error) {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+		}
+
+		// Apply include/exclude filters
+		if opts.Exclude != nil && opts.Exclude.MatchString(path) {
+			continue
+		}
+		if opts.Include != nil && !opts.Include.MatchString(path) {
+			continue
 		}
 
 		ext := filepath.Ext(path)
@@ -234,9 +249,10 @@ func parseImports(tree *sitter.Tree, content []byte, lang *language.Language) ma
 			capName := q.CaptureNameForId(cap.Index)
 			text := cap.Node.Content(content)
 
-			if capName == "package" {
+			switch capName {
+			case "package":
 				importSource = unquoteString(text)
-			} else if capName == "imported_name" {
+			case "imported_name":
 				importedName = text
 			}
 		}

@@ -18,13 +18,29 @@ import (
 )
 
 const (
-	maxRetries     = 3
-	retryBaseDelay = 500 * time.Millisecond
-	userAgent      = "xschema-cli/1.0"
+	defaultRetries     = 3
+	defaultConcurrency = 10
+	defaultHTTPTimeout = 30 * time.Second
+	retryBaseDelay     = 500 * time.Millisecond
+	userAgent          = "xschema-cli/1.0"
 )
 
-var httpClient = &http.Client{
-	Timeout: 30 * time.Second,
+// Options configures retrieval behavior
+type Options struct {
+	Concurrency int
+	HTTPTimeout time.Duration
+	Retries     int
+	NoCache     bool
+}
+
+// DefaultOptions returns sensible defaults
+func DefaultOptions() Options {
+	return Options{
+		Concurrency: defaultConcurrency,
+		HTTPTimeout: defaultHTTPTimeout,
+		Retries:     defaultRetries,
+		NoCache:     false,
+	}
 }
 
 // adapterGroup groups schemas by adapter
@@ -57,11 +73,17 @@ func (c *schemaCache) set(key string, val json.RawMessage) {
 	c.items[key] = val
 }
 
-// RetrieveFromURL fetches a JSON schema from a URL with retry
-func RetrieveFromURL(ctx context.Context, url string) (json.RawMessage, error) {
+// retrieveFromURL fetches a JSON schema from a URL with retry
+func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMessage, error) {
+	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
-	for attempt := range maxRetries {
+	maxAttempts := opts.Retries
+	if maxAttempts < 1 {
+		maxAttempts = 1
+	}
+
+	for attempt := range maxAttempts {
 		if attempt > 0 {
 			delay := retryBaseDelay * time.Duration(1<<(attempt-1))
 			select {
@@ -77,7 +99,7 @@ func RetrieveFromURL(ctx context.Context, url string) (json.RawMessage, error) {
 		}
 		req.Header.Set("User-Agent", userAgent)
 
-		resp, err := httpClient.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("failed to fetch %s: %w", url, err)
 			continue
@@ -110,8 +132,8 @@ func RetrieveFromURL(ctx context.Context, url string) (json.RawMessage, error) {
 	return nil, lastErr
 }
 
-// RetrieveFromFile reads a JSON schema from a file relative to the declaration file
-func RetrieveFromFile(ctx context.Context, file string, declPath string) (json.RawMessage, error) {
+// retrieveFromFile reads a JSON schema from a file relative to the declaration file
+func retrieveFromFile(ctx context.Context, file string, declPath string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -134,21 +156,19 @@ func RetrieveFromFile(ctx context.Context, file string, declPath string) (json.R
 }
 
 // Retrieve fetches all schemas from declarations and groups them by adapter
-func Retrieve(decls []parser.Declaration) ([]generator.GenerateBatchInput, error) {
-	return RetrieveWithContext(context.Background(), decls)
-}
-
-// RetrieveWithContext fetches all schemas with context support
-func RetrieveWithContext(ctx context.Context, decls []parser.Declaration) ([]generator.GenerateBatchInput, error) {
+func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]generator.GenerateBatchInput, error) {
 	if len(decls) == 0 {
 		return nil, nil
 	}
 
-	cache := newSchemaCache()
+	var cache *schemaCache
+	if !opts.NoCache {
+		cache = newSchemaCache()
+	}
 	results := make([]json.RawMessage, len(decls))
 
 	g, ctx := errgroup.WithContext(ctx)
-	g.SetLimit(10) // Limit concurrency
+	g.SetLimit(opts.Concurrency)
 
 	for i, decl := range decls {
 		idx, d := i, decl
@@ -159,10 +179,12 @@ func RetrieveWithContext(ctx context.Context, decls []parser.Declaration) ([]gen
 			cacheKey = "file:" + filepath.Join(filepath.Dir(d.File), d.Location)
 		}
 
-		// Check cache first
-		if cached, ok := cache.get(cacheKey); ok {
-			results[idx] = cached
-			continue
+		// Check cache first (if enabled)
+		if cache != nil {
+			if cached, ok := cache.get(cacheKey); ok {
+				results[idx] = cached
+				continue
+			}
 		}
 
 		g.Go(func() error {
@@ -171,9 +193,9 @@ func RetrieveWithContext(ctx context.Context, decls []parser.Declaration) ([]gen
 
 			switch d.Source {
 			case "url":
-				schema, err = RetrieveFromURL(ctx, d.Location)
+				schema, err = retrieveFromURL(ctx, d.Location, opts)
 			case "file":
-				schema, err = RetrieveFromFile(ctx, d.Location, d.File)
+				schema, err = retrieveFromFile(ctx, d.Location, d.File)
 			default:
 				err = fmt.Errorf("unknown source type: %s", d.Source)
 			}
@@ -182,7 +204,9 @@ func RetrieveWithContext(ctx context.Context, decls []parser.Declaration) ([]gen
 				return fmt.Errorf("failed to retrieve schema %s: %w", d.Name, err)
 			}
 
-			cache.set(cacheKey, schema)
+			if cache != nil {
+				cache.set(cacheKey, schema)
+			}
 			results[idx] = schema
 			return nil
 		})
