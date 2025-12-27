@@ -16,8 +16,10 @@ import (
 
 // queryCache caches compiled queries per language
 var (
-	queryCache   = make(map[string]*sitter.Query)
-	queryCacheMu sync.RWMutex
+	queryCache         = make(map[string]*sitter.Query)
+	queryCacheMu       sync.RWMutex
+	importQueryCache   = make(map[string]*sitter.Query)
+	importQueryCacheMu sync.RWMutex
 )
 
 func getQuery(lang *language.Language) (*sitter.Query, error) {
@@ -44,6 +46,34 @@ func getQuery(lang *language.Language) (*sitter.Query, error) {
 	return q, nil
 }
 
+func getImportQuery(lang *language.Language) (*sitter.Query, error) {
+	if lang.ImportQuery == "" {
+		return nil, nil
+	}
+
+	importQueryCacheMu.RLock()
+	if q, ok := importQueryCache[lang.Name]; ok {
+		importQueryCacheMu.RUnlock()
+		return q, nil
+	}
+	importQueryCacheMu.RUnlock()
+
+	importQueryCacheMu.Lock()
+	defer importQueryCacheMu.Unlock()
+
+	// Double-check after acquiring write lock
+	if q, ok := importQueryCache[lang.Name]; ok {
+		return q, nil
+	}
+
+	q, err := sitter.NewQuery([]byte(lang.ImportQuery), lang.GetSitterLang())
+	if err != nil {
+		return nil, err
+	}
+	importQueryCache[lang.Name] = q
+	return q, nil
+}
+
 type AdapterRef struct {
 	Name     string `json:"name"`
 	Package  string `json:"package"`
@@ -60,21 +90,27 @@ type Declaration struct {
 }
 
 // Parse finds all xschema declarations in the given directory
-func Parse(dir string) ([]Declaration, error) {
-	files, err := getSourceFiles(dir)
+func Parse(ctx context.Context, dir string) ([]Declaration, error) {
+	files, err := getSourceFiles(ctx, dir)
 	if err != nil {
 		return nil, err
 	}
 
 	var decls []Declaration
 	for _, path := range files {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
 		ext := filepath.Ext(path)
 		lang := language.ByExtension(ext)
 		if lang == nil {
 			continue
 		}
 
-		fileDecls, err := parseFile(path, lang)
+		fileDecls, err := parseFile(ctx, path, lang)
 		if err != nil {
 			return nil, err
 		}
@@ -86,14 +122,14 @@ func Parse(dir string) ([]Declaration, error) {
 
 // getSourceFiles returns source files using git ls-files if in a git repo,
 // otherwise falls back to walking the directory
-func getSourceFiles(dir string) ([]string, error) {
+func getSourceFiles(ctx context.Context, dir string) ([]string, error) {
 	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, language.ExtensionGlobs()...)
-	cmd := exec.Command("git", args...)
+	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	output, err := cmd.Output()
 	if err != nil {
 		// Not a git repo or git not available - fallback
-		return walkDirFallback(dir)
+		return walkDirFallback(ctx, dir)
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
@@ -111,10 +147,16 @@ func getSourceFiles(dir string) ([]string, error) {
 }
 
 // walkDirFallback walks directory manually when git is not available
-func walkDirFallback(dir string) ([]string, error) {
+func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 	var files []string
 
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		if err != nil {
 			return err
 		}
@@ -137,7 +179,7 @@ func walkDirFallback(dir string) ([]string, error) {
 	return files, err
 }
 
-func parseFile(path string, lang *language.Language) ([]Declaration, error) {
+func parseFile(ctx context.Context, path string, lang *language.Language) ([]Declaration, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -146,10 +188,12 @@ func parseFile(path string, lang *language.Language) ([]Declaration, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(lang.GetSitterLang())
 
-	tree, err := parser.ParseCtx(context.Background(), nil, content)
+	tree, err := parser.ParseCtx(ctx, nil, content)
 	if err != nil {
 		return nil, err
 	}
+
+	importMap := parseImports(tree, content, lang)
 
 	q, err := getQuery(lang)
 	if err != nil {
@@ -159,10 +203,53 @@ func parseFile(path string, lang *language.Language) ([]Declaration, error) {
 	qc := sitter.NewQueryCursor()
 	qc.Exec(q, tree.RootNode())
 
-	return extractDeclarations(qc, q, content, path, lang)
+	return extractDeclarations(qc, q, content, path, lang, importMap)
 }
 
-func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte, path string, lang *language.Language) ([]Declaration, error) {
+func parseImports(tree *sitter.Tree, content []byte, lang *language.Language) map[string]string {
+	q, err := getImportQuery(lang)
+	if err != nil || q == nil {
+		return nil
+	}
+
+	importMap := make(map[string]string)
+	qc := sitter.NewQueryCursor()
+	qc.Exec(q, tree.RootNode())
+
+	for {
+		match, ok := qc.NextMatch()
+		if !ok {
+			break
+		}
+
+		match = qc.FilterPredicates(match, content)
+		if len(match.Captures) == 0 {
+			continue
+		}
+
+		var importSource string
+		var importedName string
+
+		for _, cap := range match.Captures {
+			capName := q.CaptureNameForId(cap.Index)
+			text := cap.Node.Content(content)
+
+			if capName == "package" {
+				importSource = unquoteString(text)
+			} else if capName == "imported_name" {
+				importedName = text
+			}
+		}
+
+		if importSource != "" && importedName != "" {
+			importMap[importedName] = importSource
+		}
+	}
+
+	return importMap
+}
+
+func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte, path string, lang *language.Language, importMap map[string]string) ([]Declaration, error) {
 	var decls []Declaration
 
 	for {
@@ -208,6 +295,7 @@ func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte
 			Location: unquoteString(source),
 			Adapter: AdapterRef{
 				Name:     adapter,
+				Package:  importMap[adapter],
 				Language: lang.Name,
 			},
 			File: path,

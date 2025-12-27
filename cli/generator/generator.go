@@ -2,6 +2,7 @@ package generator
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -28,7 +29,7 @@ type GenerateOutput struct {
 }
 
 // Generate calls the adapter to convert schemas to native code
-func Generate(input GenerateBatchInput) ([]GenerateOutput, error) {
+func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, error) {
 	runner, args, err := getRunner(input.Language)
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func Generate(input GenerateBatchInput) ([]GenerateOutput, error) {
 	}
 
 	cmdArgs := append(args, input.Adapter)
-	cmd := exec.Command(runner, cmdArgs...)
+	cmd := exec.CommandContext(ctx, runner, cmdArgs...)
 
 	// Pipe schemas to stdin
 	stdinData, err := json.Marshal(input.Schemas)

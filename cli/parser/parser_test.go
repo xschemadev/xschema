@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -47,7 +48,7 @@ func TestCommon(t *testing.T) {
 				}
 
 				// Parse
-				decls, err := parseFile(sourceFile, &lang)
+				decls, err := parseFile(context.Background(), sourceFile, &lang)
 				if err != nil {
 					t.Fatalf("parseFile: %v", err)
 				}
@@ -62,7 +63,7 @@ func TestCommon(t *testing.T) {
 // Language-specific string tests
 func TestTypeScriptStrings(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/strings.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/strings.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -84,7 +85,7 @@ func TestTypeScriptStrings(t *testing.T) {
 
 func TestPythonStrings(t *testing.T) {
 	lang := language.ByExtension(".py")
-	decls, err := parseFile("testdata/python/strings.py", lang)
+	decls, err := parseFile(context.Background(), "testdata/python/strings.py", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -102,7 +103,7 @@ func TestPythonStrings(t *testing.T) {
 // Metadata tests
 func TestLineNumbers(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -121,7 +122,7 @@ func TestLineNumbers(t *testing.T) {
 
 func TestAdapterCapture(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -138,7 +139,7 @@ func TestAdapterCapture(t *testing.T) {
 
 func TestFilePath(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -151,7 +152,7 @@ func TestFilePath(t *testing.T) {
 }
 
 func TestParseDirectory(t *testing.T) {
-	decls, err := Parse("testdata")
+	decls, err := Parse(context.Background(), "testdata")
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}

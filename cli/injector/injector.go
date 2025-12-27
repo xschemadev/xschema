@@ -1,6 +1,10 @@
 package injector
 
-import "github.com/xschema/cli/generator"
+import (
+	"context"
+
+	"github.com/xschema/cli/generator"
+)
 
 type InjectInput struct {
 	Language string                     `json:"language"` // typescript, python, go
@@ -9,7 +13,8 @@ type InjectInput struct {
 }
 
 // Inject writes generated code to .xschema/ directory
-func Inject(input InjectInput) error {
+func Inject(ctx context.Context, input InjectInput) error {
 	// TODO: implement
+	_ = ctx
 	return nil
 }

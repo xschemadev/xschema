@@ -25,6 +25,7 @@ type Language struct {
 	Extensions    []string
 	GetSitterLang func() *sitter.Language
 	Query         string
+	ImportQuery   string
 	MethodMapping map[string]SourceType // maps method names to source type
 	DetectRunner  func() (cmd string, args []string, err error)
 }
@@ -35,6 +36,7 @@ var Languages = []Language{
 		Extensions:    []string{".ts", ".tsx", ".js", ".jsx"},
 		GetSitterLang: typescript.GetLanguage,
 		Query:         tsQuery,
+		ImportQuery:   tsImportQuery,
 		MethodMapping: map[string]SourceType{
 			"fromURL":  SourceURL,
 			"fromFile": SourceFile,
@@ -46,6 +48,7 @@ var Languages = []Language{
 		Extensions:    []string{".py"},
 		GetSitterLang: python.GetLanguage,
 		Query:         pyQuery,
+		ImportQuery:   pyImportQuery,
 		MethodMapping: map[string]SourceType{
 			"from_url":  SourceURL,
 			"from_file": SourceFile,

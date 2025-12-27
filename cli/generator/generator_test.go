@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -21,7 +22,7 @@ func TestGenerateTypescript(t *testing.T) {
 		Language: "typescript",
 	}
 
-	outputs, err := Generate(input)
+	outputs, err := Generate(context.Background(), input)
 	if err != nil {
 		t.Fatalf("Generate failed: %v", err)
 	}
