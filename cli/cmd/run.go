@@ -3,13 +3,13 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
+	"github.com/xschema/cli/logger"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
 )
@@ -47,6 +47,8 @@ func init() {
 }
 
 func runRun(cmd *cobra.Command, args []string) error {
+	logger.SetLogger(logger.New(cfg.Verbose))
+
 	ctx := cmd.Context()
 
 	// Compile include/exclude regexes
@@ -56,18 +58,15 @@ func runRun(cmd *cobra.Command, args []string) error {
 	}
 
 	// 1. Parse
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "parsing %s...\n", cfg.InputDir)
-	}
+	logger.Info("parsing directory", "input", cfg.InputDir)
 	decls, err := parser.Parse(ctx, cfg.InputDir, parserOpts)
 	if err != nil {
+		logger.Error("parse failed", "error", err)
 		return fmt.Errorf("parse: %w", err)
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "found %d declarations\n", len(decls))
-	}
+	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
-		fmt.Fprintln(os.Stderr, "no xschema declarations found")
+		logger.Warn("no xschema declarations found")
 		return nil
 	}
 
@@ -78,18 +77,18 @@ func runRun(cmd *cobra.Command, args []string) error {
 		Retries:     cfg.Retries,
 		NoCache:     cfg.NoCache,
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "retrieving schemas (concurrency=%d)...\n", cfg.Concurrency)
-	}
 	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
 	if err != nil {
+		logger.Error("retrieve failed", "error", err)
 		return fmt.Errorf("retrieve: %w", err)
 	}
 
 	// Filter by adapter if specified
 	if cfg.Adapter != "" {
+		logger.Info("filtering by adapter", "adapter", cfg.Adapter)
 		batches = filterBatchesByAdapter(batches, cfg.Adapter)
 		if len(batches) == 0 {
+			logger.Error("no schemas found for adapter", "adapter", cfg.Adapter)
 			return fmt.Errorf("no schemas found for adapter %q", cfg.Adapter)
 		}
 	}
@@ -97,17 +96,15 @@ func runRun(cmd *cobra.Command, args []string) error {
 	// 3. Generate
 	outputsByLang := make(map[string][]generator.GenerateOutput)
 	for _, batch := range batches {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "generating %s schemas via %s...\n", batch.Language, batch.Adapter)
-		}
-
 		if cfg.DryRun {
+			logger.Info("dry run", "adapter", batch.Adapter, "language", batch.Language)
 			printDryRun(batch)
 			continue
 		}
 
 		outputs, err := generator.Generate(ctx, batch)
 		if err != nil {
+			logger.Error("generate failed", "adapter", batch.Adapter, "error", err)
 			return fmt.Errorf("generate (%s): %w", batch.Adapter, err)
 		}
 		outputsByLang[batch.Language] = append(outputsByLang[batch.Language], outputs...)
@@ -119,23 +116,18 @@ func runRun(cmd *cobra.Command, args []string) error {
 
 	// 4. Inject
 	for lang, outputs := range outputsByLang {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "injecting %d %s schemas to %s...\n", len(outputs), lang, cfg.OutputDir)
-		}
-
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
 			OutDir:   cfg.OutputDir,
 		})
 		if err != nil {
+			logger.Error("inject failed", "language", lang, "error", err)
 			return fmt.Errorf("inject (%s): %w", lang, err)
 		}
 	}
 
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "done")
-	}
+	logger.Info("complete")
 	return nil
 }
 
