@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/xschema/cli/generator"
+	"github.com/xschema/cli/logger"
 	"github.com/xschema/cli/parser"
 	"golang.org/x/sync/errgroup"
 )
@@ -83,8 +84,11 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 		maxAttempts = 1
 	}
 
+	logger.Debug("fetching from URL", "url", url, "max_attempts", maxAttempts)
+
 	for attempt := range maxAttempts {
 		if attempt > 0 {
+			logger.Debug("retrying request", "url", url, "attempt", attempt+1, "max", maxAttempts)
 			delay := retryBaseDelay * time.Duration(1<<(attempt-1))
 			select {
 			case <-ctx.Done():
@@ -102,6 +106,7 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("failed to fetch %s: %w", url, err)
+			logger.Warn("HTTP request failed", "url", url, "error", err)
 			continue
 		}
 
@@ -110,11 +115,13 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 
 		if err != nil {
 			lastErr = fmt.Errorf("failed to read response from %s: %w", url, err)
+			logger.Warn("failed to read response", "url", url, "error", err)
 			continue
 		}
 
 		if resp.StatusCode >= 500 {
 			lastErr = fmt.Errorf("server error fetching %s: status %d", url, resp.StatusCode)
+			logger.Warn("server error", "url", url, "status", resp.StatusCode)
 			continue
 		}
 
@@ -126,6 +133,7 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 			return nil, fmt.Errorf("invalid JSON from %s", url)
 		}
 
+		logger.Debug("successfully fetched from URL", "url", url, "status", resp.StatusCode, "bytes", len(data))
 		return json.RawMessage(data), nil
 	}
 
@@ -143,15 +151,20 @@ func retrieveFromFile(ctx context.Context, file string, declPath string) (json.R
 	dir := filepath.Dir(declPath)
 	fullPath := filepath.Join(dir, file)
 
+	logger.Debug("reading file", "path", fullPath)
+
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
+		logger.Error("failed to read file", "path", fullPath, "error", err)
 		return nil, fmt.Errorf("failed to read %s: %w", fullPath, err)
 	}
 
 	if !json.Valid(data) {
+		logger.Error("invalid JSON in file", "path", fullPath)
 		return nil, fmt.Errorf("invalid JSON in %s", fullPath)
 	}
 
+	logger.Debug("successfully read file", "path", fullPath, "bytes", len(data))
 	return json.RawMessage(data), nil
 }
 
@@ -166,6 +179,8 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		cache = newSchemaCache()
 	}
 	results := make([]json.RawMessage, len(decls))
+
+	logger.Info("retrieving schemas", "count", len(decls), "concurrency", opts.Concurrency, "cache_enabled", cache != nil)
 
 	g, ctx := errgroup.WithContext(ctx)
 	g.SetLimit(opts.Concurrency)
@@ -182,9 +197,11 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		// Check cache first (if enabled)
 		if cache != nil {
 			if cached, ok := cache.get(cacheKey); ok {
+				logger.Debug("cache hit", "schema", d.Name, "key", cacheKey)
 				results[idx] = cached
 				continue
 			}
+			logger.Debug("cache miss", "schema", d.Name, "key", cacheKey)
 		}
 
 		g.Go(func() error {
@@ -201,6 +218,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			}
 
 			if err != nil {
+				logger.Error("failed to retrieve schema", "schema", d.Name, "source", d.Source, "location", d.Location, "error", err)
 				return fmt.Errorf("failed to retrieve schema %s: %w", d.Name, err)
 			}
 
@@ -253,7 +271,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			Adapter:  g.adapter,
 			Language: g.language,
 		})
+		logger.Info("grouped schemas by adapter", "adapter", g.adapter, "language", g.language, "schemas", len(g.schemas))
 	}
 
+	logger.Info("retrieval complete", "batches", len(batches))
 	return batches, nil
 }

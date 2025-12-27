@@ -1,15 +1,29 @@
-import { xschema } from "./xschema";
+import { createXSchemaClient } from "@xschema/client";
+import { zodAdapter } from "@xschema/zod";
+import { schemas } from "./.xschema/xschema.gen";
 
-// Mock adapter (normally from @xschema/adapter-zod)
-const zodAdapter = { name: "zod", __brand: "xschema-adapter" } as const;
+export const xschema = createXSchemaClient(schemas);
 
-// From URL
-xschema.fromURL("User", "https://cdn.my/user.json", zodAdapter);
-console.log("User:", xschema.User);
+// Register schemas - these calls are parsed by CLI to know what to generate
+const User = xschema.fromURL("User", "https://api.example.com/schemas/user.json", zodAdapter);
+const Post = xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
 
-// From file
-xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
-console.log("Post:", xschema.Post);
+// Use the schemas - full Zod API works
+const userData = User.parse({
+  id: "123e4567-e89b-12d3-a456-426614174000",
+  name: "Alice",
+  email: "alice@example.com",
+});
 
-// If haven't run the CLI, here is the DX
-xschema.fromURL("Unknown", "https://cdn.my/unknown.json", zodAdapter);
+// Type inference works
+type UserType = typeof User._type;
+//   ^? { id: string; name: string; email: string; age?: number }
+
+console.log("Parsed user:", userData);
+
+// Validation errors work
+try {
+  User.parse({ id: "not-a-uuid", name: "", email: "invalid" });
+} catch (e) {
+  console.log("Validation failed as expected");
+}

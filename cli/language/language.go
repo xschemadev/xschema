@@ -57,7 +57,7 @@ var Languages = []Language{
 			"fromFile": SourceFile,
 		},
 		DetectRunner: detectTSRunner,
-		OutputFile:   "index.ts",
+		OutputFile:   "xschema.gen.ts",
 		Template:     TSTemplate,
 		MergeImports: MergeTSImports,
 	},

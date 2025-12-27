@@ -13,6 +13,7 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/logger"
 )
 
 // Options configures parser behavior
@@ -100,8 +101,11 @@ type Declaration struct {
 func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error) {
 	files, err := getSourceFiles(ctx, dir)
 	if err != nil {
+		logger.Error("failed to get source files", "dir", dir, "error", err)
 		return nil, err
 	}
+
+	logger.Debug("found source files", "count", len(files), "dir", dir)
 
 	var decls []Declaration
 	for _, path := range files {
@@ -113,21 +117,29 @@ func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error)
 
 		// Apply include/exclude filters
 		if opts.Exclude != nil && opts.Exclude.MatchString(path) {
+			logger.Debug("excluding file", "path", path, "pattern", opts.Exclude.String())
 			continue
 		}
 		if opts.Include != nil && !opts.Include.MatchString(path) {
+			logger.Debug("skipping file (not included)", "path", path, "pattern", opts.Include.String())
 			continue
 		}
 
 		ext := filepath.Ext(path)
 		lang := language.ByExtension(ext)
 		if lang == nil {
+			logger.Debug("skipping file (unsupported extension)", "path", path, "ext", ext)
 			continue
 		}
 
+		logger.Debug("parsing file", "path", path, "language", lang.Name)
 		fileDecls, err := parseFile(ctx, path, lang)
 		if err != nil {
+			logger.Error("failed to parse file", "path", path, "error", err)
 			return nil, err
+		}
+		if len(fileDecls) > 0 {
+			logger.Debug("found declarations", "path", path, "count", len(fileDecls))
 		}
 		decls = append(decls, fileDecls...)
 	}
@@ -138,17 +150,20 @@ func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error)
 // getSourceFiles returns source files using git ls-files if in a git repo,
 // otherwise falls back to walking the directory
 func getSourceFiles(ctx context.Context, dir string) ([]string, error) {
+	logger.Debug("getting source files using git", "dir", dir)
 	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, language.ExtensionGlobs()...)
 	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	output, err := cmd.Output()
 	if err != nil {
 		// Not a git repo or git not available - fallback
+		logger.Debug("git not available, using directory walk", "dir", dir)
 		return walkDirFallback(ctx, dir)
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
 	if len(lines) == 1 && lines[0] == "" {
+		logger.Debug("no files found via git", "dir", dir)
 		return nil, nil
 	}
 
@@ -158,11 +173,13 @@ func getSourceFiles(ctx context.Context, dir string) ([]string, error) {
 			files = append(files, filepath.Join(dir, line))
 		}
 	}
+	logger.Debug("found files via git", "count", len(files), "dir", dir)
 	return files, nil
 }
 
 // walkDirFallback walks directory manually when git is not available
 func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
+	logger.Debug("walking directory", "dir", dir)
 	var files []string
 
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
@@ -180,6 +197,7 @@ func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 			// Not exaustive but fallback if not git ->
 			// if not git probably doesn't have much boilerplate
 			if name == "node_modules" || name == ".git" || name == "__pycache__" || name == ".venv" || name == "venv" {
+				logger.Debug("skipping directory", "path", path)
 				return filepath.SkipDir
 			}
 			return nil
@@ -191,6 +209,7 @@ func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 		return nil
 	})
 
+	logger.Debug("directory walk complete", "files", len(files), "dir", dir)
 	return files, err
 }
 

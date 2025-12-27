@@ -3,50 +3,52 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
+	"github.com/xschema/cli/logger"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
 )
 
 var cfg Config
 
-var runCmd = &cobra.Command{
-	Use:   "run",
+var generateCmd = &cobra.Command{
+	Use:   "generate",
 	Short: "Parse codebase, convert schemas, output native validators",
-	RunE:  runRun,
+	RunE:  runGenerate,
 }
 
 func init() {
-	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(generateCmd)
 
 	// Directories
-	runCmd.Flags().StringVarP(&cfg.InputDir, "input", "i", ".", "input directory to parse")
-	runCmd.Flags().StringVarP(&cfg.OutputDir, "output", "o", ".xschema", "output directory")
+	generateCmd.Flags().StringVarP(&cfg.InputDir, "input", "i", ".", "input directory to parse")
+	generateCmd.Flags().StringVarP(&cfg.OutputDir, "output", "o", ".xschema", "output directory")
 
 	// HTTP/Retriever
-	runCmd.Flags().IntVarP(&cfg.Concurrency, "concurrency", "c", 10, "max concurrent HTTP requests")
-	runCmd.Flags().DurationVar(&cfg.HTTPTimeout, "http-timeout", retriever.DefaultOptions().HTTPTimeout, "HTTP request timeout")
-	runCmd.Flags().IntVar(&cfg.Retries, "retries", 3, "max retry attempts for failed requests")
-	runCmd.Flags().BoolVar(&cfg.NoCache, "no-cache", false, "disable schema caching")
+	generateCmd.Flags().IntVarP(&cfg.Concurrency, "concurrency", "c", 10, "max concurrent HTTP requests")
+	generateCmd.Flags().DurationVar(&cfg.HTTPTimeout, "http-timeout", retriever.DefaultOptions().HTTPTimeout, "HTTP request timeout")
+	generateCmd.Flags().IntVar(&cfg.Retries, "retries", 3, "max retry attempts for failed requests")
+	generateCmd.Flags().BoolVar(&cfg.NoCache, "no-cache", false, "disable schema caching")
 
 	// Filtering
-	runCmd.Flags().StringVar(&cfg.Include, "include", "", "regex pattern for files to include")
-	runCmd.Flags().StringVar(&cfg.Exclude, "exclude", "", "regex pattern for files to exclude")
-	runCmd.Flags().StringVar(&cfg.Adapter, "adapter", "", "only process specific adapter")
+	generateCmd.Flags().StringVar(&cfg.Include, "include", "", "regex pattern for files to include")
+	generateCmd.Flags().StringVar(&cfg.Exclude, "exclude", "", "regex pattern for files to exclude")
+	generateCmd.Flags().StringVar(&cfg.Adapter, "adapter", "", "only process specific adapter")
 
 	// Output behavior
-	runCmd.Flags().BoolVar(&cfg.DryRun, "dry-run", false, "show what would be generated without writing")
-	runCmd.Flags().BoolVar(&cfg.Force, "force", false, "overwrite existing files without prompt")
-	runCmd.Flags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
+	generateCmd.Flags().BoolVar(&cfg.DryRun, "dry-run", false, "show what would be generated without writing")
+	generateCmd.Flags().BoolVar(&cfg.Force, "force", false, "overwrite existing files without prompt")
+	generateCmd.Flags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
 }
 
-func runRun(cmd *cobra.Command, args []string) error {
+func runGenerate(cmd *cobra.Command, args []string) error {
+	logger.SetLogger(logger.New(cfg.Verbose))
+
 	ctx := cmd.Context()
 
 	// Compile include/exclude regexes
@@ -56,18 +58,19 @@ func runRun(cmd *cobra.Command, args []string) error {
 	}
 
 	// 1. Parse
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "parsing %s...\n", cfg.InputDir)
-	}
+	logger.Info("parsing directory", "input", cfg.InputDir)
 	decls, err := parser.Parse(ctx, cfg.InputDir, parserOpts)
 	if err != nil {
+		logger.Error("parse failed", "error", err)
 		return fmt.Errorf("parse: %w", err)
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "found %d declarations\n", len(decls))
-	}
+
+	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
-		fmt.Fprintln(os.Stderr, "no xschema declarations found")
+		logger.Warn("no xschema declarations found")
+		// TODO: Support client configuration (xschema.configure()) to determine language + outDir
+		// so we can generate a stub file even with 0 schema declarations.
+		// Currently we need at least one xschema.fromURL/fromFile/FromURL() call to know which language.
 		return nil
 	}
 
@@ -78,18 +81,18 @@ func runRun(cmd *cobra.Command, args []string) error {
 		Retries:     cfg.Retries,
 		NoCache:     cfg.NoCache,
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "retrieving schemas (concurrency=%d)...\n", cfg.Concurrency)
-	}
 	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
 	if err != nil {
+		logger.Error("retrieve failed", "error", err)
 		return fmt.Errorf("retrieve: %w", err)
 	}
 
 	// Filter by adapter if specified
 	if cfg.Adapter != "" {
+		logger.Info("filtering by adapter", "adapter", cfg.Adapter)
 		batches = filterBatchesByAdapter(batches, cfg.Adapter)
 		if len(batches) == 0 {
+			logger.Error("no schemas found for adapter", "adapter", cfg.Adapter)
 			return fmt.Errorf("no schemas found for adapter %q", cfg.Adapter)
 		}
 	}
@@ -97,17 +100,15 @@ func runRun(cmd *cobra.Command, args []string) error {
 	// 3. Generate
 	outputsByLang := make(map[string][]generator.GenerateOutput)
 	for _, batch := range batches {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "generating %s schemas via %s...\n", batch.Language, batch.Adapter)
-		}
-
 		if cfg.DryRun {
+			logger.Info("dry run", "adapter", batch.Adapter, "language", batch.Language)
 			printDryRun(batch)
 			continue
 		}
 
 		outputs, err := generator.Generate(ctx, batch)
 		if err != nil {
+			logger.Error("generate failed", "adapter", batch.Adapter, "error", err)
 			return fmt.Errorf("generate (%s): %w", batch.Adapter, err)
 		}
 		outputsByLang[batch.Language] = append(outputsByLang[batch.Language], outputs...)
@@ -119,23 +120,18 @@ func runRun(cmd *cobra.Command, args []string) error {
 
 	// 4. Inject
 	for lang, outputs := range outputsByLang {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "injecting %d %s schemas to %s...\n", len(outputs), lang, cfg.OutputDir)
-		}
-
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
 			OutDir:   cfg.OutputDir,
 		})
 		if err != nil {
+			logger.Error("inject failed", "language", lang, "error", err)
 			return fmt.Errorf("inject (%s): %w", lang, err)
 		}
 	}
 
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "done")
-	}
+	logger.Info("complete")
 	return nil
 }
 
@@ -169,10 +165,10 @@ func filterBatchesByAdapter(batches []generator.GenerateBatchInput, adapter stri
 }
 
 func printDryRun(batch generator.GenerateBatchInput) {
-	fmt.Printf("adapter: %s (%s)\n", batch.Adapter, batch.Language)
+	logger.Info("adapter batch", "adapter", batch.Adapter, "language", batch.Language, "schemas", len(batch.Schemas))
 	for _, s := range batch.Schemas {
 		var schema map[string]any
 		json.Unmarshal(s.Schema, &schema)
-		fmt.Printf("  - %s: %v\n", s.Name, schema["type"])
+		logger.Info("  - schema", "name", s.Name, "type", schema["type"])
 	}
 }

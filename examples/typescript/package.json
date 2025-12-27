@@ -5,7 +5,8 @@
     "start": "bun run main.ts"
   },
   "dependencies": {
-    "@xschema/zod": "^0.0.1",
+    "@xschema/client": "file:../../packages/typescript/client",
+    "@xschema/zod": "file:../../packages/typescript/adapters/zod",
     "zod": "^3.24.0"
   },
   "devDependencies": {
