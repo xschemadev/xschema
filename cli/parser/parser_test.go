@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/xschema/cli/language"
@@ -47,7 +49,7 @@ func TestCommon(t *testing.T) {
 				}
 
 				// Parse
-				decls, err := parseFile(sourceFile, &lang)
+				decls, err := parseFile(context.Background(), sourceFile, &lang)
 				if err != nil {
 					t.Fatalf("parseFile: %v", err)
 				}
@@ -62,7 +64,7 @@ func TestCommon(t *testing.T) {
 // Language-specific string tests
 func TestTypeScriptStrings(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/strings.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/strings.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -84,7 +86,7 @@ func TestTypeScriptStrings(t *testing.T) {
 
 func TestPythonStrings(t *testing.T) {
 	lang := language.ByExtension(".py")
-	decls, err := parseFile("testdata/python/strings.py", lang)
+	decls, err := parseFile(context.Background(), "testdata/python/strings.py", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -102,7 +104,7 @@ func TestPythonStrings(t *testing.T) {
 // Metadata tests
 func TestLineNumbers(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -121,7 +123,7 @@ func TestLineNumbers(t *testing.T) {
 
 func TestAdapterCapture(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -138,7 +140,7 @@ func TestAdapterCapture(t *testing.T) {
 
 func TestFilePath(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile("testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -151,7 +153,7 @@ func TestFilePath(t *testing.T) {
 }
 
 func TestParseDirectory(t *testing.T) {
-	decls, err := Parse("testdata")
+	decls, err := Parse(context.Background(), "testdata", Options{})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -167,6 +169,67 @@ func TestParseDirectory(t *testing.T) {
 		}
 	}
 	t.Logf("Found declarations: %v", langCounts)
+}
+
+func TestParseWithInclude(t *testing.T) {
+	// Only include typescript files
+	opts := Options{
+		Include: regexp.MustCompile(`\.ts$`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if d.Adapter.Language != "typescript" {
+			t.Errorf("expected only typescript, got %s in %s", d.Adapter.Language, d.File)
+		}
+	}
+	if len(decls) == 0 {
+		t.Error("expected some typescript declarations")
+	}
+}
+
+func TestParseWithExclude(t *testing.T) {
+	// Exclude edge_cases files
+	opts := Options{
+		Exclude: regexp.MustCompile(`edge_cases`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if filepath.Base(d.File) == "edge_cases.ts" || filepath.Base(d.File) == "edge_cases.py" {
+			t.Errorf("should have excluded %s", d.File)
+		}
+	}
+}
+
+func TestParseWithBothFilters(t *testing.T) {
+	// Include only .ts, exclude strings.ts
+	opts := Options{
+		Include: regexp.MustCompile(`\.ts$`),
+		Exclude: regexp.MustCompile(`strings\.ts$`),
+	}
+	decls, err := Parse(context.Background(), "testdata", opts)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	for _, d := range decls {
+		if d.Adapter.Language != "typescript" {
+			t.Errorf("expected only typescript, got %s", d.Adapter.Language)
+		}
+		if filepath.Base(d.File) == "strings.ts" {
+			t.Errorf("should have excluded strings.ts")
+		}
+	}
+	if len(decls) == 0 {
+		t.Error("expected some declarations")
+	}
 }
 
 // assertDecls checks decls match expected (order matters)
