@@ -11,6 +11,7 @@ import (
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/logger"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
 )
@@ -48,6 +49,8 @@ func init() {
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
+	logger.SetLogger(logger.New(cfg.Verbose))
+
 	ctx := cmd.Context()
 
 	// Compile include/exclude regexes
@@ -57,19 +60,16 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// 1. Parse
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "parsing %s...\n", cfg.InputDir)
-	}
+	logger.Info("parsing directory", "input", cfg.InputDir)
 	decls, err := parser.Parse(ctx, cfg.InputDir, parserOpts)
 	if err != nil {
+		logger.Error("parse failed", "error", err)
 		return fmt.Errorf("parse: %w", err)
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "found %d declarations\n", len(decls))
-	}
 
-	// If no declarations found, generate stub file
+	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
+		logger.Warn("no xschema declarations found")
 		return generateStub()
 	}
 
@@ -80,18 +80,18 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		Retries:     cfg.Retries,
 		NoCache:     cfg.NoCache,
 	}
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "retrieving schemas (concurrency=%d)...\n", cfg.Concurrency)
-	}
 	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
 	if err != nil {
+		logger.Error("retrieve failed", "error", err)
 		return fmt.Errorf("retrieve: %w", err)
 	}
 
 	// Filter by adapter if specified
 	if cfg.Adapter != "" {
+		logger.Info("filtering by adapter", "adapter", cfg.Adapter)
 		batches = filterBatchesByAdapter(batches, cfg.Adapter)
 		if len(batches) == 0 {
+			logger.Error("no schemas found for adapter", "adapter", cfg.Adapter)
 			return fmt.Errorf("no schemas found for adapter %q", cfg.Adapter)
 		}
 	}
@@ -99,17 +99,15 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	// 3. Generate
 	outputsByLang := make(map[string][]generator.GenerateOutput)
 	for _, batch := range batches {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "generating %s schemas via %s...\n", batch.Language, batch.Adapter)
-		}
-
 		if cfg.DryRun {
+			logger.Info("dry run", "adapter", batch.Adapter, "language", batch.Language)
 			printDryRun(batch)
 			continue
 		}
 
 		outputs, err := generator.Generate(ctx, batch)
 		if err != nil {
+			logger.Error("generate failed", "adapter", batch.Adapter, "error", err)
 			return fmt.Errorf("generate (%s): %w", batch.Adapter, err)
 		}
 		outputsByLang[batch.Language] = append(outputsByLang[batch.Language], outputs...)
@@ -121,23 +119,18 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// 4. Inject
 	for lang, outputs := range outputsByLang {
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "injecting %d %s schemas to %s...\n", len(outputs), lang, cfg.OutputDir)
-		}
-
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
 			OutDir:   cfg.OutputDir,
 		})
 		if err != nil {
+			logger.Error("inject failed", "language", lang, "error", err)
 			return fmt.Errorf("inject (%s): %w", lang, err)
 		}
 	}
 
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "done")
-	}
+	logger.Info("complete")
 	return nil
 }
 
@@ -145,18 +138,16 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 func generateStub() error {
 	lang := detectLanguage()
 	if lang == "" {
-		fmt.Fprintln(os.Stderr, "no xschema declarations found")
+		logger.Warn("no xschema declarations found")
 		return nil
 	}
 
 	if cfg.DryRun {
-		fmt.Printf("would generate empty %s stub in %s\n", lang, cfg.OutputDir)
+		logger.Info("would generate stub", "language", lang, "output_dir", cfg.OutputDir)
 		return nil
 	}
 
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "generating empty %s stub...\n", lang)
-	}
+	logger.Info("generating stub", "language", lang)
 
 	err := injector.Inject(injector.InjectInput{
 		Language: lang,
@@ -167,7 +158,7 @@ func generateStub() error {
 		return fmt.Errorf("inject stub (%s): %w", lang, err)
 	}
 
-	fmt.Fprintf(os.Stderr, "created %s/%s\n", cfg.OutputDir, language.ByName(lang).OutputFile)
+	logger.Info("created stub", "path", cfg.OutputDir+"/"+language.ByName(lang).OutputFile)
 	return nil
 }
 
@@ -222,10 +213,10 @@ func filterBatchesByAdapter(batches []generator.GenerateBatchInput, adapter stri
 }
 
 func printDryRun(batch generator.GenerateBatchInput) {
-	fmt.Printf("adapter: %s (%s)\n", batch.Adapter, batch.Language)
+	logger.Info("adapter batch", "adapter", batch.Adapter, "language", batch.Language, "schemas", len(batch.Schemas))
 	for _, s := range batch.Schemas {
 		var schema map[string]any
 		json.Unmarshal(s.Schema, &schema)
-		fmt.Printf("  - %s: %v\n", s.Name, schema["type"])
+		logger.Info("  - schema", "name", s.Name, "type", schema["type"])
 	}
 }
