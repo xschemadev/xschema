@@ -2,11 +2,15 @@ package injector
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"text/template"
 
+	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/logger"
@@ -116,4 +120,175 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 		Header:  header,
 		Footer:  footer,
 	}
+}
+
+// InjectClientInput holds info needed to inject schemas import into client file
+type InjectClientInput struct {
+	ClientFile string             // path to client file
+	Language   *language.Language // language config
+	OutDir     string             // output directory (e.g., ".xschema")
+}
+
+// InjectClient adds schemas import and schemas key to createXSchemaClient call
+func InjectClient(ctx context.Context, input InjectClientInput) error {
+	content, err := os.ReadFile(input.ClientFile)
+	if err != nil {
+		return fmt.Errorf("failed to read client file: %w", err)
+	}
+
+	lang := input.Language
+
+	// Parse with tree-sitter to find createXSchemaClient call position
+	parser := sitter.NewParser()
+	parser.SetLanguage(lang.GetSitterLang())
+
+	tree, err := parser.ParseCtx(ctx, nil, content)
+	if err != nil {
+		return fmt.Errorf("failed to parse client file: %w", err)
+	}
+
+	// Find the createXSchemaClient call and config object
+	callInfo, err := findClientCall(tree, content, lang)
+	if err != nil {
+		return err
+	}
+	if callInfo == nil {
+		return fmt.Errorf("no %s call found", lang.ClientFactory)
+	}
+
+	// Build import path relative to client file
+	clientDir := filepath.Dir(input.ClientFile)
+	relPath, err := filepath.Rel(clientDir, input.OutDir)
+	if err != nil {
+		relPath = input.OutDir
+	}
+	if !strings.HasPrefix(relPath, ".") {
+		relPath = "./" + relPath
+	}
+	importPath := relPath + "/" + strings.TrimSuffix(lang.OutputFile, filepath.Ext(lang.OutputFile))
+
+	// Modify content
+	modified := string(content)
+
+	// 1. Add/update schemas in config object
+	modified, err = injectSchemasKey(modified, callInfo, lang)
+	if err != nil {
+		return err
+	}
+
+	// 2. Add import if not present
+	modified = injectSchemasImport(modified, importPath, lang)
+
+	// Write back
+	if err := os.WriteFile(input.ClientFile, []byte(modified), 0644); err != nil {
+		return fmt.Errorf("failed to write client file: %w", err)
+	}
+
+	logger.Info("injected schemas into client", "file", input.ClientFile)
+	return nil
+}
+
+type clientCallInfo struct {
+	configStart uint32 // byte offset of config object start
+	configEnd   uint32 // byte offset of config object end
+	hasSchemas  bool   // whether schemas key already exists
+}
+
+func findClientCall(tree *sitter.Tree, content []byte, lang *language.Language) (*clientCallInfo, error) {
+	// Query for createXSchemaClient call with config object
+	queryStr := lang.ClientCallQuery
+	if queryStr == "" {
+		return nil, nil
+	}
+
+	q, err := sitter.NewQuery([]byte(queryStr), lang.GetSitterLang())
+	if err != nil {
+		return nil, fmt.Errorf("failed to compile query: %w", err)
+	}
+
+	qc := sitter.NewQueryCursor()
+	qc.Exec(q, tree.RootNode())
+
+	for {
+		match, ok := qc.NextMatch()
+		if !ok {
+			break
+		}
+
+		match = qc.FilterPredicates(match, content)
+		if len(match.Captures) == 0 {
+			continue
+		}
+
+		info := &clientCallInfo{}
+		for _, cap := range match.Captures {
+			capName := q.CaptureNameForId(cap.Index)
+			switch capName {
+			case "config":
+				info.configStart = cap.Node.StartByte()
+				info.configEnd = cap.Node.EndByte()
+			case "schemas_key":
+				info.hasSchemas = true
+			}
+		}
+
+		if info.configStart > 0 {
+			return info, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func injectSchemasKey(content string, info *clientCallInfo, lang *language.Language) (string, error) {
+	if info.hasSchemas {
+		// Already has schemas key, assume it's correct
+		return content, nil
+	}
+
+	if lang.InjectSchemasKey == nil {
+		return content, fmt.Errorf("no InjectSchemasKey defined for language: %s", lang.Name)
+	}
+
+	configContent := content[info.configStart:info.configEnd]
+	newConfig := lang.InjectSchemasKey(configContent)
+
+	return content[:info.configStart] + newConfig + content[info.configEnd:], nil
+}
+
+func injectSchemasImport(content, importPath string, lang *language.Language) string {
+	if lang.BuildSchemasImport == nil {
+		return content
+	}
+
+	// Check if import already exists
+	if strings.Contains(content, importPath) {
+		return content
+	}
+
+	importLine := lang.BuildSchemasImport(importPath)
+	if importLine == "" {
+		return content
+	}
+
+	// Find last import statement using language-specific pattern
+	pattern := lang.ImportPattern
+	if pattern == "" {
+		// No pattern, add at top
+		return importLine + "\n" + content
+	}
+
+	re := regexp.MustCompile(pattern)
+	matches := re.FindAllStringIndex(content, -1)
+
+	if len(matches) == 0 {
+		// No imports, add at top
+		return importLine + "\n" + content
+	}
+
+	// Insert after last import
+	lastMatch := matches[len(matches)-1]
+	insertPos := lastMatch[1]
+
+	return content[:insertPos] + "\n" + importLine + content[insertPos:]
 }

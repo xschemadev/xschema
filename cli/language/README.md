@@ -25,10 +25,16 @@ type Language struct {
     DetectRunner  func() (string, []string, error) // detect runtime (optional)
     
     // Client detection
-    ClientPackage string                        // e.g., "@xschema/client"
-    ClientFactory string                        // e.g., "createXSchemaClient"
-    ClientQuery   string                        // query to find client variable
-    ConfigQuery   string                        // query to extract config from client call
+    ClientPackage   string                      // e.g., "@xschema/client"
+    ClientFactory   string                      // e.g., "createXSchemaClient"
+    ClientQuery     string                      // query to find client variable
+    ConfigQuery     string                      // query to extract config from client call
+    ClientCallQuery string                      // query to find config object for injection
+    
+    // Client injection (after generation)
+    BuildSchemasImport func(importPath string) string    // build import for schemas
+    ImportPattern      string                            // regex to find import lines
+    InjectSchemasKey   func(configContent string) string // inject "schemas" into config
     
     // Output generation
     OutputFile     string                       // e.g., "index.ts"
@@ -95,7 +101,7 @@ Matches: `xschema = create_xschema_client({})`
 
 ### Config Query
 
-The `ConfigQuery` extracts configuration options from the second argument of `createXSchemaClient()`.
+The `ConfigQuery` extracts configuration options from the first argument of `createXSchemaClient()`.
 
 Captures required:
 - `@config_key` - property/key name
@@ -106,20 +112,39 @@ Example (TypeScript):
 (call_expression
   function: (identifier) @_fn
   arguments: (arguments
-    (_)
     (object
       (pair
         key: (property_identifier) @config_key
         value: (_) @config_value)))
   (#eq? @_fn "createXSchemaClient"))
 ```
-Matches config in: `createXSchemaClient({}, { output: ".generated", concurrency: 5 })`
+Matches config in: `createXSchemaClient({ output: ".generated", concurrency: 5 })`
 
 Supported config keys:
 - `output` - output directory (default: ".xschema")
 - `concurrency` - max concurrent HTTP requests (default: 10)
 - `httpTimeout` / `http_timeout` - HTTP timeout in ms (default: 30000)
 - `retries` - max retry attempts (default: 3)
+
+### Client Call Query
+
+The `ClientCallQuery` finds the config object for injection. After generation, the CLI injects `schemas` import and adds it to the config.
+
+Captures required:
+- `@config` - the config object node
+- `@schemas_key` (optional) - if schemas key already exists
+
+Example (TypeScript):
+```
+(call_expression
+  function: (identifier) @_fn
+  arguments: (arguments
+    (object) @config
+    (pair
+      key: (property_identifier) @_key
+      (#eq? @_key "schemas"))? @schemas_key)
+  (#eq? @_fn "createXSchemaClient"))
+```
 
 ### Import Query
 
@@ -300,7 +325,7 @@ Each language needs a corresponding source file that produces these results:
 import { createXSchemaClient } from "@xschema/client";
 import { zodAdapter } from "@xschema/zod";
 
-const xschema = createXSchemaClient({});
+const xschema = createXSchemaClient({ output: ".xschema" });
 
 xschema.fromURL("User", "https://api.example.com/user.json", zodAdapter);
 xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
@@ -311,7 +336,7 @@ xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
 from xschema import create_xschema_client
 from xschema_pydantic import pydantic_adapter
 
-xschema = create_xschema_client({})
+xschema = create_xschema_client({ "output": ".xschema" })
 
 xschema.from_url("User", "https://api.example.com/user.json", pydantic_adapter)
 xschema.from_file("Post", "./schemas/post.json", pydantic_adapter)

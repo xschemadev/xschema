@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/xschema/cli/generator"
+	"github.com/xschema/cli/language"
 )
 
 func TestInject_TypeScript(t *testing.T) {
@@ -251,5 +252,93 @@ func TestInject_CreatesDirectory(t *testing.T) {
 
 	if _, err := os.Stat(filepath.Join(outDir, "xschema.gen.ts")); os.IsNotExist(err) {
 		t.Error("Output file not created")
+	}
+}
+
+func TestInjectClient_TypeScript(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a client file
+	clientContent := `import { createXSchemaClient } from "@xschema/client";
+import { zodAdapter } from "@xschema/zod";
+
+export const xschema = createXSchemaClient({
+  output: ".xschema",
+});
+
+const User = xschema.fromURL("User", "https://example.com/user.json", zodAdapter);
+`
+	clientFile := filepath.Join(tmpDir, "main.ts")
+	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
+		t.Fatalf("Failed to write client file: %v", err)
+	}
+
+	// Inject
+	ctx := t.Context()
+	lang := language.ByName("typescript")
+
+	err := InjectClient(ctx, InjectClientInput{
+		ClientFile: clientFile,
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+	if err != nil {
+		t.Fatalf("InjectClient failed: %v", err)
+	}
+
+	// Read result
+	content, err := os.ReadFile(clientFile)
+	if err != nil {
+		t.Fatalf("Failed to read client file: %v", err)
+	}
+
+	output := string(content)
+
+	// Check import added
+	if !strings.Contains(output, `import { schemas } from ".xschema/xschema.gen"`) {
+		t.Errorf("Missing schemas import, got:\n%s", output)
+	}
+
+	// Check schemas added to config
+	if !strings.Contains(output, "{ schemas,") || !strings.Contains(output, "output:") {
+		t.Errorf("Missing schemas in config, got:\n%s", output)
+	}
+}
+
+func TestInjectClient_EmptyConfig(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a client file with empty config
+	clientContent := `import { createXSchemaClient } from "@xschema/client";
+
+export const xschema = createXSchemaClient({});
+`
+	clientFile := filepath.Join(tmpDir, "main.ts")
+	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
+		t.Fatalf("Failed to write client file: %v", err)
+	}
+
+	ctx := t.Context()
+	lang := language.ByName("typescript")
+
+	err := InjectClient(ctx, InjectClientInput{
+		ClientFile: clientFile,
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+	if err != nil {
+		t.Fatalf("InjectClient failed: %v", err)
+	}
+
+	content, err := os.ReadFile(clientFile)
+	if err != nil {
+		t.Fatalf("Failed to read client file: %v", err)
+	}
+
+	output := string(content)
+
+	// Check schemas added
+	if !strings.Contains(output, "{ schemas }") {
+		t.Errorf("Missing schemas in empty config, got:\n%s", output)
 	}
 }

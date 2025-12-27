@@ -1,29 +1,29 @@
 import { createXSchemaClient } from "@xschema/client";
 import { zodAdapter } from "@xschema/zod";
-import { schemas } from "./.xschema/xschema.gen";
+// After `xschema generate`, CLI injects: import { schemas } from "./.xschema/xschema.gen";
+// and adds `schemas` to the config below
 
-export const xschema = createXSchemaClient(schemas);
+export const xschema = createXSchemaClient({
+  outputDir: ".xschema",
+  // schemas, // <- injected by CLI after generation
+});
 
 // Register schemas - these calls are parsed by CLI to know what to generate
 const User = xschema.fromURL("User", "https://api.example.com/schemas/user.json", zodAdapter);
 const Post = xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
 
-// Use the schemas - full Zod API works
-const userData = User.parse({
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  name: "Alice",
-  email: "alice@example.com",
-});
+// Before generation: User is PleaseRunXSchemaGenerate
+// After generation: User is z.ZodObject<...>
 
-// Type inference works
-type UserType = typeof User._type;
-//   ^? { id: string; name: string; email: string; age?: number }
+// Use the schemas - full Zod API works (after generation)
+// const userData = User.parse({
+//   id: "123e4567-e89b-12d3-a456-426614174000",
+//   name: "Alice",
+//   email: "alice@example.com",
+// });
 
-console.log("Parsed user:", userData);
+// Type inference works (after generation)
+// type UserType = typeof User._type;
 
-// Validation errors work
-try {
-  User.parse({ id: "not-a-uuid", name: "", email: "invalid" });
-} catch (e) {
-  console.log("Validation failed as expected");
-}
+console.log("User schema:", User);
+console.log("Post schema:", Post);

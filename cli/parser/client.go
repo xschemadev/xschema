@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
 
@@ -22,19 +23,19 @@ type ClientInfo struct {
 
 // ClientConfig holds configuration from createXSchemaClient call
 type ClientConfig struct {
-	Output      string // output directory, default: ".xschema"
-	Concurrency int    // max concurrent HTTP requests, default: 10
-	HTTPTimeout int    // HTTP timeout in ms, default: 30000
-	Retries     int    // max retries, default: 3
+	OutputDir          string // output directory, default: ".xschema"
+	MaxParallelFetches int    // max concurrent HTTP requests, default: 10
+	RequestTimeoutMs   int    // HTTP timeout in ms, default: 30000
+	MaxFetchRetries    int    // max retries for fetching schemas, default: 3
 }
 
 // DefaultConfig returns default configuration values
 func DefaultConfig() ClientConfig {
 	return ClientConfig{
-		Output:      ".xschema",
-		Concurrency: 10,
-		HTTPTimeout: 30000,
-		Retries:     3,
+		OutputDir:          ".xschema",
+		MaxParallelFetches: 10,
+		RequestTimeoutMs:   30000,
+		MaxFetchRetries:    3,
 	}
 }
 
@@ -81,7 +82,7 @@ func ParseClient(ctx context.Context, file string) (*ClientInfo, error) {
 		return nil, err
 	}
 
-	logger.Debug("parsed config", "output", config.Output, "concurrency", config.Concurrency)
+	logger.Debug("parsed config", "outputDir", config.OutputDir, "maxParallelFetches", config.MaxParallelFetches)
 
 	return &ClientInfo{
 		File:       file,
@@ -173,22 +174,28 @@ func parseClientConfig(tree *sitter.Tree, content []byte, lang *language.Languag
 	return nil
 }
 
+// normalizeKey converts any case convention to lowercase without separators
+// e.g. "outputDir", "output_dir", "OutputDir" -> "outputdir"
+func normalizeKey(key string) string {
+	return strings.ToLower(strings.ReplaceAll(key, "_", ""))
+}
+
 // applyConfig sets config field based on key/value
 func applyConfig(config *ClientConfig, key, value string) {
-	switch key {
-	case "output":
-		config.Output = value
-	case "concurrency":
+	switch normalizeKey(key) {
+	case "outputdir":
+		config.OutputDir = value
+	case "maxparallelfetches":
 		if v, err := parseIntValue(value); err == nil {
-			config.Concurrency = v
+			config.MaxParallelFetches = v
 		}
-	case "httpTimeout", "http_timeout":
+	case "requesttimeoutms":
 		if v, err := parseIntValue(value); err == nil {
-			config.HTTPTimeout = v
+			config.RequestTimeoutMs = v
 		}
-	case "retries":
+	case "maxfetchretries":
 		if v, err := parseIntValue(value); err == nil {
-			config.Retries = v
+			config.MaxFetchRetries = v
 		}
 	}
 }

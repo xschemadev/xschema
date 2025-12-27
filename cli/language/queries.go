@@ -31,16 +31,28 @@ var tsClientQuery = `
 `
 
 // TypeScript query for config object in createXSchemaClient call
-// Extracts key-value pairs from the second argument (config object)
+// Extracts key-value pairs from the first argument (config object)
 var tsConfigQuery = `
 (call_expression
   function: (identifier) @_fn
   arguments: (arguments
-    (_)
     (object
       (pair
         key: (property_identifier) @config_key
         value: (_) @config_value)))
+  (#eq? @_fn "createXSchemaClient"))
+`
+
+// TypeScript query to find config object for injection
+// Captures the full config object and optional schemas key
+var tsClientCallQuery = `
+(call_expression
+  function: (identifier) @_fn
+  arguments: (arguments
+    (object) @config
+    (pair
+      key: (property_identifier) @_key
+      (#eq? @_key "schemas"))? @schemas_key)
   (#eq? @_fn "createXSchemaClient"))
 `
 
@@ -73,16 +85,27 @@ var pyClientQuery = `
 `
 
 // Python query for config dict in create_xschema_client call
-// Extracts key-value pairs from the second argument (config dict)
+// Extracts key-value pairs from the first argument (config dict)
 var pyConfigQuery = `
 (call
   function: (identifier) @_fn
   arguments: (argument_list
-    (_)
     (dictionary
       (pair
         key: (string) @config_key
         value: (_) @config_value)))
+  (#eq? @_fn "create_xschema_client"))
+`
+
+// Python query to find config dict for injection
+var pyClientCallQuery = `
+(call
+  function: (identifier) @_fn
+  arguments: (argument_list
+    (dictionary) @config
+    (pair
+      key: (string) @_key
+      (#match? @_key "schemas"))? @schemas_key)
   (#eq? @_fn "create_xschema_client"))
 `
 

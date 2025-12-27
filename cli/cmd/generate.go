@@ -49,7 +49,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	logger.Info("found client", "name", client.ClientName, "language", client.Language.Name)
-	logger.Debug("client config", "output", client.Config.Output, "concurrency", client.Config.Concurrency)
+	logger.Debug("client config", "outputDir", client.Config.OutputDir, "maxParallelFetches", client.Config.MaxParallelFetches)
 
 	// 2. Parse codebase for declarations
 	logger.Info("parsing codebase", "language", client.Language.Name)
@@ -67,9 +67,9 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// 3. Retrieve schemas
 	retrieverOpts := retriever.Options{
-		Concurrency: client.Config.Concurrency,
-		HTTPTimeout: time.Duration(client.Config.HTTPTimeout) * time.Millisecond,
-		Retries:     client.Config.Retries,
+		Concurrency: client.Config.MaxParallelFetches,
+		HTTPTimeout: time.Duration(client.Config.RequestTimeoutMs) * time.Millisecond,
+		Retries:     client.Config.MaxFetchRetries,
 	}
 	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
 	if err != nil {
@@ -98,12 +98,12 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// 5. Inject
+	// 5. Inject generated code
 	for lang, outputs := range outputsByLang {
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
-			OutDir:   client.Config.Output,
+			OutDir:   client.Config.OutputDir,
 		})
 		if err != nil {
 			logger.Error("inject failed", "language", lang, "error", err)
@@ -111,7 +111,17 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	logger.Info("complete", "output", client.Config.Output)
+	// 6. Inject schemas import into client file
+	if err := injector.InjectClient(ctx, injector.InjectClientInput{
+		ClientFile: clientFile,
+		Language:   client.Language,
+		OutDir:     client.Config.OutputDir,
+	}); err != nil {
+		logger.Error("inject client failed", "error", err)
+		return fmt.Errorf("inject client: %w", err)
+	}
+
+	logger.Info("complete", "outputDir", client.Config.OutputDir)
 	return nil
 }
 

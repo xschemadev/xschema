@@ -37,12 +37,18 @@ type Language struct {
 	DetectRunner  func() (cmd string, args []string, err error)
 
 	// Client detection
-	ClientPackage string // package that exports client factory (e.g., "@xschema/client")
-	ClientFactory string // factory function name (e.g., "createXSchemaClient")
-	ClientQuery   string // query to find client variable assignments
-	ConfigQuery   string // query to extract config from client call
+	ClientPackage   string // package that exports client factory (e.g., "@xschema/client")
+	ClientFactory   string // factory function name (e.g., "createXSchemaClient")
+	ClientQuery     string // query to find client variable assignments
+	ConfigQuery     string // query to extract config from client call
+	ClientCallQuery string // query to find config object for injection
 
-	// Injection config
+	// Client injection (after generation)
+	BuildSchemasImport func(importPath string) string    // build import statement for schemas
+	ImportPattern      string                            // regex to find import lines
+	InjectSchemasKey   func(configContent string) string // inject "schemas" into config object
+
+	// Output injection
 	OutputFile   string                                            // e.g. "index.ts", "__init__.py", "xschema.go"
 	Template     string                                            // Go text/template for output
 	MergeImports func(imports []string) string                     // dedupe/format imports
@@ -61,14 +67,18 @@ var Languages = []Language{
 			"fromURL":  SourceURL,
 			"fromFile": SourceFile,
 		},
-		DetectRunner:  detectTSRunner,
-		ClientPackage: "@xschema/client",
-		ClientFactory: "createXSchemaClient",
-		ClientQuery:   tsClientQuery,
-		ConfigQuery:   tsConfigQuery,
-		OutputFile:    "xschema.gen.ts",
-		Template:      TSTemplate,
-		MergeImports:  MergeTSImports,
+		DetectRunner:       detectTSRunner,
+		ClientPackage:      "@xschema/client",
+		ClientFactory:      "createXSchemaClient",
+		ClientQuery:        tsClientQuery,
+		ConfigQuery:        tsConfigQuery,
+		ClientCallQuery:    tsClientCallQuery,
+		BuildSchemasImport: buildTSSchemasImport,
+		ImportPattern:      `(?m)^import\s+.*$`,
+		InjectSchemasKey:   injectSchemasKeyBrace,
+		OutputFile:         "xschema.gen.ts",
+		Template:           TSTemplate,
+		MergeImports:       MergeTSImports,
 	},
 	{
 		Name:          "python",
@@ -80,15 +90,19 @@ var Languages = []Language{
 			"from_url":  SourceURL,
 			"from_file": SourceFile,
 		},
-		DetectRunner:  detectPythonRunner,
-		ClientPackage: "xschema",
-		ClientFactory: "create_xschema_client",
-		ClientQuery:   pyClientQuery,
-		ConfigQuery:   pyConfigQuery,
-		OutputFile:    "__init__.py",
-		Template:      PyTemplate,
-		MergeImports:  MergePyImports,
-		BuildFooter:   BuildPythonFooter,
+		DetectRunner:       detectPythonRunner,
+		ClientPackage:      "xschema",
+		ClientFactory:      "create_xschema_client",
+		ClientQuery:        pyClientQuery,
+		ConfigQuery:        pyConfigQuery,
+		ClientCallQuery:    pyClientCallQuery,
+		BuildSchemasImport: buildPySchemasImport,
+		ImportPattern:      `(?m)^(?:import\s+|from\s+).*$`,
+		InjectSchemasKey:   injectSchemasKeyBrace,
+		OutputFile:         "__init__.py",
+		Template:           PyTemplate,
+		MergeImports:       MergePyImports,
+		BuildFooter:        BuildPythonFooter,
 	},
 }
 
@@ -253,4 +267,34 @@ func ByName(name string) *Language {
 		}
 	}
 	return nil
+}
+
+// buildTSSchemasImport builds TypeScript import for schemas
+func buildTSSchemasImport(importPath string) string {
+	return `import { schemas } from "` + importPath + `";`
+}
+
+// buildPySchemasImport builds Python import for schemas
+func buildPySchemasImport(importPath string) string {
+	// Convert path to module notation: ./.xschema/xschema -> .xschema.xschema
+	module := strings.ReplaceAll(importPath, "/", ".")
+	module = strings.TrimPrefix(module, ".")
+	return "from " + module + " import schemas"
+}
+
+// injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS/Python dict)
+func injectSchemasKeyBrace(configContent string) string {
+	// Find first { and insert after it
+	openIdx := strings.Index(configContent, "{")
+	if openIdx == -1 {
+		return configContent
+	}
+
+	// Check if object is empty (just whitespace between braces)
+	inner := strings.TrimSpace(configContent[openIdx+1 : len(configContent)-1])
+
+	if inner == "" {
+		return "{ schemas }"
+	}
+	return "{ schemas, " + inner + " }"
 }
