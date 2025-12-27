@@ -10,43 +10,44 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
+	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
 )
 
 var cfg Config
 
-var runCmd = &cobra.Command{
-	Use:   "run",
+var generateCmd = &cobra.Command{
+	Use:   "generate",
 	Short: "Parse codebase, convert schemas, output native validators",
-	RunE:  runRun,
+	RunE:  runGenerate,
 }
 
 func init() {
-	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(generateCmd)
 
 	// Directories
-	runCmd.Flags().StringVarP(&cfg.InputDir, "input", "i", ".", "input directory to parse")
-	runCmd.Flags().StringVarP(&cfg.OutputDir, "output", "o", ".xschema", "output directory")
+	generateCmd.Flags().StringVarP(&cfg.InputDir, "input", "i", ".", "input directory to parse")
+	generateCmd.Flags().StringVarP(&cfg.OutputDir, "output", "o", ".xschema", "output directory")
 
 	// HTTP/Retriever
-	runCmd.Flags().IntVarP(&cfg.Concurrency, "concurrency", "c", 10, "max concurrent HTTP requests")
-	runCmd.Flags().DurationVar(&cfg.HTTPTimeout, "http-timeout", retriever.DefaultOptions().HTTPTimeout, "HTTP request timeout")
-	runCmd.Flags().IntVar(&cfg.Retries, "retries", 3, "max retry attempts for failed requests")
-	runCmd.Flags().BoolVar(&cfg.NoCache, "no-cache", false, "disable schema caching")
+	generateCmd.Flags().IntVarP(&cfg.Concurrency, "concurrency", "c", 10, "max concurrent HTTP requests")
+	generateCmd.Flags().DurationVar(&cfg.HTTPTimeout, "http-timeout", retriever.DefaultOptions().HTTPTimeout, "HTTP request timeout")
+	generateCmd.Flags().IntVar(&cfg.Retries, "retries", 3, "max retry attempts for failed requests")
+	generateCmd.Flags().BoolVar(&cfg.NoCache, "no-cache", false, "disable schema caching")
 
 	// Filtering
-	runCmd.Flags().StringVar(&cfg.Include, "include", "", "regex pattern for files to include")
-	runCmd.Flags().StringVar(&cfg.Exclude, "exclude", "", "regex pattern for files to exclude")
-	runCmd.Flags().StringVar(&cfg.Adapter, "adapter", "", "only process specific adapter")
+	generateCmd.Flags().StringVar(&cfg.Include, "include", "", "regex pattern for files to include")
+	generateCmd.Flags().StringVar(&cfg.Exclude, "exclude", "", "regex pattern for files to exclude")
+	generateCmd.Flags().StringVar(&cfg.Adapter, "adapter", "", "only process specific adapter")
 
 	// Output behavior
-	runCmd.Flags().BoolVar(&cfg.DryRun, "dry-run", false, "show what would be generated without writing")
-	runCmd.Flags().BoolVar(&cfg.Force, "force", false, "overwrite existing files without prompt")
-	runCmd.Flags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
+	generateCmd.Flags().BoolVar(&cfg.DryRun, "dry-run", false, "show what would be generated without writing")
+	generateCmd.Flags().BoolVar(&cfg.Force, "force", false, "overwrite existing files without prompt")
+	generateCmd.Flags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
 }
 
-func runRun(cmd *cobra.Command, args []string) error {
+func runGenerate(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
 
 	// Compile include/exclude regexes
@@ -66,9 +67,10 @@ func runRun(cmd *cobra.Command, args []string) error {
 	if cfg.Verbose {
 		fmt.Fprintf(os.Stderr, "found %d declarations\n", len(decls))
 	}
+
+	// If no declarations found, generate stub file
 	if len(decls) == 0 {
-		fmt.Fprintln(os.Stderr, "no xschema declarations found")
-		return nil
+		return generateStub()
 	}
 
 	// 2. Retrieve
@@ -137,6 +139,57 @@ func runRun(cmd *cobra.Command, args []string) error {
 		fmt.Fprintln(os.Stderr, "done")
 	}
 	return nil
+}
+
+// generateStub creates an empty schema file for the target language
+func generateStub() error {
+	lang := detectLanguage()
+	if lang == "" {
+		fmt.Fprintln(os.Stderr, "no xschema declarations found")
+		return nil
+	}
+
+	if cfg.DryRun {
+		fmt.Printf("would generate empty %s stub in %s\n", lang, cfg.OutputDir)
+		return nil
+	}
+
+	if cfg.Verbose {
+		fmt.Fprintf(os.Stderr, "generating empty %s stub...\n", lang)
+	}
+
+	err := injector.Inject(injector.InjectInput{
+		Language: lang,
+		Outputs:  []generator.GenerateOutput{}, // empty
+		OutDir:   cfg.OutputDir,
+	})
+	if err != nil {
+		return fmt.Errorf("inject stub (%s): %w", lang, err)
+	}
+
+	fmt.Fprintf(os.Stderr, "created %s/%s\n", cfg.OutputDir, language.ByName(lang).OutputFile)
+	return nil
+}
+
+// detectLanguage tries to detect the project language from common files
+func detectLanguage() string {
+	// Check for TypeScript/JavaScript
+	for _, f := range []string{"package.json", "tsconfig.json", "bun.lockb", "package-lock.json"} {
+		if _, err := os.Stat(f); err == nil {
+			return "typescript"
+		}
+	}
+	// Check for Python
+	for _, f := range []string{"pyproject.toml", "setup.py", "requirements.txt", "Pipfile"} {
+		if _, err := os.Stat(f); err == nil {
+			return "python"
+		}
+	}
+	// Check for Go
+	if _, err := os.Stat("go.mod"); err == nil {
+		return "go"
+	}
+	return ""
 }
 
 func buildParserOpts() (parser.Options, error) {

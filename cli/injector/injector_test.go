@@ -37,7 +37,7 @@ func TestInject_TypeScript(t *testing.T) {
 	}
 
 	// Read output
-	content, err := os.ReadFile(filepath.Join(tmpDir, "index.ts"))
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
 	if err != nil {
 		t.Fatalf("Failed to read output: %v", err)
 	}
@@ -67,9 +67,9 @@ func TestInject_TypeScript(t *testing.T) {
 		t.Error("Missing schema registry")
 	}
 
-	// Check runtime re-export
-	if !strings.Contains(output, `from '@xschema/runtime'`) {
-		t.Error("Missing runtime import")
+	// Check declaration merging
+	if !strings.Contains(output, `declare module '@xschema/client'`) {
+		t.Error("Missing declaration merging")
 	}
 }
 
@@ -180,7 +180,7 @@ func TestInject_TypeOnly(t *testing.T) {
 		t.Fatalf("Inject failed: %v", err)
 	}
 
-	content, err := os.ReadFile(filepath.Join(tmpDir, "index.ts"))
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
 	if err != nil {
 		t.Fatalf("Failed to read output: %v", err)
 	}
@@ -217,7 +217,7 @@ func TestInject_SchemaOnly(t *testing.T) {
 		t.Fatalf("Inject failed: %v", err)
 	}
 
-	content, err := os.ReadFile(filepath.Join(tmpDir, "index.ts"))
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
 	if err != nil {
 		t.Fatalf("Failed to read output: %v", err)
 	}
@@ -249,7 +249,7 @@ func TestInject_CreatesDirectory(t *testing.T) {
 		t.Fatalf("Inject failed: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(outDir, "index.ts")); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(outDir, "xschema.gen.ts")); os.IsNotExist(err) {
 		t.Error("Output file not created")
 	}
 }
