@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
+	"github.com/smacker/go-tree-sitter/golang"
 	"github.com/smacker/go-tree-sitter/python"
 	"github.com/smacker/go-tree-sitter/typescript/typescript"
 )
@@ -20,6 +21,13 @@ const (
 	SourceFile SourceType = "file"
 )
 
+// SchemaEntry represents a generated schema for template data
+type SchemaEntry struct {
+	Name string
+	Code string
+	Type string
+}
+
 type Language struct {
 	Name          string
 	Extensions    []string
@@ -28,6 +36,13 @@ type Language struct {
 	ImportQuery   string
 	MethodMapping map[string]SourceType // maps method names to source type
 	DetectRunner  func() (cmd string, args []string, err error)
+
+	// Injection config
+	OutputFile   string                                            // e.g. "index.ts", "__init__.py", "xschema.go"
+	Template     string                                            // Go text/template for output
+	MergeImports func(imports []string) string                     // dedupe/format imports
+	BuildHeader  func(outDir string, schemas []SchemaEntry) string // inserted at top
+	BuildFooter  func(outDir string, schemas []SchemaEntry) string // inserted at bottom
 }
 
 var Languages = []Language{
@@ -42,6 +57,9 @@ var Languages = []Language{
 			"fromFile": SourceFile,
 		},
 		DetectRunner: detectTSRunner,
+		OutputFile:   "index.ts",
+		Template:     TSTemplate,
+		MergeImports: MergeTSImports,
 	},
 	{
 		Name:          "python",
@@ -54,6 +72,25 @@ var Languages = []Language{
 			"from_file": SourceFile,
 		},
 		DetectRunner: detectPythonRunner,
+		OutputFile:   "__init__.py",
+		Template:     PyTemplate,
+		MergeImports: MergePyImports,
+		BuildFooter:  BuildPythonFooter,
+	},
+	{
+		Name:          "go",
+		Extensions:    []string{".go"},
+		GetSitterLang: golang.GetLanguage,
+		Query:         goQuery,
+		ImportQuery:   goImportQuery,
+		MethodMapping: map[string]SourceType{
+			"FromURL":  SourceURL,
+			"FromFile": SourceFile,
+		},
+		OutputFile:   "xschema.go",
+		Template:     GoTemplate,
+		MergeImports: MergeGoImports,
+		BuildHeader:  BuildGoHeader,
 	},
 }
 

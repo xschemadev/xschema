@@ -123,7 +123,7 @@ func runRun(cmd *cobra.Command, args []string) error {
 			fmt.Fprintf(os.Stderr, "injecting %d %s schemas to %s...\n", len(outputs), lang, cfg.OutputDir)
 		}
 
-		err := injector.Inject(ctx, injector.InjectInput{
+		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
 			OutDir:   cfg.OutputDir,

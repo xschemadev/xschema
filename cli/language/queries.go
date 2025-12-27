@@ -53,3 +53,24 @@ var pyImportQuery = `
   module_name: (dotted_name) @package
   (dotted_name) @imported_name)
 `
+
+// Go query for xschema.FromURL/FromFile calls
+// - Matches string literal for name, source
+// - Matches identifier for adapter
+var goQuery = `
+(call_expression
+  function: (selector_expression
+    operand: (identifier) @_obj
+    field: (field_identifier) @method)
+  arguments: (argument_list
+    (interpreted_string_literal) @name
+    (interpreted_string_literal) @source
+    (identifier) @adapter)
+  (#eq? @_obj "xschema"))
+`
+
+// Go import query for adapter packages
+var goImportQuery = `
+(import_spec
+  path: (interpreted_string_literal) @package)
+`
