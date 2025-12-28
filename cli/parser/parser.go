@@ -126,9 +126,10 @@ func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, 
 // getSourceFiles returns source files for the given language
 func getSourceFiles(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
 	// Build glob patterns for this language only
+	// Need both *{ext} (current dir) and **/*{ext} (subdirs)
 	var globs []string
 	for _, ext := range lang.Extensions {
-		globs = append(globs, "**/*"+ext)
+		globs = append(globs, "*"+ext, "**/*"+ext)
 	}
 
 	logger.Debug("getting source files using git", "dir", dir, "globs", globs)

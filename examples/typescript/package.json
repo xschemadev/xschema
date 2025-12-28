@@ -2,7 +2,8 @@
   "name": "xschema-typescript-example",
   "type": "module",
   "scripts": {
-    "start": "bun run main.ts"
+    "start": "bun run main.ts",
+    "generate": "cd ../../cli && go run . generate --client ../examples/typescript/main.ts"
   },
   "dependencies": {
     "@xschema/client": "file:../../packages/typescript/client",

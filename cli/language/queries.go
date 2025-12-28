@@ -44,15 +44,15 @@ var tsConfigQuery = `
 `
 
 // TypeScript query to find config object for injection
-// Captures the full config object and optional schemas key
+// Captures the full config object and detects if schemas already exists (shorthand or pair)
 var tsClientCallQuery = `
 (call_expression
   function: (identifier) @_fn
   arguments: (arguments
-    (object) @config
-    (pair
-      key: (property_identifier) @_key
-      (#eq? @_key "schemas"))? @schemas_key)
+    (object
+      [(shorthand_property_identifier) @schemas_key
+       (pair key: (property_identifier) @schemas_key)]?
+      (#eq? @schemas_key "schemas")) @config)
   (#eq? @_fn "createXSchemaClient"))
 `
 

@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -51,9 +52,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	logger.Info("found client", "name", client.ClientName, "language", client.Language.Name)
 	logger.Debug("client config", "outputDir", client.Config.OutputDir, "maxParallelFetches", client.Config.MaxParallelFetches)
 
-	// 2. Parse codebase for declarations
+	// 2. Parse codebase for declarations (from client file's directory)
+	clientDir := filepath.Dir(clientFile)
 	logger.Info("parsing codebase", "language", client.Language.Name)
-	decls, err := parser.Parse(ctx, ".", client)
+	decls, err := parser.Parse(ctx, clientDir, client)
 	if err != nil {
 		logger.Error("parse failed", "error", err)
 		return fmt.Errorf("parse: %w", err)

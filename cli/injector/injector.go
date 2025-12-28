@@ -156,16 +156,10 @@ func InjectClient(ctx context.Context, input InjectClientInput) error {
 		return fmt.Errorf("no %s call found", lang.ClientFactory)
 	}
 
-	// Build import path relative to client file
-	clientDir := filepath.Dir(input.ClientFile)
-	relPath, err := filepath.Rel(clientDir, input.OutDir)
-	if err != nil {
-		relPath = input.OutDir
-	}
-	if !strings.HasPrefix(relPath, ".") {
-		relPath = "./" + relPath
-	}
-	importPath := relPath + "/" + strings.TrimSuffix(lang.OutputFile, filepath.Ext(lang.OutputFile))
+	// Build import path: use base of OutDir for relative import
+	// Import needs ./ prefix for relative imports
+	relOutDir := filepath.Base(input.OutDir)
+	importPath := "./" + relOutDir + "/" + strings.TrimSuffix(lang.OutputFile, filepath.Ext(lang.OutputFile))
 
 	// Modify content
 	modified := string(content)

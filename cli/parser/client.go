@@ -82,6 +82,10 @@ func ParseClient(ctx context.Context, file string) (*ClientInfo, error) {
 		return nil, err
 	}
 
+	// Resolve outputDir relative to client file's directory
+	clientDir := filepath.Dir(file)
+	config.OutputDir = filepath.Join(clientDir, config.OutputDir)
+
 	logger.Debug("parsed config", "outputDir", config.OutputDir, "maxParallelFetches", config.MaxParallelFetches)
 
 	return &ClientInfo{

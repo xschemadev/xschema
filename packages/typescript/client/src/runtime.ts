@@ -32,7 +32,7 @@ type SchemaResult<T, N extends string> = HasSchemas<T> extends true
   : PleaseRunXSchemaGenerate;
 
 export function createXSchemaClient<T extends Record<string, unknown> = RegisteredSchemas>(
-  config: XSchemaConfig<T> = {}
+  config: XSchemaConfig<T>
 ) {
   const schemas = config.schemas ?? ({} as T);
 
