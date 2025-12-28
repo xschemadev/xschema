@@ -1,5 +1,8 @@
 # Edge cases - whitespace, comments, multiline
-adapter = {"name": "pydantic"}
+from xschema import create_xschema_client
+from xschema_pydantic import adapter
+
+xschema = create_xschema_client({})
 
 # Extra whitespace
 xschema.from_url("ExtraSpaces", "https://example.com/spaces.json", adapter)

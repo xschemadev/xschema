@@ -1,6 +1,6 @@
 # Generated
-.xschema/
 xschema
+cli/cli
 
 # Go
 *.exe

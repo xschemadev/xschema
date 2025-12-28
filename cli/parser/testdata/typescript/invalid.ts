@@ -1,5 +1,8 @@
 // Invalid calls - these should NOT be parsed
-const adapter = { name: "zod" };
+import { createXSchemaClient } from "@xschema/client";
+import { adapter } from "@xschema/zod";
+
+const xschema = createXSchemaClient({});
 const dynamicName = "Dynamic";
 
 // Dynamic name (variable) - correctly skipped

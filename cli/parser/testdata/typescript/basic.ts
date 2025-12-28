@@ -1,5 +1,8 @@
 // Basic xschema calls - all should be parsed
-const zodAdapter = { name: "zod", __brand: "xschema-adapter" } as const;
+import { createXSchemaClient } from "@xschema/client";
+import { zodAdapter } from "@xschema/zod";
+
+const xschema = createXSchemaClient({});
 
 // fromURL with double quotes
 xschema.fromURL("User", "https://api.example.com/user.json", zodAdapter);

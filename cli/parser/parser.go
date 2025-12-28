@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 
@@ -15,12 +14,6 @@ import (
 	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/logger"
 )
-
-// Options configures parser behavior
-type Options struct {
-	Include *regexp.Regexp // files matching this are included
-	Exclude *regexp.Regexp // files matching this are excluded
-}
 
 // queryCache caches compiled queries per language
 var (
@@ -41,7 +34,6 @@ func getQuery(lang *language.Language) (*sitter.Query, error) {
 	queryCacheMu.Lock()
 	defer queryCacheMu.Unlock()
 
-	// Double-check after acquiring write lock
 	if q, ok := queryCache[lang.Name]; ok {
 		return q, nil
 	}
@@ -69,7 +61,6 @@ func getImportQuery(lang *language.Language) (*sitter.Query, error) {
 	importQueryCacheMu.Lock()
 	defer importQueryCacheMu.Unlock()
 
-	// Double-check after acquiring write lock
 	if q, ok := importQueryCache[lang.Name]; ok {
 		return q, nil
 	}
@@ -91,21 +82,23 @@ type AdapterRef struct {
 type Declaration struct {
 	Name     string              `json:"name"`
 	Source   language.SourceType `json:"source"`
-	Location string              `json:"location,omitempty"` // URL or file path
+	Location string              `json:"location,omitempty"`
 	Adapter  AdapterRef          `json:"adapter"`
 	File     string              `json:"file"`
 	Line     int                 `json:"line"`
 }
 
-// Parse finds all xschema declarations in the given directory
-func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error) {
-	files, err := getSourceFiles(ctx, dir)
+// Parse finds all xschema declarations in the given directory using the client info
+func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, error) {
+	lang := client.Language
+
+	files, err := getSourceFiles(ctx, dir, lang)
 	if err != nil {
 		logger.Error("failed to get source files", "dir", dir, "error", err)
 		return nil, err
 	}
 
-	logger.Debug("found source files", "count", len(files), "dir", dir)
+	logger.Debug("found source files", "count", len(files), "dir", dir, "language", lang.Name)
 
 	var decls []Declaration
 	for _, path := range files {
@@ -115,25 +108,8 @@ func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error)
 		default:
 		}
 
-		// Apply include/exclude filters
-		if opts.Exclude != nil && opts.Exclude.MatchString(path) {
-			logger.Debug("excluding file", "path", path, "pattern", opts.Exclude.String())
-			continue
-		}
-		if opts.Include != nil && !opts.Include.MatchString(path) {
-			logger.Debug("skipping file (not included)", "path", path, "pattern", opts.Include.String())
-			continue
-		}
-
-		ext := filepath.Ext(path)
-		lang := language.ByExtension(ext)
-		if lang == nil {
-			logger.Debug("skipping file (unsupported extension)", "path", path, "ext", ext)
-			continue
-		}
-
-		logger.Debug("parsing file", "path", path, "language", lang.Name)
-		fileDecls, err := parseFile(ctx, path, lang)
+		logger.Debug("parsing file", "path", path)
+		fileDecls, err := parseFile(ctx, path, lang, client.ClientName)
 		if err != nil {
 			logger.Error("failed to parse file", "path", path, "error", err)
 			return nil, err
@@ -147,18 +123,23 @@ func Parse(ctx context.Context, dir string, opts Options) ([]Declaration, error)
 	return decls, nil
 }
 
-// getSourceFiles returns source files using git ls-files if in a git repo,
-// otherwise falls back to walking the directory
-func getSourceFiles(ctx context.Context, dir string) ([]string, error) {
-	logger.Debug("getting source files using git", "dir", dir)
-	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, language.ExtensionGlobs()...)
+// getSourceFiles returns source files for the given language
+func getSourceFiles(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
+	// Build glob patterns for this language only
+	// Need both *{ext} (current dir) and **/*{ext} (subdirs)
+	var globs []string
+	for _, ext := range lang.Extensions {
+		globs = append(globs, "*"+ext, "**/*"+ext)
+	}
+
+	logger.Debug("getting source files using git", "dir", dir, "globs", globs)
+	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, globs...)
 	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	output, err := cmd.Output()
 	if err != nil {
-		// Not a git repo or git not available - fallback
 		logger.Debug("git not available, using directory walk", "dir", dir)
-		return walkDirFallback(ctx, dir)
+		return walkDirFallback(ctx, dir, lang)
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
@@ -178,10 +159,15 @@ func getSourceFiles(ctx context.Context, dir string) ([]string, error) {
 }
 
 // walkDirFallback walks directory manually when git is not available
-func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
+func walkDirFallback(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
 	logger.Debug("walking directory", "dir", dir)
-	var files []string
 
+	extSet := make(map[string]bool)
+	for _, ext := range lang.Extensions {
+		extSet[ext] = true
+	}
+
+	var files []string
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
@@ -194,8 +180,6 @@ func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 		}
 		if d.IsDir() {
 			name := d.Name()
-			// Not exaustive but fallback if not git ->
-			// if not git probably doesn't have much boilerplate
 			if name == "node_modules" || name == ".git" || name == "__pycache__" || name == ".venv" || name == "venv" {
 				logger.Debug("skipping directory", "path", path)
 				return filepath.SkipDir
@@ -203,7 +187,7 @@ func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 			return nil
 		}
 
-		if language.ByExtension(filepath.Ext(path)) != nil {
+		if extSet[filepath.Ext(path)] {
 			files = append(files, path)
 		}
 		return nil
@@ -213,7 +197,7 @@ func walkDirFallback(ctx context.Context, dir string) ([]string, error) {
 	return files, err
 }
 
-func parseFile(ctx context.Context, path string, lang *language.Language) ([]Declaration, error) {
+func parseFile(ctx context.Context, path string, lang *language.Language, clientName string) ([]Declaration, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -227,8 +211,10 @@ func parseFile(ctx context.Context, path string, lang *language.Language) ([]Dec
 		return nil, err
 	}
 
+	// Parse imports to map adapter names to packages
 	importMap := parseImports(tree, content, lang)
 
+	// Parse declarations, filtering by client name
 	q, err := getQuery(lang)
 	if err != nil {
 		return nil, err
@@ -237,7 +223,7 @@ func parseFile(ctx context.Context, path string, lang *language.Language) ([]Dec
 	qc := sitter.NewQueryCursor()
 	qc.Exec(q, tree.RootNode())
 
-	return extractDeclarations(qc, q, content, path, lang, importMap)
+	return extractDeclarations(qc, q, content, path, lang, importMap, clientName)
 }
 
 func parseImports(tree *sitter.Tree, content []byte, lang *language.Language) map[string]string {
@@ -284,7 +270,7 @@ func parseImports(tree *sitter.Tree, content []byte, lang *language.Language) ma
 	return importMap
 }
 
-func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte, path string, lang *language.Language, importMap map[string]string) ([]Declaration, error) {
+func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte, path string, lang *language.Language, importMap map[string]string, clientName string) ([]Declaration, error) {
 	var decls []Declaration
 
 	for {
@@ -298,7 +284,7 @@ func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte
 			continue
 		}
 
-		var method, name, source, adapter string
+		var obj, method, name, source, adapter string
 		var sourceLine int
 
 		for _, cap := range match.Captures {
@@ -306,6 +292,8 @@ func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte
 			text := cap.Node.Content(content)
 
 			switch capName {
+			case "obj":
+				obj = text
 			case "method":
 				method = text
 				sourceLine = int(cap.Node.StartPoint().Row) + 1
@@ -316,6 +304,11 @@ func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte
 			case "adapter":
 				adapter = text
 			}
+		}
+
+		// Filter by client name
+		if obj != clientName {
+			continue
 		}
 
 		// Look up source type from language's method mapping
@@ -344,7 +337,6 @@ func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte
 }
 
 // unquoteString removes surrounding quotes from a string literal
-// Handles: "...", '...', `...`, """...""", ”'...”', r"...", r'...'
 func unquoteString(s string) string {
 	if len(s) < 2 {
 		return s

@@ -1,29 +1,16 @@
 import { createXSchemaClient } from "@xschema/client";
 import { zodAdapter } from "@xschema/zod";
 import { schemas } from "./.xschema/xschema.gen";
+import z from "zod";
 
-export const xschema = createXSchemaClient(schemas);
+export const xschema = createXSchemaClient({ schemas })
 
-// Register schemas - these calls are parsed by CLI to know what to generate
-const User = xschema.fromURL("User", "https://api.example.com/schemas/user.json", zodAdapter);
-const Post = xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
+const appleAppSite = xschema.fromURL("AppleAppSiteAssociation", "https://www.schemastore.org/apple-app-site-association.json", zodAdapter)
 
-// Use the schemas - full Zod API works
-const userData = User.parse({
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  name: "Alice",
-  email: "alice@example.com",
-});
+const calendarJsonSchema = xschema.fromFile("Calendar", "calendar.json", zodAdapter)
 
-// Type inference works
-type UserType = typeof User._type;
-//   ^? { id: string; name: string; email: string; age?: number }
+export type CalendarType = z.infer<typeof calendarJsonSchema>
 
-console.log("Parsed user:", userData);
+const someData = {}
 
-// Validation errors work
-try {
-  User.parse({ id: "not-a-uuid", name: "", email: "invalid" });
-} catch (e) {
-  console.log("Validation failed as expected");
-}
+appleAppSite.parse(someData)

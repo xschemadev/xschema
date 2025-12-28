@@ -24,9 +24,21 @@ type Language struct {
     MethodMapping map[string]SourceType         // method name -> URL/File
     DetectRunner  func() (string, []string, error) // detect runtime (optional)
     
+    // Client detection
+    ClientPackage   string                      // e.g., "@xschema/client"
+    ClientFactory   string                      // e.g., "createXSchemaClient"
+    ClientQuery     string                      // query to find client variable
+    ConfigQuery     string                      // query to extract config from client call
+    ClientCallQuery string                      // query to find config object for injection
+    
+    // Client injection (after generation)
+    BuildSchemasImport func(importPath string) string    // build import for schemas
+    ImportPattern      string                            // regex to find import lines
+    InjectSchemasKey   func(configContent string) string // inject "schemas" into config
+    
     // Output generation
     OutputFile     string                       // e.g., "index.ts"
-    Tumplate       string                       // Go text/template
+    Template       string                       // Go text/template
     MergeImports   func([]string) string        // dedupe/format imports
     BuildHeader    func(outDir string, schemas []SchemaEntry) string
     BuildFooter    func(outDir string, schemas []SchemaEntry) string
@@ -47,13 +59,91 @@ Example (TypeScript):
 ```
 (call_expression
   function: (member_expression
-    object: (identifier) @_obj
+    object: (identifier) @obj
     property: (property_identifier) @method)
   arguments: (arguments 
     . [(string) (template_string)] @name 
     . [(string) (template_string)] @source 
     . (identifier) @adapter .)
-  (#eq? @_obj "xschema"))
+  (#not-match? @name "\\$\\{")
+  (#not-match? @source "\\$\\{"))
+```
+
+Note: The `@obj` capture is filtered in Go code to match the client variable name (found via `ClientQuery`).
+
+### Client Query
+
+The `ClientQuery` finds the variable name assigned to `createXSchemaClient()`. This allows users to name their client anything.
+
+Captures required:
+- `@client_name` - the variable name (e.g., `xschema`, `myClient`)
+
+Example (TypeScript):
+```
+(lexical_declaration
+  (variable_declarator
+    name: (identifier) @client_name
+    value: (call_expression
+      function: (identifier) @_fn
+      (#eq? @_fn "createXSchemaClient"))))
+```
+Matches: `const xschema = createXSchemaClient({});`
+
+Example (Python):
+```
+(assignment
+  left: (identifier) @client_name
+  right: (call
+    function: (identifier) @_fn
+    (#eq? @_fn "create_xschema_client")))
+```
+Matches: `xschema = create_xschema_client({})`
+
+### Config Query
+
+The `ConfigQuery` extracts configuration options from the first argument of `createXSchemaClient()`.
+
+Captures required:
+- `@config_key` - property/key name
+- `@config_value` - value (must be literal, variables not supported)
+
+Example (TypeScript):
+```
+(call_expression
+  function: (identifier) @_fn
+  arguments: (arguments
+    (object
+      (pair
+        key: (property_identifier) @config_key
+        value: (_) @config_value)))
+  (#eq? @_fn "createXSchemaClient"))
+```
+Matches config in: `createXSchemaClient({ output: ".generated", concurrency: 5 })`
+
+Supported config keys:
+- `output` - output directory (default: ".xschema")
+- `concurrency` - max concurrent HTTP requests (default: 10)
+- `httpTimeout` / `http_timeout` - HTTP timeout in ms (default: 30000)
+- `retries` - max retry attempts (default: 3)
+
+### Client Call Query
+
+The `ClientCallQuery` finds the config object for injection. After generation, the CLI injects `schemas` import and adds it to the config.
+
+Captures required:
+- `@config` - the config object node
+- `@schemas_key` (optional) - if schemas key already exists
+
+Example (TypeScript):
+```
+(call_expression
+  function: (identifier) @_fn
+  arguments: (arguments
+    (object) @config
+    (pair
+      key: (property_identifier) @_key
+      (#eq? @_key "schemas"))? @schemas_key)
+  (#eq? @_fn "createXSchemaClient"))
 ```
 
 ### Import Query
@@ -82,13 +172,6 @@ Example (Python):
   (dotted_name) @imported_name)
 ```
 Matches: `from xschema_adapter_pydantic import pydantic_adapter`
-
-Example (Go):
-```
-(import_spec
-  path: (interpreted_string_literal) @package)
-```
-Matches: `import "github.com/xschema/adapter-go"`
 
 ---
 
@@ -193,11 +276,6 @@ func MergePyImports(imports []string) string  // handles from X import Y
 Generate language-specific preamble/postamble.
 
 ```go
-// Go needs package declaration
-func BuildGoHeader(outDir string, _ []SchemaEntry) string {
-    return "package " + filepath.Base(outDir)
-}
-
 // Python needs @overload stubs for type inference
 func BuildPythonFooter(_ string, schemas []SchemaEntry) string {
     // Generate @overload stubs for from_url/from_file
@@ -221,13 +299,11 @@ cli/parser/testdata/
 │   ├── edge_cases.ts
 │   ├── invalid.ts
 │   └── strings.ts    # language-specific tests
-├── python/
-│   ├── basic.py
-│   ├── edge_cases.py
-│   ├── invalid.py
-│   └── strings.py
-└── go/
-    └── basic.go
+└── python/
+    ├── basic.py
+    ├── edge_cases.py
+    ├── invalid.py
+    └── strings.py
 ```
 
 ### Common Tests
@@ -246,12 +322,22 @@ Each language needs a corresponding source file that produces these results:
 
 ```typescript
 // typescript/basic.ts
+import { createXSchemaClient } from "@xschema/client";
+import { zodAdapter } from "@xschema/zod";
+
+const xschema = createXSchemaClient({ output: ".xschema" });
+
 xschema.fromURL("User", "https://api.example.com/user.json", zodAdapter);
 xschema.fromFile("Post", "./schemas/post.json", zodAdapter);
 ```
 
 ```python
 # python/basic.py
+from xschema import create_xschema_client
+from xschema_pydantic import pydantic_adapter
+
+xschema = create_xschema_client({ "output": ".xschema" })
+
 xschema.from_url("User", "https://api.example.com/user.json", pydantic_adapter)
 xschema.from_file("Post", "./schemas/post.json", pydantic_adapter)
 ```

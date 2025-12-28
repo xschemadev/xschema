@@ -3,8 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"regexp"
-	"strings"
+	"path/filepath"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
@@ -14,7 +14,11 @@ import (
 	"github.com/xschema/cli/retriever"
 )
 
-var cfg Config
+var (
+	clientFile string
+	verbose    bool
+	dryRun     bool
+)
 
 var generateCmd = &cobra.Command{
 	Use:   "generate",
@@ -25,41 +29,33 @@ var generateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(generateCmd)
 
-	// Directories
-	generateCmd.Flags().StringVarP(&cfg.InputDir, "input", "i", ".", "input directory to parse")
-	generateCmd.Flags().StringVarP(&cfg.OutputDir, "output", "o", ".xschema", "output directory")
+	generateCmd.Flags().StringVarP(&clientFile, "client", "c", "", "path to client file (required)")
+	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
 
-	// HTTP/Retriever
-	generateCmd.Flags().IntVarP(&cfg.Concurrency, "concurrency", "c", 10, "max concurrent HTTP requests")
-	generateCmd.Flags().DurationVar(&cfg.HTTPTimeout, "http-timeout", retriever.DefaultOptions().HTTPTimeout, "HTTP request timeout")
-	generateCmd.Flags().IntVar(&cfg.Retries, "retries", 3, "max retry attempts for failed requests")
-	generateCmd.Flags().BoolVar(&cfg.NoCache, "no-cache", false, "disable schema caching")
-
-	// Filtering
-	generateCmd.Flags().StringVar(&cfg.Include, "include", "", "regex pattern for files to include")
-	generateCmd.Flags().StringVar(&cfg.Exclude, "exclude", "", "regex pattern for files to exclude")
-	generateCmd.Flags().StringVar(&cfg.Adapter, "adapter", "", "only process specific adapter")
-
-	// Output behavior
-	generateCmd.Flags().BoolVar(&cfg.DryRun, "dry-run", false, "show what would be generated without writing")
-	generateCmd.Flags().BoolVar(&cfg.Force, "force", false, "overwrite existing files without prompt")
-	generateCmd.Flags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
+	generateCmd.MarkFlagRequired("client")
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
-	logger.SetLogger(logger.New(cfg.Verbose))
+	logger.SetLogger(logger.New(verbose))
 
 	ctx := cmd.Context()
 
-	// Compile include/exclude regexes
-	parserOpts, err := buildParserOpts()
+	// 1. Parse client file
+	logger.Info("parsing client", "file", clientFile)
+	client, err := parser.ParseClient(ctx, clientFile)
 	if err != nil {
-		return err
+		logger.Error("failed to parse client", "error", err)
+		return fmt.Errorf("parse client: %w", err)
 	}
 
-	// 1. Parse
-	logger.Info("parsing directory", "input", cfg.InputDir)
-	decls, err := parser.Parse(ctx, cfg.InputDir, parserOpts)
+	logger.Info("found client", "name", client.ClientName, "language", client.Language.Name)
+	logger.Debug("client config", "outputDir", client.Config.OutputDir, "maxParallelFetches", client.Config.MaxParallelFetches)
+
+	// 2. Parse codebase for declarations (from client file's directory)
+	clientDir := filepath.Dir(clientFile)
+	logger.Info("parsing codebase", "language", client.Language.Name)
+	decls, err := parser.Parse(ctx, clientDir, client)
 	if err != nil {
 		logger.Error("parse failed", "error", err)
 		return fmt.Errorf("parse: %w", err)
@@ -68,18 +64,14 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
 		logger.Warn("no xschema declarations found")
-		// TODO: Support client configuration (xschema.configure()) to determine language + outDir
-		// so we can generate a stub file even with 0 schema declarations.
-		// Currently we need at least one xschema.fromURL/fromFile/FromURL() call to know which language.
 		return nil
 	}
 
-	// 2. Retrieve
+	// 3. Retrieve schemas
 	retrieverOpts := retriever.Options{
-		Concurrency: cfg.Concurrency,
-		HTTPTimeout: cfg.HTTPTimeout,
-		Retries:     cfg.Retries,
-		NoCache:     cfg.NoCache,
+		Concurrency: client.Config.MaxParallelFetches,
+		HTTPTimeout: time.Duration(client.Config.RequestTimeoutMs) * time.Millisecond,
+		Retries:     client.Config.MaxFetchRetries,
 	}
 	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
 	if err != nil {
@@ -87,20 +79,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("retrieve: %w", err)
 	}
 
-	// Filter by adapter if specified
-	if cfg.Adapter != "" {
-		logger.Info("filtering by adapter", "adapter", cfg.Adapter)
-		batches = filterBatchesByAdapter(batches, cfg.Adapter)
-		if len(batches) == 0 {
-			logger.Error("no schemas found for adapter", "adapter", cfg.Adapter)
-			return fmt.Errorf("no schemas found for adapter %q", cfg.Adapter)
-		}
-	}
-
-	// 3. Generate
+	// 4. Generate
 	outputsByLang := make(map[string][]generator.GenerateOutput)
 	for _, batch := range batches {
-		if cfg.DryRun {
+		if dryRun {
 			logger.Info("dry run", "adapter", batch.Adapter, "language", batch.Language)
 			printDryRun(batch)
 			continue
@@ -114,16 +96,16 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		outputsByLang[batch.Language] = append(outputsByLang[batch.Language], outputs...)
 	}
 
-	if cfg.DryRun {
+	if dryRun {
 		return nil
 	}
 
-	// 4. Inject
+	// 5. Inject generated code
 	for lang, outputs := range outputsByLang {
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
 			Outputs:  outputs,
-			OutDir:   cfg.OutputDir,
+			OutDir:   client.Config.OutputDir,
 		})
 		if err != nil {
 			logger.Error("inject failed", "language", lang, "error", err)
@@ -131,37 +113,18 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	logger.Info("complete")
+	// 6. Inject schemas import into client file
+	if err := injector.InjectClient(ctx, injector.InjectClientInput{
+		ClientFile: clientFile,
+		Language:   client.Language,
+		OutDir:     client.Config.OutputDir,
+	}); err != nil {
+		logger.Error("inject client failed", "error", err)
+		return fmt.Errorf("inject client: %w", err)
+	}
+
+	logger.Info("complete", "outputDir", client.Config.OutputDir)
 	return nil
-}
-
-func buildParserOpts() (parser.Options, error) {
-	var opts parser.Options
-	var err error
-
-	if cfg.Include != "" {
-		opts.Include, err = regexp.Compile(cfg.Include)
-		if err != nil {
-			return opts, fmt.Errorf("invalid --include regex: %w", err)
-		}
-	}
-	if cfg.Exclude != "" {
-		opts.Exclude, err = regexp.Compile(cfg.Exclude)
-		if err != nil {
-			return opts, fmt.Errorf("invalid --exclude regex: %w", err)
-		}
-	}
-	return opts, nil
-}
-
-func filterBatchesByAdapter(batches []generator.GenerateBatchInput, adapter string) []generator.GenerateBatchInput {
-	var filtered []generator.GenerateBatchInput
-	for _, b := range batches {
-		if strings.Contains(b.Adapter, adapter) {
-			filtered = append(filtered, b)
-		}
-	}
-	return filtered
 }
 
 func printDryRun(batch generator.GenerateBatchInput) {

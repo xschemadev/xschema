@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
 
 	"github.com/xschema/cli/language"
@@ -48,8 +47,8 @@ func TestCommon(t *testing.T) {
 					t.Skipf("no source file for %s/%s", lang.Name, testName)
 				}
 
-				// Parse
-				decls, err := parseFile(context.Background(), sourceFile, &lang)
+				// Parse the file using parseFile with known client name "xschema"
+				decls, err := parseFile(context.Background(), sourceFile, &lang, "xschema")
 				if err != nil {
 					t.Fatalf("parseFile: %v", err)
 				}
@@ -64,7 +63,7 @@ func TestCommon(t *testing.T) {
 // Language-specific string tests
 func TestTypeScriptStrings(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/strings.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/strings.ts", lang, "xschema")
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -86,7 +85,7 @@ func TestTypeScriptStrings(t *testing.T) {
 
 func TestPythonStrings(t *testing.T) {
 	lang := language.ByExtension(".py")
-	decls, err := parseFile(context.Background(), "testdata/python/strings.py", lang)
+	decls, err := parseFile(context.Background(), "testdata/python/strings.py", lang, "xschema")
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -104,7 +103,7 @@ func TestPythonStrings(t *testing.T) {
 // Metadata tests
 func TestLineNumbers(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -123,7 +122,7 @@ func TestLineNumbers(t *testing.T) {
 
 func TestAdapterCapture(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -140,7 +139,7 @@ func TestAdapterCapture(t *testing.T) {
 
 func TestFilePath(t *testing.T) {
 	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang)
+	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
 	if err != nil {
 		t.Fatalf("parseFile: %v", err)
 	}
@@ -152,84 +151,65 @@ func TestFilePath(t *testing.T) {
 	}
 }
 
+func TestParseClient(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("typescript", func(t *testing.T) {
+		client, err := ParseClient(ctx, "testdata/typescript/basic.ts")
+		if err != nil {
+			t.Fatalf("ParseClient: %v", err)
+		}
+
+		if client.ClientName != "xschema" {
+			t.Errorf("expected client name 'xschema', got %q", client.ClientName)
+		}
+		if client.Language.Name != "typescript" {
+			t.Errorf("expected language 'typescript', got %q", client.Language.Name)
+		}
+	})
+
+	t.Run("python", func(t *testing.T) {
+		client, err := ParseClient(ctx, "testdata/python/basic.py")
+		if err != nil {
+			t.Fatalf("ParseClient: %v", err)
+		}
+
+		if client.ClientName != "xschema" {
+			t.Errorf("expected client name 'xschema', got %q", client.ClientName)
+		}
+		if client.Language.Name != "python" {
+			t.Errorf("expected language 'python', got %q", client.Language.Name)
+		}
+	})
+}
+
 func TestParseDirectory(t *testing.T) {
-	decls, err := Parse(context.Background(), "testdata", Options{})
+	ctx := context.Background()
+
+	// Parse client first
+	client, err := ParseClient(ctx, "testdata/typescript/basic.ts")
+	if err != nil {
+		t.Fatalf("ParseClient: %v", err)
+	}
+
+	// Parse directory
+	decls, err := Parse(ctx, "testdata", client)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 
-	langCounts := make(map[string]int)
-	for _, d := range decls {
-		langCounts[d.Adapter.Language]++
-	}
-
-	for _, lang := range language.Languages {
-		if langCounts[lang.Name] == 0 {
-			t.Errorf("expected %s declarations", lang.Name)
-		}
-	}
-	t.Logf("Found declarations: %v", langCounts)
-}
-
-func TestParseWithInclude(t *testing.T) {
-	// Only include typescript files
-	opts := Options{
-		Include: regexp.MustCompile(`\.ts$`),
-	}
-	decls, err := Parse(context.Background(), "testdata", opts)
-	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-
-	for _, d := range decls {
-		if d.Adapter.Language != "typescript" {
-			t.Errorf("expected only typescript, got %s in %s", d.Adapter.Language, d.File)
-		}
-	}
-	if len(decls) == 0 {
-		t.Error("expected some typescript declarations")
-	}
-}
-
-func TestParseWithExclude(t *testing.T) {
-	// Exclude edge_cases files
-	opts := Options{
-		Exclude: regexp.MustCompile(`edge_cases`),
-	}
-	decls, err := Parse(context.Background(), "testdata", opts)
-	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-
-	for _, d := range decls {
-		if filepath.Base(d.File) == "edge_cases.ts" || filepath.Base(d.File) == "edge_cases.py" {
-			t.Errorf("should have excluded %s", d.File)
-		}
-	}
-}
-
-func TestParseWithBothFilters(t *testing.T) {
-	// Include only .ts, exclude strings.ts
-	opts := Options{
-		Include: regexp.MustCompile(`\.ts$`),
-		Exclude: regexp.MustCompile(`strings\.ts$`),
-	}
-	decls, err := Parse(context.Background(), "testdata", opts)
-	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-
-	for _, d := range decls {
-		if d.Adapter.Language != "typescript" {
-			t.Errorf("expected only typescript, got %s", d.Adapter.Language)
-		}
-		if filepath.Base(d.File) == "strings.ts" {
-			t.Errorf("should have excluded strings.ts")
-		}
-	}
 	if len(decls) == 0 {
 		t.Error("expected some declarations")
 	}
+
+	// All should be typescript (since client is typescript)
+	for _, d := range decls {
+		if d.Adapter.Language != "typescript" {
+			t.Errorf("expected typescript, got %s", d.Adapter.Language)
+		}
+	}
+
+	t.Logf("Found %d declarations", len(decls))
 }
 
 // assertDecls checks decls match expected (order matters)

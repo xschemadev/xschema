@@ -1,5 +1,8 @@
 # Invalid calls - these should NOT be parsed
-adapter = {"name": "pydantic"}
+from xschema import create_xschema_client
+from xschema_pydantic import adapter
+
+xschema = create_xschema_client({})
 dynamic_name = "Dynamic"
 dynamic_url = "https://example.com/dynamic.json"
 
