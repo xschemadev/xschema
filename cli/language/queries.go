@@ -99,10 +99,7 @@ var pyClientCallQuery = `
 (call
   function: (identifier) @_fn
   arguments: (argument_list
-    (dictionary) @config
-    (pair
-      key: (string) @_key
-      (#match? @_key "schemas"))? @schemas_key)
+    (dictionary) @config)
   (#eq? @_fn "create_xschema_client"))
 `
 

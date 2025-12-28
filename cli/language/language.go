@@ -290,6 +290,11 @@ func injectSchemasKeyBrace(configContent string) string {
 		return configContent
 	}
 
+	// Check length to avoid panic
+	if len(configContent) < openIdx+2 {
+		return "{ schemas }"
+	}
+
 	// Check if schemas already exists (shorthand {schemas} or pair {schemas: schemas})
 	inner := configContent[openIdx+1 : len(configContent)-1]
 	innerTrimmed := strings.TrimSpace(inner)
