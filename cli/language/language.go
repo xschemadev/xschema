@@ -290,10 +290,26 @@ func injectSchemasKeyBrace(configContent string) string {
 		return configContent
 	}
 
-	// Check if object is empty (just whitespace between braces)
-	inner := strings.TrimSpace(configContent[openIdx+1 : len(configContent)-1])
+	// Check if schemas already exists (shorthand {schemas} or pair {schemas: schemas})
+	inner := configContent[openIdx+1 : len(configContent)-1]
+	innerTrimmed := strings.TrimSpace(inner)
 
-	if inner == "" {
+	// Check for shorthand: {schemas, ...}
+	if strings.HasPrefix(innerTrimmed, "schemas") && (len(innerTrimmed) == 7 || strings.HasPrefix(innerTrimmed[7:], ",") || strings.HasPrefix(innerTrimmed[7:], "}")) {
+		return configContent
+	}
+
+	// Check for pair: {schemas: schemas, ...}
+	if strings.HasPrefix(innerTrimmed, "schemas:") {
+		return configContent
+	}
+
+	// Check for quoted pair: {"schemas": schemas, ...}
+	if strings.HasPrefix(innerTrimmed, `"schemas":`) || strings.HasPrefix(innerTrimmed, `'schemas':`) {
+		return configContent
+	}
+
+	if innerTrimmed == "" {
 		return "{ schemas }"
 	}
 	return "{ schemas, " + inner + " }"

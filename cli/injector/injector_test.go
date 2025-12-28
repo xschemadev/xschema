@@ -294,8 +294,9 @@ const User = xschema.fromURL("User", "https://example.com/user.json", zodAdapter
 
 	output := string(content)
 
-	// Check import added
-	if !strings.Contains(output, `import { schemas } from ".xschema/xschema.gen"`) {
+	// Check import added (with or without ./ prefix)
+	if !strings.Contains(output, `import { schemas } from ".xschema/xschema.gen"`) &&
+		!strings.Contains(output, `import { schemas } from "./.xschema/xschema.gen"`) {
 		t.Errorf("Missing schemas import, got:\n%s", output)
 	}
 
@@ -340,5 +341,83 @@ export const xschema = createXSchemaClient({});
 	// Check schemas added
 	if !strings.Contains(output, "{ schemas }") {
 		t.Errorf("Missing schemas in empty config, got:\n%s", output)
+	}
+}
+
+func TestInjectClient_ExistingSchemasShorthand(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a client file with existing schemas shorthand
+	clientContent := `import { createXSchemaClient } from "@xschema/client";
+import { schemas } from ".xschema/xschema.gen";
+
+export const xschema = createXSchemaClient({ schemas, output: ".xschema" });
+`
+	clientFile := filepath.Join(tmpDir, "main.ts")
+	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
+		t.Fatalf("Failed to write client file: %v", err)
+	}
+
+	ctx := t.Context()
+	lang := language.ByName("typescript")
+
+	err := InjectClient(ctx, InjectClientInput{
+		ClientFile: clientFile,
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+	if err != nil {
+		t.Fatalf("InjectClient failed: %v", err)
+	}
+
+	content, err := os.ReadFile(clientFile)
+	if err != nil {
+		t.Fatalf("Failed to read client file: %v", err)
+	}
+
+	output := string(content)
+
+	// Check schemas not duplicated (should still be shorthand)
+	if !strings.Contains(output, "{ schemas,") {
+		t.Errorf("Schemas shorthand should not be modified, got:\n%s", output)
+	}
+}
+
+func TestInjectClient_ExistingSchemasPair(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a client file with existing schemas as key-value pair
+	clientContent := `import { createXSchemaClient } from "@xschema/client";
+import { schemas } from ".xschema/xschema.gen";
+
+export const xschema = createXSchemaClient({ schemas: schemas, output: ".xschema" });
+`
+	clientFile := filepath.Join(tmpDir, "main.ts")
+	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
+		t.Fatalf("Failed to write client file: %v", err)
+	}
+
+	ctx := t.Context()
+	lang := language.ByName("typescript")
+
+	err := InjectClient(ctx, InjectClientInput{
+		ClientFile: clientFile,
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+	if err != nil {
+		t.Fatalf("InjectClient failed: %v", err)
+	}
+
+	content, err := os.ReadFile(clientFile)
+	if err != nil {
+		t.Fatalf("Failed to read client file: %v", err)
+	}
+
+	output := string(content)
+
+	// Check schemas not duplicated (should still be key-value pair)
+	if !strings.Contains(output, "{ schemas: schemas,") {
+		t.Errorf("Schemas pair should not be modified, got:\n%s", output)
 	}
 }

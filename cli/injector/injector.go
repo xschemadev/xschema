@@ -255,8 +255,9 @@ func injectSchemasImport(content, importPath string, lang *language.Language) st
 		return content
 	}
 
-	// Check if import already exists
-	if strings.Contains(content, importPath) {
+	// Check if import already exists (with or without ./ prefix)
+	normalizedPath := strings.TrimPrefix(importPath, "./")
+	if strings.Contains(content, importPath) || strings.Contains(content, normalizedPath) {
 		return content
 	}
 
