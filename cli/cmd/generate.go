@@ -20,7 +20,8 @@ var (
 	langFilter string
 	verbose    bool
 	dryRun     bool
-	watch      bool
+	//TODO
+	watch bool
 )
 
 var generateCmd = &cobra.Command{
