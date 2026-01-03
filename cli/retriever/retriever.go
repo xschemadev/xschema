@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/ui"
 	"golang.org/x/sync/errgroup"
@@ -44,11 +43,17 @@ func DefaultOptions() Options {
 	}
 }
 
-// adapterGroup groups schemas by adapter
-type adapterGroup struct {
-	adapter  string
-	language string
-	schemas  []generator.GenerateInput
+// RetrievedSchema contains a fetched schema with its metadata
+type RetrievedSchema struct {
+	Namespace string
+	ID        string
+	Schema    json.RawMessage
+	Adapter   string
+}
+
+// Key returns the full namespaced key like "namespace:id"
+func (r RetrievedSchema) Key() string {
+	return r.Namespace + ":" + r.ID
 }
 
 // schemaCache caches retrieved schemas
@@ -140,18 +145,19 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 	return nil, lastErr
 }
 
-// retrieveFromFile reads a JSON schema from a file relative to the declaration file
-func retrieveFromFile(ctx context.Context, file string, declPath string) (json.RawMessage, error) {
+// retrieveFromFile reads a JSON schema from a file relative to the config file
+func retrieveFromFile(ctx context.Context, filePath string, configPath string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	default:
 	}
 
-	dir := filepath.Dir(declPath)
-	fullPath := filepath.Join(dir, file)
+	// Resolve path relative to config file's directory
+	configDir := filepath.Dir(configPath)
+	fullPath := filepath.Join(configDir, filePath)
 
-	ui.Verbosef("reading file: %s", fullPath)
+	ui.Verbosef("reading file: %s (relative to %s)", fullPath, configDir)
 
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
@@ -168,8 +174,8 @@ func retrieveFromFile(ctx context.Context, file string, declPath string) (json.R
 	return json.RawMessage(data), nil
 }
 
-// Retrieve fetches all schemas from declarations and groups them by adapter
-func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]generator.GenerateBatchInput, error) {
+// Retrieve fetches all schemas from declarations
+func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]RetrievedSchema, error) {
 	if len(decls) == 0 {
 		return nil, nil
 	}
@@ -179,7 +185,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		cache = newSchemaCache()
 	}
 
-	results := make([]json.RawMessage, len(decls))
+	results := make([]RetrievedSchema, len(decls))
 
 	ui.Verbosef("retrieving schemas: count=%d, concurrency=%d, cache_enabled=%v", len(decls), opts.Concurrency, cache != nil)
 
@@ -189,45 +195,80 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 	for i, decl := range decls {
 		idx, d := i, decl
 
-		// Build cache key
-		cacheKey := string(d.Source) + ":" + d.Location
-		if d.Source == "file" {
-			cacheKey = "file:" + filepath.Join(filepath.Dir(d.File), d.Location)
+		// Build cache key based on source type
+		var cacheKey string
+		switch d.SourceType {
+		case parser.SourceURL:
+			var url string
+			if err := json.Unmarshal(d.Source, &url); err != nil {
+				return nil, fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
+			}
+			cacheKey = "url:" + url
+		case parser.SourceFile:
+			var filePath string
+			if err := json.Unmarshal(d.Source, &filePath); err != nil {
+				return nil, fmt.Errorf("invalid file source for %s: %w", d.Key(), err)
+			}
+			cacheKey = "file:" + filepath.Join(filepath.Dir(d.ConfigPath), filePath)
+		case parser.SourceJSON:
+			// Inline JSON - use the declaration key as cache key
+			cacheKey = "json:" + d.Key()
 		}
 
 		// Check cache first (if enabled)
 		if cache != nil {
 			if cached, ok := cache.get(cacheKey); ok {
-				ui.Verbosef("cache hit: schema=%s, key=%s", d.Name, cacheKey)
-				results[idx] = cached
+				ui.Verbosef("cache hit: schema=%s, key=%s", d.Key(), cacheKey)
+				results[idx] = RetrievedSchema{
+					Namespace: d.Namespace,
+					ID:        d.ID,
+					Schema:    cached,
+					Adapter:   d.Adapter,
+				}
 				continue
 			}
-			ui.Verbosef("cache miss: schema=%s, key=%s", d.Name, cacheKey)
+			ui.Verbosef("cache miss: schema=%s, key=%s", d.Key(), cacheKey)
 		}
 
 		g.Go(func() error {
 			var schema json.RawMessage
 			var err error
 
-			switch d.Source {
-			case "url":
-				schema, err = retrieveFromURL(ctx, d.Location, opts)
-			case "file":
-				schema, err = retrieveFromFile(ctx, d.Location, d.File)
+			switch d.SourceType {
+			case parser.SourceURL:
+				var url string
+				if err := json.Unmarshal(d.Source, &url); err != nil {
+					return fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
+				}
+				schema, err = retrieveFromURL(ctx, url, opts)
+			case parser.SourceFile:
+				var filePath string
+				if err := json.Unmarshal(d.Source, &filePath); err != nil {
+					return fmt.Errorf("invalid file source for %s: %w", d.Key(), err)
+				}
+				schema, err = retrieveFromFile(ctx, filePath, d.ConfigPath)
+			case parser.SourceJSON:
+				// Inline JSON - source is already the schema
+				schema = d.Source
 			default:
-				err = fmt.Errorf("unknown source type: %s", d.Source)
+				err = fmt.Errorf("unknown source type: %s", d.SourceType)
 			}
 
 			if err != nil {
-				ui.Verbosef("failed to retrieve schema: name=%s, source=%s, location=%s, error=%v", d.Name, d.Source, d.Location, err)
-				return fmt.Errorf("failed to retrieve schema %s: %w", d.Name, err)
+				ui.Verbosef("failed to retrieve schema: key=%s, source=%s, error=%v", d.Key(), d.SourceType, err)
+				return fmt.Errorf("failed to retrieve schema %s: %w", d.Key(), err)
 			}
 
 			if cache != nil {
 				cache.set(cacheKey, schema)
 			}
 
-			results[idx] = schema
+			results[idx] = RetrievedSchema{
+				Namespace: d.Namespace,
+				ID:        d.ID,
+				Schema:    schema,
+				Adapter:   d.Adapter,
+			}
 			return nil
 		})
 	}
@@ -236,46 +277,25 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		return nil, err
 	}
 
-	// Group by adapter
-	groups := make(map[string]*adapterGroup)
-	for i, decl := range decls {
-		adapterKey := decl.Adapter.Package
-		if adapterKey == "" {
-			adapterKey = decl.Adapter.Name
-		}
+	ui.Verbosef("retrieval complete: schemas=%d", len(results))
+	return results, nil
+}
 
-		group, ok := groups[adapterKey]
-		if !ok {
-			group = &adapterGroup{
-				adapter:  adapterKey,
-				language: decl.Adapter.Language,
-			}
-			groups[adapterKey] = group
-		}
-		group.schemas = append(group.schemas, generator.GenerateInput{
-			Name:   decl.Name,
-			Schema: results[i],
-		})
+// GroupByAdapter groups retrieved schemas by adapter package
+func GroupByAdapter(schemas []RetrievedSchema) map[string][]RetrievedSchema {
+	groups := make(map[string][]RetrievedSchema)
+	for _, s := range schemas {
+		groups[s.Adapter] = append(groups[s.Adapter], s)
 	}
+	return groups
+}
 
-	// Sort keys for deterministic output
+// SortedAdapters returns adapter keys in sorted order for deterministic output
+func SortedAdapters(groups map[string][]RetrievedSchema) []string {
 	keys := make([]string, 0, len(groups))
 	for k := range groups {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-
-	batches := make([]generator.GenerateBatchInput, 0, len(groups))
-	for _, k := range keys {
-		g := groups[k]
-		batches = append(batches, generator.GenerateBatchInput{
-			Schemas:  g.schemas,
-			Adapter:  g.adapter,
-			Language: g.language,
-		})
-		ui.Verbosef("grouped schemas by adapter: adapter=%s, language=%s, schemas=%d", g.adapter, g.language, len(g.schemas))
-	}
-
-	ui.Verbosef("retrieval complete: batches=%d", len(batches))
-	return batches, nil
+	return keys
 }

@@ -11,44 +11,99 @@ export interface Register {
 // Type helper to get registered schemas
 export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
 
-// Check if T has actual schema keys (not just empty Record<string, unknown>)
-type HasSchemas<T> = Record<string, unknown> extends T ? false : true;
+// Get all registered schema keys as a union type (e.g., "user:Profile" | "another:TSConfig")
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
 
-type PleaseRunXSchemaGenerate = {
-  readonly __error: 'Run `xschema generate`';
-};
+// Extract the ID part from "namespace:id" keys for a specific namespace
+// e.g., ExtractID<"user:Profile" | "user:Calendar", "user"> = "Profile" | "Calendar"
+type ExtractID<Keys extends string, NS extends string> = 
+  Keys extends `${NS}:${infer ID}` ? ID : never;
 
-// Configuration - parsed by CLI from createXSchemaClient call
+// Valid keys when using a default namespace - includes full keys AND shorthand IDs
+// e.g., if defaultNamespace is "user" and schemas has "user:Profile", "another:TSConfig"
+// then valid keys are: "user:Profile" | "another:TSConfig" | "Profile"
+type ValidKeys<T, DefaultNS extends string | undefined> = 
+  DefaultNS extends string
+    ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS>
+    : keyof T & string;
+
+// Resolve a shorthand key to its full "namespace:id" form
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = 
+  K extends `${string}:${string}` 
+    ? K  // Already has namespace
+    : DefaultNS extends string 
+      ? `${DefaultNS}:${K}`  // Prepend default namespace
+      : K;  // No default namespace
+
+// Type helper to extract schema types by name
+// Only accepts full "namespace:id" keys for explicitness
+// Use the xschema client for shorthand ID lookups
+export type XSchemaType<N extends SchemaKeys> = 
+  Register extends { schemaTypes: infer T }
+    ? N extends keyof T 
+      ? T[N]
+      : never
+    : never;
+
+// Configuration for createXSchemaClient
 export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = {
   schemas?: T;
-  outputDir?: string;          // Output directory (default: .xschema)
-  maxParallelFetches?: number; // Max concurrent HTTP requests (default: 10)
-  requestTimeoutMs?: number;   // HTTP request timeout in ms (default: 30000)
-  maxFetchRetries?: number;    // Max retry attempts for fetching schemas (default: 3)
+  defaultNamespace?: string;
 };
 
-type SchemaResult<T, N extends string> = HasSchemas<T> extends true
-  ? N extends keyof T ? T[N] : PleaseRunXSchemaGenerate
-  : PleaseRunXSchemaGenerate;
-
-export function createXSchemaClient<T extends Record<string, unknown> = RegisteredSchemas>(
-  config: XSchemaConfig<T>
+/**
+ * Creates an xschema client for looking up schemas by namespace:id
+ * 
+ * Provides full TypeScript autocompletion and compile-time errors for invalid keys.
+ * 
+ * @example
+ * ```ts
+ * import { schemas } from "./.xschema/xschema.gen";
+ * import { createXSchemaClient } from "@xschema/client";
+ * 
+ * const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
+ * 
+ * // Full autocompletion for all schema keys
+ * const userSchema = xschema("user:Profile");  // ✓
+ * const tsConfig = xschema("another:TSConfig"); // ✓
+ * 
+ * // With defaultNamespace, can omit namespace for that namespace
+ * const profile = xschema("Profile");  // ✓ resolves to "user:Profile"
+ * 
+ * // TypeScript error for invalid keys
+ * const invalid = xschema("nonexistent");  // ✗ Type error!
+ * ```
+ */
+export function createXSchemaClient<
+  const T extends Record<string, unknown> = RegisteredSchemas,
+  const DefaultNS extends string | undefined = undefined
+>(
+  config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }
 ) {
   const schemas = config.schemas ?? ({} as T);
+  const defaultNs = config.defaultNamespace;
 
-  function lookup<N extends string>(name: N): SchemaResult<T, N> {
-    if (!(name in schemas)) {
-      throw new Error(`Run xschema generate - unknown schema: ${name}`);
+  /**
+   * Look up a schema by key.
+   * @param key - Schema key in "namespace:id" format, or just "id" if defaultNamespace is set
+   * @returns The schema validator (e.g., Zod schema)
+   */
+  function lookup<K extends ValidKeys<T, DefaultNS>>(
+    key: K
+  ): T[ResolveKey<K, DefaultNS> & keyof T] {
+    // If key includes ":", use as-is; otherwise prepend defaultNamespace
+    const resolvedKey = (key as string).includes(':') 
+      ? key 
+      : defaultNs 
+        ? `${defaultNs}:${key}` 
+        : key;
+    
+    if (!(resolvedKey in schemas)) {
+      throw new Error(`Unknown schema: ${resolvedKey}. Run \`xschema generate\`.`);
     }
-    return schemas[name as keyof T] as SchemaResult<T, N>;
+    
+    return schemas[resolvedKey as keyof T] as T[ResolveKey<K, DefaultNS> & keyof T];
   }
 
-  return {
-    fromURL: <N extends string>(name: N, _url: string, _adapter: XSchemaAdapter) => lookup(name),
-    fromFile: <N extends string>(name: N, _path: string, _adapter: XSchemaAdapter) => lookup(name),
-    ...schemas,
-  } as {
-    fromURL: <N extends string>(name: N, url: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
-    fromFile: <N extends string>(name: N, path: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
-  } & T;
+  return lookup;
 }

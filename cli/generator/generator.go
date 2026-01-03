@@ -8,25 +8,36 @@ import (
 	"os/exec"
 
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/retriever"
 	"github.com/xschema/cli/ui"
 )
 
+// GenerateInput is sent to the adapter CLI
 type GenerateInput struct {
-	Name   string          `json:"name"`
-	Schema json.RawMessage `json:"schema"`
+	Namespace string          `json:"namespace"`
+	ID        string          `json:"id"`
+	Schema    json.RawMessage `json:"schema"`
 }
 
-type GenerateBatchInput struct {
-	Schemas  []GenerateInput `json:"schemas"`
-	Adapter  string          `json:"adapter"`  // e.g. "@xschema/zod"
-	Language string          `json:"language"` // e.g. "typescript", "python"
-}
-
+// GenerateOutput is received from the adapter CLI
 type GenerateOutput struct {
-	Name    string   `json:"name"`
-	Schema  string   `json:"schema"`
-	Type    string   `json:"type"`
-	Imports []string `json:"imports"`
+	Namespace string   `json:"namespace"`
+	ID        string   `json:"id"`
+	Schema    string   `json:"schema"`  // generated code expression
+	Type      string   `json:"type"`    // type expression
+	Imports   []string `json:"imports"` // required imports
+}
+
+// Key returns the full namespaced key like "namespace:id"
+func (o GenerateOutput) Key() string {
+	return o.Namespace + ":" + o.ID
+}
+
+// GenerateBatchInput groups schemas by adapter for batch processing
+type GenerateBatchInput struct {
+	Adapter  string // adapter package e.g., "@xschema/zod"
+	Language string // language name e.g., "typescript"
+	Schemas  []retriever.RetrievedSchema
 }
 
 // Generate calls the adapter to convert schemas to native code
@@ -44,11 +55,21 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, fmt.Errorf("%s not found: %w", runner, err)
 	}
 
+	// Build input for adapter
+	adapterInput := make([]GenerateInput, len(input.Schemas))
+	for i, s := range input.Schemas {
+		adapterInput[i] = GenerateInput{
+			Namespace: s.Namespace,
+			ID:        s.ID,
+			Schema:    s.Schema,
+		}
+	}
+
 	cmdArgs := append(args, input.Adapter)
 	cmd := exec.CommandContext(ctx, runner, cmdArgs...)
 
 	// Pipe schemas to stdin
-	stdinData, err := json.Marshal(input.Schemas)
+	stdinData, err := json.Marshal(adapterInput)
 	if err != nil {
 		ui.Verbosef("failed to marshal schemas for adapter %s", input.Adapter)
 		return nil, fmt.Errorf("failed to marshal schemas: %w", err)
@@ -83,4 +104,29 @@ func getRunner(langName string) (string, []string, error) {
 		return "", nil, fmt.Errorf("unsupported language: %s", langName)
 	}
 	return lang.DetectRunner()
+}
+
+// GenerateAll runs generation for all adapter groups and returns all outputs
+func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string) ([]GenerateOutput, error) {
+	groups := retriever.GroupByAdapter(schemas)
+	adapters := retriever.SortedAdapters(groups)
+
+	var allOutputs []GenerateOutput
+
+	for _, adapter := range adapters {
+		batch := GenerateBatchInput{
+			Adapter:  adapter,
+			Language: langName,
+			Schemas:  groups[adapter],
+		}
+
+		outputs, err := Generate(ctx, batch)
+		if err != nil {
+			return nil, err
+		}
+
+		allOutputs = append(allOutputs, outputs...)
+	}
+
+	return allOutputs, nil
 }

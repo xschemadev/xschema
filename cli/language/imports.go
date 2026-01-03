@@ -179,6 +179,7 @@ func MergePyImports(imports []string) string {
 }
 
 // BuildPythonFooter generates Python overload stubs for type safety
+// Uses namespace:id format for schema keys
 func BuildPythonFooter(_ string, schemas []SchemaEntry) string {
 	if len(schemas) == 0 {
 		return ""
@@ -186,11 +187,11 @@ func BuildPythonFooter(_ string, schemas []SchemaEntry) string {
 
 	var lines []string
 
-	// from_url overloads
+	// from_url overloads - use Key() for the literal type and VarName for the return type
 	for _, s := range schemas {
 		lines = append(lines, `    @staticmethod
     @overload
-    def from_url(name: Literal["`+s.Name+`"], url: str, adapter: XSchemaAdapter) -> type[`+s.Name+`]: ...`)
+    def from_url(name: Literal["`+s.Key()+`"], url: str, adapter: XSchemaAdapter) -> type[`+s.VarName+`]: ...`)
 	}
 	lines = append(lines, `    @staticmethod
     @overload
@@ -207,7 +208,7 @@ func BuildPythonFooter(_ string, schemas []SchemaEntry) string {
 	for _, s := range schemas {
 		lines = append(lines, `    @staticmethod
     @overload
-    def from_file(name: Literal["`+s.Name+`"], path: str, adapter: XSchemaAdapter) -> type[`+s.Name+`]: ...`)
+    def from_file(name: Literal["`+s.Key()+`"], path: str, adapter: XSchemaAdapter) -> type[`+s.VarName+`]: ...`)
 	}
 	lines = append(lines, `    @staticmethod
     @overload

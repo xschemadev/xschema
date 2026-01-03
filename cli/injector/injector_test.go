@@ -18,16 +18,18 @@ func TestInject_TypeScript(t *testing.T) {
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
-				Name:    "User",
-				Schema:  `z.object({ id: z.string(), name: z.string() })`,
-				Type:    "z.infer<typeof User>",
-				Imports: []string{`import { z } from "zod"`},
+				Namespace: "user",
+				ID:        "User",
+				Schema:    `z.object({ id: z.string(), name: z.string() })`,
+				Type:      "z.infer<typeof user_User>",
+				Imports:   []string{`import { z } from "zod"`},
 			},
 			{
-				Name:    "Post",
-				Schema:  `z.object({ title: z.string(), body: z.string() })`,
-				Type:    "z.infer<typeof Post>",
-				Imports: []string{`import { z } from "zod"`},
+				Namespace: "user",
+				ID:        "Post",
+				Schema:    `z.object({ title: z.string(), body: z.string() })`,
+				Type:      "z.infer<typeof user_Post>",
+				Imports:   []string{`import { z } from "zod"`},
 			},
 		},
 	}
@@ -55,17 +57,20 @@ func TestInject_TypeScript(t *testing.T) {
 		t.Error("Imports not properly merged")
 	}
 
-	// Check schemas
-	if !strings.Contains(output, "export const User =") {
-		t.Error("Missing User schema")
+	// Check schemas with namespaced variable names
+	if !strings.Contains(output, "const user_User =") {
+		t.Error("Missing user_User schema")
 	}
-	if !strings.Contains(output, "export const Post =") {
-		t.Error("Missing Post schema")
+	if !strings.Contains(output, "const user_Post =") {
+		t.Error("Missing user_Post schema")
 	}
 
-	// Check registry
-	if !strings.Contains(output, "schemas = { User, Post }") {
-		t.Error("Missing schema registry")
+	// Check registry with namespace:id keys
+	if !strings.Contains(output, `"user:User": user_User`) {
+		t.Error("Missing user:User in schema registry")
+	}
+	if !strings.Contains(output, `"user:Post": user_Post`) {
+		t.Error("Missing user:Post in schema registry")
 	}
 
 	// Check declaration merging
@@ -82,19 +87,21 @@ func TestInject_Python(t *testing.T) {
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
-				Name: "User",
-				Schema: `class User(BaseModel):
+				Namespace: "user",
+				ID:        "User",
+				Schema: `class user_User(BaseModel):
     id: str
     name: str`,
-				Type:    "User",
+				Type:    "user_User",
 				Imports: []string{`from pydantic import BaseModel`},
 			},
 			{
-				Name: "Post",
-				Schema: `class Post(BaseModel):
+				Namespace: "user",
+				ID:        "Post",
+				Schema: `class user_Post(BaseModel):
     title: str
     body: str`,
-				Type:    "Post",
+				Type:    "user_Post",
 				Imports: []string{`from pydantic import BaseModel`},
 			},
 		},
@@ -124,21 +131,21 @@ func TestInject_Python(t *testing.T) {
 	}
 
 	// Check schemas
-	if !strings.Contains(output, "class User(BaseModel):") {
-		t.Error("Missing User schema")
+	if !strings.Contains(output, "class user_User(BaseModel):") {
+		t.Error("Missing user_User schema")
 	}
-	if !strings.Contains(output, "class Post(BaseModel):") {
-		t.Error("Missing Post schema")
-	}
-
-	// Check registry
-	if !strings.Contains(output, `"User": User`) {
-		t.Error("Missing User in registry")
+	if !strings.Contains(output, "class user_Post(BaseModel):") {
+		t.Error("Missing user_Post schema")
 	}
 
-	// Check overloads
-	if !strings.Contains(output, `Literal["User"]`) {
-		t.Error("Missing User overload")
+	// Check registry with namespace:id keys
+	if !strings.Contains(output, `"user:User": user_User`) {
+		t.Error("Missing user:User in registry")
+	}
+
+	// Check overloads with namespace:id format
+	if !strings.Contains(output, `Literal["user:User"]`) {
+		t.Error("Missing user:User overload")
 	}
 	if !strings.Contains(output, "def from_url") {
 		t.Error("Missing from_url method")
@@ -168,10 +175,11 @@ func TestInject_TypeOnly(t *testing.T) {
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
-				Name:    "User",
-				Type:    "{ id: string; name: string }",
-				Schema:  "", // type only, no schema
-				Imports: []string{},
+				Namespace: "user",
+				ID:        "User",
+				Type:      "{ id: string; name: string }",
+				Schema:    "", // type only, no schema
+				Imports:   []string{},
 			},
 		},
 	}
@@ -189,10 +197,10 @@ func TestInject_TypeOnly(t *testing.T) {
 	output := string(content)
 
 	// Should have type export, not const
-	if !strings.Contains(output, "export type User =") {
+	if !strings.Contains(output, "export type user_User =") {
 		t.Errorf("Missing type export, got:\n%s", output)
 	}
-	if strings.Contains(output, "export const User =") {
+	if strings.Contains(output, "const user_User =") {
 		t.Error("Should not have const export for type-only")
 	}
 }
@@ -205,10 +213,11 @@ func TestInject_SchemaOnly(t *testing.T) {
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
-				Name:    "User",
-				Schema:  "z.object({ id: z.string() })",
-				Type:    "", // schema only, no explicit type
-				Imports: []string{`import { z } from "zod"`},
+				Namespace: "user",
+				ID:        "User",
+				Schema:    "z.object({ id: z.string() })",
+				Type:      "", // schema only, no explicit type
+				Imports:   []string{`import { z } from "zod"`},
 			},
 		},
 	}
@@ -226,10 +235,10 @@ func TestInject_SchemaOnly(t *testing.T) {
 	output := string(content)
 
 	// Should have const export, not type
-	if !strings.Contains(output, "export const User =") {
+	if !strings.Contains(output, "const user_User =") {
 		t.Errorf("Missing const export, got:\n%s", output)
 	}
-	if strings.Contains(output, "export type User =") {
+	if strings.Contains(output, "export type user_User =") {
 		t.Error("Should not have type export for schema-only")
 	}
 }
@@ -242,7 +251,7 @@ func TestInject_CreatesDirectory(t *testing.T) {
 		Language: "typescript",
 		OutDir:   outDir,
 		Outputs: []generator.GenerateOutput{
-			{Name: "Test", Schema: "z.string()", Imports: []string{}},
+			{Namespace: "test", ID: "Test", Schema: "z.string()", Imports: []string{}},
 		},
 	})
 
@@ -260,13 +269,10 @@ func TestInjectClient_TypeScript(t *testing.T) {
 
 	// Create a client file
 	clientContent := `import { createXSchemaClient } from "@xschema/client";
-import { zodAdapter } from "@xschema/zod";
 
 export const xschema = createXSchemaClient({
-  output: ".xschema",
+  defaultNamespace: "user",
 });
-
-const User = xschema.fromURL("User", "https://example.com/user.json", zodAdapter);
 `
 	clientFile := filepath.Join(tmpDir, "main.ts")
 	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
@@ -274,10 +280,9 @@ const User = xschema.fromURL("User", "https://example.com/user.json", zodAdapter
 	}
 
 	// Inject
-	ctx := t.Context()
 	lang := language.ByName("typescript")
 
-	err := InjectClient(ctx, InjectClientInput{
+	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
 		Language:   lang,
 		OutDir:     ".xschema",
@@ -301,7 +306,7 @@ const User = xschema.fromURL("User", "https://example.com/user.json", zodAdapter
 	}
 
 	// Check schemas added to config
-	if !strings.Contains(output, "{ schemas,") || !strings.Contains(output, "output:") {
+	if !strings.Contains(output, "{ schemas,") || !strings.Contains(output, "defaultNamespace:") {
 		t.Errorf("Missing schemas in config, got:\n%s", output)
 	}
 }
@@ -319,10 +324,9 @@ export const xschema = createXSchemaClient({});
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	ctx := t.Context()
 	lang := language.ByName("typescript")
 
-	err := InjectClient(ctx, InjectClientInput{
+	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
 		Language:   lang,
 		OutDir:     ".xschema",
@@ -351,17 +355,16 @@ func TestInjectClient_ExistingSchemasShorthand(t *testing.T) {
 	clientContent := `import { createXSchemaClient } from "@xschema/client";
 import { schemas } from ".xschema/xschema.gen";
 
-export const xschema = createXSchemaClient({ schemas, output: ".xschema" });
+export const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
 `
 	clientFile := filepath.Join(tmpDir, "main.ts")
 	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	ctx := t.Context()
 	lang := language.ByName("typescript")
 
-	err := InjectClient(ctx, InjectClientInput{
+	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
 		Language:   lang,
 		OutDir:     ".xschema",
@@ -390,17 +393,16 @@ func TestInjectClient_ExistingSchemasPair(t *testing.T) {
 	clientContent := `import { createXSchemaClient } from "@xschema/client";
 import { schemas } from ".xschema/xschema.gen";
 
-export const xschema = createXSchemaClient({ schemas: schemas, output: ".xschema" });
+export const xschema = createXSchemaClient({ schemas: schemas, defaultNamespace: "user" });
 `
 	clientFile := filepath.Join(tmpDir, "main.ts")
 	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	ctx := t.Context()
 	lang := language.ByName("typescript")
 
-	err := InjectClient(ctx, InjectClientInput{
+	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
 		Language:   lang,
 		OutDir:     ".xschema",
@@ -419,5 +421,267 @@ export const xschema = createXSchemaClient({ schemas: schemas, output: ".xschema
 	// Check schemas not duplicated (should still be key-value pair)
 	if !strings.Contains(output, "{ schemas: schemas,") {
 		t.Errorf("Schemas pair should not be modified, got:\n%s", output)
+	}
+}
+
+func TestInject_EmptyOutputs(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs:  []generator.GenerateOutput{},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	// File should still be created with header
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+
+	output := string(content)
+	if !strings.Contains(output, "Generated by xschema") {
+		t.Error("Missing header in empty output file")
+	}
+}
+
+func TestInject_MixedSchemaAndType(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs: []generator.GenerateOutput{
+			{
+				Namespace: "user",
+				ID:        "WithBoth",
+				Schema:    `z.object({ id: z.string() })`,
+				Type:      "z.infer<typeof user_WithBoth>",
+				Imports:   []string{`import { z } from "zod"`},
+			},
+			{
+				Namespace: "user",
+				ID:        "TypeOnly",
+				Schema:    "",
+				Type:      "{ id: string }",
+				Imports:   []string{},
+			},
+			{
+				Namespace: "user",
+				ID:        "SchemaOnly",
+				Schema:    `z.string()`,
+				Type:      "",
+				Imports:   []string{`import { z } from "zod"`},
+			},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+
+	output := string(content)
+
+	// Check all three schemas are present
+	if !strings.Contains(output, "user_WithBoth") {
+		t.Error("Missing WithBoth schema")
+	}
+	if !strings.Contains(output, "user_TypeOnly") {
+		t.Error("Missing TypeOnly schema")
+	}
+	if !strings.Contains(output, "user_SchemaOnly") {
+		t.Error("Missing SchemaOnly schema")
+	}
+}
+
+func TestInject_MultipleNamespaces(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs: []generator.GenerateOutput{
+			{Namespace: "user", ID: "User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "post", ID: "Post", Schema: "z.number()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "comment", ID: "Comment", Schema: "z.boolean()", Imports: []string{`import { z } from "zod"`}},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+
+	output := string(content)
+
+	// Check all namespaced keys
+	if !strings.Contains(output, `"user:User"`) {
+		t.Error("Missing user:User key")
+	}
+	if !strings.Contains(output, `"post:Post"`) {
+		t.Error("Missing post:Post key")
+	}
+	if !strings.Contains(output, `"comment:Comment"`) {
+		t.Error("Missing comment:Comment key")
+	}
+}
+
+func TestInject_DifferentImports(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs: []generator.GenerateOutput{
+			{
+				Namespace: "user",
+				ID:        "User",
+				Schema:    "z.string()",
+				Imports:   []string{`import { z } from "zod"`, `import { ZodError } from "zod"`},
+			},
+			{
+				Namespace: "user",
+				ID:        "Post",
+				Schema:    "someOther()",
+				Imports:   []string{`import { someOther } from "other-lib"`},
+			},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+
+	output := string(content)
+
+	// Check imports are merged correctly
+	if !strings.Contains(output, `from "zod"`) {
+		t.Error("Missing zod import")
+	}
+	if !strings.Contains(output, `from "other-lib"`) {
+		t.Error("Missing other-lib import")
+	}
+}
+
+func TestInject_OverwriteExisting(t *testing.T) {
+	tmpDir := t.TempDir()
+	outPath := filepath.Join(tmpDir, "xschema.gen.ts")
+
+	// Write existing file
+	if err := os.WriteFile(outPath, []byte("// old content"), 0644); err != nil {
+		t.Fatalf("Failed to write existing file: %v", err)
+	}
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs: []generator.GenerateOutput{
+			{Namespace: "user", ID: "New", Schema: "z.string()", Imports: []string{}},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	content, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+
+	output := string(content)
+
+	// Old content should be replaced
+	if strings.Contains(output, "old content") {
+		t.Error("Old content should be overwritten")
+	}
+	if !strings.Contains(output, "user_New") {
+		t.Error("New content should be present")
+	}
+}
+
+func TestInjectClient_NoClientFactory(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// File without createXSchemaClient
+	clientContent := `import { something } from "somewhere";
+
+export const foo = "bar";
+`
+	clientFile := filepath.Join(tmpDir, "main.ts")
+	if err := os.WriteFile(clientFile, []byte(clientContent), 0644); err != nil {
+		t.Fatalf("Failed to write client file: %v", err)
+	}
+
+	lang := language.ByName("typescript")
+
+	err := InjectClient(InjectClientInput{
+		ClientFile: clientFile,
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+	if err != nil {
+		t.Fatalf("InjectClient failed: %v", err)
+	}
+
+	content, err := os.ReadFile(clientFile)
+	if err != nil {
+		t.Fatalf("Failed to read client file: %v", err)
+	}
+
+	output := string(content)
+
+	// Should still add import even without factory
+	if !strings.Contains(output, `import { schemas }`) {
+		t.Error("Should add schemas import")
+	}
+}
+
+func TestInjectClient_FileNotFound(t *testing.T) {
+	lang := language.ByName("typescript")
+
+	err := InjectClient(InjectClientInput{
+		ClientFile: "/nonexistent/path/main.ts",
+		Language:   lang,
+		OutDir:     ".xschema",
+	})
+
+	if err == nil {
+		t.Error("Expected error for non-existent file")
+	}
+}
+
+func TestInject_NilLanguage(t *testing.T) {
+	err := Inject(InjectInput{
+		Language: "",
+		OutDir:   t.TempDir(),
+		Outputs:  []generator.GenerateOutput{},
+	})
+
+	if err == nil {
+		t.Error("Expected error for empty language")
 	}
 }

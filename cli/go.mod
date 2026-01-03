@@ -6,8 +6,8 @@ require (
 	github.com/charmbracelet/huh/spinner v0.0.0-20251215014908-6f7d32faaff3
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/muesli/termenv v0.16.0
-	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 	github.com/spf13/cobra v1.10.2
+	github.com/tailscale/hujson v0.0.0-20250605163823-992244df8c5a
 	golang.org/x/sync v0.19.0
 	golang.org/x/term v0.38.0
 )

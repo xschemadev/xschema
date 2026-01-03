@@ -5,105 +5,133 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	sitter "github.com/smacker/go-tree-sitter"
-	"github.com/smacker/go-tree-sitter/python"
-	"github.com/smacker/go-tree-sitter/typescript/typescript"
 )
 
-var extMap map[string]*Language
-
-type SourceType string
-
 const (
-	SourceURL  SourceType = "url"
-	SourceFile SourceType = "file"
+	// XSchemaBaseURL is the base URL for xschema.dev schema files
+	XSchemaBaseURL = "https://xschema.dev/schemas/"
 )
 
 // SchemaEntry represents a generated schema for template data
 type SchemaEntry struct {
-	Name string
-	Code string
-	Type string
+	Namespace string // e.g., "user"
+	ID        string // e.g., "TestUrl"
+	VarName   string // e.g., "user_TestUrl" (safe variable name)
+	Code      string // generated schema code
+	Type      string // type expression
+}
+
+// Key returns the full namespaced key like "user:TestUrl"
+func (s SchemaEntry) Key() string {
+	return s.Namespace + ":" + s.ID
 }
 
 type Language struct {
-	Name          string
-	Extensions    []string
-	GetSitterLang func() *sitter.Language
-	Query         string
-	ImportQuery   string
-	MethodMapping map[string]SourceType // maps method names to source type
-	DetectRunner  func() (cmd string, args []string, err error)
-
-	// Client detection
-	ClientPackage   string // package that exports client factory (e.g., "@xschema/client")
-	ClientFactory   string // factory function name (e.g., "createXSchemaClient")
-	ClientQuery     string // query to find client variable assignments
-	ConfigQuery     string // query to extract config from client call
-	ClientCallQuery string // query to find config object for injection
+	Name         string
+	Extensions   []string // file extensions for source files (for injector)
+	SchemaURL    string   // e.g., "https://xschema.dev/schemas/ts.jsonc"
+	SchemaExt    string   // e.g., "ts.jsonc" - extracted from SchemaURL
+	DetectRunner func() (cmd string, args []string, err error)
 
 	// Client injection (after generation)
-	BuildSchemasImport func(importPath string) string    // build import statement for schemas
-	ImportPattern      string                            // regex to find import lines
-	InjectSchemasKey   func(configContent string) string // inject "schemas" into config object
+	BuildSchemasImport   func(importPath string) string    // build import statement for schemas
+	ImportPattern        string                            // regex to find import lines
+	InjectSchemasKey     func(configContent string) string // inject "schemas" into config object
+	ClientFactoryPattern string                            // regex to find client factory calls e.g. createXSchemaClient({ ... })
 
-	// Output injection
-	OutputFile   string                                            // e.g. "index.ts", "__init__.py", "xschema.go"
+	// Output generation
+	OutputFile   string                                            // e.g. "xschema.gen.ts", "__init__.py"
 	Template     string                                            // Go text/template for output
 	MergeImports func(imports []string) string                     // dedupe/format imports
 	BuildHeader  func(outDir string, schemas []SchemaEntry) string // inserted at top
 	BuildFooter  func(outDir string, schemas []SchemaEntry) string // inserted at bottom
+	BuildVarName func(namespace, id string) string                 // build variable name from namespace and id
+
+	// Parser (fallback when git not available)
+	IgnoreDirs []string // directories to skip when walking
 }
 
 var Languages = []Language{
 	{
-		Name:          "typescript",
-		Extensions:    []string{".ts", ".tsx", ".js", ".jsx"},
-		GetSitterLang: typescript.GetLanguage,
-		Query:         tsQuery,
-		ImportQuery:   tsImportQuery,
-		MethodMapping: map[string]SourceType{
-			"fromURL":  SourceURL,
-			"fromFile": SourceFile,
-		},
-		DetectRunner:       detectTSRunner,
-		ClientPackage:      "@xschema/client",
-		ClientFactory:      "createXSchemaClient",
-		ClientQuery:        tsClientQuery,
-		ConfigQuery:        tsConfigQuery,
-		ClientCallQuery:    tsClientCallQuery,
-		BuildSchemasImport: buildTSSchemasImport,
-		ImportPattern:      `(?m)^import\s+.*$`,
-		InjectSchemasKey:   injectSchemasKeyBrace,
-		OutputFile:         "xschema.gen.ts",
-		Template:           TSTemplate,
-		MergeImports:       MergeTSImports,
+		Name:                 "typescript",
+		Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
+		SchemaURL:            XSchemaBaseURL + "ts.jsonc",
+		SchemaExt:            "ts.jsonc",
+		DetectRunner:         detectTSRunner,
+		BuildSchemasImport:   buildTSSchemasImport,
+		ImportPattern:        `(?m)^import\s+.*$`,
+		InjectSchemasKey:     injectSchemasKeyBrace,
+		ClientFactoryPattern: `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputFile:           "xschema.gen.ts",
+		Template:             TSTemplate,
+		MergeImports:         MergeTSImports,
+		BuildVarName:         buildVarNameUnderscore,
+		IgnoreDirs:           []string{"node_modules", "dist", "build"},
 	},
 	{
-		Name:          "python",
-		Extensions:    []string{".py"},
-		GetSitterLang: python.GetLanguage,
-		Query:         pyQuery,
-		ImportQuery:   pyImportQuery,
-		MethodMapping: map[string]SourceType{
-			"from_url":  SourceURL,
-			"from_file": SourceFile,
-		},
-		DetectRunner:       detectPythonRunner,
-		ClientPackage:      "xschema",
-		ClientFactory:      "create_xschema_client",
-		ClientQuery:        pyClientQuery,
-		ConfigQuery:        pyConfigQuery,
-		ClientCallQuery:    pyClientCallQuery,
-		BuildSchemasImport: buildPySchemasImport,
-		ImportPattern:      `(?m)^(?:import\s+|from\s+).*$`,
-		InjectSchemasKey:   injectSchemasKeyBrace,
-		OutputFile:         "__init__.py",
-		Template:           PyTemplate,
-		MergeImports:       MergePyImports,
-		BuildFooter:        BuildPythonFooter,
+		Name:                 "python",
+		Extensions:           []string{".py"},
+		SchemaURL:            XSchemaBaseURL + "py.jsonc",
+		SchemaExt:            "py.jsonc",
+		DetectRunner:         detectPythonRunner,
+		BuildSchemasImport:   buildPySchemasImport,
+		ImportPattern:        `(?m)^(?:import\s+|from\s+).*$`,
+		InjectSchemasKey:     injectSchemasKeyBrace,
+		ClientFactoryPattern: `create_xschema_client\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputFile:           "__init__.py",
+		Template:             PyTemplate,
+		MergeImports:         MergePyImports,
+		BuildFooter:          BuildPythonFooter,
+		BuildVarName:         buildVarNameUnderscore,
+		IgnoreDirs:           []string{"__pycache__", ".venv", "venv"},
 	},
+}
+
+// languageBySchemaExt maps schema extensions to languages
+var languageBySchemaExt map[string]*Language
+
+func init() {
+	languageBySchemaExt = make(map[string]*Language)
+	for i := range Languages {
+		languageBySchemaExt[Languages[i].SchemaExt] = &Languages[i]
+	}
+}
+
+// BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/ts.jsonc"
+// Returns nil if URL doesn't match xschema.dev pattern
+func BySchemaURL(url string) *Language {
+	if !strings.HasPrefix(url, XSchemaBaseURL) {
+		return nil
+	}
+	ext := strings.TrimPrefix(url, XSchemaBaseURL)
+	return languageBySchemaExt[ext]
+}
+
+// ByName returns the language config by name
+func ByName(name string) *Language {
+	for i, lang := range Languages {
+		if lang.Name == name {
+			return &Languages[i]
+		}
+	}
+	return nil
+}
+
+// AllIgnoreDirs returns a combined set of all ignore dirs from all languages
+// Used when walking directories before language detection
+func AllIgnoreDirs() map[string]bool {
+	dirs := make(map[string]bool)
+	for _, lang := range Languages {
+		for _, dir := range lang.IgnoreDirs {
+			dirs[dir] = true
+		}
+	}
+	return dirs
+}
+
+// IsXSchemaURL checks if a URL is an xschema.dev schema URL
+func IsXSchemaURL(url string) bool {
+	return strings.HasPrefix(url, XSchemaBaseURL)
 }
 
 func detectTSRunner() (string, []string, error) {
@@ -234,41 +262,6 @@ func detectBuildSystem(content string) string {
 	return ""
 }
 
-// ExtensionGlobs returns glob patterns for all supported extensions
-func ExtensionGlobs() []string {
-	var globs []string
-	for _, lang := range Languages {
-		for _, ext := range lang.Extensions {
-			globs = append(globs, "**/*"+ext)
-		}
-	}
-	return globs
-}
-
-func init() {
-	extMap = make(map[string]*Language)
-	for i := range Languages {
-		for _, ext := range Languages[i].Extensions {
-			extMap[ext] = &Languages[i]
-		}
-	}
-}
-
-// ByExtension returns the language config for a file extension
-func ByExtension(ext string) *Language {
-	return extMap[ext]
-}
-
-// ByName returns the language config by name
-func ByName(name string) *Language {
-	for i, lang := range Languages {
-		if lang.Name == name {
-			return &Languages[i]
-		}
-	}
-	return nil
-}
-
 // buildTSSchemasImport builds TypeScript import for schemas
 func buildTSSchemasImport(importPath string) string {
 	return `import { schemas } from "` + importPath + `";`
@@ -280,6 +273,11 @@ func buildPySchemasImport(importPath string) string {
 	module := strings.ReplaceAll(importPath, "/", ".")
 	module = strings.TrimPrefix(module, ".")
 	return "from " + module + " import schemas"
+}
+
+// buildVarNameUnderscore builds a variable name using underscore separator: namespace_id
+func buildVarNameUnderscore(namespace, id string) string {
+	return namespace + "_" + id
 }
 
 // injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS/Python dict)

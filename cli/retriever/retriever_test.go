@@ -18,7 +18,7 @@ func testdataPath(name string) string {
 
 func TestRetrieveFromFile(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc") // Use as config path for relative resolution
 
 	tests := []struct {
 		name     string
@@ -35,7 +35,7 @@ func TestRetrieveFromFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := retrieveFromFile(ctx, tt.file, declPath)
+			result, err := retrieveFromFile(ctx, tt.file, configPath)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error, got nil")
@@ -94,54 +94,46 @@ func TestRetrieveFromURL(t *testing.T) {
 
 func TestRetrieveAggregation(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
 		// Zod schemas
-		{Name: "User", Source: "file", Location: "user.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
-		{Name: "Post", Source: "file", Location: "post.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
+		{Namespace: "user", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "user", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 		// Pydantic schemas
-		{Name: "Config", Source: "file", Location: "config.json", Adapter: parser.AdapterRef{Package: "@xschema/pydantic", Language: "python"}, File: declPath},
-		{Name: "UserPy", Source: "file", Location: "user.json", Adapter: parser.AdapterRef{Package: "@xschema/pydantic", Language: "python"}, File: declPath},
+		{Namespace: "config", ID: "Config", SourceType: parser.SourceFile, Source: json.RawMessage(`"config.json"`), Adapter: "@xschema/pydantic", ConfigPath: configPath},
+		{Namespace: "config", ID: "UserPy", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/pydantic", ConfigPath: configPath},
 	}
 
-	batches, err := Retrieve(ctx, decls, DefaultOptions())
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(batches) != 2 {
-		t.Fatalf("expected 2 batches, got %d", len(batches))
+	if len(schemas) != 4 {
+		t.Fatalf("expected 4 schemas, got %d", len(schemas))
 	}
 
-	// Results are sorted by adapter key
-	pydanticBatch := batches[0] // @xschema/pydantic comes before @xschema/zod
-	zodBatch := batches[1]
-
-	if pydanticBatch.Adapter != "@xschema/pydantic" {
-		t.Errorf("expected first batch adapter=@xschema/pydantic, got %s", pydanticBatch.Adapter)
-	}
-	if pydanticBatch.Language != "python" {
-		t.Errorf("expected language=python, got %s", pydanticBatch.Language)
-	}
-	if len(pydanticBatch.Schemas) != 2 {
-		t.Errorf("expected 2 pydantic schemas, got %d", len(pydanticBatch.Schemas))
+	// Group by adapter
+	groups := GroupByAdapter(schemas)
+	if len(groups) != 2 {
+		t.Fatalf("expected 2 adapter groups, got %d", len(groups))
 	}
 
-	if zodBatch.Adapter != "@xschema/zod" {
-		t.Errorf("expected second batch adapter=@xschema/zod, got %s", zodBatch.Adapter)
+	pydanticSchemas := groups["@xschema/pydantic"]
+	zodSchemas := groups["@xschema/zod"]
+
+	if len(pydanticSchemas) != 2 {
+		t.Errorf("expected 2 pydantic schemas, got %d", len(pydanticSchemas))
 	}
-	if zodBatch.Language != "typescript" {
-		t.Errorf("expected language=typescript, got %s", zodBatch.Language)
-	}
-	if len(zodBatch.Schemas) != 2 {
-		t.Errorf("expected 2 zod schemas, got %d", len(zodBatch.Schemas))
+	if len(zodSchemas) != 2 {
+		t.Errorf("expected 2 zod schemas, got %d", len(zodSchemas))
 	}
 }
 
 func TestRetrieveConcurrency(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	// Create 15 declarations to test concurrency (limit is 10)
 	var decls []parser.Declaration
@@ -149,41 +141,37 @@ func TestRetrieveConcurrency(t *testing.T) {
 	for i := 0; i < 15; i++ {
 		file := files[i%len(files)]
 		adapter := "@xschema/zod"
-		lang := "typescript"
 		if i%2 == 0 {
 			adapter = "@xschema/pydantic"
-			lang = "python"
 		}
 		decls = append(decls, parser.Declaration{
-			Name:     file[:len(file)-5] + string(rune('A'+i)), // userA, postB, etc
-			Source:   "file",
-			Location: file,
-			Adapter:  parser.AdapterRef{Package: adapter, Language: lang},
-			File:     declPath,
+			Namespace:  "test",
+			ID:         file[:len(file)-5] + string(rune('A'+i)), // userA, postB, etc
+			SourceType: parser.SourceFile,
+			Source:     json.RawMessage(`"` + file + `"`),
+			Adapter:    adapter,
+			ConfigPath: configPath,
 		})
 	}
 
-	batches, err := Retrieve(ctx, decls, DefaultOptions())
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(batches) != 2 {
-		t.Fatalf("expected 2 batches, got %d", len(batches))
+	if len(schemas) != 15 {
+		t.Errorf("expected 15 schemas, got %d", len(schemas))
 	}
 
-	total := 0
-	for _, b := range batches {
-		total += len(b.Schemas)
-	}
-	if total != 15 {
-		t.Errorf("expected 15 total schemas, got %d", total)
+	groups := GroupByAdapter(schemas)
+	if len(groups) != 2 {
+		t.Fatalf("expected 2 adapter groups, got %d", len(groups))
 	}
 }
 
 func TestRetrieveErrors(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	tests := []struct {
 		name  string
@@ -192,19 +180,19 @@ func TestRetrieveErrors(t *testing.T) {
 		{
 			name: "file not found",
 			decls: []parser.Declaration{
-				{Name: "Missing", Source: "file", Location: "nonexistent.json", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+				{Namespace: "test", ID: "Missing", SourceType: parser.SourceFile, Source: json.RawMessage(`"nonexistent.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 			},
 		},
 		{
 			name: "invalid json file",
 			decls: []parser.Declaration{
-				{Name: "Invalid", Source: "file", Location: "invalid.txt", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+				{Namespace: "test", ID: "Invalid", SourceType: parser.SourceFile, Source: json.RawMessage(`"invalid.txt"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 			},
 		},
 		{
 			name: "url not found",
 			decls: []parser.Declaration{
-				{Name: "NotFound", Source: "url", Location: "https://httpstat.us/404", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+				{Namespace: "test", ID: "NotFound", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/404"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 			},
 		},
 	}
@@ -223,9 +211,9 @@ func TestRetrieveContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 	decls := []parser.Declaration{
-		{Name: "User", Source: "url", Location: "https://json.schemastore.org/eslintrc.json", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+		{Namespace: "test", ID: "User", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, DefaultOptions())
@@ -236,43 +224,43 @@ func TestRetrieveContextCancellation(t *testing.T) {
 
 func TestRetrieveNoCache(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	// Same file referenced twice with different names
 	decls := []parser.Declaration{
-		{Name: "User1", Source: "file", Location: "user.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
-		{Name: "User2", Source: "file", Location: "user.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
+		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 	}
 
 	// With cache (default) - should work
 	opts := DefaultOptions()
-	batches, err := Retrieve(ctx, decls, opts)
+	schemas, err := Retrieve(ctx, decls, opts)
 	if err != nil {
 		t.Fatalf("with cache: %v", err)
 	}
-	if len(batches[0].Schemas) != 2 {
-		t.Errorf("expected 2 schemas, got %d", len(batches[0].Schemas))
+	if len(schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(schemas))
 	}
 
 	// Without cache - should also work (just fetches twice)
 	opts.NoCache = true
-	batches, err = Retrieve(ctx, decls, opts)
+	schemas, err = Retrieve(ctx, decls, opts)
 	if err != nil {
 		t.Fatalf("without cache: %v", err)
 	}
-	if len(batches[0].Schemas) != 2 {
-		t.Errorf("expected 2 schemas, got %d", len(batches[0].Schemas))
+	if len(schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(schemas))
 	}
 }
 
 func TestRetrieveCustomConcurrency(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
-		{Name: "User", Source: "file", Location: "user.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
-		{Name: "Post", Source: "file", Location: "post.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
-		{Name: "Config", Source: "file", Location: "config.json", Adapter: parser.AdapterRef{Package: "@xschema/zod", Language: "typescript"}, File: declPath},
+		{Namespace: "test", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Config", SourceType: parser.SourceFile, Source: json.RawMessage(`"config.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 	}
 
 	// Concurrency = 1 (sequential)
@@ -281,18 +269,18 @@ func TestRetrieveCustomConcurrency(t *testing.T) {
 		HTTPTimeout: DefaultOptions().HTTPTimeout,
 		Retries:     DefaultOptions().Retries,
 	}
-	batches, err := Retrieve(ctx, decls, opts)
+	schemas, err := Retrieve(ctx, decls, opts)
 	if err != nil {
 		t.Fatalf("concurrency=1: %v", err)
 	}
-	if len(batches[0].Schemas) != 3 {
-		t.Errorf("expected 3 schemas, got %d", len(batches[0].Schemas))
+	if len(schemas) != 3 {
+		t.Errorf("expected 3 schemas, got %d", len(schemas))
 	}
 }
 
 func TestRetrieveCustomTimeout(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	// Very short timeout for a slow endpoint
 	opts := Options{
@@ -302,7 +290,7 @@ func TestRetrieveCustomTimeout(t *testing.T) {
 	}
 
 	decls := []parser.Declaration{
-		{Name: "Slow", Source: "url", Location: "https://httpstat.us/200?sleep=5000", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+		{Namespace: "test", ID: "Slow", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/200?sleep=5000"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, opts)
@@ -313,7 +301,7 @@ func TestRetrieveCustomTimeout(t *testing.T) {
 
 func TestRetrieveSingleAttempt(t *testing.T) {
 	ctx := context.Background()
-	declPath := testdataPath("fake.ts")
+	configPath := testdataPath("fake.jsonc")
 
 	// Single attempt (Retries=1) - should fail on 500 without retrying
 	opts := Options{
@@ -323,11 +311,240 @@ func TestRetrieveSingleAttempt(t *testing.T) {
 	}
 
 	decls := []parser.Declaration{
-		{Name: "ServerError", Source: "url", Location: "https://httpstat.us/500", Adapter: parser.AdapterRef{Package: "@xschema/zod"}, File: declPath},
+		{Namespace: "test", ID: "ServerError", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/500"`), Adapter: "@xschema/zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, opts)
 	if err == nil {
 		t.Error("expected error with single attempt on 500")
+	}
+}
+
+func TestRetrieveInlineJSON(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	inlineSchema := `{"type": "object", "properties": {"name": {"type": "string"}}}`
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 1 {
+		t.Fatalf("expected 1 schema, got %d", len(schemas))
+	}
+
+	// The schema should be the inline JSON itself
+	if string(schemas[0].Schema) != inlineSchema {
+		t.Errorf("expected inline schema to be passed through, got %s", schemas[0].Schema)
+	}
+}
+
+func TestRetrievedSchemaKey(t *testing.T) {
+	s := RetrievedSchema{
+		Namespace: "user",
+		ID:        "TestUrl",
+	}
+
+	if s.Key() != "user:TestUrl" {
+		t.Errorf("expected key 'user:TestUrl', got %q", s.Key())
+	}
+}
+
+func TestRetrieveEmptyDeclarations(t *testing.T) {
+	ctx := context.Background()
+	schemas, err := Retrieve(ctx, []parser.Declaration{}, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if schemas != nil && len(schemas) != 0 {
+		t.Errorf("expected nil or empty slice, got %d schemas", len(schemas))
+	}
+}
+
+func TestRetrieveUnknownSourceType(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "Unknown", SourceType: "invalid", Source: json.RawMessage(`"test"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for unknown source type")
+	}
+}
+
+func TestRetrieveInvalidURLSource(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "BadURL", SourceType: parser.SourceURL, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for invalid URL source JSON")
+	}
+}
+
+func TestRetrieveInvalidFileSource(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "BadFile", SourceType: parser.SourceFile, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for invalid file source JSON")
+	}
+}
+
+func TestGroupByAdapterEmpty(t *testing.T) {
+	groups := GroupByAdapter([]RetrievedSchema{})
+	if len(groups) != 0 {
+		t.Errorf("expected 0 groups, got %d", len(groups))
+	}
+}
+
+func TestGroupByAdapterSingle(t *testing.T) {
+	schemas := []RetrievedSchema{
+		{Namespace: "user", ID: "User", Adapter: "@xschema/zod"},
+	}
+	groups := GroupByAdapter(schemas)
+
+	if len(groups) != 1 {
+		t.Errorf("expected 1 group, got %d", len(groups))
+	}
+	if len(groups["@xschema/zod"]) != 1 {
+		t.Errorf("expected 1 schema in zod group, got %d", len(groups["@xschema/zod"]))
+	}
+}
+
+func TestSortedAdapters(t *testing.T) {
+	groups := map[string][]RetrievedSchema{
+		"@xschema/zod":      {},
+		"@xschema/pydantic": {},
+		"@xschema/ajv":      {},
+	}
+
+	sorted := SortedAdapters(groups)
+
+	expected := []string{"@xschema/ajv", "@xschema/pydantic", "@xschema/zod"}
+	for i, v := range expected {
+		if sorted[i] != v {
+			t.Errorf("expected sorted[%d]=%s, got %s", i, v, sorted[i])
+		}
+	}
+}
+
+func TestSortedAdaptersEmpty(t *testing.T) {
+	groups := map[string][]RetrievedSchema{}
+	sorted := SortedAdapters(groups)
+
+	if len(sorted) != 0 {
+		t.Errorf("expected 0 sorted adapters, got %d", len(sorted))
+	}
+}
+
+func TestRetrieveCacheHit(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	// Same source, different IDs - second should hit cache
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	opts := DefaultOptions()
+	opts.Concurrency = 1 // Force sequential to test cache
+
+	schemas, err := Retrieve(ctx, decls, opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(schemas))
+	}
+
+	// Both should have same schema content
+	if string(schemas[0].Schema) != string(schemas[1].Schema) {
+		t.Error("cache should return same content for same source")
+	}
+}
+
+func TestRetrieveMixedSourceTypes(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	inlineSchema := `{"type": "object", "properties": {"inline": {"type": "boolean"}}}`
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "FromFile", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 2 {
+		t.Fatalf("expected 2 schemas, got %d", len(schemas))
+	}
+
+	// Verify inline schema is passed through as-is
+	if string(schemas[1].Schema) != inlineSchema {
+		t.Errorf("inline schema mismatch: got %s", schemas[1].Schema)
+	}
+}
+
+func TestRetrievePreservesMetadata(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "myns", ID: "MyID", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/custom", ConfigPath: configPath},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if schemas[0].Namespace != "myns" {
+		t.Errorf("expected namespace 'myns', got %s", schemas[0].Namespace)
+	}
+	if schemas[0].ID != "MyID" {
+		t.Errorf("expected ID 'MyID', got %s", schemas[0].ID)
+	}
+	if schemas[0].Adapter != "@xschema/custom" {
+		t.Errorf("expected adapter '@xschema/custom', got %s", schemas[0].Adapter)
+	}
+}
+
+func TestDefaultOptions(t *testing.T) {
+	opts := DefaultOptions()
+
+	if opts.Concurrency != 10 {
+		t.Errorf("expected concurrency 10, got %d", opts.Concurrency)
+	}
+	if opts.HTTPTimeout != 30*time.Second {
+		t.Errorf("expected timeout 30s, got %v", opts.HTTPTimeout)
+	}
+	if opts.Retries != 3 {
+		t.Errorf("expected retries 3, got %d", opts.Retries)
+	}
+	if opts.NoCache != false {
+		t.Error("expected NoCache false by default")
 	}
 }

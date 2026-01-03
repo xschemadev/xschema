@@ -2,105 +2,37 @@ package parser
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"sync"
 
-	sitter "github.com/smacker/go-tree-sitter"
-
+	"github.com/tailscale/hujson"
 	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/ui"
 )
 
-// queryCache caches compiled queries per language
-var (
-	queryCache         = make(map[string]*sitter.Query)
-	queryCacheMu       sync.RWMutex
-	importQueryCache   = make(map[string]*sitter.Query)
-	importQueryCacheMu sync.RWMutex
-)
+// Parse finds all xschema config files in the project and returns merged declarations
+// langFilter can be empty (auto-detect) or a language name to filter by
+func Parse(ctx context.Context, projectRoot string, langFilter string) (*ParseResult, error) {
+	ui.Verbosef("parsing project: root=%s, langFilter=%s", projectRoot, langFilter)
 
-func getQuery(lang *language.Language) (*sitter.Query, error) {
-	queryCacheMu.RLock()
-	if q, ok := queryCache[lang.Name]; ok {
-		queryCacheMu.RUnlock()
-		return q, nil
-	}
-	queryCacheMu.RUnlock()
-
-	queryCacheMu.Lock()
-	defer queryCacheMu.Unlock()
-
-	if q, ok := queryCache[lang.Name]; ok {
-		return q, nil
-	}
-
-	q, err := sitter.NewQuery([]byte(lang.Query), lang.GetSitterLang())
+	// Find all JSON/JSONC files
+	files, err := getConfigFiles(ctx, projectRoot)
 	if err != nil {
-		return nil, err
-	}
-	queryCache[lang.Name] = q
-	return q, nil
-}
-
-func getImportQuery(lang *language.Language) (*sitter.Query, error) {
-	if lang.ImportQuery == "" {
-		return nil, nil
+		return nil, fmt.Errorf("failed to find config files: %w", err)
 	}
 
-	importQueryCacheMu.RLock()
-	if q, ok := importQueryCache[lang.Name]; ok {
-		importQueryCacheMu.RUnlock()
-		return q, nil
-	}
-	importQueryCacheMu.RUnlock()
+	ui.Verbosef("found potential config files: count=%d", len(files))
 
-	importQueryCacheMu.Lock()
-	defer importQueryCacheMu.Unlock()
+	// Parse each file, filter by xschema.dev $schema
+	var configs []ConfigFile
+	var detectedLang *language.Language
+	languageConflict := false
 
-	if q, ok := importQueryCache[lang.Name]; ok {
-		return q, nil
-	}
-
-	q, err := sitter.NewQuery([]byte(lang.ImportQuery), lang.GetSitterLang())
-	if err != nil {
-		return nil, err
-	}
-	importQueryCache[lang.Name] = q
-	return q, nil
-}
-
-type AdapterRef struct {
-	Name     string `json:"name"`
-	Package  string `json:"package"`
-	Language string `json:"language"`
-}
-
-type Declaration struct {
-	Name     string              `json:"name"`
-	Source   language.SourceType `json:"source"`
-	Location string              `json:"location,omitempty"`
-	Adapter  AdapterRef          `json:"adapter"`
-	File     string              `json:"file"`
-	Line     int                 `json:"line"`
-}
-
-// Parse finds all xschema declarations in the given directory using the client info
-func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, error) {
-	lang := client.Language
-
-	files, err := getSourceFiles(ctx, dir, lang)
-	if err != nil {
-		ui.Verbosef("failed to get source files in %s", dir)
-		return nil, err
-	}
-
-	ui.Verbosef("found source files: count=%d, dir=%s, language=%s", len(files), dir, lang.Name)
-
-	var decls []Declaration
 	for _, path := range files {
 		select {
 		case <-ctx.Done():
@@ -108,67 +40,118 @@ func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, 
 		default:
 		}
 
-		ui.Verbosef("parsing file: %s", path)
-		fileDecls, err := parseFile(ctx, path, lang, client.ClientName)
+		config, err := parseConfigFile(path)
 		if err != nil {
-			ui.Verbosef("failed to parse file: %s", path)
-			return nil, err
+			ui.Verbosef("skipping file (parse error): path=%s, error=%v", path, err)
+			continue
 		}
-		if len(fileDecls) > 0 {
-			ui.Verbosef("found declarations: path=%s, count=%d", path, len(fileDecls))
+		if config == nil {
+			// Not an xschema config file
+			continue
 		}
-		decls = append(decls, fileDecls...)
+
+		ui.Verbosef("found xschema config: path=%s, namespace=%s, language=%s, schemas=%d",
+			path, config.Namespace, config.Language.Name, len(config.Schemas))
+
+		// Check language consistency
+		if detectedLang == nil {
+			detectedLang = config.Language
+		} else if detectedLang.Name != config.Language.Name {
+			languageConflict = true
+		}
+
+		configs = append(configs, *config)
 	}
 
-	return decls, nil
+	if len(configs) == 0 {
+		return nil, fmt.Errorf("no xschema config files found in %s", projectRoot)
+	}
+
+	// Handle language filter/conflict
+	if languageConflict {
+		if langFilter == "" {
+			// List detected languages
+			langs := make(map[string]bool)
+			for _, c := range configs {
+				langs[c.Language.Name] = true
+			}
+			var langList []string
+			for l := range langs {
+				langList = append(langList, l)
+			}
+			return nil, fmt.Errorf("multiple languages detected (%s). Use --lang to specify which one to use",
+				strings.Join(langList, ", "))
+		}
+		// Filter configs by language
+		var filtered []ConfigFile
+		for _, c := range configs {
+			if c.Language.Name == langFilter {
+				filtered = append(filtered, c)
+			}
+		}
+		configs = filtered
+		detectedLang = language.ByName(langFilter)
+		if detectedLang == nil {
+			return nil, fmt.Errorf("unknown language: %s", langFilter)
+		}
+	}
+
+	// Merge declarations, checking for conflicts
+	declarations, err := mergeDeclarations(configs)
+	if err != nil {
+		return nil, err
+	}
+
+	ui.Verbosef("parsed %d configs, %d declarations", len(configs), len(declarations))
+
+	return &ParseResult{
+		Language:     detectedLang,
+		Configs:      configs,
+		Declarations: declarations,
+	}, nil
 }
 
-// getSourceFiles returns source files for the given language
-func getSourceFiles(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
-	// Build glob patterns for this language only
-	// Need both *{ext} (current dir) and **/*{ext} (subdirs)
-	var globs []string
-	for _, ext := range lang.Extensions {
-		globs = append(globs, "*"+ext, "**/*"+ext)
-	}
-
-	ui.Verbosef("getting source files using git in %s (globs: %v)", dir, globs)
-	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, globs...)
+// getConfigFiles returns all JSON/JSONC files in the project
+func getConfigFiles(ctx context.Context, projectRoot string) ([]string, error) {
+	// Try git ls-files first
+	ui.Verbosef("getting config files using git in %s", projectRoot)
+	args := []string{"ls-files", "--cached", "--others", "--exclude-standard", "*.json", "*.jsonc"}
 	cmd := exec.CommandContext(ctx, "git", args...)
-	cmd.Dir = dir
+	cmd.Dir = projectRoot
 	output, err := cmd.Output()
 	if err != nil {
 		ui.Verbose("git not available, using directory walk")
-		return walkDirFallback(ctx, dir, lang)
+		return walkDirForConfigs(ctx, projectRoot)
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
 	if len(lines) == 1 && lines[0] == "" {
-		ui.Verbosef("no files found via git in %s", dir)
+		ui.Verbosef("no files found via git in %s", projectRoot)
 		return nil, nil
 	}
 
 	files := make([]string, 0, len(lines))
 	for _, line := range lines {
 		if line != "" {
-			files = append(files, filepath.Join(dir, line))
+			files = append(files, filepath.Join(projectRoot, line))
 		}
 	}
-	ui.Verbosef("found files via git: count=%d, dir=%s", len(files), dir)
+	ui.Verbosef("found files via git: count=%d", len(files))
 	return files, nil
 }
 
-// walkDirFallback walks directory manually when git is not available
-func walkDirFallback(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
-	ui.Verbosef("walking directory: %s", dir)
+// walkDirForConfigs walks directory manually when git is not available
+func walkDirForConfigs(ctx context.Context, projectRoot string) ([]string, error) {
+	ui.Verbosef("walking directory for configs: %s", projectRoot)
 
-	extSet := make(map[string]bool)
-	for _, ext := range lang.Extensions {
-		extSet[ext] = true
-	}
+	// Get all language-specific ignore dirs
+	ignoreDirs := language.AllIgnoreDirs()
+	// Add common dirs that should always be skipped
+	ignoreDirs[".git"] = true
+	ignoreDirs["vendor"] = true // Go vendor
 
 	var files []string
-	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(projectRoot, func(path string, d fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -180,184 +163,103 @@ func walkDirFallback(ctx context.Context, dir string, lang *language.Language) (
 		}
 		if d.IsDir() {
 			name := d.Name()
-			if name == "node_modules" || name == ".git" || name == "__pycache__" || name == ".venv" || name == "venv" {
+			if ignoreDirs[name] {
 				ui.Verbosef("skipping directory: %s", path)
 				return filepath.SkipDir
 			}
 			return nil
 		}
 
-		if extSet[filepath.Ext(path)] {
+		ext := filepath.Ext(path)
+		if ext == ".json" || ext == ".jsonc" {
 			files = append(files, path)
 		}
 		return nil
 	})
 
-	ui.Verbosef("directory walk complete: files=%d, dir=%s", len(files), dir)
+	ui.Verbosef("directory walk complete: files=%d", len(files))
 	return files, err
 }
 
-func parseFile(ctx context.Context, path string, lang *language.Language, clientName string) ([]Declaration, error) {
+// parseConfigFile parses a single config file
+// Returns nil if file is not an xschema config (no matching $schema)
+func parseConfigFile(path string) (*ConfigFile, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	parser := sitter.NewParser()
-	parser.SetLanguage(lang.GetSitterLang())
-
-	tree, err := parser.ParseCtx(ctx, nil, content)
+	// Standardize JSONC to JSON using hujson
+	standardized, err := hujson.Standardize(content)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid JSON/JSONC: %w", err)
 	}
 
-	// Parse imports to map adapter names to packages
-	importMap := parseImports(tree, content, lang)
-
-	// Parse declarations, filtering by client name
-	q, err := getQuery(lang)
-	if err != nil {
-		return nil, err
+	// Parse JSON
+	var raw ConfigFileRaw
+	if err := json.Unmarshal(standardized, &raw); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
 	}
 
-	qc := sitter.NewQueryCursor()
-	qc.Exec(q, tree.RootNode())
+	// Check if this is an xschema config file
+	if !language.IsXSchemaURL(raw.Schema) {
+		return nil, nil
+	}
 
-	return extractDeclarations(qc, q, content, path, lang, importMap, clientName)
+	// Detect language from $schema URL
+	lang := language.BySchemaURL(raw.Schema)
+	if lang == nil {
+		return nil, fmt.Errorf("unknown xschema language in $schema: %s", raw.Schema)
+	}
+
+	// Derive namespace from filename or use explicit override
+	namespace := raw.Namespace
+	if namespace == "" {
+		// Use filename without extension
+		base := filepath.Base(path)
+		ext := filepath.Ext(base)
+		namespace = strings.TrimSuffix(base, ext)
+	}
+
+	return &ConfigFile{
+		Path:      path,
+		Namespace: namespace,
+		Language:  lang,
+		Schemas:   raw.Schemas,
+	}, nil
 }
 
-func parseImports(tree *sitter.Tree, content []byte, lang *language.Language) map[string]string {
-	q, err := getImportQuery(lang)
-	if err != nil || q == nil {
-		return nil
-	}
+// mergeDeclarations merges all config files into a flat list of declarations
+// Same namespace from different files is merged; duplicate IDs within namespace are an error
+func mergeDeclarations(configs []ConfigFile) ([]Declaration, error) {
+	// Track seen IDs per namespace for duplicate detection
+	seenIDs := make(map[string]map[string]string) // namespace -> id -> config path
 
-	importMap := make(map[string]string)
-	qc := sitter.NewQueryCursor()
-	qc.Exec(q, tree.RootNode())
+	var declarations []Declaration
 
-	for {
-		match, ok := qc.NextMatch()
-		if !ok {
-			break
+	for _, config := range configs {
+		if seenIDs[config.Namespace] == nil {
+			seenIDs[config.Namespace] = make(map[string]string)
 		}
 
-		match = qc.FilterPredicates(match, content)
-		if len(match.Captures) == 0 {
-			continue
-		}
-
-		var importSource string
-		var importedName string
-
-		for _, cap := range match.Captures {
-			capName := q.CaptureNameForId(cap.Index)
-			text := cap.Node.Content(content)
-
-			switch capName {
-			case "package":
-				importSource = unquoteString(text)
-			case "imported_name":
-				importedName = text
+		for _, schema := range config.Schemas {
+			// Check for duplicate ID in this namespace
+			if existingPath, exists := seenIDs[config.Namespace][schema.ID]; exists {
+				return nil, fmt.Errorf("duplicate schema ID %q in namespace %q: defined in both %s and %s",
+					schema.ID, config.Namespace, existingPath, config.Path)
 			}
-		}
+			seenIDs[config.Namespace][schema.ID] = config.Path
 
-		if importSource != "" && importedName != "" {
-			importMap[importedName] = importSource
-		}
-	}
-
-	return importMap
-}
-
-func extractDeclarations(qc *sitter.QueryCursor, q *sitter.Query, content []byte, path string, lang *language.Language, importMap map[string]string, clientName string) ([]Declaration, error) {
-	var decls []Declaration
-
-	for {
-		match, ok := qc.NextMatch()
-		if !ok {
-			break
-		}
-
-		match = qc.FilterPredicates(match, content)
-		if len(match.Captures) == 0 {
-			continue
-		}
-
-		var obj, method, name, source, adapter string
-		var sourceLine int
-
-		for _, cap := range match.Captures {
-			capName := q.CaptureNameForId(cap.Index)
-			text := cap.Node.Content(content)
-
-			switch capName {
-			case "obj":
-				obj = text
-			case "method":
-				method = text
-				sourceLine = int(cap.Node.StartPoint().Row) + 1
-			case "name":
-				name = unquoteString(text)
-			case "source":
-				source = text
-			case "adapter":
-				adapter = text
-			}
-		}
-
-		// Filter by client name
-		if obj != clientName {
-			continue
-		}
-
-		// Look up source type from language's method mapping
-		sourceType, ok := lang.MethodMapping[method]
-		if !ok {
-			continue
-		}
-
-		decl := Declaration{
-			Name:     name,
-			Source:   sourceType,
-			Location: unquoteString(source),
-			Adapter: AdapterRef{
-				Name:     adapter,
-				Package:  importMap[adapter],
-				Language: lang.Name,
-			},
-			File: path,
-			Line: sourceLine,
-		}
-
-		decls = append(decls, decl)
-	}
-
-	return decls, nil
-}
-
-// unquoteString removes surrounding quotes from a string literal
-func unquoteString(s string) string {
-	if len(s) < 2 {
-		return s
-	}
-
-	// Strip raw string prefix (r"..." or r'...')
-	if len(s) >= 3 && (s[0] == 'r' || s[0] == 'R') && (s[1] == '"' || s[1] == '\'') {
-		s = s[1:]
-	}
-
-	// Handle triple quotes first (""" or ''')
-	if len(s) >= 6 {
-		if (s[:3] == `"""` && s[len(s)-3:] == `"""`) ||
-			(s[:3] == `'''` && s[len(s)-3:] == `'''`) {
-			return s[3 : len(s)-3]
+			declarations = append(declarations, Declaration{
+				Namespace:  config.Namespace,
+				ID:         schema.ID,
+				SourceType: schema.SourceType,
+				Source:     schema.Source,
+				Adapter:    schema.Adapter,
+				ConfigPath: config.Path,
+			})
 		}
 	}
 
-	// Handle single, double, or backtick quotes
-	if (s[0] == '"' || s[0] == '\'' || s[0] == '`') && s[0] == s[len(s)-1] {
-		return s[1 : len(s)-1]
-	}
-	return s
+	return declarations, nil
 }

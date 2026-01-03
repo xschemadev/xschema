@@ -2,234 +2,562 @@ package parser
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/xschema/cli/language"
 )
 
-type expectedDecl struct {
-	Name     string `json:"name"`
-	Source   string `json:"source"`
-	Location string `json:"location,omitempty"`
-}
+func TestParseConfigFile(t *testing.T) {
+	// Create a temp directory with a test config file
+	tmpDir := t.TempDir()
 
-// commonTests are run for all languages
-var commonTests = []string{"basic", "edge_cases", "invalid"}
+	// Create a valid xschema config file
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{
+				"id": "User",
+				"sourceType": "url",
+				"source": "https://example.com/user.json",
+				"adapter": "@xschema/zod"
+			},
+			{
+				"id": "Post",
+				"sourceType": "file",
+				"source": "./post.json",
+				"adapter": "@xschema/zod"
+			}
+		]
+	}`
 
-func TestCommon(t *testing.T) {
-	for _, lang := range language.Languages {
-		for _, testName := range commonTests {
-			t.Run(lang.Name+"/"+testName, func(t *testing.T) {
-				// Load expected from common/
-				expectedPath := filepath.Join("testdata", "common", testName+".json")
-				expectedData, err := os.ReadFile(expectedPath)
-				if err != nil {
-					t.Fatalf("read expected: %v", err)
-				}
-				var expected []expectedDecl
-				if err := json.Unmarshal(expectedData, &expected); err != nil {
-					t.Fatalf("parse expected: %v", err)
-				}
-
-				// Find source file for this language
-				var sourceFile string
-				for _, ext := range lang.Extensions {
-					candidate := filepath.Join("testdata", lang.Name, testName+ext)
-					if _, err := os.Stat(candidate); err == nil {
-						sourceFile = candidate
-						break
-					}
-				}
-				if sourceFile == "" {
-					t.Skipf("no source file for %s/%s", lang.Name, testName)
-				}
-
-				// Parse the file using parseFile with known client name "xschema"
-				decls, err := parseFile(context.Background(), sourceFile, &lang, "xschema")
-				if err != nil {
-					t.Fatalf("parseFile: %v", err)
-				}
-
-				// Assert
-				assertDecls(t, decls, expected)
-			})
-		}
+	configPath := filepath.Join(tmpDir, "user.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
 	}
-}
 
-// Language-specific string tests
-func TestTypeScriptStrings(t *testing.T) {
-	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/strings.ts", lang, "xschema")
+	// Parse the config file
+	config, err := parseConfigFile(configPath)
 	if err != nil {
-		t.Fatalf("parseFile: %v", err)
+		t.Fatalf("parseConfigFile: %v", err)
 	}
 
-	expected := []expectedDecl{
-		{"DoubleQuote", "url", "https://example.com/a.json"},
-		{"SingleQuote", "url", "https://example.com/b.json"},
-		{"TemplateLit", "url", "https://example.com/c.json"},
+	// Assertions
+	if config == nil {
+		t.Fatal("expected config, got nil")
 	}
-	assertDecls(t, decls, expected)
+	if config.Namespace != "user" {
+		t.Errorf("expected namespace 'user', got %q", config.Namespace)
+	}
+	if config.Language.Name != "typescript" {
+		t.Errorf("expected language 'typescript', got %q", config.Language.Name)
+	}
+	if len(config.Schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(config.Schemas))
+	}
 
-	// Verify interpolated ones are NOT found
-	for _, d := range decls {
-		if d.Name == "Interpolated" || d.Name == "Schema${version}" {
-			t.Errorf("should NOT find %q (template interpolation)", d.Name)
-		}
+	// Check first schema
+	if config.Schemas[0].ID != "User" {
+		t.Errorf("expected first schema ID 'User', got %q", config.Schemas[0].ID)
+	}
+	if config.Schemas[0].SourceType != SourceURL {
+		t.Errorf("expected sourceType 'url', got %q", config.Schemas[0].SourceType)
 	}
 }
 
-func TestPythonStrings(t *testing.T) {
-	lang := language.ByExtension(".py")
-	decls, err := parseFile(context.Background(), "testdata/python/strings.py", lang, "xschema")
+func TestParseConfigFileWithNamespaceOverride(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"namespace": "custom",
+		"schemas": [
+			{
+				"id": "Test",
+				"sourceType": "url",
+				"source": "https://example.com/test.json",
+				"adapter": "@xschema/zod"
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "user.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
 	if err != nil {
-		t.Fatalf("parseFile: %v", err)
+		t.Fatalf("parseConfigFile: %v", err)
 	}
 
-	expected := []expectedDecl{
-		{"DoubleQuote", "url", "https://example.com/a.json"},
-		{"SingleQuote", "url", "https://example.com/b.json"},
-		{"TripleDouble", "url", "https://example.com/c.json"},
-		{"TripleSingle", "url", "https://example.com/d.json"},
-		{"RawString", "file", "./schemas/raw.json"},
+	if config.Namespace != "custom" {
+		t.Errorf("expected namespace 'custom' (override), got %q", config.Namespace)
 	}
-	assertDecls(t, decls, expected)
 }
 
-// Metadata tests
-func TestLineNumbers(t *testing.T) {
-	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
+func TestParseConfigFileNotXSchema(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// A regular JSON Schema file, not an xschema config
+	configContent := `{
+		"$schema": "https://json-schema.org/draft-07/schema#",
+		"type": "object"
+	}`
+
+	configPath := filepath.Join(tmpDir, "regular.json")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
 	if err != nil {
-		t.Fatalf("parseFile: %v", err)
+		t.Fatalf("parseConfigFile: %v", err)
 	}
 
-	prevLine := 0
-	for _, d := range decls {
-		if d.Line <= 0 {
-			t.Errorf("%q: line should be > 0, got %d", d.Name, d.Line)
-		}
-		if d.Line < prevLine {
-			t.Errorf("%q: line %d should be >= prev line %d", d.Name, d.Line, prevLine)
-		}
-		prevLine = d.Line
+	// Should return nil for non-xschema config
+	if config != nil {
+		t.Error("expected nil for non-xschema config file")
 	}
 }
 
-func TestAdapterCapture(t *testing.T) {
-	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
+func TestParseConfigFileWithJSONC(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// JSONC with comments
+	configContent := `{
+		// This is a comment
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{
+				"id": "Test",
+				"sourceType": "url",
+				"source": "https://example.com/test.json",
+				"adapter": "@xschema/zod"
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "test.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
 	if err != nil {
-		t.Fatalf("parseFile: %v", err)
+		t.Fatalf("parseConfigFile: %v", err)
 	}
 
-	for _, d := range decls {
-		if d.Adapter.Name != "zodAdapter" {
-			t.Errorf("%q: expected adapter=zodAdapter, got %q", d.Name, d.Adapter.Name)
-		}
-		if d.Adapter.Language != "typescript" {
-			t.Errorf("%q: expected language=typescript, got %q", d.Name, d.Adapter.Language)
-		}
+	if config == nil {
+		t.Fatal("expected config, got nil")
+	}
+	if len(config.Schemas) != 1 {
+		t.Errorf("expected 1 schema, got %d", len(config.Schemas))
 	}
 }
 
-func TestFilePath(t *testing.T) {
-	lang := language.ByExtension(".ts")
-	decls, err := parseFile(context.Background(), "testdata/typescript/basic.ts", lang, "xschema")
-	if err != nil {
-		t.Fatalf("parseFile: %v", err)
+func TestParse(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create two config files
+	config1 := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+	config2 := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "@xschema/zod"}
+		]
+	}`
+
+	if err := os.WriteFile(filepath.Join(tmpDir, "user.jsonc"), []byte(config1), 0644); err != nil {
+		t.Fatalf("failed to write config1: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "post.jsonc"), []byte(config2), 0644); err != nil {
+		t.Fatalf("failed to write config2: %v", err)
 	}
 
-	for _, d := range decls {
-		if d.File != "testdata/typescript/basic.ts" {
-			t.Errorf("%q: expected file path, got %q", d.Name, d.File)
-		}
-	}
-}
-
-func TestParseClient(t *testing.T) {
 	ctx := context.Background()
-
-	t.Run("typescript", func(t *testing.T) {
-		client, err := ParseClient(ctx, "testdata/typescript/basic.ts")
-		if err != nil {
-			t.Fatalf("ParseClient: %v", err)
-		}
-
-		if client.ClientName != "xschema" {
-			t.Errorf("expected client name 'xschema', got %q", client.ClientName)
-		}
-		if client.Language.Name != "typescript" {
-			t.Errorf("expected language 'typescript', got %q", client.Language.Name)
-		}
-	})
-
-	t.Run("python", func(t *testing.T) {
-		client, err := ParseClient(ctx, "testdata/python/basic.py")
-		if err != nil {
-			t.Fatalf("ParseClient: %v", err)
-		}
-
-		if client.ClientName != "xschema" {
-			t.Errorf("expected client name 'xschema', got %q", client.ClientName)
-		}
-		if client.Language.Name != "python" {
-			t.Errorf("expected language 'python', got %q", client.Language.Name)
-		}
-	})
-}
-
-func TestParseDirectory(t *testing.T) {
-	ctx := context.Background()
-
-	// Parse client first
-	client, err := ParseClient(ctx, "testdata/typescript/basic.ts")
-	if err != nil {
-		t.Fatalf("ParseClient: %v", err)
-	}
-
-	// Parse directory
-	decls, err := Parse(ctx, "testdata", client)
+	result, err := Parse(ctx, tmpDir, "")
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 
-	if len(decls) == 0 {
-		t.Error("expected some declarations")
+	if result.Language.Name != "typescript" {
+		t.Errorf("expected language 'typescript', got %q", result.Language.Name)
 	}
-
-	// All should be typescript (since client is typescript)
-	for _, d := range decls {
-		if d.Adapter.Language != "typescript" {
-			t.Errorf("expected typescript, got %s", d.Adapter.Language)
-		}
+	if len(result.Configs) != 2 {
+		t.Errorf("expected 2 configs, got %d", len(result.Configs))
 	}
-
-	t.Logf("Found %d declarations", len(decls))
+	if len(result.Declarations) != 2 {
+		t.Errorf("expected 2 declarations, got %d", len(result.Declarations))
+	}
 }
 
-// assertDecls checks decls match expected (order matters)
-func assertDecls(t *testing.T, decls []Declaration, expected []expectedDecl) {
-	t.Helper()
+func TestParseDuplicateIDError(t *testing.T) {
+	tmpDir := t.TempDir()
 
-	if len(decls) != len(expected) {
-		t.Fatalf("expected %d decls, got %d", len(expected), len(decls))
+	// Two config files with same namespace (same filename) but shouldn't happen
+	// Actually - two different files with same ID in same namespace
+	config1 := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"namespace": "shared",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+	config2 := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"namespace": "shared",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user2.json", "adapter": "@xschema/zod"}
+		]
+	}`
+
+	if err := os.WriteFile(filepath.Join(tmpDir, "a.jsonc"), []byte(config1), 0644); err != nil {
+		t.Fatalf("failed to write config1: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "b.jsonc"), []byte(config2), 0644); err != nil {
+		t.Fatalf("failed to write config2: %v", err)
 	}
 
-	for i, exp := range expected {
-		d := decls[i]
-		if d.Name != exp.Name {
-			t.Errorf("decl[%d]: expected name %q, got %q", i, exp.Name, d.Name)
-		}
-		if string(d.Source) != exp.Source {
-			t.Errorf("decl[%d] %q: expected source %q, got %q", i, d.Name, exp.Source, d.Source)
-		}
-		if exp.Location != "" && d.Location != exp.Location {
-			t.Errorf("decl[%d] %q: expected location %q, got %q", i, d.Name, exp.Location, d.Location)
-		}
+	ctx := context.Background()
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected error for duplicate ID in same namespace")
+	}
+}
+
+func TestParseMultipleLanguagesError(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// One TypeScript, one Python config
+	tsConfig := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+	pyConfig := `{
+		"$schema": "https://xschema.dev/schemas/py.jsonc",
+		"schemas": [
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "xschema-pydantic"}
+		]
+	}`
+
+	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
+		t.Fatalf("failed to write ts config: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "py.jsonc"), []byte(pyConfig), 0644); err != nil {
+		t.Fatalf("failed to write py config: %v", err)
+	}
+
+	ctx := context.Background()
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected error for multiple languages without --lang filter")
+	}
+}
+
+func TestParseWithLanguageFilter(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// One TypeScript, one Python config
+	tsConfig := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+	pyConfig := `{
+		"$schema": "https://xschema.dev/schemas/py.jsonc",
+		"schemas": [
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "xschema-pydantic"}
+		]
+	}`
+
+	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
+		t.Fatalf("failed to write ts config: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "py.jsonc"), []byte(pyConfig), 0644); err != nil {
+		t.Fatalf("failed to write py config: %v", err)
+	}
+
+	ctx := context.Background()
+	result, err := Parse(ctx, tmpDir, "typescript")
+	if err != nil {
+		t.Fatalf("Parse with filter: %v", err)
+	}
+
+	if result.Language.Name != "typescript" {
+		t.Errorf("expected language 'typescript', got %q", result.Language.Name)
+	}
+	if len(result.Declarations) != 1 {
+		t.Errorf("expected 1 declaration (filtered), got %d", len(result.Declarations))
+	}
+}
+
+func TestDeclarationKey(t *testing.T) {
+	d := Declaration{
+		Namespace: "user",
+		ID:        "TestUrl",
+	}
+
+	if d.Key() != "user:TestUrl" {
+		t.Errorf("expected key 'user:TestUrl', got %q", d.Key())
+	}
+}
+
+func TestParseConfigFileEmptySchemas(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": []
+	}`
+
+	configPath := filepath.Join(tmpDir, "empty.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
+	if err != nil {
+		t.Fatalf("parseConfigFile: %v", err)
+	}
+
+	if config == nil {
+		t.Fatal("expected config, got nil")
+	}
+	if len(config.Schemas) != 0 {
+		t.Errorf("expected 0 schemas, got %d", len(config.Schemas))
+	}
+}
+
+func TestParseConfigFileMalformedJSON(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{"truncated", `{"$schema": "https://xschema.dev/schemas/ts.jsonc"`},
+		{"invalid syntax", `{"$schema": "https://xschema.dev/schemas/ts.jsonc", schemas: []}`},
+		{"empty file", ``},
+		{"not json", `this is not json`},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			configPath := filepath.Join(tmpDir, tt.name+".jsonc")
+			if err := os.WriteFile(configPath, []byte(tt.content), 0644); err != nil {
+				t.Fatalf("failed to write config: %v", err)
+			}
+
+			_, err := parseConfigFile(configPath)
+			if err == nil {
+				t.Error("expected error for malformed JSON")
+			}
+		})
+	}
+}
+
+func TestParseConfigFileMissingSchemaURL(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Valid JSON but no $schema field
+	configContent := `{
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "no-schema.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
+	if err != nil {
+		t.Fatalf("parseConfigFile: %v", err)
+	}
+
+	// Should return nil (not an xschema config)
+	if config != nil {
+		t.Error("expected nil for config without $schema")
+	}
+}
+
+func TestParseConfigFileUnknownSchemaLanguage(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// xschema.dev URL but unknown language
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/unknown.jsonc",
+		"schemas": []
+	}`
+
+	configPath := filepath.Join(tmpDir, "unknown-lang.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	_, err := parseConfigFile(configPath)
+	if err == nil {
+		t.Error("expected error for unknown language in $schema")
+	}
+}
+
+func TestParseNoConfigFiles(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Empty directory - no config files
+	ctx := context.Background()
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected error when no config files found")
+	}
+}
+
+func TestParseConfigFileInSubdirectory(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create subdirectory with config
+	subDir := filepath.Join(tmpDir, "schemas", "user")
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		t.Fatalf("failed to create subdir: %v", err)
+	}
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+		]
+	}`
+
+	configPath := filepath.Join(subDir, "user.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	ctx := context.Background()
+	result, err := Parse(ctx, tmpDir, "")
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	if len(result.Configs) != 1 {
+		t.Errorf("expected 1 config from subdirectory, got %d", len(result.Configs))
+	}
+}
+
+func TestParseConfigFileWithAllSourceTypes(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [
+			{"id": "FromURL", "sourceType": "url", "source": "https://example.com/schema.json", "adapter": "@xschema/zod"},
+			{"id": "FromFile", "sourceType": "file", "source": "./local.json", "adapter": "@xschema/zod"},
+			{"id": "Inline", "sourceType": "json", "source": {"type": "string"}, "adapter": "@xschema/zod"}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "all-sources.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
+	if err != nil {
+		t.Fatalf("parseConfigFile: %v", err)
+	}
+
+	if len(config.Schemas) != 3 {
+		t.Fatalf("expected 3 schemas, got %d", len(config.Schemas))
+	}
+
+	if config.Schemas[0].SourceType != SourceURL {
+		t.Errorf("expected first schema sourceType 'url', got %q", config.Schemas[0].SourceType)
+	}
+	if config.Schemas[1].SourceType != SourceFile {
+		t.Errorf("expected second schema sourceType 'file', got %q", config.Schemas[1].SourceType)
+	}
+	if config.Schemas[2].SourceType != SourceJSON {
+		t.Errorf("expected third schema sourceType 'json', got %q", config.Schemas[2].SourceType)
+	}
+}
+
+func TestParseResultDeclarationsByNamespace(t *testing.T) {
+	result := &ParseResult{
+		Declarations: []Declaration{
+			{Namespace: "user", ID: "User"},
+			{Namespace: "user", ID: "Profile"},
+			{Namespace: "post", ID: "Post"},
+		},
+	}
+
+	byNs := result.DeclarationsByNamespace()
+
+	if len(byNs) != 2 {
+		t.Errorf("expected 2 namespaces, got %d", len(byNs))
+	}
+	if len(byNs["user"]) != 2 {
+		t.Errorf("expected 2 user declarations, got %d", len(byNs["user"]))
+	}
+	if len(byNs["post"]) != 1 {
+		t.Errorf("expected 1 post declaration, got %d", len(byNs["post"]))
+	}
+}
+
+func TestParseResultDeclarationsByAdapter(t *testing.T) {
+	result := &ParseResult{
+		Declarations: []Declaration{
+			{Namespace: "user", ID: "User", Adapter: "@xschema/zod"},
+			{Namespace: "user", ID: "Profile", Adapter: "@xschema/zod"},
+			{Namespace: "post", ID: "Post", Adapter: "@xschema/pydantic"},
+		},
+	}
+
+	byAdapter := result.DeclarationsByAdapter()
+
+	if len(byAdapter) != 2 {
+		t.Errorf("expected 2 adapters, got %d", len(byAdapter))
+	}
+	if len(byAdapter["@xschema/zod"]) != 2 {
+		t.Errorf("expected 2 zod declarations, got %d", len(byAdapter["@xschema/zod"]))
+	}
+	if len(byAdapter["@xschema/pydantic"]) != 1 {
+		t.Errorf("expected 1 pydantic declaration, got %d", len(byAdapter["@xschema/pydantic"]))
+	}
+}
+
+func TestParseContextCancellation(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a config file
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"schemas": [{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}]
+	}`
+	if err := os.WriteFile(filepath.Join(tmpDir, "test.jsonc"), []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel immediately
+
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected context cancellation error")
+	}
+}
+
+func TestParseConfigFileNonExistent(t *testing.T) {
+	_, err := parseConfigFile("/nonexistent/path/config.jsonc")
+	if err == nil {
+		t.Error("expected error for non-existent file")
 	}
 }

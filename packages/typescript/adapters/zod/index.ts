@@ -7,12 +7,14 @@ export interface XSchemaAdapter {
 }
 
 export interface ConvertInput {
-  name: string;
+  namespace: string;
+  id: string;
   schema: object;
 }
 
 export interface ConvertResult {
-  name: string;
+  namespace: string;
+  id: string;
   imports: string[];
   schema: string;
   type: string;
@@ -24,13 +26,15 @@ export const zodAdapter: XSchemaAdapter = {
   language: "typescript",
 };
 
-export function convert(name: string, schema: object): ConvertResult {
+export function convert(namespace: string, id: string, schema: object): ConvertResult {
   const schemaCode = jsonSchemaToZod(schema);
+  const varName = `${namespace}_${id}`;
 
   return {
-    name,
+    namespace,
+    id,
     imports: ['import { z } from "zod"'],
     schema: schemaCode,
-    type: `z.infer<typeof ${name}>`,
+    type: `z.infer<typeof ${varName}>`,
   };
 }
