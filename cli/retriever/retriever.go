@@ -200,11 +200,15 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		switch d.SourceType {
 		case parser.SourceURL:
 			var url string
-			json.Unmarshal(d.Source, &url)
+			if err := json.Unmarshal(d.Source, &url); err != nil {
+				return nil, fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
+			}
 			cacheKey = "url:" + url
 		case parser.SourceFile:
 			var filePath string
-			json.Unmarshal(d.Source, &filePath)
+			if err := json.Unmarshal(d.Source, &filePath); err != nil {
+				return nil, fmt.Errorf("invalid file source for %s: %w", d.Key(), err)
+			}
 			cacheKey = "file:" + filepath.Join(filepath.Dir(d.ConfigPath), filePath)
 		case parser.SourceJSON:
 			// Inline JSON - use the declaration key as cache key
