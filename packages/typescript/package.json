@@ -1,0 +1,14 @@
+{
+  "name": "xschema-typescript",
+  "private": true,
+  "workspaces": ["core", "client", "adapters/*", "example"],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "changeset": "changeset",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "typescript": "^5.0.0"
+  }
+}

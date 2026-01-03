@@ -1,2 +1,2 @@
-export type { XSchemaAdapter, XSchemaConfig, Register, RegisteredSchemas, XSchemaType } from './runtime';
+export type { XSchemaConfig, Register, RegisteredSchemas, XSchemaType } from './runtime';
 export { createXSchemaClient } from './runtime';

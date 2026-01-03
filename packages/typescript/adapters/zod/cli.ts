@@ -1,15 +1,5 @@
-#!/usr/bin/env node
-import { convert, type ConvertInput } from "./index.ts";
+#!/usr/bin/env bun
+import { createAdapterCLI } from "@xschema/core";
+import { convert } from "./index";
 
-const chunks: string[] = [];
-process.stdin.on("data", (chunk) => chunks.push(String(chunk)));
-process.stdin.on("end", () => {
-  try {
-    const inputs: ConvertInput[] = JSON.parse(chunks.join(""));
-    const outputs = inputs.map(({ namespace, id, schema }) => convert(namespace, id, schema));
-    console.log(JSON.stringify(outputs));
-  } catch (err) {
-    console.error(err instanceof Error ? err.message : err);
-    process.exit(1);
-  }
-});
+createAdapterCLI(convert);

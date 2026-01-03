@@ -1,8 +1,3 @@
-export type XSchemaAdapter = {
-  readonly name: string;
-  readonly __brand: 'xschema-adapter';
-};
-
 // Declaration merging interface - extended by generated code
 export interface Register {
   // Populated by generated code via declare module
