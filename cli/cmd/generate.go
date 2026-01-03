@@ -9,9 +9,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/injector"
-	"github.com/xschema/cli/logger"
+	"github.com/xschema/cli/language"
 	"github.com/xschema/cli/parser"
 	"github.com/xschema/cli/retriever"
+	"github.com/xschema/cli/ui"
 )
 
 var (
@@ -30,77 +31,100 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 
 	generateCmd.Flags().StringVarP(&clientFile, "client", "c", "", "path to client file (required)")
-	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show verbose output")
 	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
 
 	generateCmd.MarkFlagRequired("client")
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
-	logger.SetLogger(logger.New(verbose))
+	start := time.Now()
+
+	// Setup verbose mode
+	ui.SetVerbose(verbose)
 
 	ctx := cmd.Context()
 
-	// 1. Parse client file
-	logger.Info("parsing client", "file", clientFile)
+	// Step 1: Parse client file
+	ui.Step(1, 5, "Parsing client file")
 	client, err := parser.ParseClient(ctx, clientFile)
 	if err != nil {
-		logger.Error("failed to parse client", "error", err)
-		return fmt.Errorf("parse client: %w", err)
+		ui.ErrorMsg("Failed to parse client", err)
+		return err
 	}
+	ui.Detail(fmt.Sprintf("Found %s (%s)", ui.Primary.Render(client.ClientName), client.Language.Name))
+	ui.Verbosef("Config: outputDir=%s, maxParallelFetches=%d", client.Config.OutputDir, client.Config.MaxParallelFetches)
 
-	logger.Info("found client", "name", client.ClientName, "language", client.Language.Name)
-	logger.Debug("client config", "outputDir", client.Config.OutputDir, "maxParallelFetches", client.Config.MaxParallelFetches)
-
-	// 2. Parse codebase for declarations (from client file's directory)
+	// Step 2: Scan codebase for declarations
+	ui.Step(2, 5, "Scanning for declarations")
 	clientDir := filepath.Dir(clientFile)
-	logger.Info("parsing codebase", "language", client.Language.Name)
 	decls, err := parser.Parse(ctx, clientDir, client)
 	if err != nil {
-		logger.Error("parse failed", "error", err)
-		return fmt.Errorf("parse: %w", err)
+		ui.ErrorMsg("Failed to scan codebase", err)
+		return err
 	}
+	ui.Detail(fmt.Sprintf("Found %d declarations", len(decls)))
 
-	logger.Info("found declarations", "count", len(decls))
 	if len(decls) == 0 {
-		logger.Warn("no xschema declarations found")
+		ui.WarnMsg("No xschema declarations found")
 		return nil
 	}
 
-	// 3. Retrieve schemas
+	// Step 3: Fetch schemas (with spinner)
+	var batches []generator.GenerateBatchInput
 	retrieverOpts := retriever.Options{
 		Concurrency: client.Config.MaxParallelFetches,
 		HTTPTimeout: time.Duration(client.Config.RequestTimeoutMs) * time.Millisecond,
 		Retries:     client.Config.MaxFetchRetries,
 	}
-	batches, err := retriever.Retrieve(ctx, decls, retrieverOpts)
+
+	err = ui.RunWithSpinner("Fetching schemas...", func() error {
+		var fetchErr error
+		batches, fetchErr = retriever.Retrieve(ctx, decls, retrieverOpts)
+		return fetchErr
+	})
 	if err != nil {
-		logger.Error("retrieve failed", "error", err)
-		return fmt.Errorf("retrieve: %w", err)
+		ui.ErrorMsg("Failed to fetch schemas", err)
+		return err
 	}
 
-	// 4. Generate
+	// Show what we fetched
+	for _, d := range decls {
+		ui.Detail(fmt.Sprintf("%s from %s", ui.Primary.Render(d.Name), d.Location))
+	}
+	ui.SuccessMsg(fmt.Sprintf("Fetched %d schemas", len(decls)))
+
+	// Handle dry-run mode
+	if dryRun {
+		ui.Println()
+		ui.Println(ui.Bold.Render("Dry run mode - no files will be written"))
+		ui.Println()
+		for _, batch := range batches {
+			printDryRun(batch)
+		}
+		return nil
+	}
+
+	// Step 4: Generate (with spinner per adapter)
+	ui.Step(4, 5, "Generating validators")
 	outputsByLang := make(map[string][]generator.GenerateOutput)
 	for _, batch := range batches {
-		if dryRun {
-			logger.Info("dry run", "adapter", batch.Adapter, "language", batch.Language)
-			printDryRun(batch)
-			continue
-		}
-
-		outputs, err := generator.Generate(ctx, batch)
+		var outputs []generator.GenerateOutput
+		err = ui.RunWithSpinner(fmt.Sprintf("Running %s adapter...", ui.Primary.Render(batch.Adapter)), func() error {
+			var genErr error
+			outputs, genErr = generator.Generate(ctx, batch)
+			return genErr
+		})
 		if err != nil {
-			logger.Error("generate failed", "adapter", batch.Adapter, "error", err)
-			return fmt.Errorf("generate (%s): %w", batch.Adapter, err)
+			ui.ErrorMsg("Generation failed", err, "Make sure the adapter is installed")
+			return err
 		}
 		outputsByLang[batch.Language] = append(outputsByLang[batch.Language], outputs...)
 	}
 
-	if dryRun {
-		return nil
-	}
-
-	// 5. Inject generated code
+	// Step 5: Inject
+	ui.Step(5, 5, "Writing output files")
+	var generatedFiles []string
 	for lang, outputs := range outputsByLang {
 		err := injector.Inject(injector.InjectInput{
 			Language: lang,
@@ -108,30 +132,68 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 			OutDir:   client.Config.OutputDir,
 		})
 		if err != nil {
-			logger.Error("inject failed", "language", lang, "error", err)
-			return fmt.Errorf("inject (%s): %w", lang, err)
+			ui.ErrorMsg("Failed to write output", err)
+			return err
+		}
+		// Track generated file
+		l := language.ByName(lang)
+		if l != nil {
+			generatedFiles = append(generatedFiles, filepath.Join(client.Config.OutputDir, l.OutputFile))
 		}
 	}
 
-	// 6. Inject schemas import into client file
+	// Inject schemas import into client file
 	if err := injector.InjectClient(ctx, injector.InjectClientInput{
 		ClientFile: clientFile,
 		Language:   client.Language,
 		OutDir:     client.Config.OutputDir,
 	}); err != nil {
-		logger.Error("inject client failed", "error", err)
-		return fmt.Errorf("inject client: %w", err)
+		ui.ErrorMsg("Failed to inject client import", err)
+		return err
 	}
 
-	logger.Info("complete", "outputDir", client.Config.OutputDir)
+	// Summary
+	printSummary(batches, client.Config.OutputDir, generatedFiles, time.Since(start))
+
 	return nil
 }
 
+func printSummary(batches []generator.GenerateBatchInput, outDir string, files []string, duration time.Duration) {
+	ui.Println()
+	ui.SuccessMsg(fmt.Sprintf("Generation complete (%s)", ui.FormatDuration(duration)))
+	ui.Println()
+
+	ui.Println("  Schemas generated:")
+	for _, b := range batches {
+		ui.Printf("    %s\n", ui.Primary.Render(b.Adapter))
+		for _, s := range b.Schemas {
+			ui.Printf("      %s %s\n", ui.Dim.Render("•"), s.Name)
+		}
+	}
+	ui.Println()
+
+	if len(files) > 0 {
+		ui.Printf("  Output: %s\n", ui.Primary.Render(files[0]))
+		for _, f := range files[1:] {
+			ui.Printf("          %s\n", ui.Primary.Render(f))
+		}
+	} else {
+		ui.Printf("  Output: %s\n", ui.Primary.Render(outDir))
+	}
+	ui.Println()
+
+	ui.Printf("  %s Check the generated file to verify the output\n", ui.Dim.Render("Tip:"))
+}
+
 func printDryRun(batch generator.GenerateBatchInput) {
-	logger.Info("adapter batch", "adapter", batch.Adapter, "language", batch.Language, "schemas", len(batch.Schemas))
+	ui.Printf("  %s (%s)\n", ui.Primary.Render(batch.Adapter), batch.Language)
 	for _, s := range batch.Schemas {
 		var schema map[string]any
 		json.Unmarshal(s.Schema, &schema)
-		logger.Info("  - schema", "name", s.Name, "type", schema["type"])
+		schemaType := "object"
+		if t, ok := schema["type"].(string); ok {
+			schemaType = t
+		}
+		ui.Printf("    %s %s %s\n", ui.Dim.Render("•"), s.Name, ui.Dim.Render(fmt.Sprintf("(%s)", schemaType)))
 	}
 }

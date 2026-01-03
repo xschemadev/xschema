@@ -8,7 +8,7 @@ import (
 	"os/exec"
 
 	"github.com/xschema/cli/language"
-	"github.com/xschema/cli/logger"
+	"github.com/xschema/cli/ui"
 )
 
 type GenerateInput struct {
@@ -36,11 +36,11 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, err
 	}
 
-	logger.Info("running adapter", "adapter", input.Adapter, "language", input.Language, "runner", runner, "schemas", len(input.Schemas))
+	ui.Verbosef("running adapter: %s (language: %s, runner: %s, schemas: %d)", input.Adapter, input.Language, runner, len(input.Schemas))
 
 	// Check runner exists
 	if _, err := exec.LookPath(runner); err != nil {
-		logger.Error("runner not found", "runner", runner, "error", err)
+		ui.Verbosef("runner not found: %s", runner)
 		return nil, fmt.Errorf("%s not found: %w", runner, err)
 	}
 
@@ -50,29 +50,29 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 	// Pipe schemas to stdin
 	stdinData, err := json.Marshal(input.Schemas)
 	if err != nil {
-		logger.Error("failed to marshal schemas", "adapter", input.Adapter, "error", err)
+		ui.Verbosef("failed to marshal schemas for adapter %s", input.Adapter)
 		return nil, fmt.Errorf("failed to marshal schemas: %w", err)
 	}
 	cmd.Stdin = bytes.NewReader(stdinData)
 
-	logger.Debug("executing adapter command", "adapter", input.Adapter, "args", cmdArgs)
+	ui.Verbosef("executing adapter command: %s %v", runner, cmdArgs)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		logger.Error("adapter execution failed", "adapter", input.Adapter, "error", err, "stderr", stderr.String())
+		ui.Verbosef("adapter execution failed: %s - %s", input.Adapter, stderr.String())
 		return nil, fmt.Errorf("adapter %s failed: %w\n%s", input.Adapter, err, stderr.String())
 	}
 
 	var outputs []GenerateOutput
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
-		logger.Error("invalid adapter output", "adapter", input.Adapter, "error", err, "output", stdout.String())
+		ui.Verbosef("invalid adapter output from %s: %s", input.Adapter, stdout.String())
 		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", input.Adapter, err, stdout.String())
 	}
 
-	logger.Info("adapter execution successful", "adapter", input.Adapter, "outputs", len(outputs))
+	ui.Verbosef("adapter execution successful: %s (outputs: %d)", input.Adapter, len(outputs))
 	return outputs, nil
 }
 
