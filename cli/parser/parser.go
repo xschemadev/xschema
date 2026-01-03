@@ -144,6 +144,12 @@ func getConfigFiles(ctx context.Context, projectRoot string) ([]string, error) {
 func walkDirForConfigs(ctx context.Context, projectRoot string) ([]string, error) {
 	ui.Verbosef("walking directory for configs: %s", projectRoot)
 
+	// Get all language-specific ignore dirs
+	ignoreDirs := language.AllIgnoreDirs()
+	// Add common dirs that should always be skipped
+	ignoreDirs[".git"] = true
+	ignoreDirs["vendor"] = true // Go vendor
+
 	var files []string
 	err := filepath.WalkDir(projectRoot, func(path string, d fs.DirEntry, err error) error {
 		select {
@@ -157,10 +163,7 @@ func walkDirForConfigs(ctx context.Context, projectRoot string) ([]string, error
 		}
 		if d.IsDir() {
 			name := d.Name()
-			// Skip common non-project directories
-			if name == "node_modules" || name == ".git" || name == "__pycache__" ||
-				name == ".venv" || name == "venv" || name == "vendor" ||
-				name == "dist" || name == "build" {
+			if ignoreDirs[name] {
 				ui.Verbosef("skipping directory: %s", path)
 				return filepath.SkipDir
 			}

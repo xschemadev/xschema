@@ -354,3 +354,197 @@ func TestRetrievedSchemaKey(t *testing.T) {
 		t.Errorf("expected key 'user:TestUrl', got %q", s.Key())
 	}
 }
+
+func TestRetrieveEmptyDeclarations(t *testing.T) {
+	ctx := context.Background()
+	schemas, err := Retrieve(ctx, []parser.Declaration{}, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if schemas != nil && len(schemas) != 0 {
+		t.Errorf("expected nil or empty slice, got %d schemas", len(schemas))
+	}
+}
+
+func TestRetrieveUnknownSourceType(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "Unknown", SourceType: "invalid", Source: json.RawMessage(`"test"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for unknown source type")
+	}
+}
+
+func TestRetrieveInvalidURLSource(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "BadURL", SourceType: parser.SourceURL, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for invalid URL source JSON")
+	}
+}
+
+func TestRetrieveInvalidFileSource(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "BadFile", SourceType: parser.SourceFile, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for invalid file source JSON")
+	}
+}
+
+func TestGroupByAdapterEmpty(t *testing.T) {
+	groups := GroupByAdapter([]RetrievedSchema{})
+	if len(groups) != 0 {
+		t.Errorf("expected 0 groups, got %d", len(groups))
+	}
+}
+
+func TestGroupByAdapterSingle(t *testing.T) {
+	schemas := []RetrievedSchema{
+		{Namespace: "user", ID: "User", Adapter: "@xschema/zod"},
+	}
+	groups := GroupByAdapter(schemas)
+
+	if len(groups) != 1 {
+		t.Errorf("expected 1 group, got %d", len(groups))
+	}
+	if len(groups["@xschema/zod"]) != 1 {
+		t.Errorf("expected 1 schema in zod group, got %d", len(groups["@xschema/zod"]))
+	}
+}
+
+func TestSortedAdapters(t *testing.T) {
+	groups := map[string][]RetrievedSchema{
+		"@xschema/zod":      {},
+		"@xschema/pydantic": {},
+		"@xschema/ajv":      {},
+	}
+
+	sorted := SortedAdapters(groups)
+
+	expected := []string{"@xschema/ajv", "@xschema/pydantic", "@xschema/zod"}
+	for i, v := range expected {
+		if sorted[i] != v {
+			t.Errorf("expected sorted[%d]=%s, got %s", i, v, sorted[i])
+		}
+	}
+}
+
+func TestSortedAdaptersEmpty(t *testing.T) {
+	groups := map[string][]RetrievedSchema{}
+	sorted := SortedAdapters(groups)
+
+	if len(sorted) != 0 {
+		t.Errorf("expected 0 sorted adapters, got %d", len(sorted))
+	}
+}
+
+func TestRetrieveCacheHit(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	// Same source, different IDs - second should hit cache
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	opts := DefaultOptions()
+	opts.Concurrency = 1 // Force sequential to test cache
+
+	schemas, err := Retrieve(ctx, decls, opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(schemas))
+	}
+
+	// Both should have same schema content
+	if string(schemas[0].Schema) != string(schemas[1].Schema) {
+		t.Error("cache should return same content for same source")
+	}
+}
+
+func TestRetrieveMixedSourceTypes(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	inlineSchema := `{"type": "object", "properties": {"inline": {"type": "boolean"}}}`
+	decls := []parser.Declaration{
+		{Namespace: "test", ID: "FromFile", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "@xschema/zod", ConfigPath: configPath},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 2 {
+		t.Fatalf("expected 2 schemas, got %d", len(schemas))
+	}
+
+	// Verify inline schema is passed through as-is
+	if string(schemas[1].Schema) != inlineSchema {
+		t.Errorf("inline schema mismatch: got %s", schemas[1].Schema)
+	}
+}
+
+func TestRetrievePreservesMetadata(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{Namespace: "myns", ID: "MyID", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/custom", ConfigPath: configPath},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if schemas[0].Namespace != "myns" {
+		t.Errorf("expected namespace 'myns', got %s", schemas[0].Namespace)
+	}
+	if schemas[0].ID != "MyID" {
+		t.Errorf("expected ID 'MyID', got %s", schemas[0].ID)
+	}
+	if schemas[0].Adapter != "@xschema/custom" {
+		t.Errorf("expected adapter '@xschema/custom', got %s", schemas[0].Adapter)
+	}
+}
+
+func TestDefaultOptions(t *testing.T) {
+	opts := DefaultOptions()
+
+	if opts.Concurrency != 10 {
+		t.Errorf("expected concurrency 10, got %d", opts.Concurrency)
+	}
+	if opts.HTTPTimeout != 30*time.Second {
+		t.Errorf("expected timeout 30s, got %v", opts.HTTPTimeout)
+	}
+	if opts.Retries != 3 {
+		t.Errorf("expected retries 3, got %d", opts.Retries)
+	}
+	if opts.NoCache != false {
+		t.Error("expected NoCache false by default")
+	}
+}

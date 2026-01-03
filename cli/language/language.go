@@ -34,9 +34,10 @@ type Language struct {
 	DetectRunner func() (cmd string, args []string, err error)
 
 	// Client injection (after generation)
-	BuildSchemasImport func(importPath string) string    // build import statement for schemas
-	ImportPattern      string                            // regex to find import lines
-	InjectSchemasKey   func(configContent string) string // inject "schemas" into config object
+	BuildSchemasImport   func(importPath string) string    // build import statement for schemas
+	ImportPattern        string                            // regex to find import lines
+	InjectSchemasKey     func(configContent string) string // inject "schemas" into config object
+	ClientFactoryPattern string                            // regex to find client factory calls e.g. createXSchemaClient({ ... })
 
 	// Output generation
 	OutputFile   string                                            // e.g. "xschema.gen.ts", "__init__.py"
@@ -44,35 +45,45 @@ type Language struct {
 	MergeImports func(imports []string) string                     // dedupe/format imports
 	BuildHeader  func(outDir string, schemas []SchemaEntry) string // inserted at top
 	BuildFooter  func(outDir string, schemas []SchemaEntry) string // inserted at bottom
+	BuildVarName func(namespace, id string) string                 // build variable name from namespace and id
+
+	// Parser (fallback when git not available)
+	IgnoreDirs []string // directories to skip when walking
 }
 
 var Languages = []Language{
 	{
-		Name:               "typescript",
-		Extensions:         []string{".ts", ".tsx", ".js", ".jsx"},
-		SchemaURL:          XSchemaBaseURL + "ts.jsonc",
-		SchemaExt:          "ts.jsonc",
-		DetectRunner:       detectTSRunner,
-		BuildSchemasImport: buildTSSchemasImport,
-		ImportPattern:      `(?m)^import\s+.*$`,
-		InjectSchemasKey:   injectSchemasKeyBrace,
-		OutputFile:         "xschema.gen.ts",
-		Template:           TSTemplate,
-		MergeImports:       MergeTSImports,
+		Name:                 "typescript",
+		Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
+		SchemaURL:            XSchemaBaseURL + "ts.jsonc",
+		SchemaExt:            "ts.jsonc",
+		DetectRunner:         detectTSRunner,
+		BuildSchemasImport:   buildTSSchemasImport,
+		ImportPattern:        `(?m)^import\s+.*$`,
+		InjectSchemasKey:     injectSchemasKeyBrace,
+		ClientFactoryPattern: `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputFile:           "xschema.gen.ts",
+		Template:             TSTemplate,
+		MergeImports:         MergeTSImports,
+		BuildVarName:         buildVarNameUnderscore,
+		IgnoreDirs:           []string{"node_modules", "dist", "build"},
 	},
 	{
-		Name:               "python",
-		Extensions:         []string{".py"},
-		SchemaURL:          XSchemaBaseURL + "py.jsonc",
-		SchemaExt:          "py.jsonc",
-		DetectRunner:       detectPythonRunner,
-		BuildSchemasImport: buildPySchemasImport,
-		ImportPattern:      `(?m)^(?:import\s+|from\s+).*$`,
-		InjectSchemasKey:   injectSchemasKeyBrace,
-		OutputFile:         "__init__.py",
-		Template:           PyTemplate,
-		MergeImports:       MergePyImports,
-		BuildFooter:        BuildPythonFooter,
+		Name:                 "python",
+		Extensions:           []string{".py"},
+		SchemaURL:            XSchemaBaseURL + "py.jsonc",
+		SchemaExt:            "py.jsonc",
+		DetectRunner:         detectPythonRunner,
+		BuildSchemasImport:   buildPySchemasImport,
+		ImportPattern:        `(?m)^(?:import\s+|from\s+).*$`,
+		InjectSchemasKey:     injectSchemasKeyBrace,
+		ClientFactoryPattern: `create_xschema_client\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputFile:           "__init__.py",
+		Template:             PyTemplate,
+		MergeImports:         MergePyImports,
+		BuildFooter:          BuildPythonFooter,
+		BuildVarName:         buildVarNameUnderscore,
+		IgnoreDirs:           []string{"__pycache__", ".venv", "venv"},
 	},
 }
 
@@ -104,6 +115,18 @@ func ByName(name string) *Language {
 		}
 	}
 	return nil
+}
+
+// AllIgnoreDirs returns a combined set of all ignore dirs from all languages
+// Used when walking directories before language detection
+func AllIgnoreDirs() map[string]bool {
+	dirs := make(map[string]bool)
+	for _, lang := range Languages {
+		for _, dir := range lang.IgnoreDirs {
+			dirs[dir] = true
+		}
+	}
+	return dirs
 }
 
 // IsXSchemaURL checks if a URL is an xschema.dev schema URL
@@ -250,6 +273,11 @@ func buildPySchemasImport(importPath string) string {
 	module := strings.ReplaceAll(importPath, "/", ".")
 	module = strings.TrimPrefix(module, ".")
 	return "from " + module + " import schemas"
+}
+
+// buildVarNameUnderscore builds a variable name using underscore separator: namespace_id
+func buildVarNameUnderscore(namespace, id string) string {
+	return namespace + "_" + id
 }
 
 // injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS/Python dict)

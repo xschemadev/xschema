@@ -33,11 +33,6 @@ func (o GenerateOutput) Key() string {
 	return o.Namespace + ":" + o.ID
 }
 
-// VarName returns a safe variable name for the schema
-func (o GenerateOutput) VarName() string {
-	return o.Namespace + "_" + o.ID
-}
-
 // GenerateBatchInput groups schemas by adapter for batch processing
 type GenerateBatchInput struct {
 	Adapter  string // adapter package e.g., "@xschema/zod"

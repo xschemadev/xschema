@@ -96,10 +96,14 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 	// Build schema entries
 	schemas := make([]language.SchemaEntry, len(input.Outputs))
 	for i, out := range input.Outputs {
+		varName := out.Namespace + "_" + out.ID // default
+		if lang.BuildVarName != nil {
+			varName = lang.BuildVarName(out.Namespace, out.ID)
+		}
 		schemas[i] = language.SchemaEntry{
 			Namespace: out.Namespace,
 			ID:        out.ID,
-			VarName:   out.VarName(),
+			VarName:   varName,
 			Code:      out.Schema,
 			Type:      out.Type,
 		}
@@ -171,41 +175,30 @@ func InjectClient(input InjectClientInput) error {
 // injectSchemasIntoConfig tries to inject "schemas" into the config object
 // Returns the modified content and whether injection was successful
 func injectSchemasIntoConfig(content string, lang *language.Language) (string, bool) {
-	if lang.InjectSchemasKey == nil {
+	if lang.InjectSchemasKey == nil || lang.ClientFactoryPattern == "" {
 		return content, false
 	}
 
-	// Pattern to find createXSchemaClient({ ... })
-	// This regex matches the config object between ({ and })
-	patterns := []string{
-		`createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,   // TypeScript
-		`create_xschema_client\s*\(\s*(\{[^}]*\})\s*\)`, // Python
+	re := regexp.MustCompile(lang.ClientFactoryPattern)
+	matches := re.FindStringSubmatchIndex(content)
+	if matches == nil {
+		return content, false
 	}
 
-	for _, pattern := range patterns {
-		re := regexp.MustCompile(pattern)
-		matches := re.FindStringSubmatchIndex(content)
-		if matches == nil {
-			continue
-		}
+	// Extract config object
+	configStart := matches[2]
+	configEnd := matches[3]
+	configContent := content[configStart:configEnd]
 
-		// Extract config object
-		configStart := matches[2]
-		configEnd := matches[3]
-		configContent := content[configStart:configEnd]
-
-		// Inject schemas key
-		newConfig := lang.InjectSchemasKey(configContent)
-		if newConfig == configContent {
-			// Already has schemas or couldn't inject
-			return content, true
-		}
-
-		// Replace in content
-		return content[:configStart] + newConfig + content[configEnd:], true
+	// Inject schemas key
+	newConfig := lang.InjectSchemasKey(configContent)
+	if newConfig == configContent {
+		// Already has schemas or couldn't inject
+		return content, true
 	}
 
-	return content, false
+	// Replace in content
+	return content[:configStart] + newConfig + content[configEnd:], true
 }
 
 func injectSchemasImport(content, importPath string, lang *language.Language) string {
