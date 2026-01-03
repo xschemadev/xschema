@@ -1,26 +1,21 @@
 {
+	// XSchema config file - detected by $schema URL
+	// Namespace defaults to filename: "user"
 	"$schema": "https://xschema.dev/schemas/ts.jsonc",
-	"config": {},
 	"schemas": [
 		{
-			"id": "TestUrl",
+			// Schema from a URL
+			"id": "Profile",
 			"sourceType": "url",
-			"source": "https://test.com",
-			"adapter": "zod"
+			"source": "https://json.schemastore.org/base.json",
+			"adapter": "@xschema/zod"
 		},
 		{
-			"id": "TestFile",
+			// Schema from a local file (relative to this config file)
+			"id": "Calendar",
 			"sourceType": "file",
-			"source": "./test.json",
-			"adapter": "ts"
-		},
-		{
-			"id": "TestJson",
-			"sourceType": "json",
-			"source": {
-				"test": "number[]"
-			},
-			"adapter": "arkType"
+			"source": "./calendar.json",
+			"adapter": "@xschema/zod"
 		}
 	]
 }

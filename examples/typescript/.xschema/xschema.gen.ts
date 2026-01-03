@@ -2,22 +2,30 @@
 // https://xschema.dev/docs
 import { z } from "zod"
 
-export const AppleAppSiteAssociation = z.object({ "webcredentials": z.object({ "apps": z.any().optional() }).describe("Apple Webcredentials Config Schema").optional(), "appclips": z.object({ "apps": z.any().optional() }).describe("Apple AppClip Config Schema").optional(), "applinks": z.object({ "apps": z.array(z.any()).describe("Always empty [] for UniversaLink, can be omitted in later versions").optional(), "details": z.array(z.object({ "appIDs": z.array(z.any()).min(1).unique().describe("Array of AppIDs").optional(), "appID": z.any().optional(), "paths": z.array(z.string().describe("Single unique path to be matched against")).min(1).unique().describe("Array of paths to be matched against").optional(), "components": z.array(z.any()).min(1).describe("Array of path components to be matched, available in later versions").optional() }).strict().describe("Details of specific AppIDs uri matching configuration")).min(1).describe("AppIDs's Universalink URI Matching Configuration") }).strict().describe("Universalink Configurations Schema") }).strict().describe("Apple Universal Links Config Schema");
-export type AppleAppSiteAssociationType = z.infer<typeof AppleAppSiteAssociation>;
+const another_TSConfig = z.record(z.any()).and(z.intersection(z.intersection(z.intersection(z.any(), z.any()), z.intersection(z.any(), z.any())), z.intersection(z.intersection(z.any(), z.any()), z.intersection(z.any(), z.union([z.any(), z.any(), z.any(), z.any()])))));
+type another_TSConfigType = z.infer<typeof another_TSConfig>;
 
-export const Calendar = z.object({ "startDate": z.string().describe("Event starting time").optional(), "endDate": z.string().describe("Event ending time").optional(), "summary": z.string(), "location": z.string().optional(), "url": z.string().optional(), "duration": z.string().describe("Event duration").optional(), "recurrenceDate": z.string().describe("Recurrence date").optional(), "recurrenceDule": z.string().describe("Recurrence rule").optional(), "category": z.string().optional(), "description": z.string().optional(), "geo": z.any().optional() }).describe("A representation of an event");
-export type CalendarType = z.infer<typeof Calendar>;
+const user_Profile = z.any();
+type user_ProfileType = z.infer<typeof user_Profile>;
 
-export const schemas = { AppleAppSiteAssociation, Calendar } as const;
+const user_Calendar = z.object({ "startDate": z.string().describe("Event starting time").optional(), "endDate": z.string().describe("Event ending time").optional(), "summary": z.string(), "location": z.string().optional(), "url": z.string().optional(), "duration": z.string().describe("Event duration").optional(), "recurrenceDate": z.string().describe("Recurrence date").optional(), "recurrenceDule": z.string().describe("Recurrence rule").optional(), "category": z.string().optional(), "description": z.string().optional(), "geo": z.any().optional() }).describe("A representation of an event");
+type user_CalendarType = z.infer<typeof user_Calendar>;
+
+export const schemas = {
+  "another:TSConfig": another_TSConfig,
+  "user:Profile": user_Profile,
+  "user:Calendar": user_Calendar,
+} as const;
 
 export type SchemaTypes = {
-	AppleAppSiteAssociation: AppleAppSiteAssociationType;
-	Calendar: CalendarType;
+  "another:TSConfig": another_TSConfigType;
+  "user:Profile": user_ProfileType;
+  "user:Calendar": user_CalendarType;
 };
 
 declare module '@xschema/client' {
-	interface Register {
-		schemas: typeof schemas;
-		schemaTypes: SchemaTypes;
-	}
+  interface Register {
+    schemas: typeof schemas;
+    schemaTypes: SchemaTypes;
+  }
 }

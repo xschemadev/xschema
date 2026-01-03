@@ -1,11 +1,13 @@
 {
+	// Another config file - namespace defaults to "another"
+	// Multiple config files are merged into one output
 	"$schema": "https://xschema.dev/schemas/ts.jsonc",
 	"schemas": [
 		{
-			"id": "TestUrl",
+			"id": "TSConfig",
 			"sourceType": "url",
-			"source": "https://test.com",
-			"adapter": "zod"
+			"source": "https://json.schemastore.org/tsconfig.json",
+			"adapter": "@xschema/zod"
 		}
 	]
 }

@@ -115,18 +115,18 @@ func TestMergePyImports(t *testing.T) {
 
 func TestBuildPythonFooter(t *testing.T) {
 	schemas := []SchemaEntry{
-		{Name: "User", Code: "class User(BaseModel): pass", Type: "User"},
-		{Name: "Post", Code: "class Post(BaseModel): pass", Type: "Post"},
+		{Namespace: "user", ID: "User", VarName: "user_User", Code: "class user_User(BaseModel): pass", Type: "user_User"},
+		{Namespace: "user", ID: "Post", VarName: "user_Post", Code: "class user_Post(BaseModel): pass", Type: "user_Post"},
 	}
 
 	footer := BuildPythonFooter("", schemas)
 
-	// Check that it contains overloads for both schemas
-	if !strings.Contains(footer, `Literal["User"]`) {
-		t.Error("expected User literal in footer")
+	// Check that it contains overloads for both schemas with namespace:id format
+	if !strings.Contains(footer, `Literal["user:User"]`) {
+		t.Error("expected user:User literal in footer")
 	}
-	if !strings.Contains(footer, `Literal["Post"]`) {
-		t.Error("expected Post literal in footer")
+	if !strings.Contains(footer, `Literal["user:Post"]`) {
+		t.Error("expected user:Post literal in footer")
 	}
 	if !strings.Contains(footer, "from_url") {
 		t.Error("expected from_url in footer")
