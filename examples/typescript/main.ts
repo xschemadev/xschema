@@ -1,22 +1,13 @@
 import { schemas } from "./.xschema/xschema.gen";
 import { createXSchemaClient, XSchemaType } from "@xschema/client";
-import { zodAdapter } from "@xschema/zod";
 
-export const xschema = createXSchemaClient({ schemas })
-
-// Dual purpose: declaration (parsed by CLI) + returns schema for immediate use
-const appleAppSite = xschema.fromURL("AppleAppSiteAssociation", "https://www.schemastore.org/apple-app-site-association.json", zodAdapter)
-
-const calendarJsonSchema = xschema.fromFile("Calendar", "calendar.json", zodAdapter)
+export const xschema = createXSchemaClient({ schemas, defaultNamespace: "another" })
 
 // Type extraction using XSchemaType helper
-export type CalendarType = XSchemaType<"Calendar">
+export type AnotherType = XSchemaType<"another:TestUrl">
 
-// Access schemas by ID (convenient when you don't want to repeat URL/path)
-const calendar = xschema.getFromId("Calendar")
-const appleAppSiteById = xschema.getFromId("AppleAppSiteAssociation")
 
-const someData = {}
-
-appleAppSite.parse(someData)
-calendar.parse(someData)
+const anotherUrl = xschema("another:TestUrl")
+const userUrl = xschema("user:TestUrl")
+//same as anotherUrl
+const anotherUrl = xschema("TestUrl")

@@ -1,0 +1,26 @@
+{
+	"$schema": "https://xschema.dev/schemas/ts.jsonc",
+	"config": {},
+	"schemas": [
+		{
+			"id": "TestUrl",
+			"sourceType": "url",
+			"source": "https://test.com",
+			"adapter": "zod"
+		},
+		{
+			"id": "TestFile",
+			"sourceType": "file",
+			"source": "./test.json",
+			"adapter": "ts"
+		},
+		{
+			"id": "TestJson",
+			"sourceType": "json",
+			"source": {
+				"test": "number[]"
+			},
+			"adapter": "arkType"
+		}
+	]
+}

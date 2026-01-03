@@ -1,0 +1,11 @@
+{
+	"$schema": "https://xschema.dev/schemas/ts.jsonc",
+	"schemas": [
+		{
+			"id": "TestUrl",
+			"sourceType": "url",
+			"source": "https://test.com",
+			"adapter": "zod"
+		}
+	]
+}
