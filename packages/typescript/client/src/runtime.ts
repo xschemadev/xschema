@@ -11,6 +11,17 @@ export interface Register {
 // Type helper to get registered schemas
 export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
 
+// Type helper to get all registered schema type names
+type RegisteredSchemaNames = Register extends { schemaTypes: infer T } ? keyof T & string : string;
+
+// Type helper to extract schema types by name
+export type XSchemaType<N extends RegisteredSchemaNames> = 
+  Register extends { schemaTypes: infer T }
+    ? N extends keyof T 
+      ? T[N] 
+      : never
+    : never;
+
 // Check if T has actual schema keys (not just empty Record<string, unknown>)
 type HasSchemas<T> = Record<string, unknown> extends T ? false : true;
 
@@ -44,11 +55,13 @@ export function createXSchemaClient<T extends Record<string, unknown> = Register
   }
 
   return {
-    fromURL: <N extends string>(name: N, _url: string, _adapter: XSchemaAdapter) => lookup(name),
-    fromFile: <N extends string>(name: N, _path: string, _adapter: XSchemaAdapter) => lookup(name),
+    fromURL: <N extends keyof T & string>(name: N, _url: string, _adapter: XSchemaAdapter) => lookup(name),
+    fromFile: <N extends keyof T & string>(name: N, _path: string, _adapter: XSchemaAdapter) => lookup(name),
+    getFromId: <N extends keyof T & string>(name: N) => lookup(name),
     ...schemas,
   } as {
-    fromURL: <N extends string>(name: N, url: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
-    fromFile: <N extends string>(name: N, path: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
+    fromURL: <N extends keyof T & string>(name: N, url: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
+    fromFile: <N extends keyof T & string>(name: N, path: string, adapter: XSchemaAdapter) => SchemaResult<T, N>;
+    getFromId: <N extends keyof T & string>(name: N) => SchemaResult<T, N>;
   } & T;
 }

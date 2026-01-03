@@ -20,9 +20,22 @@ export type {{.Name}}Type = {{.Type}};
 {{end}}
 export const schemas = { {{range $i, $s := .Schemas}}{{if $i}}, {{end}}{{$s.Name}}{{end}} } as const;
 
+export type SchemaTypes = {
+{{- range .Schemas}}
+{{- if and .Code .Type}}
+  {{.Name}}: {{.Name}}Type;
+{{- else if .Type}}
+  {{.Name}}: {{.Type}};
+{{- else if .Code}}
+  {{.Name}}: typeof {{.Name}};
+{{- end}}
+{{- end}}
+};
+
 declare module '@xschema/client' {
   interface Register {
-    schemas: typeof schemas
+    schemas: typeof schemas;
+    schemaTypes: SchemaTypes;
   }
 }
 {{- if .Footer}}
