@@ -10,6 +10,7 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/ui"
 )
 
 // ClientInfo holds parsed client information
@@ -47,6 +48,8 @@ func ParseClient(ctx context.Context, file string) (*ClientInfo, error) {
 		return nil, fmt.Errorf("unsupported file extension: %s", ext)
 	}
 
+	ui.Verbosef("parsing client file: %s (language: %s)", file, lang.Name)
+
 	// Read file
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -71,6 +74,8 @@ func ParseClient(ctx context.Context, file string) (*ClientInfo, error) {
 		return nil, fmt.Errorf("no %s call found in %s", lang.ClientFactory, file)
 	}
 
+	ui.Verbosef("found client: %s", clientName)
+
 	// Parse config
 	config := DefaultConfig()
 	if err := parseClientConfig(tree, content, lang, &config); err != nil {
@@ -80,6 +85,8 @@ func ParseClient(ctx context.Context, file string) (*ClientInfo, error) {
 	// Resolve outputDir relative to client file's directory
 	clientDir := filepath.Dir(file)
 	config.OutputDir = filepath.Join(clientDir, config.OutputDir)
+
+	ui.Verbosef("parsed config: outputDir=%s, maxParallelFetches=%d", config.OutputDir, config.MaxParallelFetches)
 
 	return &ClientInfo{
 		File:       file,

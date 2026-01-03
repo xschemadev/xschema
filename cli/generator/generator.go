@@ -8,6 +8,7 @@ import (
 	"os/exec"
 
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/ui"
 )
 
 type GenerateInput struct {
@@ -35,8 +36,11 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, err
 	}
 
+	ui.Verbosef("running adapter: %s (language: %s, runner: %s, schemas: %d)", input.Adapter, input.Language, runner, len(input.Schemas))
+
 	// Check runner exists
 	if _, err := exec.LookPath(runner); err != nil {
+		ui.Verbosef("runner not found: %s", runner)
 		return nil, fmt.Errorf("%s not found: %w", runner, err)
 	}
 
@@ -46,23 +50,29 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 	// Pipe schemas to stdin
 	stdinData, err := json.Marshal(input.Schemas)
 	if err != nil {
+		ui.Verbosef("failed to marshal schemas for adapter %s", input.Adapter)
 		return nil, fmt.Errorf("failed to marshal schemas: %w", err)
 	}
 	cmd.Stdin = bytes.NewReader(stdinData)
+
+	ui.Verbosef("executing adapter command: %s %v", runner, cmdArgs)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
+		ui.Verbosef("adapter execution failed: %s - %s", input.Adapter, stderr.String())
 		return nil, fmt.Errorf("adapter %s failed: %w\n%s", input.Adapter, err, stderr.String())
 	}
 
 	var outputs []GenerateOutput
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
+		ui.Verbosef("invalid adapter output from %s: %s", input.Adapter, stdout.String())
 		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", input.Adapter, err, stdout.String())
 	}
 
+	ui.Verbosef("adapter execution successful: %s (outputs: %d)", input.Adapter, len(outputs))
 	return outputs, nil
 }
 

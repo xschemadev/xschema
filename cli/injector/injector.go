@@ -13,6 +13,7 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/ui"
 )
 
 type InjectInput struct {
@@ -33,38 +34,51 @@ type TemplateData struct {
 func Inject(input InjectInput) error {
 	lang := language.ByName(input.Language)
 	if lang == nil {
+		ui.Verbosef("unsupported language: %s", input.Language)
 		return fmt.Errorf("unsupported language: %s", input.Language)
 	}
 
 	if lang.Template == "" {
+		ui.Verbosef("no template defined for language: %s", input.Language)
 		return fmt.Errorf("no template defined for language: %s", input.Language)
 	}
+
+	ui.Verbosef("injecting schemas: language=%s, outputs=%d, outDir=%s", input.Language, len(input.Outputs), input.OutDir)
 
 	// Build template data
 	data := buildTemplateData(input, lang)
 
+	ui.Verbosef("template data: imports=%d, schemas=%d", len(data.Imports), len(data.Schemas))
+
 	// Parse and execute template
 	tmpl, err := template.New("inject").Parse(lang.Template)
 	if err != nil {
+		ui.Verbosef("failed to parse template for language: %s", input.Language)
 		return fmt.Errorf("failed to parse template: %w", err)
 	}
 
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
+		ui.Verbosef("failed to execute template for language: %s", input.Language)
 		return fmt.Errorf("failed to execute template: %w", err)
 	}
 
+	ui.Verbosef("template execution successful: %d bytes", buf.Len())
+
 	// Ensure output directory exists
 	if err := os.MkdirAll(input.OutDir, 0755); err != nil {
+		ui.Verbosef("failed to create output directory: %s", input.OutDir)
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
 	// Write output file
 	outPath := filepath.Join(input.OutDir, lang.OutputFile)
 	if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
+		ui.Verbosef("failed to write output file: %s", outPath)
 		return fmt.Errorf("failed to write output file: %w", err)
 	}
 
+	ui.Verbosef("successfully injected schemas: path=%s, bytes=%d", outPath, buf.Len())
 	return nil
 }
 
@@ -164,6 +178,7 @@ func InjectClient(ctx context.Context, input InjectClientInput) error {
 		return fmt.Errorf("failed to write client file: %w", err)
 	}
 
+	ui.Verbosef("injected schemas into client: %s", input.ClientFile)
 	return nil
 }
 

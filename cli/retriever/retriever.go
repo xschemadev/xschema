@@ -14,6 +14,7 @@ import (
 
 	"github.com/xschema/cli/generator"
 	"github.com/xschema/cli/parser"
+	"github.com/xschema/cli/ui"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -83,8 +84,11 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 		maxAttempts = 1
 	}
 
+	ui.Verbosef("fetching from URL: %s (max_attempts: %d)", url, maxAttempts)
+
 	for attempt := range maxAttempts {
 		if attempt > 0 {
+			ui.Verbosef("retrying request: url=%s, attempt=%d/%d", url, attempt+1, maxAttempts)
 			delay := retryBaseDelay * time.Duration(1<<(attempt-1))
 			select {
 			case <-ctx.Done():
@@ -102,6 +106,7 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("failed to fetch %s: %w", url, err)
+			ui.Verbosef("HTTP request failed: url=%s, error=%v", url, err)
 			continue
 		}
 
@@ -110,11 +115,13 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 
 		if err != nil {
 			lastErr = fmt.Errorf("failed to read response from %s: %w", url, err)
+			ui.Verbosef("failed to read response: url=%s, error=%v", url, err)
 			continue
 		}
 
 		if resp.StatusCode >= 500 {
 			lastErr = fmt.Errorf("server error fetching %s: status %d", url, resp.StatusCode)
+			ui.Verbosef("server error: url=%s, status=%d", url, resp.StatusCode)
 			continue
 		}
 
@@ -126,6 +133,7 @@ func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 			return nil, fmt.Errorf("invalid JSON from %s", url)
 		}
 
+		ui.Verbosef("successfully fetched from URL: url=%s, status=%d, bytes=%d", url, resp.StatusCode, len(data))
 		return json.RawMessage(data), nil
 	}
 
@@ -143,15 +151,20 @@ func retrieveFromFile(ctx context.Context, file string, declPath string) (json.R
 	dir := filepath.Dir(declPath)
 	fullPath := filepath.Join(dir, file)
 
+	ui.Verbosef("reading file: %s", fullPath)
+
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
+		ui.Verbosef("failed to read file: path=%s, error=%v", fullPath, err)
 		return nil, fmt.Errorf("failed to read %s: %w", fullPath, err)
 	}
 
 	if !json.Valid(data) {
+		ui.Verbosef("invalid JSON in file: %s", fullPath)
 		return nil, fmt.Errorf("invalid JSON in %s", fullPath)
 	}
 
+	ui.Verbosef("successfully read file: path=%s, bytes=%d", fullPath, len(data))
 	return json.RawMessage(data), nil
 }
 
@@ -168,6 +181,8 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 
 	results := make([]json.RawMessage, len(decls))
 
+	ui.Verbosef("retrieving schemas: count=%d, concurrency=%d, cache_enabled=%v", len(decls), opts.Concurrency, cache != nil)
+
 	g, ctx := errgroup.WithContext(ctx)
 	g.SetLimit(opts.Concurrency)
 
@@ -183,9 +198,11 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 		// Check cache first (if enabled)
 		if cache != nil {
 			if cached, ok := cache.get(cacheKey); ok {
+				ui.Verbosef("cache hit: schema=%s, key=%s", d.Name, cacheKey)
 				results[idx] = cached
 				continue
 			}
+			ui.Verbosef("cache miss: schema=%s, key=%s", d.Name, cacheKey)
 		}
 
 		g.Go(func() error {
@@ -202,6 +219,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			}
 
 			if err != nil {
+				ui.Verbosef("failed to retrieve schema: name=%s, source=%s, location=%s, error=%v", d.Name, d.Source, d.Location, err)
 				return fmt.Errorf("failed to retrieve schema %s: %w", d.Name, err)
 			}
 
@@ -255,7 +273,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			Adapter:  g.adapter,
 			Language: g.language,
 		})
+		ui.Verbosef("grouped schemas by adapter: adapter=%s, language=%s, schemas=%d", g.adapter, g.language, len(g.schemas))
 	}
 
+	ui.Verbosef("retrieval complete: batches=%d", len(batches))
 	return batches, nil
 }

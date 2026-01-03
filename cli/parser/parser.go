@@ -12,6 +12,7 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 
 	"github.com/xschema/cli/language"
+	"github.com/xschema/cli/ui"
 )
 
 // queryCache caches compiled queries per language
@@ -93,8 +94,11 @@ func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, 
 
 	files, err := getSourceFiles(ctx, dir, lang)
 	if err != nil {
+		ui.Verbosef("failed to get source files in %s", dir)
 		return nil, err
 	}
+
+	ui.Verbosef("found source files: count=%d, dir=%s, language=%s", len(files), dir, lang.Name)
 
 	var decls []Declaration
 	for _, path := range files {
@@ -104,9 +108,14 @@ func Parse(ctx context.Context, dir string, client *ClientInfo) ([]Declaration, 
 		default:
 		}
 
+		ui.Verbosef("parsing file: %s", path)
 		fileDecls, err := parseFile(ctx, path, lang, client.ClientName)
 		if err != nil {
+			ui.Verbosef("failed to parse file: %s", path)
 			return nil, err
+		}
+		if len(fileDecls) > 0 {
+			ui.Verbosef("found declarations: path=%s, count=%d", path, len(fileDecls))
 		}
 		decls = append(decls, fileDecls...)
 	}
@@ -123,16 +132,19 @@ func getSourceFiles(ctx context.Context, dir string, lang *language.Language) ([
 		globs = append(globs, "*"+ext, "**/*"+ext)
 	}
 
+	ui.Verbosef("getting source files using git in %s (globs: %v)", dir, globs)
 	args := append([]string{"ls-files", "--cached", "--others", "--exclude-standard"}, globs...)
 	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	output, err := cmd.Output()
 	if err != nil {
+		ui.Verbose("git not available, using directory walk")
 		return walkDirFallback(ctx, dir, lang)
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
 	if len(lines) == 1 && lines[0] == "" {
+		ui.Verbosef("no files found via git in %s", dir)
 		return nil, nil
 	}
 
@@ -142,11 +154,14 @@ func getSourceFiles(ctx context.Context, dir string, lang *language.Language) ([
 			files = append(files, filepath.Join(dir, line))
 		}
 	}
+	ui.Verbosef("found files via git: count=%d, dir=%s", len(files), dir)
 	return files, nil
 }
 
 // walkDirFallback walks directory manually when git is not available
 func walkDirFallback(ctx context.Context, dir string, lang *language.Language) ([]string, error) {
+	ui.Verbosef("walking directory: %s", dir)
+
 	extSet := make(map[string]bool)
 	for _, ext := range lang.Extensions {
 		extSet[ext] = true
@@ -166,6 +181,7 @@ func walkDirFallback(ctx context.Context, dir string, lang *language.Language) (
 		if d.IsDir() {
 			name := d.Name()
 			if name == "node_modules" || name == ".git" || name == "__pycache__" || name == ".venv" || name == "venv" {
+				ui.Verbosef("skipping directory: %s", path)
 				return filepath.SkipDir
 			}
 			return nil
@@ -177,6 +193,7 @@ func walkDirFallback(ctx context.Context, dir string, lang *language.Language) (
 		return nil
 	})
 
+	ui.Verbosef("directory walk complete: files=%d, dir=%s", len(files), dir)
 	return files, err
 }
 
