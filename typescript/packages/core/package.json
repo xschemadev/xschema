@@ -1,6 +1,6 @@
 {
 	"name": "@xschemadev/core",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"type": "module",
 	"description": "xschema adapter protocol types and CLI helper",
 	"exports": {
