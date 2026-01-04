@@ -37,6 +37,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get version from tag
+        id: version
+        run: |
+          TAG="${{ needs.release-please.outputs.cli--tag_name }}"
+          VERSION="${TAG#cli-v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -56,14 +63,8 @@ jobs:
           workdir: cli
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GORELEASER_CURRENT_TAG: v${{ steps.version.outputs.version }}
           # HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-
-      - name: Get version from tag
-        id: version
-        run: |
-          TAG="${{ needs.release-please.outputs.cli--tag_name }}"
-          VERSION="${TAG#cli-v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Copy binaries to npm packages
         run: |
