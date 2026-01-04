@@ -1,6 +1,6 @@
 {
   "name": "@xschemadev/cli-linux-arm64",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "xschema CLI binary for Linux ARM64",
   "os": [
     "linux"
