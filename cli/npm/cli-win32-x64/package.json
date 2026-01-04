@@ -1,10 +1,16 @@
 {
   "name": "@xschemadev/cli-win32-x64",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "xschema CLI binary for Windows x64",
-  "os": ["win32"],
-  "cpu": ["x64"],
-  "files": ["xschema.exe"],
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "xschema.exe"
+  ],
   "preferUnplugged": true,
   "license": "MIT",
   "repository": {

@@ -1,10 +1,16 @@
 {
   "name": "@xschemadev/cli-darwin-x64",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "xschema CLI binary for macOS x64",
-  "os": ["darwin"],
-  "cpu": ["x64"],
-  "files": ["xschema"],
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "xschema"
+  ],
   "preferUnplugged": true,
   "license": "MIT",
   "repository": {
