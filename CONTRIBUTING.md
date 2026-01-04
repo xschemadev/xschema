@@ -14,17 +14,17 @@ Thank you for your interest in contributing to xschema!
 
 ```bash
 # Clone the repository
-git clone https://github.com/xschema/xschema.git
+git clone https://github.com/xschemadev/xschema.git
 cd xschema
 
 # Install root dependencies (husky, commitlint)
 bun install
 
 # Install TypeScript package dependencies
-cd packages/typescript && bun install && cd ../..
+cd typescript && bun install && cd ..
 
 # Build TypeScript packages
-cd packages/typescript && bun run build && cd ../..
+cd typescript && bun run build && cd ..
 
 # Run Go tests
 cd cli && go test ./... && cd ..
@@ -47,7 +47,7 @@ cd cli && go test ./... && cd ..
    cd cli && go test ./...
    
    # TypeScript
-   cd packages/typescript && bun run build
+   cd typescript && bun run build && bun run typecheck
    ```
 
 4. Commit using conventional commit format (see below)
@@ -65,13 +65,15 @@ xschema/
 │   ├── generator/                # Adapter invocation
 │   ├── injector/                 # Code injection
 │   └── language/                 # Language-specific logic
-├── packages/
-│   └── typescript/               # TypeScript packages
-│       ├── core/                 # @xschema/core - shared types
-│       ├── client/               # @xschema/client - runtime
-│       ├── adapters/
-│       │   └── zod/              # @xschema/zod - Zod adapter
-│       └── example/              # Example project
+├── typescript/                   # TypeScript packages (bun workspace)
+│   ├── packages/
+│   │   ├── core/                 # @xschemadev/core - adapter types
+│   │   ├── client/               # @xschemadev/client - runtime
+│   │   └── zod/                  # @xschemadev/zod - Zod adapter
+│   ├── package.json              # Workspace root
+│   └── tsconfig.base.json        # Shared TS config
+├── examples/
+│   └── typescript/               # Example project
 └── docs/                         # Documentation
 ```
 
@@ -104,13 +106,13 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). All commits
 
 ### Scopes
 
-| Scope    | Description         |
-| -------- | ------------------- |
-| `cli`    | Go CLI              |
-| `core`   | @xschema/core       |
-| `client` | @xschema/client     |
-| `zod`    | @xschema/zod        |
-| `deps`   | Dependency updates  |
+| Scope    | Description             |
+| -------- | ----------------------- |
+| `cli`    | Go CLI                  |
+| `core`   | @xschemadev/core        |
+| `client` | @xschemadev/client      |
+| `zod`    | @xschemadev/zod         |
+| `deps`   | Dependency updates      |
 
 ### Examples
 
@@ -148,7 +150,7 @@ For breaking changes, either:
 
 ### Before Submitting
 
-- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in packages/typescript/)
+- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in typescript/)
 - [ ] Commits follow conventional commit format
 - [ ] PR description explains the changes
 
@@ -170,7 +172,9 @@ docs: update README
 
 ## Releases
 
-Releases are automated via [release-please](https://github.com/googleapis/release-please). When your PR is merged:
+Releases are automated via [release-please](https://github.com/googleapis/release-please). See [docs/RELEASING.md](docs/RELEASING.md) for details.
+
+When your PR is merged:
 
 1. release-please analyzes commits
 2. Creates/updates a Release PR with changelog

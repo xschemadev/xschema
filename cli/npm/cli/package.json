@@ -1,0 +1,23 @@
+{
+  "name": "@xschemadev/cli",
+  "version": "0.0.1",
+  "description": "xschema CLI - JSON Schema to native validators",
+  "bin": {
+    "xschema": "./bin/xschema.js"
+  },
+  "files": ["bin"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xschemadev/xschema.git",
+    "directory": "cli"
+  },
+  "license": "MIT",
+  "optionalDependencies": {
+    "@xschemadev/cli-darwin-arm64": "0.0.1",
+    "@xschemadev/cli-darwin-x64": "0.0.1",
+    "@xschemadev/cli-linux-arm64": "0.0.1",
+    "@xschemadev/cli-linux-x64": "0.0.1",
+    "@xschemadev/cli-win32-arm64": "0.0.1",
+    "@xschemadev/cli-win32-x64": "0.0.1"
+  }
+}

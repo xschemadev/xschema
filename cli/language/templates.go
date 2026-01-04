@@ -35,7 +35,7 @@ export type SchemaTypes = {
 {{- end}}
 };
 
-declare module '@xschema/client' {
+declare module '@xschemadev/client' {
   interface Register {
     schemas: typeof schemas;
     schemaTypes: SchemaTypes;

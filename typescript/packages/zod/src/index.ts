@@ -1,4 +1,4 @@
-import type { ConvertInput, ConvertResult } from "../../index.js";
+import type { ConvertInput, ConvertResult } from "@xschemadev/core";
 import { jsonSchemaToZod } from "json-schema-to-zod";
 
 export function convert(input: ConvertInput): ConvertResult {

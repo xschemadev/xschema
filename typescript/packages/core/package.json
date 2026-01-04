@@ -1,0 +1,20 @@
+{
+  "name": "@xschemadev/core",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "xschema adapter protocol types and CLI helper",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}

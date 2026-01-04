@@ -74,7 +74,7 @@ func TestInject_TypeScript(t *testing.T) {
 	}
 
 	// Check declaration merging
-	if !strings.Contains(output, `declare module '@xschema/client'`) {
+	if !strings.Contains(output, `declare module '@xschemadev/client'`) {
 		t.Error("Missing declaration merging")
 	}
 }
@@ -268,7 +268,7 @@ func TestInjectClient_TypeScript(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a client file
-	clientContent := `import { createXSchemaClient } from "@xschema/client";
+	clientContent := `import { createXSchemaClient } from "@xschemadev/client";
 
 export const xschema = createXSchemaClient({
   defaultNamespace: "user",
@@ -315,7 +315,7 @@ func TestInjectClient_EmptyConfig(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a client file with empty config
-	clientContent := `import { createXSchemaClient } from "@xschema/client";
+	clientContent := `import { createXSchemaClient } from "@xschemadev/client";
 
 export const xschema = createXSchemaClient({});
 `
@@ -352,7 +352,7 @@ func TestInjectClient_ExistingSchemasShorthand(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a client file with existing schemas shorthand
-	clientContent := `import { createXSchemaClient } from "@xschema/client";
+	clientContent := `import { createXSchemaClient } from "@xschemadev/client";
 import { schemas } from ".xschema/xschema.gen";
 
 export const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
@@ -390,7 +390,7 @@ func TestInjectClient_ExistingSchemasPair(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a client file with existing schemas as key-value pair
-	clientContent := `import { createXSchemaClient } from "@xschema/client";
+	clientContent := `import { createXSchemaClient } from "@xschemadev/client";
 import { schemas } from ".xschema/xschema.gen";
 
 export const xschema = createXSchemaClient({ schemas: schemas, defaultNamespace: "user" });

@@ -1,6 +1,6 @@
 // Invalid calls - these should NOT be parsed
-import { createXSchemaClient } from "@xschema/client";
-import { adapter } from "@xschema/zod";
+import { createXSchemaClient } from "@xschemadev/client";
+import { adapter } from "@xschemadev/zod";
 
 const xschema = createXSchemaClient({});
 const dynamicName = "Dynamic";

@@ -1,0 +1,15 @@
+{
+  "name": "@xschemadev/cli-darwin-arm64",
+  "version": "0.0.1",
+  "description": "xschema CLI binary for macOS ARM64",
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "files": ["xschema"],
+  "preferUnplugged": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xschemadev/xschema.git",
+    "directory": "cli"
+  }
+}

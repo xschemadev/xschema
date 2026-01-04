@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createAdapterCLI } from "../../index.js";
+import { createAdapterCLI } from "@xschemadev/core";
 import { convert } from "./index.js";
 
 createAdapterCLI(convert);

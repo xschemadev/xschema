@@ -1,6 +1,6 @@
 // String variations - testing different quote styles
-import { createXSchemaClient } from "@xschema/client";
-import { adapter } from "@xschema/zod";
+import { createXSchemaClient } from "@xschemadev/client";
+import { adapter } from "@xschemadev/zod";
 
 const xschema = createXSchemaClient({});
 

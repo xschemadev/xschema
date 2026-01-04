@@ -25,11 +25,15 @@ builds:
       - -X github.com/xschemadev/xschema/cmd.date={{.Date}}
 
 archives:
-  - format: tar.gz
+  - id: compressed
+    format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
         format: zip
+  - id: binary
+    format: binary
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"

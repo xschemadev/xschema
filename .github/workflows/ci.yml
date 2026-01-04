@@ -72,12 +72,12 @@ jobs:
         run: bun install
         working-directory: typescript
 
-      - name: Build package
+      - name: Build all packages
         run: bun run build
         working-directory: typescript
 
-      - name: Type check
-        run: bunx tsc --noEmit
+      - name: Type check all packages
+        run: bun run typecheck
         working-directory: typescript
 
   integration:
@@ -101,7 +101,7 @@ jobs:
         run: bun install
         working-directory: typescript
 
-      - name: Build TS package
+      - name: Build TS packages
         run: bun run build
         working-directory: typescript
 

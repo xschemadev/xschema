@@ -25,7 +25,7 @@ type Language struct {
     DetectRunner  func() (string, []string, error) // detect runtime (optional)
     
     // Client detection
-    ClientPackage   string                      // e.g., "@xschema/client"
+    ClientPackage   string                      // e.g., "@xschemadev/client"
     ClientFactory   string                      // e.g., "createXSchemaClient"
     ClientQuery     string                      // query to find client variable
     ConfigQuery     string                      // query to extract config from client call
@@ -151,7 +151,7 @@ Example (TypeScript):
 The `ImportQuery` captures adapter imports to populate `AdapterRef.Package`. This maps adapter variable names to their source package.
 
 Captures required:
-- `@package` - the import source/module (e.g., `"@xschema/adapter-zod"`)
+- `@package` - the import source/module (e.g., `"@xschemadev/adapter-zod"`)
 - `@imported_name` - the imported identifier (e.g., `zodAdapter`)
 
 The parser builds a map `importedName -> package` and uses it to populate `AdapterRef.Package` in each `Declaration`.
@@ -163,7 +163,7 @@ Example (TypeScript):
   (import_specifier
     name: (identifier) @imported_name))
 ```
-Matches: `import { zodAdapter } from "@xschema/adapter-zod"`
+Matches: `import { zodAdapter } from "@xschemadev/adapter-zod"`
 
 Example (Python):
 ```
@@ -249,7 +249,7 @@ export type {{.Name}}Type = {{.Type}};
 {{end}}
 export const schemas = { {{range $i, $s := .Schemas}}{{if $i}}, {{end}}{{$s.Name}}{{end}} } as const;
 
-declare module '@xschema/client' {
+declare module '@xschemadev/client' {
   interface Register {
     schemas: typeof schemas
   }
@@ -322,8 +322,8 @@ Each language needs a corresponding source file that produces these results:
 
 ```typescript
 // typescript/basic.ts
-import { createXSchemaClient } from "@xschema/client";
-import { zodAdapter } from "@xschema/zod";
+import { createXSchemaClient } from "@xschemadev/client";
+import { zodAdapter } from "@xschemadev/zod";
 
 const xschema = createXSchemaClient({ output: ".xschema" });
 

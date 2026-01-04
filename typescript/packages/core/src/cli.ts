@@ -1,23 +1,4 @@
-// Core types for xschema adapters
-export interface XSchemaAdapter {
-  readonly __brand: "xschema-adapter";
-  readonly name: string;
-  readonly language: string;
-}
-
-export interface ConvertInput {
-  namespace: string;
-  id: string;
-  schema: object;
-}
-
-export interface ConvertResult {
-  namespace: string;
-  id: string;
-  imports: string[];
-  schema: string;
-  type: string;
-}
+import type { ConvertInput, ConvertResult } from "./types.js";
 
 /**
  * Creates a CLI handler for xschema adapters.
@@ -26,7 +7,7 @@ export interface ConvertResult {
  * @example
  * ```ts
  * #!/usr/bin/env node
- * import { createAdapterCLI } from "@xschema";
+ * import { createAdapterCLI } from "@xschemadev/core";
  * import { convert } from "./index";
  *
  * createAdapterCLI(convert);

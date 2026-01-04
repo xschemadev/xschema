@@ -10,7 +10,7 @@
  */
 
 import { schemas } from "./.xschema/xschema.gen";
-import { createXSchemaClient, XSchemaType } from "@xschema/client";
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
 
 // Create the xschema client with generated schemas
 // defaultNamespace allows shorthand lookups: xschema("Calendar") instead of xschema("user:Calendar")

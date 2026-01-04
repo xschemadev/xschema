@@ -7,11 +7,26 @@
     "cli": {
       "release-type": "simple",
       "component": "cli",
-      "extra-files": ["cli/cmd/root.go"]
+      "extra-files": [
+        "cli/cmd/root.go",
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.version"
+        }
+      ]
     },
-    "typescript": {
+    "typescript/packages/core": {
       "release-type": "node",
-      "component": "ts"
+      "component": "core"
+    },
+    "typescript/packages/client": {
+      "release-type": "node",
+      "component": "client"
+    },
+    "typescript/packages/zod": {
+      "release-type": "node",
+      "component": "zod"
     }
   },
   "separate-pull-requests": true,

@@ -2,6 +2,7 @@
   "name": "generator-test",
   "type": "module",
   "dependencies": {
-    "@xschema": "file:../../../../typescript"
+    "@xschemadev/client": "file:../../../../typescript/packages/client",
+    "@xschemadev/zod": "file:../../../../typescript/packages/zod"
   }
 }

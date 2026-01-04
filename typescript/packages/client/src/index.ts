@@ -54,7 +54,7 @@ export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas>
  * @example
  * ```ts
  * import { schemas } from "./.xschema/xschema.gen";
- * import { createXSchemaClient } from "@xschema/client";
+ * import { createXSchemaClient } from "@xschemadev/client";
  * 
  * const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
  * 

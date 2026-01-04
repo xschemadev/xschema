@@ -1,6 +1,6 @@
 // Basic xschema calls - all should be parsed
-import { createXSchemaClient } from "@xschema/client";
-import { zodAdapter } from "@xschema/zod";
+import { createXSchemaClient } from "@xschemadev/client";
+import { zodAdapter } from "@xschemadev/zod";
 
 const xschema = createXSchemaClient({});
 
