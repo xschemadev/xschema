@@ -106,23 +106,6 @@ jobs:
           cp dist/xschema-win32-arm64/xschema.exe npm/cli-win32-arm64/xschema.exe
         working-directory: cli
 
-      - name: Update package versions
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          
-          # Update platform package versions
-          for dir in cli/npm/cli-*/; do
-            jq --arg v "$VERSION" '.version = $v' "$dir/package.json" > tmp.json
-            mv tmp.json "$dir/package.json"
-          done
-          
-          # Update main package version and optionalDependencies
-          jq --arg v "$VERSION" '
-            .version = $v |
-            .optionalDependencies = (.optionalDependencies | with_entries(.value = $v))
-          ' cli/npm/cli/package.json > tmp.json
-          mv tmp.json cli/npm/cli/package.json
-
       - name: Publish platform packages to npm
         run: |
           for pkg in cli-darwin-arm64 cli-darwin-x64 cli-linux-arm64 cli-linux-x64 cli-win32-arm64 cli-win32-x64; do
