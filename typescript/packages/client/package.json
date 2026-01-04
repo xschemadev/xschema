@@ -1,6 +1,6 @@
 {
 	"name": "@xschemadev/client",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"type": "module",
 	"description": "XSchema Runtime Client with Typescript type inference",
 	"exports": {

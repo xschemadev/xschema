@@ -2,5 +2,5 @@
   "typescript/packages/zod": "0.0.3",
   "typescript/packages/core": "0.0.4",
   "cli": "0.0.8",
-  "typescript/packages/client": "0.0.3"
+  "typescript/packages/client": "0.0.4"
 }
