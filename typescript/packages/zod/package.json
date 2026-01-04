@@ -2,7 +2,7 @@
 	"name": "@xschemadev/zod",
 	"version": "0.0.3",
 	"type": "module",
-	"description": "xschema zod adapter",
+	"description": "XSchema Zod Adapter",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",

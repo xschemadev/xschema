@@ -1,7 +1,7 @@
 {
 	"name": "@xschemadev/cli",
 	"version": "0.0.7",
-	"description": "xschema CLI - bring your JSON schemas to life",
+	"description": "XSchema CLI - Bring your JSON Schemas to life",
 	"bin": {
 		"xschema": "./bin/xschema.js"
 	},
