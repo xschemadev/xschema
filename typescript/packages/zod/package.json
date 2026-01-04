@@ -1,6 +1,6 @@
 {
   "name": "@xschemadev/zod",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "xschema Zod adapter - convert JSON Schema to Zod validators",
   "exports": {
@@ -12,7 +12,9 @@
   "bin": {
     "xschema-zod": "./dist/cli.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
