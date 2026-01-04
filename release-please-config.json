@@ -13,6 +13,66 @@
           "type": "json",
           "path": "cli/npm/cli/package.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-darwin-arm64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-darwin-x64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-linux-arm64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-linux-x64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-win32-arm64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli/package.json",
+          "jsonpath": "$.optionalDependencies['@xschemadev/cli-win32-x64']"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-darwin-arm64/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-darwin-x64/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-linux-arm64/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-linux-x64/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-win32-arm64/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cli/npm/cli-win32-x64/package.json",
+          "jsonpath": "$.version"
         }
       ]
     },
