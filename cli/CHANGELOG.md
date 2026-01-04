@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/xschemadev/xschema/compare/cli-v0.0.5...cli-v0.0.6) (2026-01-04)
+
+
+### Bug Fixes
+
+* **cli:** wrong release-please-config versions ([#15](https://github.com/xschemadev/xschema/issues/15)) ([d46c6fa](https://github.com/xschemadev/xschema/commit/d46c6fa896661886c592f1e150f1fbc44f1a8ffa))
+
 ## [0.0.5](https://github.com/xschemadev/xschema/compare/cli-v0.0.4...cli-v0.0.5) (2026-01-04)
 
 
