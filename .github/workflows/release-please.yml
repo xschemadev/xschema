@@ -145,28 +145,23 @@ jobs:
         run: bun run build
         working-directory: typescript
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-
       - name: Publish @xschemadev/core
         if: needs.release-please.outputs.core--release_created == 'true'
-        run: npm publish --access public
+        run: bun publish --access public
         working-directory: typescript/packages/core
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/client
         if: needs.release-please.outputs.client--release_created == 'true'
-        run: npm publish --access public
+        run: bun publish --access public
         working-directory: typescript/packages/client
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/zod
         if: needs.release-please.outputs.zod--release_created == 'true'
-        run: npm publish --access public
+        run: bun publish --access public
         working-directory: typescript/packages/zod
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

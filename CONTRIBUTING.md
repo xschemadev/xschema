@@ -70,10 +70,9 @@ xschema/
 │   │   ├── core/                 # @xschemadev/core - adapter types
 │   │   ├── client/               # @xschemadev/client - runtime
 │   │   └── zod/                  # @xschemadev/zod - Zod adapter
+│   ├── example/                  # Example project
 │   ├── package.json              # Workspace root
 │   └── tsconfig.base.json        # Shared TS config
-├── examples/
-│   └── typescript/               # Example project
 └── docs/                         # Documentation
 ```
 

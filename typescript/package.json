@@ -1,10 +1,10 @@
 {
   "name": "xschema-typescript",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": ["packages/*", "example"],
   "scripts": {
-    "build": "bun run --filter '@xschemadev/core' build && bun run --filter '@xschemadev/client' build && bun run --filter '@xschemadev/zod' build",
-    "typecheck": "bun run --filter '*' typecheck"
+    "build": "bun run --filter '@xschemadev/*' build",
+    "typecheck": "bun run --filter '@xschemadev/*' typecheck"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

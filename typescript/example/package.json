@@ -4,11 +4,11 @@
   "type": "module",
   "scripts": {
     "start": "bun run main.ts",
-    "generate": "cd ../../cli && go run . generate --project ../examples/typescript"
+    "generate": "cd ../../cli && go run . generate --project ../typescript/example"
   },
   "dependencies": {
-    "@xschemadev/client": "file:../../typescript/packages/client",
-    "@xschemadev/zod": "file:../../typescript/packages/zod",
+    "@xschemadev/client": "workspace:*",
+    "@xschemadev/zod": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {
