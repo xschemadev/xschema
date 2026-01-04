@@ -1,8 +1,8 @@
 {
 	"name": "@xschemadev/core",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"type": "module",
-	"description": "XSchema Adapter Protocol types and CLI helper",
+	"description": "XSchema Adapter CLI helper and protocol types",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
