@@ -1,19 +1,19 @@
 {
-  "name": "@xschemadev/client",
-  "version": "0.0.2",
-  "type": "module",
-  "description": "xschema runtime client with TypeScript type inference",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
-  }
+	"name": "@xschemadev/client",
+	"version": "0.0.2",
+	"type": "module",
+	"description": "xschema runtime client with typescript type inference",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit"
+	}
 }

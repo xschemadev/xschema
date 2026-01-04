@@ -1,29 +1,29 @@
 {
-  "name": "@xschemadev/zod",
-  "version": "0.0.2",
-  "type": "module",
-  "description": "xschema Zod adapter - convert JSON Schema to Zod validators",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "bin": {
-    "xschema-zod": "./dist/cli.js"
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@xschemadev/core": "workspace:*",
-    "json-schema-to-zod": "^2.4.1"
-  },
-  "peerDependencies": {
-    "zod": "^3.0.0"
-  }
+	"name": "@xschemadev/zod",
+	"version": "0.0.2",
+	"type": "module",
+	"description": "xschema zod adapter",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"bin": {
+		"xschema-zod": "./dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@xschemadev/core": "workspace:*",
+		"json-schema-to-zod": "^2.4.1"
+	},
+	"peerDependencies": {
+		"zod": "^3.0.0"
+	}
 }
