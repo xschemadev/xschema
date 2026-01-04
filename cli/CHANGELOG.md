@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.8](https://github.com/xschemadev/xschema/compare/cli-v0.0.7...cli-v0.0.8) (2026-01-04)
+
+
+### Features
+
+* update all packages descriptions ([91bff70](https://github.com/xschemadev/xschema/commit/91bff7027b7f905531be14e83097c28b1c6dd7e6))
+
 ## [0.0.7](https://github.com/xschemadev/xschema/compare/cli-v0.0.6...cli-v0.0.7) (2026-01-04)
 
 

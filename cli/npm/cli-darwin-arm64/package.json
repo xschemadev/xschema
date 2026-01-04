@@ -1,6 +1,6 @@
 {
   "name": "@xschemadev/cli-darwin-arm64",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "xschema CLI binary for macOS ARM64",
   "os": [
     "darwin"

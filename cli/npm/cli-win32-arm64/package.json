@@ -1,6 +1,6 @@
 {
   "name": "@xschemadev/cli-win32-arm64",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "xschema CLI binary for Windows ARM64",
   "os": [
     "win32"

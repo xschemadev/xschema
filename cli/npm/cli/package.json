@@ -1,6 +1,6 @@
 {
 	"name": "@xschemadev/cli",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"description": "XSchema CLI - Bring your JSON Schemas to life",
 	"bin": {
 		"xschema": "./bin/xschema.js"
@@ -15,11 +15,11 @@
 	},
 	"license": "MIT",
 	"optionalDependencies": {
-		"@xschemadev/cli-darwin-arm64": "0.0.7",
-		"@xschemadev/cli-darwin-x64": "0.0.7",
-		"@xschemadev/cli-linux-arm64": "0.0.7",
-		"@xschemadev/cli-linux-x64": "0.0.7",
-		"@xschemadev/cli-win32-arm64": "0.0.7",
-		"@xschemadev/cli-win32-x64": "0.0.7"
+		"@xschemadev/cli-darwin-arm64": "0.0.8",
+		"@xschemadev/cli-darwin-x64": "0.0.8",
+		"@xschemadev/cli-linux-arm64": "0.0.8",
+		"@xschemadev/cli-linux-x64": "0.0.8",
+		"@xschemadev/cli-win32-arm64": "0.0.8",
+		"@xschemadev/cli-win32-x64": "0.0.8"
 	}
 }
