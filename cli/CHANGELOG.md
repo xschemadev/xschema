@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.0.7](https://github.com/xschemadev/xschema/compare/cli-v0.0.6...cli-v0.0.7) (2026-01-04)
+
+
+### Features
+
+* releases ([e70a7fb](https://github.com/xschemadev/xschema/commit/e70a7fb721eb35fb71c69d7ccd06eaaefbf0e410))
+* update packages descriptions ([bb7b652](https://github.com/xschemadev/xschema/commit/bb7b6522fb5cc1b4b6f2e7db1272cd3b2adf824c))
+
+
+### Bug Fixes
+
+* add monorepo tag prefix for goreleaser ([82427cc](https://github.com/xschemadev/xschema/commit/82427cca84a783b589dc4f1a1b383ec8f6ffa308))
+* **cli:** wrong release-please-config versions ([#15](https://github.com/xschemadev/xschema/issues/15)) ([d46c6fa](https://github.com/xschemadev/xschema/commit/d46c6fa896661886c592f1e150f1fbc44f1a8ffa))
+* goreleases + docs ([bc5bb02](https://github.com/xschemadev/xschema/commit/bc5bb0239be6e945d91010363d93ac30703718f4))
+* remove gorelease pro feature and manually extracting cli version ([99ce180](https://github.com/xschemadev/xschema/commit/99ce180d370f92f377f31c39f4d037c9854d5ad8))
+
 ## [0.0.6](https://github.com/xschemadev/xschema/compare/cli-v0.0.5...cli-v0.0.6) (2026-01-04)
 
 

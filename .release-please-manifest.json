@@ -1,6 +1,6 @@
 {
-  "cli": "0.0.6",
-  "typescript/packages/core": "0.0.2",
   "typescript/packages/zod": "0.0.3",
-  "typescript/packages/client": "0.0.2"
+  "typescript/packages/core": "0.0.4",
+  "cli": "0.0.7",
+  "typescript/packages/client": "0.0.3"
 }
