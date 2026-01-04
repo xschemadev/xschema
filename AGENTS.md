@@ -5,7 +5,7 @@ JSON Schema to native validators (Zod, Pydantic, etc.) with full type safety.
 ## Project Structure
 
 ```
-cli/                    # Go CLI (main tool)
+cli/                    # Go CLI (github.com/xschemadev/xschema)
   cmd/                  # cobra commands
   parser/               # parses JSON/JSONC config files
   retriever/            # fetches schemas from URL/file/inline
@@ -14,69 +14,43 @@ cli/                    # Go CLI (main tool)
   language/             # language-specific config (TS, Python)
   ui/                   # terminal output helpers
 
-packages/typescript/    # TS packages (bun workspace)
-  core/                 # shared types (ConvertInput, ConvertResult)
-  client/               # runtime client
-  adapters/zod/         # @xschema/zod adapter
+typescript/             # TS packages (bun workspace)
+  packages/core/        # @xschemadev/core - shared types
+  packages/zod/         # @xschemadev/zod - zod adapter
+  packages/client/      # @xschemadev/client - runtime client
   example/              # example project
-
-packages/python/        # Python packages (future)
 ```
 
 ## Build/Test/Lint Commands
 
-### Go CLI
+### Go CLI (run from `cli/` directory)
 
 ```bash
-# run all tests
-cd cli && go test ./...
-
-# run single test file
-cd cli && go test ./parser/
-
-# run single test by name
-cd cli && go test ./parser/ -run TestParseConfigFile
-
-# run with verbose output
-cd cli && go test ./parser/ -v
-
-# run short tests only (skip integration)
-cd cli && go test ./... -short
-
-# run integration tests
-cd cli && go test . -run TestIntegration
-
-# build CLI
-cd cli && go build -o xschema .
-
-# format code
-cd cli && go fmt ./...
-
-# lint (if golangci-lint installed)
-cd cli && golangci-lint run
+go test ./...                           # run all tests
+go test ./parser/                       # run single package tests
+go test ./parser/ -run TestParse        # run single test by name
+go test ./parser/ -v                    # verbose output
+go test ./... -short                    # skip integration tests
+go test . -run TestIntegration          # run integration tests only
+go build -o xschema .                   # build binary
+go fmt ./...                            # format code
+golangci-lint run                       # lint (if installed)
 ```
 
-### TypeScript Packages
+### TypeScript (run from `typescript/` directory)
 
 ```bash
-# install deps (from packages/typescript)
-cd packages/typescript && bun install
-
-# build all packages
-cd packages/typescript && bun run build
-
-# run example
-cd packages/typescript/example && bun run main.ts
-
-# type check (in any package)
-bunx tsc --noEmit
+bun install                             # install deps
+bun run build                           # build all packages
+bun run typecheck                       # type check all packages
+bunx tsc --noEmit                       # type check single package
 ```
 
 ## Code Style Guidelines
 
 ### Go Code
 
-**Imports**: stdlib first, then external, then internal. Grouped with blank lines:
+**Imports**: stdlib first, external second, internal third (grouped with blank lines):
 ```go
 import (
     "context"
@@ -84,62 +58,50 @@ import (
 
     "github.com/spf13/cobra"
 
-    "github.com/xschema/cli/language"
-    "github.com/xschema/cli/ui"
+    "github.com/xschemadev/xschema/language"
+    "github.com/xschemadev/xschema/ui"
 )
 ```
 
-**Naming**:
-- Exported: `PascalCase` (e.g., `Parse`, `GenerateOutput`)
-- Unexported: `camelCase` (e.g., `parseConfigFile`)
-- Constants: `camelCase` or `PascalCase` based on export
-- Acronyms: keep uppercase (`URL`, `HTTP`, `ID`)
+**Naming**: Exported `PascalCase`, unexported `camelCase`, acronyms uppercase (`URL`, `ID`)
 
-**Error handling**:
-- Wrap errors with context: `fmt.Errorf("failed to X: %w", err)`
-- Return early on errors
-- Use `ui.Verbosef()` for debug logging before returning errors
+**Error handling**: wrap with context `fmt.Errorf("failed to X: %w", err)`, return early, use `ui.Verbosef()` for debug logging
 
-**Functions**:
-- Accept `context.Context` as first param for cancellable ops
-- Keep functions focused and small
-- Use named return values sparingly (only when clarifying)
+**Functions**: accept `context.Context` as first param for cancellable ops
 
-**Types**:
-- Define types close to where they're used
-- Use `json.RawMessage` for arbitrary JSON
-- Prefer structs over maps for known shapes
+**Types**: define close to usage, use `json.RawMessage` for arbitrary JSON, prefer structs over maps
 
 ### TypeScript Code
 
-**Imports**: external packages first, then relative:
+**Imports**: external packages first, then relative (blank line between):
 ```typescript
-import type { ConvertInput, ConvertResult } from "@xschema/core";
+import type { ConvertInput, ConvertResult } from "@xschemadev/core";
 import { jsonSchemaToZod } from "json-schema-to-zod";
 
 import { convert } from "./index";
 ```
 
-**Naming**:
-- Interfaces/Types: `PascalCase` (e.g., `XSchemaAdapter`, `ConvertResult`)
-- Functions: `camelCase` (e.g., `convert`, `createAdapterCLI`)
-- Constants: `camelCase` or `SCREAMING_SNAKE` for true constants
+**Naming**: types/interfaces `PascalCase`, functions `camelCase`
 
-**Types**:
-- Use `interface` for object shapes
-- Use `type` for unions, intersections, aliases
-- Mark readonly when appropriate: `readonly __brand: 'xschema-adapter'`
-- Use `object` (not `Object`) in type annotations
+**Types**: use `interface` for object shapes, `type` for unions/aliases, use `object` not `Object`
 
-**Exports**:
-- Named exports preferred over default exports
-- Re-export types with `export type { ... }` when possible
+**Exports**: named exports preferred, re-export types with `export type { ... }`
+
+## Commit Conventions
+
+Uses conventional commits with these scopes:
+- `cli` - Go CLI changes
+- `ts` - TypeScript packages
+- `py` - Python packages (future)
+- `deps` - dependency updates
+- `release` - release commits
+
+Examples: `feat(cli): add watch mode`, `fix(ts): handle null schemas`
 
 ## Architecture Notes
 
 ### Config File Format
 
-xschema configs are JSON/JSONC files with `$schema` pointing to xschema.dev:
 ```jsonc
 {
   "$schema": "https://xschema.dev/schemas/ts.jsonc",
@@ -149,7 +111,7 @@ xschema configs are JSON/JSONC files with `$schema` pointing to xschema.dev:
       "id": "User",
       "sourceType": "url",     // "url" | "file" | "json"
       "source": "https://...", // or "./path.json" or {...}
-      "adapter": "@xschema/zod"
+      "adapter": "@xschemadev/zod"
     }
   ]
 }
@@ -166,79 +128,27 @@ xschema configs are JSON/JSONC files with `$schema` pointing to xschema.dev:
 
 Adapters receive JSON array via stdin, output JSON array via stdout:
 ```typescript
-// Input
-[{ namespace: "user", id: "User", schema: {...} }]
-
-// Output
-[{ namespace: "user", id: "User", schema: "z.object(...)", type: "z.infer<typeof user_User>", imports: ["import { z } from 'zod'"] }]
+// Input: [{ namespace: "user", id: "User", schema: {...} }]
+// Output: [{ namespace: "user", id: "User", schema: "z.object(...)", type: "...", imports: [...] }]
 ```
 
 ### Key Types
 
-```go
-// parser/types.go
-type Declaration struct {
-    Namespace  string
-    ID         string
-    SourceType SourceType // "url" | "file" | "json"
-    Source     json.RawMessage
-    Adapter    string
-    ConfigPath string
-}
-
-// generator/generator.go
-type GenerateOutput struct {
-    Namespace string
-    ID        string
-    Schema    string   // generated code
-    Type      string   // type expression
-    Imports   []string
-}
-```
-
-### Language Detection
-
-- Detected from `$schema` URL: `https://xschema.dev/schemas/ts.jsonc` -> typescript
-- Runner auto-detected from lockfiles (bun.lock -> bunx, pnpm-lock.yaml -> pnpm exec, etc.)
+- `parser.Declaration`: Namespace, ID, Adapter, ConfigPath, SourceType, Source (json.RawMessage)
+- `generator.GenerateOutput`: Namespace, ID, Schema (code), Type (expression), Imports
 
 ## Testing Patterns
 
-**Unit tests**: create temp directories with test configs
-```go
-func TestParseConfigFile(t *testing.T) {
-    tmpDir := t.TempDir()
-    // write test files, run parser, assert
-}
-```
-
-**Integration tests**: test full pipeline (Parse -> Retrieve -> Generate -> Inject)
-```go
-func TestIntegration_FullPipeline(t *testing.T) {
-    if testing.Short() {
-        t.Skip("skipping integration test in short mode")
-    }
-    // requires adapter to be installed
-}
-```
-
-**Table-driven tests**: for testing multiple cases
-```go
-tests := []struct {
-    name    string
-    content string
-}{
-    {"truncated", `{...`},
-    {"empty", ``},
-}
-for _, tt := range tests {
-    t.Run(tt.name, func(t *testing.T) { ... })
-}
-```
+- Use `t.TempDir()` for temp files
+- Table-driven tests: `tests := []struct{...}{}` with `t.Run(tt.name, ...)`
+- Integration tests skip with `if testing.Short() { t.Skip() }`
 
 ## Common Gotchas
 
 - Config file paths are relative to the config file's directory, not cwd
 - Namespace defaults to filename without extension if not specified
 - Same ID in same namespace across files = error
-- Multiple languages in project without `--lang` flag = error
+- Multiple languages without `--lang` flag = error
 - `json.RawMessage` preserves raw JSON; don't re-marshal inline schemas
+- Language detected from `$schema` URL: `ts.jsonc` -> typescript, `py.jsonc` -> python
+- Runner auto-detected from lockfiles (bun.lock -> bunx, pnpm-lock.yaml -> pnpm exec)
