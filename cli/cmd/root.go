@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version information set by goreleaser
+// Version information set via ldflags at build time
 var (
 	version = "dev"
 	commit  = "none"

@@ -47,34 +47,62 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.24"
 
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          distribution: goreleaser
-          version: "~> v2"
-          args: release --clean
-          workdir: cli
+      - name: Build binaries for all platforms
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          COMMIT="${GITHUB_SHA::7}"
+          DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          LDFLAGS="-s -w -X github.com/xschemadev/xschema/cmd.version=$VERSION -X github.com/xschemadev/xschema/cmd.commit=$COMMIT -X github.com/xschemadev/xschema/cmd.date=$DATE"
+          
+          mkdir -p dist
+          
+          echo "Building linux/amd64..."
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-linux-x64/xschema .
+          
+          echo "Building linux/arm64..."
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-linux-arm64/xschema .
+          
+          echo "Building darwin/amd64..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-darwin-x64/xschema .
+          
+          echo "Building darwin/arm64..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-darwin-arm64/xschema .
+          
+          echo "Building windows/amd64..."
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-win32-x64/xschema.exe .
+          
+          echo "Building windows/arm64..."
+          CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-win32-arm64/xschema.exe .
+        working-directory: cli
+
+      - name: Create archives and upload to GitHub release
+        run: |
+          cd dist
+          for dir in */; do
+            name="${dir%/}"
+            tar -czf "${name}.tar.gz" -C "$dir" .
+          done
+          gh release upload ${{ needs.release-please.outputs.cli--tag_name }} *.tar.gz --clobber
+        working-directory: cli
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GORELEASER_CURRENT_TAG: v${{ steps.version.outputs.version }}
-          # HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
 
       - name: Copy binaries to npm packages
         run: |
-          # Copy binaries from goreleaser binary archive output to npm package dirs
-          cp cli/dist/xschema_linux_arm64 cli/npm/cli-linux-arm64/xschema
-          cp cli/dist/xschema_linux_amd64_v1 cli/npm/cli-linux-x64/xschema
-          cp cli/dist/xschema_darwin_arm64 cli/npm/cli-darwin-arm64/xschema
-          cp cli/dist/xschema_darwin_amd64_v1 cli/npm/cli-darwin-x64/xschema
-          cp cli/dist/xschema_windows_arm64.exe cli/npm/cli-win32-arm64/xschema.exe
-          cp cli/dist/xschema_windows_amd64_v1.exe cli/npm/cli-win32-x64/xschema.exe
+          cp dist/xschema-linux-x64/xschema     npm/cli-linux-x64/xschema
+          cp dist/xschema-linux-arm64/xschema   npm/cli-linux-arm64/xschema
+          cp dist/xschema-darwin-x64/xschema    npm/cli-darwin-x64/xschema
+          cp dist/xschema-darwin-arm64/xschema  npm/cli-darwin-arm64/xschema
+          cp dist/xschema-win32-x64/xschema.exe npm/cli-win32-x64/xschema.exe
+          cp dist/xschema-win32-arm64/xschema.exe npm/cli-win32-arm64/xschema.exe
+        working-directory: cli
 
       - name: Update package versions
         run: |
