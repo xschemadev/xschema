@@ -28,3 +28,4 @@ bun.lock
 *.swp
 *.swo
 .DS_Store
+dist/

@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/xschema/cli/generator"
-	"github.com/xschema/cli/injector"
-	"github.com/xschema/cli/parser"
-	"github.com/xschema/cli/retriever"
-	"github.com/xschema/cli/ui"
+	"github.com/xschemadev/xschema/generator"
+	"github.com/xschemadev/xschema/injector"
+	"github.com/xschemadev/xschema/parser"
+	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/ui"
 )
 
 var (

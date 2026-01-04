@@ -3,7 +3,7 @@ package parser
 import (
 	"encoding/json"
 
-	"github.com/xschema/cli/language"
+	"github.com/xschemadev/xschema/language"
 )
 
 // SourceType represents how to retrieve a schema
@@ -27,7 +27,7 @@ type SchemaEntryRaw struct {
 	ID         string          `json:"id"`
 	SourceType SourceType      `json:"sourceType"` // "url", "file", "json"
 	Source     json.RawMessage `json:"source"`     // string for url/file, object for json
-	Adapter    string          `json:"adapter"`    // full package name e.g., "@xschema/zod"
+	Adapter    string          `json:"adapter"`    // full package name e.g., "zod"
 }
 
 // ConfigFile represents a parsed xschema config file
@@ -44,7 +44,7 @@ type Declaration struct {
 	ID         string          // e.g., "TestUrl"
 	SourceType SourceType      // "url", "file", "json"
 	Source     json.RawMessage // URL string, file path string, or inline JSON object
-	Adapter    string          // full adapter package e.g., "@xschema/zod"
+	Adapter    string          // full adapter package e.g., "zod"
 	ConfigPath string          // path to config file (for relative file resolution)
 }
 

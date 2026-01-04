@@ -19,13 +19,13 @@ func TestParseConfigFile(t *testing.T) {
 				"id": "User",
 				"sourceType": "url",
 				"source": "https://example.com/user.json",
-				"adapter": "@xschema/zod"
+				"adapter": "zod"
 			},
 			{
 				"id": "Post",
 				"sourceType": "file",
 				"source": "./post.json",
-				"adapter": "@xschema/zod"
+				"adapter": "zod"
 			}
 		]
 	}`
@@ -75,7 +75,7 @@ func TestParseConfigFileWithNamespaceOverride(t *testing.T) {
 				"id": "Test",
 				"sourceType": "url",
 				"source": "https://example.com/test.json",
-				"adapter": "@xschema/zod"
+				"adapter": "zod"
 			}
 		]
 	}`
@@ -132,7 +132,7 @@ func TestParseConfigFileWithJSONC(t *testing.T) {
 				"id": "Test",
 				"sourceType": "url",
 				"source": "https://example.com/test.json",
-				"adapter": "@xschema/zod"
+				"adapter": "zod"
 			}
 		]
 	}`
@@ -162,13 +162,13 @@ func TestParse(t *testing.T) {
 	config1 := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	config2 := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "@xschema/zod"}
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "zod"}
 		]
 	}`
 
@@ -205,14 +205,14 @@ func TestParseDuplicateIDError(t *testing.T) {
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"namespace": "shared",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	config2 := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"namespace": "shared",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user2.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user2.json", "adapter": "zod"}
 		]
 	}`
 
@@ -237,7 +237,7 @@ func TestParseMultipleLanguagesError(t *testing.T) {
 	tsConfig := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	pyConfig := `{
@@ -268,7 +268,7 @@ func TestParseWithLanguageFilter(t *testing.T) {
 	tsConfig := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	pyConfig := `{
@@ -370,7 +370,7 @@ func TestParseConfigFileMissingSchemaURL(t *testing.T) {
 	// Valid JSON but no $schema field
 	configContent := `{
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 
@@ -433,7 +433,7 @@ func TestParseConfigFileInSubdirectory(t *testing.T) {
 	configContent := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}
+			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 
@@ -459,9 +459,9 @@ func TestParseConfigFileWithAllSourceTypes(t *testing.T) {
 	configContent := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
 		"schemas": [
-			{"id": "FromURL", "sourceType": "url", "source": "https://example.com/schema.json", "adapter": "@xschema/zod"},
-			{"id": "FromFile", "sourceType": "file", "source": "./local.json", "adapter": "@xschema/zod"},
-			{"id": "Inline", "sourceType": "json", "source": {"type": "string"}, "adapter": "@xschema/zod"}
+			{"id": "FromURL", "sourceType": "url", "source": "https://example.com/schema.json", "adapter": "zod"},
+			{"id": "FromFile", "sourceType": "file", "source": "./local.json", "adapter": "zod"},
+			{"id": "Inline", "sourceType": "json", "source": {"type": "string"}, "adapter": "zod"}
 		]
 	}`
 
@@ -515,8 +515,8 @@ func TestParseResultDeclarationsByNamespace(t *testing.T) {
 func TestParseResultDeclarationsByAdapter(t *testing.T) {
 	result := &ParseResult{
 		Declarations: []Declaration{
-			{Namespace: "user", ID: "User", Adapter: "@xschema/zod"},
-			{Namespace: "user", ID: "Profile", Adapter: "@xschema/zod"},
+			{Namespace: "user", ID: "User", Adapter: "zod"},
+			{Namespace: "user", ID: "Profile", Adapter: "zod"},
 			{Namespace: "post", ID: "Post", Adapter: "@xschema/pydantic"},
 		},
 	}
@@ -526,8 +526,8 @@ func TestParseResultDeclarationsByAdapter(t *testing.T) {
 	if len(byAdapter) != 2 {
 		t.Errorf("expected 2 adapters, got %d", len(byAdapter))
 	}
-	if len(byAdapter["@xschema/zod"]) != 2 {
-		t.Errorf("expected 2 zod declarations, got %d", len(byAdapter["@xschema/zod"]))
+	if len(byAdapter["zod"]) != 2 {
+		t.Errorf("expected 2 zod declarations, got %d", len(byAdapter["zod"]))
 	}
 	if len(byAdapter["@xschema/pydantic"]) != 1 {
 		t.Errorf("expected 1 pydantic declaration, got %d", len(byAdapter["@xschema/pydantic"]))
@@ -540,7 +540,7 @@ func TestParseContextCancellation(t *testing.T) {
 	// Create a config file
 	configContent := `{
 		"$schema": "https://xschema.dev/schemas/ts.jsonc",
-		"schemas": [{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "@xschema/zod"}]
+		"schemas": [{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}]
 	}`
 	if err := os.WriteFile(filepath.Join(tmpDir, "test.jsonc"), []byte(configContent), 0644); err != nil {
 		t.Fatalf("failed to write config: %v", err)

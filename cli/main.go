@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/xschema/cli/cmd"
+	"github.com/xschemadev/xschema/cmd"
 )
 
 func main() {

@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/tailscale/hujson"
-	"github.com/xschema/cli/language"
-	"github.com/xschema/cli/ui"
+	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/ui"
 )
 
 // Parse finds all xschema config files in the project and returns merged declarations

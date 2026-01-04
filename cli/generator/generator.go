@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/xschema/cli/language"
-	"github.com/xschema/cli/retriever"
-	"github.com/xschema/cli/ui"
+	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/ui"
 )
 
 // GenerateInput is sent to the adapter CLI
@@ -35,19 +35,27 @@ func (o GenerateOutput) Key() string {
 
 // GenerateBatchInput groups schemas by adapter for batch processing
 type GenerateBatchInput struct {
-	Adapter  string // adapter package e.g., "@xschema/zod"
+	Adapter  string // adapter package e.g., "zod"
 	Language string // language name e.g., "typescript"
 	Schemas  []retriever.RetrievedSchema
 }
 
 // Generate calls the adapter to convert schemas to native code
 func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, error) {
-	runner, args, err := getRunner(input.Language)
+	lang := language.ByName(input.Language)
+	if lang == nil {
+		return nil, fmt.Errorf("unsupported language: %s", input.Language)
+	}
+
+	runner, args, err := lang.DetectRunner()
 	if err != nil {
 		return nil, err
 	}
 
-	ui.Verbosef("running adapter: %s (language: %s, runner: %s, schemas: %d)", input.Adapter, input.Language, runner, len(input.Schemas))
+	// Construct bin name: "zod" -> "xschema-zod"
+	binName := lang.AdapterBinPrefix + input.Adapter
+
+	ui.Verbosef("running adapter: %s (language: %s, runner: %s, schemas: %d)", binName, input.Language, runner, len(input.Schemas))
 
 	// Check runner exists
 	if _, err := exec.LookPath(runner); err != nil {
@@ -65,13 +73,13 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		}
 	}
 
-	cmdArgs := append(args, input.Adapter)
+	cmdArgs := append(args, binName)
 	cmd := exec.CommandContext(ctx, runner, cmdArgs...)
 
 	// Pipe schemas to stdin
 	stdinData, err := json.Marshal(adapterInput)
 	if err != nil {
-		ui.Verbosef("failed to marshal schemas for adapter %s", input.Adapter)
+		ui.Verbosef("failed to marshal schemas for adapter %s", binName)
 		return nil, fmt.Errorf("failed to marshal schemas: %w", err)
 	}
 	cmd.Stdin = bytes.NewReader(stdinData)
@@ -83,27 +91,18 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		ui.Verbosef("adapter execution failed: %s - %s", input.Adapter, stderr.String())
-		return nil, fmt.Errorf("adapter %s failed: %w\n%s", input.Adapter, err, stderr.String())
+		ui.Verbosef("adapter execution failed: %s - %s", binName, stderr.String())
+		return nil, fmt.Errorf("adapter %s failed: %w\n%s", binName, err, stderr.String())
 	}
 
 	var outputs []GenerateOutput
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
-		ui.Verbosef("invalid adapter output from %s: %s", input.Adapter, stdout.String())
-		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", input.Adapter, err, stdout.String())
+		ui.Verbosef("invalid adapter output from %s: %s", binName, stdout.String())
+		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", binName, err, stdout.String())
 	}
 
-	ui.Verbosef("adapter execution successful: %s (outputs: %d)", input.Adapter, len(outputs))
+	ui.Verbosef("adapter execution successful: %s (outputs: %d)", binName, len(outputs))
 	return outputs, nil
-}
-
-// getRunner returns the command and args to run an adapter based on language
-func getRunner(langName string) (string, []string, error) {
-	lang := language.ByName(langName)
-	if lang == nil {
-		return "", nil, fmt.Errorf("unsupported language: %s", langName)
-	}
-	return lang.DetectRunner()
 }
 
 // GenerateAll runs generation for all adapter groups and returns all outputs

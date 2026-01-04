@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/xschema/cli/generator"
-	"github.com/xschema/cli/language"
-	"github.com/xschema/cli/ui"
+	"github.com/xschemadev/xschema/generator"
+	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/ui"
 )
 
 type InjectInput struct {

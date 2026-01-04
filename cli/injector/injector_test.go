@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/xschema/cli/generator"
-	"github.com/xschema/cli/language"
+	"github.com/xschemadev/xschema/generator"
+	"github.com/xschemadev/xschema/language"
 )
 
 func TestInject_TypeScript(t *testing.T) {

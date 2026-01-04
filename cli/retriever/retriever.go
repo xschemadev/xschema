@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/xschema/cli/parser"
-	"github.com/xschema/cli/ui"
+	"github.com/xschemadev/xschema/parser"
+	"github.com/xschemadev/xschema/ui"
 	"golang.org/x/sync/errgroup"
 )
 

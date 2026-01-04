@@ -1,0 +1,63 @@
+version: 2
+
+project_name: xschema
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: .
+    binary: xschema
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/xschemadev/xschema/cmd.version={{.Version}}
+      - -X github.com/xschemadev/xschema/cmd.commit={{.Commit}}
+      - -X github.com/xschemadev/xschema/cmd.date={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+
+release:
+  prerelease: auto
+  name_template: "CLI v{{.Version}}"
+
+# Homebrew tap (uncomment when ready)
+# brews:
+#   - name: xschema
+#     repository:
+#       owner: xschema
+#       name: homebrew-tap
+#       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+#     homepage: "https://xschema.dev"
+#     description: "JSON Schema to native validators with full type safety"
+#     license: "MIT"
+#     install: |
+#       bin.install "xschema"
+#     test: |
+#       system "#{bin}/xschema", "--version"

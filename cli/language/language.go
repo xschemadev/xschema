@@ -27,11 +27,12 @@ func (s SchemaEntry) Key() string {
 }
 
 type Language struct {
-	Name         string
-	Extensions   []string // file extensions for source files (for injector)
-	SchemaURL    string   // e.g., "https://xschema.dev/schemas/ts.jsonc"
-	SchemaExt    string   // e.g., "ts.jsonc" - extracted from SchemaURL
-	DetectRunner func() (cmd string, args []string, err error)
+	Name             string
+	Extensions       []string // file extensions for source files (for injector)
+	SchemaURL        string   // e.g., "https://xschema.dev/schemas/ts.jsonc"
+	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
+	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
+	DetectRunner     func() (cmd string, args []string, err error)
 
 	// Client injection (after generation)
 	BuildSchemasImport   func(importPath string) string    // build import statement for schemas
@@ -57,6 +58,7 @@ var Languages = []Language{
 		Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
 		SchemaURL:            XSchemaBaseURL + "ts.jsonc",
 		SchemaExt:            "ts.jsonc",
+		AdapterBinPrefix:     "xschema-",
 		DetectRunner:         detectTSRunner,
 		BuildSchemasImport:   buildTSSchemasImport,
 		ImportPattern:        `(?m)^import\s+.*$`,

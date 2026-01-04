@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xschema/cli/parser"
+	"github.com/xschemadev/xschema/parser"
 )
 
 func testdataPath(name string) string {
@@ -98,8 +98,8 @@ func TestRetrieveAggregation(t *testing.T) {
 
 	decls := []parser.Declaration{
 		// Zod schemas
-		{Namespace: "user", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "user", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "user", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "user", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "zod", ConfigPath: configPath},
 		// Pydantic schemas
 		{Namespace: "config", ID: "Config", SourceType: parser.SourceFile, Source: json.RawMessage(`"config.json"`), Adapter: "@xschema/pydantic", ConfigPath: configPath},
 		{Namespace: "config", ID: "UserPy", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/pydantic", ConfigPath: configPath},
@@ -121,7 +121,7 @@ func TestRetrieveAggregation(t *testing.T) {
 	}
 
 	pydanticSchemas := groups["@xschema/pydantic"]
-	zodSchemas := groups["@xschema/zod"]
+	zodSchemas := groups["zod"]
 
 	if len(pydanticSchemas) != 2 {
 		t.Errorf("expected 2 pydantic schemas, got %d", len(pydanticSchemas))
@@ -140,7 +140,7 @@ func TestRetrieveConcurrency(t *testing.T) {
 	files := []string{"user.json", "post.json", "config.json"}
 	for i := 0; i < 15; i++ {
 		file := files[i%len(files)]
-		adapter := "@xschema/zod"
+		adapter := "zod"
 		if i%2 == 0 {
 			adapter = "@xschema/pydantic"
 		}
@@ -180,19 +180,19 @@ func TestRetrieveErrors(t *testing.T) {
 		{
 			name: "file not found",
 			decls: []parser.Declaration{
-				{Namespace: "test", ID: "Missing", SourceType: parser.SourceFile, Source: json.RawMessage(`"nonexistent.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+				{Namespace: "test", ID: "Missing", SourceType: parser.SourceFile, Source: json.RawMessage(`"nonexistent.json"`), Adapter: "zod", ConfigPath: configPath},
 			},
 		},
 		{
 			name: "invalid json file",
 			decls: []parser.Declaration{
-				{Namespace: "test", ID: "Invalid", SourceType: parser.SourceFile, Source: json.RawMessage(`"invalid.txt"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+				{Namespace: "test", ID: "Invalid", SourceType: parser.SourceFile, Source: json.RawMessage(`"invalid.txt"`), Adapter: "zod", ConfigPath: configPath},
 			},
 		},
 		{
 			name: "url not found",
 			decls: []parser.Declaration{
-				{Namespace: "test", ID: "NotFound", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/404"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+				{Namespace: "test", ID: "NotFound", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/404"`), Adapter: "zod", ConfigPath: configPath},
 			},
 		},
 	}
@@ -213,7 +213,7 @@ func TestRetrieveContextCancellation(t *testing.T) {
 
 	configPath := testdataPath("fake.jsonc")
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "User", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, DefaultOptions())
@@ -228,8 +228,8 @@ func TestRetrieveNoCache(t *testing.T) {
 
 	// Same file referenced twice with different names
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	// With cache (default) - should work
@@ -258,9 +258,9 @@ func TestRetrieveCustomConcurrency(t *testing.T) {
 	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "test", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "test", ID: "Config", SourceType: parser.SourceFile, Source: json.RawMessage(`"config.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Post", SourceType: parser.SourceFile, Source: json.RawMessage(`"post.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Config", SourceType: parser.SourceFile, Source: json.RawMessage(`"config.json"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	// Concurrency = 1 (sequential)
@@ -290,7 +290,7 @@ func TestRetrieveCustomTimeout(t *testing.T) {
 	}
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "Slow", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/200?sleep=5000"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Slow", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/200?sleep=5000"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, opts)
@@ -311,7 +311,7 @@ func TestRetrieveSingleAttempt(t *testing.T) {
 	}
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "ServerError", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/500"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "ServerError", SourceType: parser.SourceURL, Source: json.RawMessage(`"https://httpstat.us/500"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, opts)
@@ -326,7 +326,7 @@ func TestRetrieveInlineJSON(t *testing.T) {
 
 	inlineSchema := `{"type": "object", "properties": {"name": {"type": "string"}}}`
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	schemas, err := Retrieve(ctx, decls, DefaultOptions())
@@ -371,7 +371,7 @@ func TestRetrieveUnknownSourceType(t *testing.T) {
 	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "Unknown", SourceType: "invalid", Source: json.RawMessage(`"test"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Unknown", SourceType: "invalid", Source: json.RawMessage(`"test"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, DefaultOptions())
@@ -385,7 +385,7 @@ func TestRetrieveInvalidURLSource(t *testing.T) {
 	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "BadURL", SourceType: parser.SourceURL, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "BadURL", SourceType: parser.SourceURL, Source: json.RawMessage(`123`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, DefaultOptions())
@@ -399,7 +399,7 @@ func TestRetrieveInvalidFileSource(t *testing.T) {
 	configPath := testdataPath("fake.jsonc")
 
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "BadFile", SourceType: parser.SourceFile, Source: json.RawMessage(`123`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "BadFile", SourceType: parser.SourceFile, Source: json.RawMessage(`123`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	_, err := Retrieve(ctx, decls, DefaultOptions())
@@ -417,28 +417,28 @@ func TestGroupByAdapterEmpty(t *testing.T) {
 
 func TestGroupByAdapterSingle(t *testing.T) {
 	schemas := []RetrievedSchema{
-		{Namespace: "user", ID: "User", Adapter: "@xschema/zod"},
+		{Namespace: "user", ID: "User", Adapter: "zod"},
 	}
 	groups := GroupByAdapter(schemas)
 
 	if len(groups) != 1 {
 		t.Errorf("expected 1 group, got %d", len(groups))
 	}
-	if len(groups["@xschema/zod"]) != 1 {
-		t.Errorf("expected 1 schema in zod group, got %d", len(groups["@xschema/zod"]))
+	if len(groups["zod"]) != 1 {
+		t.Errorf("expected 1 schema in zod group, got %d", len(groups["zod"]))
 	}
 }
 
 func TestSortedAdapters(t *testing.T) {
 	groups := map[string][]RetrievedSchema{
-		"@xschema/zod":      {},
+		"zod":      {},
 		"@xschema/pydantic": {},
 		"@xschema/ajv":      {},
 	}
 
 	sorted := SortedAdapters(groups)
 
-	expected := []string{"@xschema/ajv", "@xschema/pydantic", "@xschema/zod"}
+	expected := []string{"@xschema/ajv", "@xschema/pydantic", "zod"}
 	for i, v := range expected {
 		if sorted[i] != v {
 			t.Errorf("expected sorted[%d]=%s, got %s", i, v, sorted[i])
@@ -461,8 +461,8 @@ func TestRetrieveCacheHit(t *testing.T) {
 
 	// Same source, different IDs - second should hit cache
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User1", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "User2", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	opts := DefaultOptions()
@@ -489,8 +489,8 @@ func TestRetrieveMixedSourceTypes(t *testing.T) {
 
 	inlineSchema := `{"type": "object", "properties": {"inline": {"type": "boolean"}}}`
 	decls := []parser.Declaration{
-		{Namespace: "test", ID: "FromFile", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "@xschema/zod", ConfigPath: configPath},
-		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "@xschema/zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "FromFile", SourceType: parser.SourceFile, Source: json.RawMessage(`"user.json"`), Adapter: "zod", ConfigPath: configPath},
+		{Namespace: "test", ID: "Inline", SourceType: parser.SourceJSON, Source: json.RawMessage(inlineSchema), Adapter: "zod", ConfigPath: configPath},
 	}
 
 	schemas, err := Retrieve(ctx, decls, DefaultOptions())

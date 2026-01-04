@@ -1,0 +1,38 @@
+{
+  "name": "@xschema",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "JSON Schema to native validators with full type safety",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    }
+  },
+  "bin": {
+    "xschema-zod": "./dist/adapters/zod/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "zod": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": { "optional": true }
+  },
+  "dependencies": {
+    "json-schema-to-zod": "^2.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "zod": "^3.24.0",
+    "@types/node": "^22.0.0"
+  }
+}
