@@ -1,10 +1,16 @@
 {
   "name": "@xschemadev/cli-linux-x64",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "xschema CLI binary for Linux x64",
-  "os": ["linux"],
-  "cpu": ["x64"],
-  "files": ["xschema"],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "xschema"
+  ],
   "preferUnplugged": true,
   "license": "MIT",
   "repository": {
