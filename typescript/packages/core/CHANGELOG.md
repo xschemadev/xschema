@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/xschemadev/xschema/compare/core-v0.0.5...core-v0.0.6) (2026-01-04)
+
+
+### Features
+
+* **ts:** udpate chore ([2daf1a8](https://github.com/xschemadev/xschema/commit/2daf1a88454832f510cbb880ce88ee0bc76cbddd))
+
 ## [0.0.5](https://github.com/xschemadev/xschema/compare/core-v0.0.4...core-v0.0.5) (2026-01-04)
 
 
