@@ -20,7 +20,7 @@ var (
 	langFilter string
 	verbose    bool
 	dryRun     bool
-	//TODO
+	// TODO: implement watch mode
 	watch bool
 )
 
@@ -137,12 +137,12 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Summary
 	generatedFile := filepath.Join(outDir, result.Language.OutputFile)
-	printSummary(schemas, outDir, generatedFile, time.Since(start))
+	printSummary(schemas, generatedFile, time.Since(start))
 
 	return nil
 }
 
-func printSummary(schemas []retriever.RetrievedSchema, outDir string, generatedFile string, duration time.Duration) {
+func printSummary(schemas []retriever.RetrievedSchema, generatedFile string, duration time.Duration) {
 	ui.Println()
 	ui.SuccessMsg(fmt.Sprintf("Generation complete (%s)", ui.FormatDuration(duration)))
 	ui.Println()

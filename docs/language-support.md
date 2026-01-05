@@ -430,6 +430,22 @@ If using release-please, add to `release-please-config.json`:
 }
 ```
 
+#### 8. Update compliance workflow
+
+Update `.github/workflows/compliance.yml` to include the new language's adapter path in the triggers:
+
+```yaml
+on:
+  pull_request:
+    paths:
+      - "typescript/packages/adapters/**"
+      - "typescript/packages/core/**"
+      - "rust/packages/adapters/**"      # Add new language
+      - "cli/compliance/**"
+```
+
+The workflow auto-discovers adapters with `compliance/harness.*` files, but the path triggers need to include the new language's adapter directory.
+
 ### Example: Full Rust Support
 
 **Step 1: Config (cli/language/language.go)**

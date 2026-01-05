@@ -1,0 +1,65 @@
+name: Compliance Check
+
+on:
+  pull_request:
+    paths:
+      - "typescript/packages/adapters/**"
+      - "typescript/packages/core/**"
+      - "cli/compliance/**"
+  push:
+    branches: [master]
+    paths:
+      - "typescript/packages/adapters/**"
+      - "typescript/packages/core/**"
+      - "cli/compliance/**"
+  workflow_dispatch: # manual trigger
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install TS dependencies
+        run: bun install
+        working-directory: typescript
+
+      - name: Build TS packages
+        run: bun run build
+        working-directory: typescript
+
+      - name: Build CLI
+        run: go build -o xschema .
+        working-directory: cli
+
+      - name: Run compliance for all adapters
+        run: |
+          for adapter in typescript/packages/adapters/*/; do
+            if [ -f "$adapter/compliance/harness.ts" ]; then
+              echo "Running compliance for $adapter"
+              (cd "$adapter" && bun run compliance)
+            fi
+          done
+        working-directory: .
+
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain typescript/packages/adapters/*/compliance/results/) ]]; then
+            echo "::error::Compliance results are out of date"
+            echo ""
+            echo "The following files have changed:"
+            git status --porcelain typescript/packages/adapters/*/compliance/results/
+            echo ""
+            echo "Please run 'bun run compliance' in the adapter directory and commit the results."
+            echo ""
+            echo "Diff:"
+            git diff typescript/packages/adapters/*/compliance/results/
+            exit 1
+          fi
+          echo "✓ Compliance results are up to date"
