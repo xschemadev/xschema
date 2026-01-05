@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": ["packages/*", "packages/adapters/*", "example"],
   "scripts": {
-    "build": "bun run --filter '@xschemadev/*' build",
+    "build": "bun run --filter '@xschemadev/core' build && bun run --filter '@xschemadev/*' build",
     "typecheck": "bun run --filter '@xschemadev/*' typecheck"
   },
   "devDependencies": {
