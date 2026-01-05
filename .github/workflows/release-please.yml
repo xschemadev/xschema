@@ -20,7 +20,7 @@ jobs:
       cli--tag_name: ${{ steps.release.outputs['cli--tag_name'] }}
       core--release_created: ${{ steps.release.outputs['typescript/packages/core--release_created'] }}
       client--release_created: ${{ steps.release.outputs['typescript/packages/client--release_created'] }}
-      zod--release_created: ${{ steps.release.outputs['typescript/packages/zod--release_created'] }}
+      zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -162,6 +162,6 @@ jobs:
       - name: Publish @xschemadev/zod
         if: needs.release-please.outputs.zod--release_created == 'true'
         run: bun publish --access public
-        working-directory: typescript/packages/zod
+        working-directory: typescript/packages/adapters/zod
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

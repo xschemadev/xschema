@@ -84,7 +84,7 @@
       "release-type": "node",
       "component": "client"
     },
-    "typescript/packages/zod": {
+    "typescript/packages/adapters/zod": {
       "release-type": "node",
       "component": "zod"
     }
