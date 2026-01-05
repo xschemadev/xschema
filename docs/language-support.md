@@ -312,6 +312,21 @@ Both TypeScript and Python configs follow the same schema:
 
 ## Adding a New Language
 
+### Directory Convention
+
+All languages follow the same directory structure:
+
+```
+{lang}/packages/adapters/{adapter}/compliance/harness.{ext}
+```
+
+Where:
+- `{lang}` = language name (must match `Language.Name` in Go, e.g., `typescript`, `python`, `rust`)
+- `{adapter}` = adapter name (e.g., `zod`, `pydantic`, `serde`)
+- `{ext}` = language file extension (e.g., `ts`, `py`, `rs`)
+
+This convention enables automatic discovery by both the CLI and CI workflows.
+
 ### Requirements
 
 To add support for a new language (e.g., Go, Rust, C#), implement:
@@ -405,15 +420,21 @@ func buildVarNameUpperCase(namespace, id string) string {
 
 #### 6. Create Adapter Package
 
-Create a TypeScript adapter package that runs via the CLI:
+Create an adapter package following the directory convention:
 
 ```
-typescript/packages/rust-serde/
+rust/packages/adapters/serde/
 ├── src/
-│   ├── index.ts  # Implements convert()
-│   └── cli.ts    # createAdapterCLI()
-└── package.json
+│   └── ...           # Language-specific implementation
+├── compliance/
+│   └── harness.rs    # Compliance test harness
+└── Cargo.toml        # Or appropriate manifest
 ```
+
+The adapter must:
+- Accept JSON Schema via stdin
+- Output generated code via stdout
+- Follow the adapter protocol (see [adapter-system.md](adapter-system.md))
 
 #### 7. Register in build system
 
@@ -422,9 +443,9 @@ If using release-please, add to `release-please-config.json`:
 ```json
 {
   "packages": {
-    "typescript/packages/rust-serde": {
-      "release-type": "node",
-      "component": "rust-serde"
+    "rust/packages/adapters/serde": {
+      "release-type": "simple",
+      "component": "serde"
     }
   }
 }
@@ -432,40 +453,51 @@ If using release-please, add to `release-please-config.json`:
 
 #### 8. Update compliance workflow
 
-Update `.github/workflows/compliance.yml` to include the new language's adapter path in the triggers:
+Add setup and build steps for the new language in `.github/workflows/compliance.yml`:
 
 ```yaml
-on:
-  pull_request:
-    paths:
-      - "typescript/packages/adapters/**"
-      - "typescript/packages/core/**"
-      - "rust/packages/adapters/**"      # Add new language
-      - "cli/compliance/**"
+- uses: actions-rust-lang/setup-rust-toolchain@v1
+  if: matrix.lang == 'rust'
+
+- name: Install Rust dependencies
+  if: matrix.lang == 'rust'
+  run: cargo fetch
+  working-directory: rust
+
+- name: Build Rust packages
+  if: matrix.lang == 'rust'
+  run: cargo build --release
+  working-directory: rust
 ```
 
-The workflow auto-discovers adapters with `compliance/harness.*` files, but the path triggers need to include the new language's adapter directory.
+The CI workflow automatically discovers adapters by scanning for `*/packages/adapters/*/compliance/harness.*` files. The path triggers use `*/packages/adapters/**` which covers all languages.
 
 ### Example: Full Rust Support
 
-**Step 1: Config (cli/language/language.go)**
+**Step 1: Config (cli/language/rust.go)**
 
 ```go
-Language{
-    Name:             "rust",
-    SchemaURL:        "https://xschema.dev/schemas/rs.jsonc",
-    SchemaExt:        "rs.jsonc",
-    AdapterBinPrefix: "xschema-",
-    DetectRunner:     detectRustRunner,
-    OutputFile:       "xschema.gen.rs",
-    Template:         RustTemplate,
-    MergeImports:     MergeRustImports,
-    BuildVarName:     buildVarNameUpperCase,
-    IgnoreDirs:       []string{"target", ".cargo"},
+var rust = Language{
+    Name:                "rust",
+    Extensions:          []string{".rs"},
+    SchemaURL:           XSchemaBaseURL + "rs.jsonc",
+    SchemaExt:           "rs.jsonc",
+    AdapterBinPrefix:    "xschema-",
+    DetectRunner:        detectRustRunner,
+    OutputFile:          "xschema.gen.rs",
+    Template:            RustTemplate,
+    MergeImports:        MergeRustImports,
+    BuildVarName:        buildVarNameUpperCase,
+    IgnoreDirs:          []string{"target", ".cargo"},
+    DetectHarnessRunner: detectRustHarnessRunner,
+    GetPackageName:      getRustPackageName,
+    AdapterCLIPath:      getRustAdapterCLIPath,
 }
 ```
 
-**Step 2: Runner detection (cli/language/language.go)**
+Don't forget to add `rust` to the `Languages` slice in `language.go`.
+
+**Step 2: Runner detection (cli/language/rust.go)**
 
 ```go
 func detectRustRunner() (string, []string, error) {
@@ -473,6 +505,19 @@ func detectRustRunner() (string, []string, error) {
         return "cargo", []string{"run", "--bin"}, nil
     }
     return "", nil, fmt.Errorf("Cargo.toml not found")
+}
+
+func detectRustHarnessRunner(dir string) (string, []string, error) {
+    return "cargo", []string{"run", "--quiet", "--"}, nil
+}
+
+func getRustPackageName(dir string) string {
+    // Parse Cargo.toml to get package name
+    return filepath.Base(dir)
+}
+
+func getRustAdapterCLIPath(adapterPath string) string {
+    return filepath.Join(adapterPath, "target", "release", "cli")
 }
 ```
 
@@ -502,7 +547,6 @@ pub mod schemas {
 
 ```go
 func MergeRustImports(imports []string) string {
-    // Collect and deduplicate use statements
     seen := make(map[string]bool)
     var result []string
     for _, imp := range imports {
@@ -515,47 +559,42 @@ func MergeRustImports(imports []string) string {
 }
 ```
 
-**Step 5: Adapter package**
+**Step 5: Create adapter directory structure**
+
+Following the convention `{lang}/packages/adapters/{adapter}/`:
 
 ```bash
-mkdir -p packages/rust-serde/src
-cd packages/rust-serde
+mkdir -p rust/packages/adapters/serde/src
+mkdir -p rust/packages/adapters/serde/compliance
 ```
 
-**package.json:**
+**Step 6: Create compliance harness**
 
-```json
-{
-  "name": "@xschemadev/rust-serde",
-  "version": "0.0.1",
-  "type": "module",
-  "bin": {
-    "xschema-serde": "./dist/cli.js"
-  },
-  "dependencies": {
-    "@xschemadev/core": "workspace:*"
-  }
+Create `rust/packages/adapters/serde/compliance/harness.rs`:
+
+```rust
+use serde_json::Value;
+
+const SCHEMA: &str = r#"{{GENERATED_CODE}}"#;
+const TEST_CASES: &str = r#"{{TEST_CASES}}"#;
+
+fn main() {
+    // Parse and run test cases, output JSON results
 }
 ```
 
-**src/index.ts:**
+**Step 7: Add CI setup steps**
 
-```typescript
-import type { ConvertInput, ConvertResult } from "@xschemadev/core";
-import { jsonSchemaToRust } from "json-schema-to-rust";
+Add to `.github/workflows/compliance.yml`:
 
-export function convert(input: ConvertInput): ConvertResult {
-  const code = jsonSchemaToRust(input.schema);
-  const varName = `${input.namespace}_${input.id}`.toUpperCase();
+```yaml
+- uses: actions-rust-lang/setup-rust-toolchain@v1
+  if: matrix.lang == 'rust'
 
-  return {
-    namespace: input.namespace,
-    id: input.id,
-    imports: ['use serde::{Deserialize, Serialize};'],
-    schema: code,
-    type: `${varName}`,
-  };
-}
+- name: Build Rust packages
+  if: matrix.lang == 'rust'
+  run: cargo build --release
+  working-directory: rust
 ```
 
 ## Configuration File Examples

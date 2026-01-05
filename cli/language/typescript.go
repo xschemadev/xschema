@@ -13,7 +13,6 @@ var typescript = Language{
 	SchemaURL:            XSchemaBaseURL + "ts.jsonc",
 	SchemaExt:            "ts.jsonc",
 	AdapterBinPrefix:     "xschema-",
-	AdaptersPath:         "typescript/packages/adapters",
 	DetectRunner:         detectTSRunner,
 	BuildSchemasImport:   buildTSSchemasImport,
 	ImportPattern:        `(?m)^import\s+.*$`,

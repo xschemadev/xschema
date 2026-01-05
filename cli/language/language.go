@@ -30,7 +30,6 @@ type Language struct {
 	SchemaURL        string   // e.g., "https://xschema.dev/schemas/ts.jsonc"
 	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
-	AdaptersPath     string   // path to adapters directory relative to repo root (e.g., "typescript/packages/adapters")
 	DetectRunner     func() (cmd string, args []string, err error)
 
 	// Client injection (after generation)

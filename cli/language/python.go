@@ -11,7 +11,7 @@ var python = Language{
 	Extensions:           []string{".py"},
 	SchemaURL:            XSchemaBaseURL + "py.jsonc",
 	SchemaExt:            "py.jsonc",
-	AdaptersPath:         "python/packages/adapters",
+	AdapterBinPrefix:     "xschema-",
 	DetectRunner:         detectPythonRunner,
 	BuildSchemasImport:   buildPySchemasImport,
 	ImportPattern:        `(?m)^(?:import\s+|from\s+).*$`,
