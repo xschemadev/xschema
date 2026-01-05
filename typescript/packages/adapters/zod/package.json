@@ -21,8 +21,7 @@
 		"compliance": "../../../../cli/xschema compliance --dev-report"
 	},
 	"dependencies": {
-		"@xschemadev/core": "workspace:*",
-		"json-schema-to-zod": "^2.4.1"
+		"@xschemadev/core": "workspace:*"
 	},
 	"devDependencies": {
 		"zod": "^3.24.0"

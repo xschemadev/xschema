@@ -3,93 +3,24 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 11,
-      "failed": 3,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "additionalItems as schema",
-          "test": "additional items do not match schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "additional items are not permitted",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "heterogeneous invalid instance",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "additionalProperties",
-      "passed": 11,
-      "failed": 5,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "an additional property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "non-ASCII pattern with additionalProperties",
-          "test": "not matching the pattern is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties can exist by itself",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in extends are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "default",
-      "passed": 6,
-      "failed": 1,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "the default keyword does not do anything if the property is missing",
-          "test": "missing properties are not filled in with the default",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "dependencies",
@@ -225,24 +156,39 @@
     },
     {
       "keyword": "enum",
-      "passed": 15,
-      "failed": 1,
+      "passed": 13,
+      "failed": 3,
       "skipped": 0,
       "total": 16,
       "failures": [
         {
           "group": "heterogeneous enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "false",
+          "test": "something else is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "null is not an object (evaluating 'Object.keys(val)')"
+        },
+        {
+          "group": "enums in properties",
+          "test": "missing required property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "missing all properties is invalid",
+          "expected": false,
+          "actual": "true",
           "passed": false
         }
       ]
     },
     {
       "keyword": "extends",
-      "passed": 3,
-      "failed": 7,
+      "passed": 4,
+      "failed": 6,
       "skipped": 0,
       "total": 10,
       "failures": [
@@ -256,13 +202,6 @@
         {
           "group": "extends",
           "test": "mismatch extended",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "extends",
-          "test": "wrong type",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -306,58 +245,24 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 1,
-      "failed": 1,
+      "passed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
-          "test": "failing case",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 2
     },
     {
       "keyword": "items",
-      "passed": 5,
-      "failed": 2,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "a schema given for items",
-          "test": "wrong type of items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "maxItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "maxItems validation",
-          "test": "too long is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "maxLength",
@@ -368,80 +273,34 @@
       "failures": [
         {
           "group": "maxLength validation",
-          "test": "too long is invalid",
-          "expected": false,
-          "actual": "true",
+          "test": "two graphemes is long enough",
+          "expected": true,
+          "actual": "false",
           "passed": false
         }
       ]
     },
     {
       "keyword": "maximum",
-      "passed": 10,
-      "failed": 4,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "maximum validation",
-          "test": "above the maximum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maximum validation with unsigned integer",
-          "test": "above the maximum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "above the maximum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "minItems validation",
-          "test": "too short is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "minLength",
-      "passed": 3,
-      "failed": 2,
+      "passed": 4,
+      "failed": 1,
       "skipped": 0,
       "total": 5,
       "failures": [
-        {
-          "group": "minLength validation",
-          "test": "too short is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "minLength validation",
           "test": "one grapheme is not long enough",
@@ -453,249 +312,54 @@
     },
     {
       "keyword": "minimum",
-      "passed": 9,
-      "failed": 4,
+      "passed": 13,
+      "failed": 0,
       "skipped": 0,
-      "total": 13,
-      "failures": [
-        {
-          "group": "minimum validation",
-          "test": "below the minimum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "float below the minimum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "int below the minimum is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 13
     },
     {
       "keyword": "pattern",
-      "passed": 8,
-      "failed": 1,
+      "passed": 9,
+      "failed": 0,
       "skipped": 0,
-      "total": 9,
-      "failures": [
-        {
-          "group": "pattern validation",
-          "test": "a non-matching pattern is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 9
     },
     {
       "keyword": "patternProperties",
-      "passed": 10,
-      "failed": 7,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "a single invalid match is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "multiple invalid matches is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to one is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to the other is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to both is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "recognized members are accounted for",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "regexes are case sensitive, 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "properties",
-      "passed": 9,
-      "failed": 6,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "object properties validation",
-          "test": "one property invalid is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object properties validation",
-          "test": "both properties invalid is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property invalidates property",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates property",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates nonproperty",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty invalidates others",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "ref",
-      "passed": 14,
-      "failed": 13,
+      "passed": 18,
+      "failed": 3,
       "skipped": 0,
-      "total": 27,
+      "total": 21,
       "failures": [
-        {
-          "group": "root pointer ref",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "relative pointer ref to object",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "slash invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "tilde invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "percent invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "nested refs",
-          "test": "nested ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
+        },
+        {
+          "group": "$ref prevents a sibling id from changing the base uri",
+          "test": "$ref resolves to /definitions/base_foo, data validates",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
         },
         {
           "group": "remote ref, containing refs itself",
@@ -703,68 +367,40 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "match the enum exactly",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "refRemote",
-      "passed": 4,
-      "failed": 4,
+      "passed": 6,
+      "failed": 2,
       "skipped": 0,
       "total": 8,
       "failures": [
         {
-          "group": "remote ref",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
+          "group": "change resolution scope",
+          "test": "changed scope ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
         },
         {
           "group": "change resolution scope",
           "test": "changed scope ref invalid",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
         }
       ]
     },
     {
       "keyword": "required",
-      "passed": 3,
-      "failed": 1,
+      "passed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 2
     },
     {
       "keyword": "type",
@@ -826,138 +462,17 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 45,
-      "failed": 17,
+      "passed": 62,
+      "failed": 0,
       "skipped": 0,
-      "total": 62,
-      "failures": [
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of integers is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of more than two integers is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "numbers are unique if mathematically unequal",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of strings is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of objects is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of nested objects is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of arrays is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of more than two arrays is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique heterogeneous types are invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [false, true] is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [true, false] is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 62
     }
   ],
   "summary": {
-    "passed": 330,
-    "failed": 104,
+    "passed": 388,
+    "failed": 38,
     "skipped": 0,
-    "total": 434,
-    "percentage": 76.036866359447
+    "total": 426,
+    "percentage": 91.07981220657277
   }
 }

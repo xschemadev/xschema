@@ -2,12 +2,15 @@ package compliance
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"time"
+
+	"github.com/xschemadev/xschema/bundler"
 )
 
 // RunOptions configures the compliance test run
@@ -162,7 +165,13 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 	default:
 	}
 
-	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, group.Schema)
+	bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+	if err != nil {
+		markAllFailed(keywordResult, summary, group, fmt.Sprintf("bundling error: %v", err))
+		return nil
+	}
+
+	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, bundledSchema)
 	if err != nil {
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
@@ -266,4 +275,27 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 	}
 
 	return nil
+}
+
+func bundleSchema(ctx context.Context, schema RawSchema, suitePath string) (RawSchema, error) {
+	schemaJSON, err := json.Marshal(schema)
+	if err != nil {
+		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
+	}
+
+	bundleOpts := bundler.Options{
+		RemotesPath: filepath.Join(suitePath, "remotes"),
+	}
+
+	bundled, err := bundler.Bundle(ctx, schemaJSON, bundleOpts)
+	if err != nil {
+		return RawSchema{}, err
+	}
+
+	var result RawSchema
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		return RawSchema{}, fmt.Errorf("failed to unmarshal bundled schema: %w", err)
+	}
+
+	return result, nil
 }

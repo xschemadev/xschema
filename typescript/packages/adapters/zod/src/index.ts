@@ -1,9 +1,9 @@
 import type { ConvertInput, ConvertResult } from "@xschemadev/core";
-import { jsonSchemaToZod } from "json-schema-to-zod";
+import { jsonSchemaToZodCode, type JSONSchema } from "./converter.js";
 
 export function convert(input: ConvertInput): ConvertResult {
   const { namespace, id, schema } = input;
-  const schemaCode = jsonSchemaToZod(schema);
+  const schemaCode = jsonSchemaToZodCode(schema as JSONSchema);
   const varName = `${namespace}_${id}`;
 
   return {

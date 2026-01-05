@@ -1,0 +1,6 @@
+{
+  "type": "object",
+  "properties": {
+    "address": { "$ref": "user-with-internal-refs.json#/definitions/Address" }
+  }
+}
