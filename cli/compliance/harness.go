@@ -48,9 +48,19 @@ func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []Test
 		return "", fmt.Errorf("failed to serialize test cases: %w", err)
 	}
 
+	// Create a JS string literal containing the JSON
+	// This ensures __proto__ and other special property names are preserved
+	// (directly embedding as JS object literals would interpret __proto__ as prototype setter)
+	testCasesString, err := json.Marshal(string(testCasesJSON))
+	if err != nil {
+		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
+	}
+
 	// Replace placeholders
 	content := template
 	content = strings.ReplaceAll(content, "{{GENERATED_CODE}}", generatedCode)
+	content = strings.ReplaceAll(content, "{{TEST_CASES_STRING}}", string(testCasesString))
+	// Keep legacy support for {{TEST_CASES}} in case other adapters use it
 	content = strings.ReplaceAll(content, "{{TEST_CASES}}", string(testCasesJSON))
 
 	// Get extension from template

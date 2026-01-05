@@ -26,33 +26,10 @@
     },
     {
       "keyword": "allOf",
-      "passed": 24,
-      "failed": 3,
+      "passed": 27,
+      "failed": 0,
       "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: true, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 27
     },
     {
       "keyword": "anyOf",
@@ -86,120 +63,17 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 16,
-      "failed": 13,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 1",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 3",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 4",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "enum",
-      "passed": 48,
-      "failed": 1,
+      "passed": 49,
+      "failed": 0,
       "skipped": 0,
-      "total": 49,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "null is not an object (evaluating 'Object.keys(val)')"
-        }
-      ]
+      "total": 49
     },
     {
       "keyword": "format",
@@ -217,19 +91,10 @@
     },
     {
       "keyword": "items",
-      "passed": 20,
-      "failed": 1,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "items and subitems",
-          "test": "wrong sub-item",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "maxItems",
@@ -240,19 +105,10 @@
     },
     {
       "keyword": "maxLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "two graphemes is long enough",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "maxProperties",
@@ -277,19 +133,10 @@
     },
     {
       "keyword": "minLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "one grapheme is not long enough",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "minProperties",
@@ -307,19 +154,10 @@
     },
     {
       "keyword": "multipleOf",
-      "passed": 9,
-      "failed": 1,
+      "passed": 10,
+      "failed": 0,
       "skipped": 0,
-      "total": 10,
-      "failures": [
-        {
-          "group": "small multiple of large integer",
-          "test": "any integer is a multiple of 1e-8",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 10
     },
     {
       "keyword": "not",
@@ -330,40 +168,10 @@
     },
     {
       "keyword": "oneOf",
-      "passed": 19,
-      "failed": 4,
+      "passed": 23,
+      "failed": 0,
       "skipped": 0,
-      "total": 23,
-      "failures": [
-        {
-          "group": "oneOf with required",
-          "test": "first valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "second valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "first oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "second oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 23
     },
     {
       "keyword": "pattern",
@@ -381,27 +189,25 @@
     },
     {
       "keyword": "properties",
-      "passed": 23,
-      "failed": 1,
+      "passed": 24,
+      "failed": 0,
       "skipped": 0,
-      "total": 24,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 24
     },
     {
       "keyword": "ref",
-      "passed": 25,
-      "failed": 8,
+      "passed": 24,
+      "failed": 9,
       "skipped": 0,
       "total": 33,
       "failures": [
+        {
+          "group": "ref overrides any sibling keywords",
+          "test": "ref valid, maxItems ignored",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
@@ -551,54 +357,10 @@
     },
     {
       "keyword": "required",
-      "passed": 9,
-      "failed": 6,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "type",
@@ -616,10 +378,10 @@
     }
   ],
   "summary": {
-    "passed": 548,
-    "failed": 51,
+    "passed": 579,
+    "failed": 20,
     "skipped": 0,
     "total": 599,
-    "percentage": 91.48580968280467
+    "percentage": 96.661101836394
   }
 }

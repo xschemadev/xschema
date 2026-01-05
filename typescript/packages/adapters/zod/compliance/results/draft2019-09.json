@@ -10,8 +10,8 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 19,
-      "failed": 2,
+      "passed": 20,
+      "failed": 1,
       "skipped": 0,
       "total": 21,
       "failures": [
@@ -21,45 +21,15 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "additionalProperties with propertyNames",
-          "test": "Valid against propertyNames, but not additionalProperties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "allOf",
-      "passed": 27,
-      "failed": 3,
+      "passed": 30,
+      "failed": 0,
       "skipped": 0,
-      "total": 30,
-      "failures": [
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: true, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 30
     },
     {
       "keyword": "anchor",
@@ -91,26 +61,10 @@
     },
     {
       "keyword": "contains",
-      "passed": 19,
-      "failed": 2,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "contains keyword with boolean schema false",
-          "test": "any non-empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword with boolean schema false",
-          "test": "empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "content",
@@ -135,84 +89,24 @@
     },
     {
       "keyword": "dependentRequired",
-      "passed": 16,
-      "failed": 4,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "dependencies with escaped characters",
-          "test": "CRLF",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 10 |         }, { message: \"Property foo\n                           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema/typescript/packages/adapters/zod/xschema-harness-2836760364.ts:10:23\n\nBun v1.3.3 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quotes",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 10 |         }, { message: \"Property foo\n                           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema/typescript/packages/adapters/zod/xschema-harness-2836760364.ts:10:23\n\nBun v1.3.3 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "CRLF missing dependent",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 10 |         }, { message: \"Property foo\n                           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema/typescript/packages/adapters/zod/xschema-harness-2836760364.ts:10:23\n\nBun v1.3.3 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quotes missing dependent",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 10 |         }, { message: \"Property foo\n                           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema/typescript/packages/adapters/zod/xschema-harness-2836760364.ts:10:23\n\nBun v1.3.3 (Linux x64)\n"
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "dependentSchemas",
-      "passed": 18,
-      "failed": 2,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote invalid under dependent schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "enum",
-      "passed": 44,
-      "failed": 1,
+      "passed": 45,
+      "failed": 0,
       "skipped": 0,
-      "total": 45,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "null is not an object (evaluating 'Object.keys(val)')"
-        }
-      ]
+      "total": 45
     },
     {
       "keyword": "exclusiveMaximum",
@@ -251,19 +145,10 @@
     },
     {
       "keyword": "items",
-      "passed": 27,
-      "failed": 1,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "items and subitems",
-          "test": "wrong sub-item",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "maxContains",
@@ -281,19 +166,10 @@
     },
     {
       "keyword": "maxLength",
-      "passed": 6,
-      "failed": 1,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "two graphemes is long enough",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "maxProperties",
@@ -325,19 +201,10 @@
     },
     {
       "keyword": "minLength",
-      "passed": 6,
-      "failed": 1,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "one grapheme is not long enough",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "minProperties",
@@ -355,19 +222,10 @@
     },
     {
       "keyword": "multipleOf",
-      "passed": 9,
-      "failed": 1,
+      "passed": 10,
+      "failed": 0,
       "skipped": 0,
-      "total": 10,
-      "failures": [
-        {
-          "group": "small multiple of large integer",
-          "test": "any integer is a multiple of 1e-8",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 10
     },
     {
       "keyword": "not",
@@ -378,40 +236,10 @@
     },
     {
       "keyword": "oneOf",
-      "passed": 23,
-      "failed": 4,
+      "passed": 27,
+      "failed": 0,
       "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "oneOf with required",
-          "test": "first valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "second valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "first oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "second oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 27
     },
     {
       "keyword": "pattern",
@@ -429,35 +257,17 @@
     },
     {
       "keyword": "properties",
-      "passed": 27,
-      "failed": 1,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "propertyNames",
-      "passed": 19,
-      "failed": 1,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "propertyNames with boolean schema false",
-          "test": "object with any properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "recursiveRef",
@@ -533,19 +343,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 33,
-      "failed": 1,
+      "passed": 35,
+      "failed": 0,
       "skipped": 0,
-      "total": 34,
-      "failures": [
-        {
-          "group": "ref applies alongside sibling keywords",
-          "test": "ref valid, maxItems invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 35
     },
     {
       "keyword": "refRemote",
@@ -556,54 +357,10 @@
     },
     {
       "keyword": "required",
-      "passed": 10,
-      "failed": 6,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "type",
@@ -621,21 +378,14 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 1,
-      "failed": 2,
+      "passed": 43,
+      "failed": 1,
       "skipped": 0,
-      "total": 3,
+      "total": 44,
       "failures": [
         {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "base case: both properties present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "in place applicator siblings, bar is missing",
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 3rd level is invalid",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -667,10 +417,10 @@
     }
   ],
   "summary": {
-    "passed": 942,
-    "failed": 43,
+    "passed": 1015,
+    "failed": 12,
     "skipped": 0,
-    "total": 985,
-    "percentage": 95.63451776649747
+    "total": 1027,
+    "percentage": 98.83154819863681
   }
 }

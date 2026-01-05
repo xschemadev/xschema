@@ -72,7 +72,15 @@ export interface JSONSchema {
 	dependentSchemas?: Record<string, JSONSchema>;
 	dependentRequired?: Record<string, string[]>;
 
-	// Unevaluated (will throw)
+	// Legacy (draft3-7) - combined into dependentRequired/dependentSchemas in 2019-09+
+	dependencies?: Record<string, string[] | JSONSchema>;
+
+	// Legacy draft3
+	disallow?: string | string[] | JSONSchema[];  // inverse of type
+	extends?: JSONSchema | JSONSchema[];  // like allOf
+	divisibleBy?: number;  // alias for multipleOf
+
+	// Unevaluated (partially supported - simple cases only)
 	unevaluatedItems?: JSONSchema | boolean;
 	unevaluatedProperties?: JSONSchema | boolean;
 
@@ -164,30 +172,130 @@ function convertSchema(schema: JSONSchema | boolean, ctx: ConversionContext): st
 	if (schema.unevaluatedItems !== undefined) {
 		throw new Error("unevaluatedItems is not supported");
 	}
+	// unevaluatedProperties with applicators requires runtime tracking - not supported
+	// But simple case (no applicators) is equivalent to additionalProperties
 	if (schema.unevaluatedProperties !== undefined) {
-		throw new Error("unevaluatedProperties is not supported");
+		const hasApplicators = schema.allOf || schema.anyOf || schema.oneOf ||
+			schema.if || schema.$ref || schema.dependentSchemas || schema.not;
+		if (hasApplicators) {
+			throw new Error("unevaluatedProperties with applicators is not supported");
+		}
+		// If additionalProperties is already present, it "evaluates" all additional properties
+		// So unevaluatedProperties has nothing left to check - just ignore it
+		if (schema.additionalProperties !== undefined) {
+			const converted = { ...schema };
+			delete converted.unevaluatedProperties;
+			return convertSchema(converted, ctx);
+		}
+		// Simple case: treat as additionalProperties
+		// Convert by moving unevaluatedProperties to additionalProperties
+		const converted = { ...schema };
+		converted.additionalProperties = schema.unevaluatedProperties;
+		delete converted.unevaluatedProperties;
+		return convertSchema(converted, ctx);
+	}
+
+	// Handle draft3 legacy keywords
+	// divisibleBy is alias for multipleOf
+	if (schema.divisibleBy !== undefined && schema.multipleOf === undefined) {
+		const converted = { ...schema, multipleOf: schema.divisibleBy };
+		delete converted.divisibleBy;
+		return convertSchema(converted, ctx);
+	}
+
+	// extends is like allOf - merge with existing allOf if present
+	if (schema.extends !== undefined) {
+		const converted = { ...schema };
+		const extendsSchemas = Array.isArray(schema.extends) ? schema.extends : [schema.extends];
+		converted.allOf = [...(schema.allOf || []), ...extendsSchemas];
+		delete converted.extends;
+		return convertSchema(converted, ctx);
+	}
+
+	// disallow is inverse of type - use "not" with type
+	if (schema.disallow !== undefined) {
+		const disallowValue = schema.disallow;
+		const converted = { ...schema };
+		delete converted.disallow;
+
+		// disallow can be a string, array of strings, array of schemas, or mixed
+		let notSchema: JSONSchema;
+		if (typeof disallowValue === 'string') {
+			notSchema = { type: disallowValue };
+		} else if (Array.isArray(disallowValue)) {
+			// Check if it's an array of strings only
+			const allStrings = disallowValue.every(v => typeof v === 'string');
+			if (allStrings) {
+				notSchema = { type: disallowValue as string[] };
+			} else {
+				// Mixed array or array of schemas - normalize strings to {type: x}
+				const schemas = disallowValue.map(v =>
+					typeof v === 'string' ? { type: v } : v
+				) as JSONSchema[];
+				notSchema = { anyOf: schemas };
+			}
+		} else {
+			notSchema = disallowValue as JSONSchema;
+		}
+
+		// Combine with existing schema using intersection
+		// The result must match converted AND not match notSchema
+		const notCode = convertSchema({ not: notSchema }, ctx);
+		const baseCode = convertSchema(converted, ctx);
+
+		// If base is just z.any(), return the not constraint alone
+		if (baseCode === "z.any()") {
+			return notCode;
+		}
+
+		return `z.intersection(${baseCode}, ${notCode})`;
 	}
 
 	// Handle $ref
 	if (schema.$ref) {
 		const refPath = schema.$ref;
 
+		let refCode: string;
 		if (ctx.refs.has(refPath)) {
-			return ctx.refs.get(refPath)!;
-		}
-
-		if (ctx.processing.has(refPath)) {
+			refCode = ctx.refs.get(refPath)!;
+		} else if (ctx.processing.has(refPath)) {
 			// Circular reference - use lazy
 			// For now, return z.any() for circular refs
-			return "z.lazy(() => z.any())";
+			refCode = "z.lazy(() => z.any())";
+		} else {
+			ctx.processing.add(refPath);
+			const resolved = resolveRef(refPath, ctx);
+			refCode = convertSchema(resolved, ctx);
+			ctx.refs.set(refPath, refCode);
+			ctx.processing.delete(refPath);
 		}
 
-		ctx.processing.add(refPath);
-		const resolved = resolveRef(refPath, ctx);
-		const zodCode = convertSchema(resolved, ctx);
-		ctx.refs.set(refPath, zodCode);
-		ctx.processing.delete(refPath);
-		return zodCode;
+		// In JSON Schema 2019-09+, $ref can have sibling keywords that must also apply
+		// In draft-07 and earlier, $ref overrides all siblings (return ref only)
+		const supportsRefSiblings = ctx.version === "draft-2020-12";
+
+		if (supportsRefSiblings) {
+			// Check for sibling keywords (excluding metadata/structural keywords)
+			const siblingSchema = { ...schema };
+			delete siblingSchema.$ref;
+			delete siblingSchema.$id;
+			delete siblingSchema.$anchor;
+			delete siblingSchema.$defs;
+			delete siblingSchema.definitions;
+			delete siblingSchema.$schema;
+			delete siblingSchema.$comment;
+			delete siblingSchema.$dynamicRef;
+			delete siblingSchema.$dynamicAnchor;
+
+			const siblingKeys = Object.keys(siblingSchema);
+			if (siblingKeys.length > 0) {
+				// Has sibling keywords - intersect ref with sibling constraints
+				const siblingCode = convertSchema(siblingSchema, ctx);
+				return `z.intersection(${refCode}, ${siblingCode})`;
+			}
+		}
+
+		return refCode;
 	}
 
 	// Handle not - limited support
@@ -259,45 +367,48 @@ function convertSchema(schema: JSONSchema | boolean, ctx: ConversionContext): st
 		schema.enum !== undefined ||
 		schema.const !== undefined;
 
-	if (schema.allOf) {
-		// If there are base schema properties, include them in the allOf
-		if (hasBaseSchema) {
-			const baseSchema = { ...schema };
-			delete baseSchema.allOf;
-			delete baseSchema.anyOf;
-			delete baseSchema.oneOf;
-			const allSchemas = [baseSchema, ...schema.allOf];
-			return convertAllOf(allSchemas, ctx);
-		}
-		return convertAllOf(schema.allOf, ctx);
-	}
+	// Handle composition operators - they can appear together and must all be satisfied
+	const hasAllOf = schema.allOf && schema.allOf.length > 0;
+	const hasAnyOf = schema.anyOf && schema.anyOf.length > 0;
+	const hasOneOf = schema.oneOf && schema.oneOf.length > 0;
 
-	if (schema.anyOf) {
-		// If there are base schema properties, intersect with anyOf
-		if (hasBaseSchema) {
-			const baseSchema = { ...schema };
-			delete baseSchema.anyOf;
-			delete baseSchema.allOf;
-			delete baseSchema.oneOf;
-			const baseCode = convertSchema(baseSchema, ctx);
-			const anyOfCode = convertAnyOf(schema.anyOf, ctx);
-			return `z.intersection(${baseCode}, ${anyOfCode})`;
-		}
-		return convertAnyOf(schema.anyOf, ctx);
-	}
+	if (hasAllOf || hasAnyOf || hasOneOf) {
+		const parts: string[] = [];
 
-	if (schema.oneOf) {
-		// If there are base schema properties, intersect with oneOf
+		// Add base schema constraints if present
 		if (hasBaseSchema) {
 			const baseSchema = { ...schema };
-			delete baseSchema.oneOf;
 			delete baseSchema.allOf;
 			delete baseSchema.anyOf;
-			const baseCode = convertSchema(baseSchema, ctx);
-			const oneOfCode = convertOneOf(schema.oneOf, ctx);
-			return `z.intersection(${baseCode}, ${oneOfCode})`;
+			delete baseSchema.oneOf;
+			parts.push(convertSchema(baseSchema, ctx));
 		}
-		return convertOneOf(schema.oneOf, ctx);
+
+		// Add allOf (intersection of all)
+		if (hasAllOf) {
+			parts.push(convertAllOf(schema.allOf!, ctx));
+		}
+
+		// Add anyOf (union - at least one must match)
+		if (hasAnyOf) {
+			parts.push(convertAnyOf(schema.anyOf!, ctx));
+		}
+
+		// Add oneOf (exactly one must match)
+		if (hasOneOf) {
+			parts.push(convertOneOf(schema.oneOf!, ctx));
+		}
+
+		// Combine all parts with intersection
+		if (parts.length === 1) {
+			return parts[0]!;
+		}
+
+		let result = parts[0]!;
+		for (let i = 1; i < parts.length; i++) {
+			result = `z.intersection(${result}, ${parts[i]})`;
+		}
+		return result;
 	}
 
 	// Handle enum
@@ -354,7 +465,8 @@ function convertSchema(schema: JSONSchema | boolean, ctx: ConversionContext): st
 			schema.minProperties !== undefined ||
 			schema.maxProperties !== undefined ||
 			schema.dependentRequired !== undefined ||
-			schema.dependentSchemas !== undefined;
+			schema.dependentSchemas !== undefined ||
+			schema.dependencies !== undefined;
 
 		const hasArrayKeywords = schema.items !== undefined ||
 			schema.prefixItems !== undefined ||
@@ -524,12 +636,13 @@ function convertString(schema: JSONSchema): string {
 		}
 	}
 
-	// Apply constraints
+	// Apply constraints - use grapheme cluster counting per JSON Schema spec
+	// JSON Schema counts grapheme clusters, not code units (e.g., "👨‍👩‍👦" = 1 grapheme, not 8)
 	if (typeof schema.minLength === "number") {
-		result += `.min(${schema.minLength})`;
+		result += `.refine((val) => [...new Intl.Segmenter().segment(val)].length >= ${schema.minLength}, { message: "String must have at least ${schema.minLength} character(s)" })`;
 	}
 	if (typeof schema.maxLength === "number") {
-		result += `.max(${schema.maxLength})`;
+		result += `.refine((val) => [...new Intl.Segmenter().segment(val)].length <= ${schema.maxLength}, { message: "String must have at most ${schema.maxLength} character(s)" })`;
 	}
 	if (schema.pattern) {
 		// JSON Schema patterns are not implicitly anchored
@@ -574,18 +687,49 @@ function convertNumber(schema: JSONSchema, isInteger: boolean): string {
 
 	// Handle multipleOf
 	if (typeof schema.multipleOf === "number") {
-		result += `.multipleOf(${schema.multipleOf})`;
+		const mult = schema.multipleOf;
+		// For small multipleOf values, use epsilon-based comparison to avoid float precision issues
+		if (mult < 1 && mult > 0) {
+			result += `.refine((val) => Math.abs(val - Math.round(val / ${mult}) * ${mult}) < 1e-10, { message: "Number must be a multiple of ${mult}" })`;
+		} else {
+			result += `.multipleOf(${mult})`;
+		}
 	}
 
 	return result;
 }
 
+// Property names that exist on Object.prototype and need special handling
+const PROTOTYPE_PROPERTY_NAMES = new Set([
+	'__proto__', 'constructor', 'toString', 'valueOf', 'hasOwnProperty',
+	'isPrototypeOf', 'propertyIsEnumerable', 'toLocaleString', '__defineGetter__',
+	'__defineSetter__', '__lookupGetter__', '__lookupSetter__'
+]);
+
 function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 	const properties = schema.properties || {};
-	const requiredArr = schema.required || [];
+	// Start with top-level required array
+	const requiredArr = [...(schema.required || [])];
+
+	// Draft3 style: check for required: true on individual properties
+	for (const [key, propSchema] of Object.entries(properties)) {
+		if (propSchema && typeof propSchema === 'object' && (propSchema as Record<string, unknown>).required === true) {
+			if (!requiredArr.includes(key)) {
+				requiredArr.push(key);
+			}
+		}
+	}
+
 	const requiredSet = new Set(requiredArr);
-	const propKeys = Object.keys(properties);
+	// Use Object.getOwnPropertyNames to include __proto__ and other special names
+	// that Object.keys might miss if the object was created with them as prototype
+	const propKeys = Object.getOwnPropertyNames(properties);
 	const hasPatternProperties = schema.patternProperties && Object.keys(schema.patternProperties).length > 0;
+
+	// Check if any property names shadow Object.prototype properties
+	// Must check both propKeys and requiredArr since required props get added to shape
+	const hasPrototypeProps = propKeys.some(k => PROTOTYPE_PROPERTY_NAMES.has(k)) ||
+		requiredArr.some(k => PROTOTYPE_PROPERTY_NAMES.has(k));
 
 	// Build shape - include both defined properties and required properties not in properties
 	const shape: string[] = [];
@@ -593,7 +737,9 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 
 	// First add all defined properties
 	for (const key of propKeys) {
-		const propSchema = properties[key]!;
+		// Use bracket notation to safely access properties with special names like __proto__
+		const propSchema = (properties as Record<string, JSONSchema>)[key];
+		if (propSchema === undefined) continue;
 		let propCode = convertSchema(propSchema, ctx);
 
 		// If not required, make optional
@@ -601,14 +747,15 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 			propCode += ".optional()";
 		}
 
-		shape.push(`${escapeString(key)}: ${propCode}`);
+		// Use computed property syntax [key]: to avoid __proto__ being treated as prototype
+		shape.push(`[${escapeString(key)}]: ${propCode}`);
 		addedKeys.add(key);
 	}
 
 	// Add required properties that aren't in properties (they must exist but can be any type)
 	for (const key of requiredArr) {
 		if (!addedKeys.has(key)) {
-			shape.push(`${escapeString(key)}: z.any()`);
+			shape.push(`[${escapeString(key)}]: z.any()`);
 			addedKeys.add(key);
 		}
 	}
@@ -618,7 +765,76 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 	// When we have patternProperties, we need passthrough + superRefine for validation
 	const needsPassthrough = hasPatternProperties || schema.propertyNames;
 
-	if (shape.length === 0 && !needsPassthrough) {
+	// Special handling for schemas with Object.prototype property names
+	// z.object() would incorrectly validate inherited properties, so we use manual validation
+	if (hasPrototypeProps) {
+		// Build validators for each property
+		const propValidators: string[] = [];
+		const handledKeys = new Set<string>();
+
+		// First handle properties with schemas
+		for (const key of propKeys) {
+			const propSchema = (properties as Record<string, JSONSchema>)[key];
+			if (propSchema === undefined) continue;
+			const propCode = convertSchema(propSchema, ctx);
+			const isRequired = requiredSet.has(key);
+			handledKeys.add(key);
+
+			propValidators.push(`
+        if (Object.hasOwn(val, ${escapeString(key)})) {
+          const result = ${propCode}.safeParse(val[${escapeString(key)}]);
+          if (!result.success) {
+            result.error.issues.forEach(issue => ctx.addIssue({ ...issue, path: [${escapeString(key)}, ...issue.path] }));
+          }
+        }${isRequired ? ` else {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: [${escapeString(key)}], message: "Required" });
+        }` : ''}`);
+		}
+
+		// Then handle required properties that don't have schemas (they're z.any())
+		for (const key of requiredArr) {
+			if (handledKeys.has(key)) continue;
+			handledKeys.add(key);
+
+			propValidators.push(`
+        if (!Object.hasOwn(val, ${escapeString(key)})) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: [${escapeString(key)}], message: "Required" });
+        }`);
+		}
+
+		// Handle additionalProperties
+		const allDefinedKeys = [...handledKeys];
+		let additionalCheck = '';
+		if (schema.additionalProperties === false) {
+			const definedPropsJson = JSON.stringify(allDefinedKeys);
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const key of Object.keys(val)) {
+          if (!definedProps.has(key)) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Additional property not allowed" });
+          }
+        }`;
+		} else if (typeof schema.additionalProperties === 'object') {
+			const additionalSchema = convertSchema(schema.additionalProperties, ctx);
+			const definedPropsJson = JSON.stringify(allDefinedKeys);
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const [key, value] of Object.entries(val)) {
+          if (!definedProps.has(key)) {
+            const result = ${additionalSchema}.safeParse(value);
+            if (!result.success) {
+              result.error.issues.forEach(issue => ctx.addIssue({ ...issue, path: [key, ...issue.path] }));
+            }
+          }
+        }`;
+		}
+
+		// Use z.any() to avoid Zod transforming the object (which strips __proto__)
+		// We validate the raw input directly
+		result = `z.any().superRefine((val, ctx) => {
+      if (typeof val !== "object" || val === null || Array.isArray(val)) return;${propValidators.join('')}${additionalCheck}
+    })`;
+	} else if (shape.length === 0 && !needsPassthrough) {
 		// No properties defined, no pattern properties
 		if (schema.additionalProperties === false) {
 			result = "z.object({}).strict()";
@@ -646,8 +862,16 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 		}
 	}
 
-	// Handle patternProperties and/or additionalProperties: false with superRefine
-	if (hasPatternProperties || (schema.additionalProperties === false && needsPassthrough)) {
+	// Handle patternProperties and/or additionalProperties validation with superRefine
+	// This is needed when:
+	// - We have patternProperties (need to validate matching keys)
+	// - We have additionalProperties: false with passthrough (need to reject extra keys)
+	// - We have additionalProperties schema with passthrough (need to validate extra values)
+	const needsAdditionalPropsValidation = hasPatternProperties ||
+		(needsPassthrough && schema.additionalProperties === false) ||
+		(needsPassthrough && typeof schema.additionalProperties === "object");
+
+	if (needsAdditionalPropsValidation) {
 		const patterns = Object.entries(schema.patternProperties || {});
 		const definedProps = JSON.stringify(propKeys);
 
@@ -711,8 +935,8 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 		result += `.superRefine((val, ctx) => {${superRefineBody}})`;
 	}
 
-	// Handle propertyNames
-	if (schema.propertyNames) {
+	// Handle propertyNames (check !== undefined to handle boolean false)
+	if (schema.propertyNames !== undefined) {
 		const keySchema = convertSchema(schema.propertyNames, ctx);
 		result += `.superRefine((val, ctx) => {
       for (const key of Object.keys(val)) {
@@ -723,6 +947,20 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
             path: [key],
             message: "Invalid property name",
           });
+        }
+      }
+    })`;
+	}
+
+	// Handle required properties explicitly - z.any() accepts undefined so we need to check key presence
+	// Skip if we already handled it in the hasPrototypeProps path
+	if (requiredArr.length > 0 && !hasPrototypeProps) {
+		const requiredJson = JSON.stringify(requiredArr);
+		result += `.superRefine((val, ctx) => {
+      const required = ${requiredJson};
+      for (const key of required) {
+        if (!Object.hasOwn(val, key)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Required" });
         }
       }
     })`;
@@ -741,12 +979,13 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 		for (const [prop, deps] of Object.entries(schema.dependentRequired)) {
 			const depsArr = deps as string[];
 			if (depsArr.length > 0) {
+				const message = escapeString(`Property ${prop} requires ${depsArr.join(", ")}`);
 				result += `.refine((val) => {
-          if (${escapeString(prop)} in val) {
-            return ${depsArr.map(d => `${escapeString(d)} in val`).join(" && ")};
+          if (Object.hasOwn(val, ${escapeString(prop)})) {
+            return ${depsArr.map(d => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")};
           }
           return true;
-        }, { message: "Property ${prop} requires ${depsArr.join(", ")}" })`;
+        }, { message: ${message} })`;
 			}
 		}
 	}
@@ -756,13 +995,42 @@ function convertObject(schema: JSONSchema, ctx: ConversionContext): string {
 		for (const [prop, depSchema] of Object.entries(schema.dependentSchemas)) {
 			const depCode = convertSchema(depSchema as JSONSchema, ctx);
 			result += `.superRefine((val, ctx) => {
-        if (${escapeString(prop)} in val) {
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
           const result = ${depCode}.safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       })`;
+		}
+	}
+
+	// Handle dependencies (draft3-7) - combines dependentRequired and dependentSchemas
+	if (schema.dependencies) {
+		for (const [prop, dep] of Object.entries(schema.dependencies)) {
+			if (Array.isArray(dep)) {
+				// Property dependency - like dependentRequired
+				if (dep.length > 0) {
+					const message = escapeString(`Property ${prop} requires ${dep.join(", ")}`);
+					result += `.refine((val) => {
+            if (Object.hasOwn(val, ${escapeString(prop)})) {
+              return ${dep.map(d => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")};
+            }
+            return true;
+          }, { message: ${message} })`;
+				}
+			} else {
+				// Schema dependency - like dependentSchemas
+				const depCode = convertSchema(dep as JSONSchema, ctx);
+				result += `.superRefine((val, ctx) => {
+          if (Object.hasOwn(val, ${escapeString(prop)})) {
+            const result = ${depCode}.safeParse(val);
+            if (!result.success) {
+              result.error.issues.forEach(issue => ctx.addIssue(issue));
+            }
+          }
+        })`;
+			}
 		}
 	}
 
@@ -898,8 +1166,8 @@ function convertArray(schema: JSONSchema, ctx: ConversionContext): string {
     }, { message: "Array items must be unique" })`;
 	}
 
-	// Handle contains
-	if (schema.contains) {
+	// Handle contains (check !== undefined to handle boolean false)
+	if (schema.contains !== undefined) {
 		const containsSchema = convertSchema(schema.contains, ctx);
 		const minContains = schema.minContains ?? 1;
 		const maxContains = schema.maxContains;
@@ -962,11 +1230,14 @@ function convertEnum(values: unknown[], schema: JSONSchema, ctx: ConversionConte
 
 	if (hasComplexValues) {
 		// Use refine with deep equality check against all enum values
-		const sortedValues = values.map(v => JSON.stringify(v, Object.keys(v as object).sort()));
+		// Handle null safely - null doesn't have Object.keys()
+		const sortedValues = values.map(v =>
+			JSON.stringify(v, v != null && typeof v === 'object' ? Object.keys(v).sort() : undefined)
+		);
 		const valuesArrayCode = `[${sortedValues.map(v => JSON.stringify(v)).join(", ")}]`;
 
 		return `z.any().refine((val) => {
-      const normalized = JSON.stringify(val, Object.keys(val as object).sort());
+      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ${valuesArrayCode};
       return validValues.includes(normalized);
     }, { message: "Value must be one of the enum values" })`;

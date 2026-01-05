@@ -10,10 +10,19 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 16,
-      "failed": 0,
+      "passed": 15,
+      "failed": 1,
       "skipped": 0,
-      "total": 16
+      "total": 16,
+      "failures": [
+        {
+          "group": "additionalProperties does not look in applicators",
+          "test": "properties defined in extends are not examined",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "default",
@@ -24,8 +33,8 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 11,
-      "failed": 7,
+      "passed": 17,
+      "failed": 1,
       "skipped": 0,
       "total": 18,
       "failures": [
@@ -35,206 +44,36 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "disallow",
-      "passed": 4,
-      "failed": 5,
+      "passed": 9,
+      "failed": 0,
       "skipped": 0,
-      "total": 9,
-      "failures": [
-        {
-          "group": "disallow",
-          "test": "disallowed",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple disallow",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple disallow",
-          "test": "other mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple disallow subschema",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple disallow subschema",
-          "test": "other mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 9
     },
     {
       "keyword": "divisibleBy",
-      "passed": 5,
-      "failed": 3,
+      "passed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "by int",
-          "test": "int by int fail",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "by number",
-          "test": "35 is not divisible by 1.5",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "by small number",
-          "test": "0.00751 is not divisible by 0.0001",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 8
     },
     {
       "keyword": "enum",
-      "passed": 13,
-      "failed": 3,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "null is not an object (evaluating 'Object.keys(val)')"
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing all properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "extends",
-      "passed": 4,
-      "failed": 6,
+      "passed": 10,
+      "failed": 0,
       "skipped": 0,
-      "total": 10,
-      "failures": [
-        {
-          "group": "extends",
-          "test": "mismatch extends",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "extends",
-          "test": "mismatch extended",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple extends",
-          "test": "mismatch first extends",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple extends",
-          "test": "mismatch second extends",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple extends",
-          "test": "mismatch both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "extends simple types",
-          "test": "mismatch extends",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 10
     },
     {
       "keyword": "format",
@@ -266,19 +105,10 @@
     },
     {
       "keyword": "maxLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "two graphemes is long enough",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "maximum",
@@ -296,19 +126,10 @@
     },
     {
       "keyword": "minLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "one grapheme is not long enough",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "minimum",
@@ -340,11 +161,18 @@
     },
     {
       "keyword": "ref",
-      "passed": 18,
-      "failed": 3,
+      "passed": 17,
+      "failed": 4,
       "skipped": 0,
       "total": 21,
       "failures": [
+        {
+          "group": "ref overrides any sibling keywords",
+          "test": "remote ref valid, maxItems ignored",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
@@ -469,10 +297,10 @@
     }
   ],
   "summary": {
-    "passed": 388,
-    "failed": 38,
+    "passed": 411,
+    "failed": 15,
     "skipped": 0,
     "total": 426,
-    "percentage": 91.07981220657277
+    "percentage": 96.47887323943662
   }
 }
