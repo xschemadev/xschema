@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.0](https://github.com/xschemadev/xschema/compare/zod-v0.0.4...zod-v0.1.0) (2026-01-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* compliance ([#29](https://github.com/xschemadev/xschema/issues/29))
+
+### Features
+
+* compliance ([#29](https://github.com/xschemadev/xschema/issues/29)) ([40ee3f1](https://github.com/xschemadev/xschema/commit/40ee3f19116805655209cd8f93ab0a3fcec9907e))
+
 ## [0.0.4](https://github.com/xschemadev/xschema/compare/zod-v0.0.3...zod-v0.0.4) (2026-01-04)
 
 
