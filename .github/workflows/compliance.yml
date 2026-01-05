@@ -1,0 +1,178 @@
+name: Compliance Check
+
+on:
+  pull_request:
+    paths:
+      - "*/packages/adapters/**"
+      - "*/packages/core/**"
+      - "cli/compliance/**"
+  push:
+    branches: [master]
+    paths:
+      - "*/packages/adapters/**"
+      - "*/packages/core/**"
+      - "cli/compliance/**"
+  workflow_dispatch: # manual trigger
+
+jobs:
+  detect-adapters:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+      has_adapters: ${{ steps.detect.outputs.has_adapters }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need history for diff
+
+      - name: Detect changed adapters
+        id: detect
+        run: |
+          # Determine what changed
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          else
+            # workflow_dispatch - run all adapters
+            BASE=""
+            HEAD=""
+          fi
+
+          # Check if we need to run all adapters (cli/compliance or core changed, or manual trigger)
+          RUN_ALL="false"
+          if [ -z "$BASE" ]; then
+            RUN_ALL="true"
+            echo "Manual trigger - running all adapters"
+          else
+            CORE_CHANGES=$(git diff --name-only "$BASE" "$HEAD" -- cli/compliance/ */packages/core/ 2>/dev/null || echo "")
+            if [ -n "$CORE_CHANGES" ]; then
+              RUN_ALL="true"
+              echo "Core or CLI compliance changed - running all adapters"
+            fi
+          fi
+
+          # Build list of adapters to test
+          # Format: [{adapter, lang}, ...]
+          MATRIX="[]"
+
+          # Find all adapters with compliance harness across all languages
+          # Convention: {lang}/packages/adapters/{adapter}/compliance/harness.*
+          for harness in */packages/adapters/*/compliance/harness.*; do
+            [ -f "$harness" ] || continue
+
+            # Extract lang and adapter from path
+            lang=$(echo "$harness" | cut -d'/' -f1)
+            adapter=$(echo "$harness" | cut -d'/' -f4)
+
+            if [ "$RUN_ALL" = "true" ]; then
+              # Add all adapters
+              MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\"}]")
+            else
+              # Check if any files in this adapter changed
+              ADAPTER_PATH="$lang/packages/adapters/$adapter/"
+              CHANGED_FILES=$(git diff --name-only "$BASE" "$HEAD" -- "$ADAPTER_PATH" 2>/dev/null || echo "")
+              if [ -n "$CHANGED_FILES" ]; then
+                MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\"}]")
+              fi
+            fi
+          done
+
+          # Output results
+          if [ "$MATRIX" = "[]" ]; then
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+            echo "has_adapters=false" >> $GITHUB_OUTPUT
+            echo "No adapters to test"
+          else
+            echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+            echo "has_adapters=true" >> $GITHUB_OUTPUT
+            echo "Adapters to test: $MATRIX"
+          fi
+
+  compliance:
+    needs: detect-adapters
+    if: needs.detect-adapters.outputs.has_adapters == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.detect-adapters.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - uses: oven-sh/setup-bun@v2
+        if: matrix.lang == 'typescript'
+
+      - name: Install TS dependencies
+        if: matrix.lang == 'typescript'
+        run: bun install
+        working-directory: typescript
+
+      - name: Build TS packages
+        if: matrix.lang == 'typescript'
+        run: bun run build
+        working-directory: typescript
+
+      - uses: actions/setup-python@v5
+        if: matrix.lang == 'python'
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v4
+        if: matrix.lang == 'python'
+
+      - name: Install Python dependencies
+        if: matrix.lang == 'python'
+        run: uv sync
+        working-directory: python
+
+      - name: Build CLI
+        run: go build -o xschema .
+        working-directory: cli
+
+      - name: Run compliance for ${{ matrix.adapter }}
+        run: |
+          cd ${{ matrix.lang }}/packages/adapters/${{ matrix.adapter }}
+          ../../../../cli/xschema compliance --dev-report --lang ${{ matrix.lang }}
+
+      - name: Check for uncommitted changes
+        run: |
+          RESULTS_DIR="${{ matrix.lang }}/packages/adapters/${{ matrix.adapter }}/compliance/results/"
+          if [[ -n $(git status --porcelain "$RESULTS_DIR") ]]; then
+            # Check if there are real changes beyond just the timestamp line
+            real_changes=$(git diff "$RESULTS_DIR" | grep -E '^[-+]' | grep -v '^[-+][-+][-+]' | grep -v '^[-+]Generated:' || true)
+            if [[ -n "$real_changes" ]]; then
+              echo "::error::Compliance results are out of date for ${{ matrix.adapter }}"
+              echo ""
+              echo "The following files have changed:"
+              git status --porcelain "$RESULTS_DIR"
+              echo ""
+              echo "Please run 'xschema compliance --dev-report' in the adapter directory and commit the results."
+              echo ""
+              echo "Diff:"
+              git diff "$RESULTS_DIR"
+              exit 1
+            fi
+            echo "✓ Compliance results only have timestamp changes (allowed)"
+          else
+            echo "✓ Compliance results are up to date"
+          fi
+
+  compliance-result:
+    runs-on: ubuntu-latest
+    needs: [detect-adapters, compliance]
+    if: always()
+    steps:
+      - name: Check compliance results
+        run: |
+          if [ "${{ needs.compliance.result }}" = "failure" ]; then
+            echo "Compliance checks failed"
+            exit 1
+          fi
+          echo "All compliance checks passed (or skipped)"
