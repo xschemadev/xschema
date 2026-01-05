@@ -51,15 +51,21 @@ jobs:
       - name: Check for uncommitted changes
         run: |
           if [[ -n $(git status --porcelain typescript/packages/adapters/*/compliance/results/) ]]; then
-            echo "::error::Compliance results are out of date"
-            echo ""
-            echo "The following files have changed:"
-            git status --porcelain typescript/packages/adapters/*/compliance/results/
-            echo ""
-            echo "Please run 'bun run compliance' in the adapter directory and commit the results."
-            echo ""
-            echo "Diff:"
-            git diff typescript/packages/adapters/*/compliance/results/
-            exit 1
+            # Check if there are real changes beyond just the timestamp line
+            real_changes=$(git diff typescript/packages/adapters/*/compliance/results/ | grep -E '^[-+]' | grep -v '^[-+][-+][-+]' | grep -v '^[-+]Generated:' || true)
+            if [[ -n "$real_changes" ]]; then
+              echo "::error::Compliance results are out of date"
+              echo ""
+              echo "The following files have changed:"
+              git status --porcelain typescript/packages/adapters/*/compliance/results/
+              echo ""
+              echo "Please run 'bun run compliance' in the adapter directory and commit the results."
+              echo ""
+              echo "Diff:"
+              git diff typescript/packages/adapters/*/compliance/results/
+              exit 1
+            fi
+            echo "✓ Compliance results only have timestamp changes (allowed)"
+          else
+            echo "✓ Compliance results are up to date"
           fi
-          echo "✓ Compliance results are up to date"
