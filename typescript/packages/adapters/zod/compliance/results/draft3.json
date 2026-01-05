@@ -3,3707 +3,961 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 0,
-      "failed": 14,
+      "passed": 11,
+      "failed": 3,
       "skipped": 0,
       "total": 14,
       "failures": [
         {
           "group": "additionalItems as schema",
-          "test": "additional items match schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems as schema",
           "test": "additional items do not match schema",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "when items is schema, additionalItems does nothing",
-          "test": "all items match schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "equal number of items present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "array of items with no additionalItems permitted",
           "test": "additional items are not permitted",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems as false without items",
-          "test": "items defaults to empty schema so everything is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems as false without items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems are allowed by default",
-          "test": "only the first item is validated",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "additionalItems with heterogeneous array",
           "test": "heterogeneous invalid instance",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "valid instance",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalItems with null instance elements",
-          "test": "allows null elements",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "additionalProperties",
-      "passed": 0,
-      "failed": 16,
+      "passed": 11,
+      "failed": 5,
       "skipped": 0,
       "total": 16,
       "failures": [
         {
           "group": "additionalProperties being false does not allow other properties",
-          "test": "no additional properties is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
           "test": "an additional property is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "patternProperties are not additional properties",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "non-ASCII pattern with additionalProperties",
-          "test": "matching the pattern is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "non-ASCII pattern with additionalProperties",
           "test": "not matching the pattern is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "no additional properties is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "an additional valid property is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "additionalProperties with schema",
           "test": "an additional invalid property is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties can exist by itself",
-          "test": "an additional valid property is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "additionalProperties can exist by itself",
           "test": "an additional invalid property is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties are allowed by default",
-          "test": "additional properties are allowed",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "additionalProperties does not look in applicators",
           "test": "properties defined in extends are not examined",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "additionalProperties with null valued instance properties",
-          "test": "allows null values",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "default",
-      "passed": 0,
-      "failed": 7,
+      "passed": 6,
+      "failed": 1,
       "skipped": 0,
       "total": 7,
       "failures": [
         {
-          "group": "invalid type for default",
-          "test": "valid when property is specified",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "invalid type for default",
-          "test": "still valid when the invalid default is used",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "invalid string value for default",
-          "test": "valid when property is specified",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "invalid string value for default",
-          "test": "still valid when the invalid default is used",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "the default keyword does not do anything if the property is missing",
-          "test": "an explicit property value is checked against maximum (passing)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "the default keyword does not do anything if the property is missing",
-          "test": "an explicit property value is checked against maximum (failing)",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
           "group": "the default keyword does not do anything if the property is missing",
           "test": "missing properties are not filled in with the default",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "false",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "dependencies",
-      "passed": 0,
-      "failed": 18,
+      "passed": 11,
+      "failed": 7,
       "skipped": 0,
       "total": 18,
       "failures": [
         {
           "group": "dependencies",
-          "test": "neither",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
-          "test": "nondependant",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
-          "test": "with dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
           "test": "missing dependency",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "neither",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "nondependants",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "with dependencies",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies",
           "test": "missing dependency",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies",
           "test": "missing other dependency",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies",
           "test": "missing both dependencies",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "no dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies subschema",
           "test": "wrong type",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies subschema",
           "test": "wrong type other",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple dependencies subschema",
           "test": "wrong type both",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "disallow",
-      "passed": 0,
-      "failed": 9,
+      "passed": 4,
+      "failed": 5,
       "skipped": 0,
       "total": 9,
       "failures": [
         {
           "group": "disallow",
-          "test": "allowed",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "disallow",
           "test": "disallowed",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple disallow",
-          "test": "valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple disallow",
           "test": "mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple disallow",
           "test": "other mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple disallow subschema",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple disallow subschema",
-          "test": "other match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple disallow subschema",
           "test": "mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple disallow subschema",
           "test": "other mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "divisibleBy",
-      "passed": 0,
-      "failed": 8,
+      "passed": 5,
+      "failed": 3,
       "skipped": 0,
       "total": 8,
       "failures": [
         {
           "group": "by int",
-          "test": "int by int",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "by int",
           "test": "int by int fail",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "by int",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "by number",
-          "test": "zero is divisible by anything (except 0)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "by number",
-          "test": "4.5 is divisible by 1.5",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "by number",
           "test": "35 is not divisible by 1.5",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "by small number",
-          "test": "0.0075 is divisible by 0.0001",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "by small number",
           "test": "0.00751 is not divisible by 0.0001",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "enum",
-      "passed": 0,
-      "failed": 16,
+      "passed": 15,
+      "failed": 1,
       "skipped": 0,
       "total": 16,
       "failures": [
         {
-          "group": "simple enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "simple enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
           "group": "heterogeneous enum validation",
           "test": "one of the enum is valid",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "heterogeneous enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "heterogeneous enum validation",
-          "test": "objects are deep compared",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "both properties are valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "wrong foo value",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "wrong bar value",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing optional property is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing required property is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing all properties is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "nul characters in strings",
-          "test": "match string with nul",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "nul characters in strings",
-          "test": "do not match string lacking nul",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "false",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "extends",
-      "passed": 0,
-      "failed": 10,
+      "passed": 3,
+      "failed": 7,
       "skipped": 0,
       "total": 10,
       "failures": [
         {
           "group": "extends",
-          "test": "extends",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "extends",
           "test": "mismatch extends",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "extends",
           "test": "mismatch extended",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "extends",
           "test": "wrong type",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple extends",
-          "test": "valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple extends",
           "test": "mismatch first extends",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple extends",
           "test": "mismatch second extends",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple extends",
           "test": "mismatch both",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "extends simple types",
-          "test": "valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "extends simple types",
           "test": "mismatch extends",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "format",
-      "passed": 0,
-      "failed": 60,
+      "passed": 60,
+      "failed": 0,
       "skipped": 0,
-      "total": 60,
-      "failures": [
-        {
-          "group": "email format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "email format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "email format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "email format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "email format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "email format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ip-address format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ipv6 format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "host-name format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date-time format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regex format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "date format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "time format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "color format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uri format",
-          "test": "all string formats ignore nulls",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        }
-      ]
+      "total": 60
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 0,
-      "failed": 2,
+      "passed": 1,
+      "failed": 1,
       "skipped": 0,
       "total": 2,
       "failures": [
         {
           "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
-          "test": "passing case",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
           "test": "failing case",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "items",
-      "passed": 0,
-      "failed": 7,
+      "passed": 5,
+      "failed": 2,
       "skipped": 0,
       "total": 7,
       "failures": [
         {
           "group": "a schema given for items",
-          "test": "valid items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "a schema given for items",
           "test": "wrong type of items",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "a schema given for items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "correct types",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "an array of schemas for items",
           "test": "wrong types",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "items with null instance elements",
-          "test": "allows null elements",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array-form items with null instance elements",
-          "test": "allows null elements",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "maxItems",
-      "passed": 0,
-      "failed": 4,
+      "passed": 3,
+      "failed": 1,
       "skipped": 0,
       "total": 4,
       "failures": [
         {
           "group": "maxItems validation",
-          "test": "shorter is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxItems validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxItems validation",
           "test": "too long is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "maxLength",
-      "passed": 0,
-      "failed": 5,
+      "passed": 4,
+      "failed": 1,
       "skipped": 0,
       "total": 5,
       "failures": [
         {
           "group": "maxLength validation",
-          "test": "shorter is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxLength validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxLength validation",
           "test": "too long is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maxLength validation",
-          "test": "two graphemes is long enough",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "maximum",
-      "passed": 0,
-      "failed": 14,
+      "passed": 10,
+      "failed": 4,
       "skipped": 0,
       "total": 14,
       "failures": [
         {
           "group": "maximum validation",
-          "test": "below the maximum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation",
           "test": "above the maximum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation with unsigned integer",
-          "test": "below the maximum is invalid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation with unsigned integer",
-          "test": "boundary point integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation with unsigned integer",
-          "test": "boundary point float is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "maximum validation with unsigned integer",
           "test": "above the maximum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "below the maximum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "maximum validation (explicit false exclusivity)",
           "test": "above the maximum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "below the maximum is still valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "exclusiveMaximum validation",
           "test": "boundary point is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "minItems",
-      "passed": 0,
-      "failed": 4,
+      "passed": 3,
+      "failed": 1,
       "skipped": 0,
       "total": 4,
       "failures": [
         {
           "group": "minItems validation",
-          "test": "longer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minItems validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minItems validation",
           "test": "too short is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "minLength",
-      "passed": 0,
-      "failed": 5,
+      "passed": 3,
+      "failed": 2,
       "skipped": 0,
       "total": 5,
       "failures": [
         {
           "group": "minLength validation",
-          "test": "longer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minLength validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minLength validation",
           "test": "too short is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "minLength validation",
           "test": "one grapheme is not long enough",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "minimum",
-      "passed": 0,
-      "failed": 13,
+      "passed": 9,
+      "failed": 4,
       "skipped": 0,
       "total": 13,
       "failures": [
         {
           "group": "minimum validation",
-          "test": "above the minimum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation",
           "test": "below the minimum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "above the minimum is still valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "exclusiveMinimum validation",
           "test": "boundary point is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "negative above the minimum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "positive above the minimum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "boundary point with float is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "minimum validation with signed integer",
           "test": "float below the minimum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "minimum validation with signed integer",
           "test": "int below the minimum is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "pattern",
-      "passed": 0,
-      "failed": 9,
+      "passed": 8,
+      "failed": 1,
       "skipped": 0,
       "total": 9,
       "failures": [
         {
           "group": "pattern validation",
-          "test": "a matching pattern is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
           "test": "a non-matching pattern is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores booleans",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores floats",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores null",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "pattern is not anchored",
-          "test": "matches a substring",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "patternProperties",
-      "passed": 0,
-      "failed": 17,
+      "passed": 10,
+      "failed": 7,
       "skipped": 0,
       "total": 17,
       "failures": [
         {
           "group": "patternProperties validates properties matching a regex",
-          "test": "a single valid match is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "multiple valid matches is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
           "test": "a single invalid match is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "patternProperties validates properties matching a regex",
           "test": "multiple invalid matches is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "a single valid match is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "a simultaneous match is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "multiple matches is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple simultaneous patternProperties are validated",
           "test": "an invalid due to one is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple simultaneous patternProperties are validated",
           "test": "an invalid due to the other is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "multiple simultaneous patternProperties are validated",
           "test": "an invalid due to both is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "non recognized members are ignored",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "regexes are not anchored by default and are case sensitive",
           "test": "recognized members are accounted for",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "regexes are case sensitive",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "regexes are not anchored by default and are case sensitive",
           "test": "regexes are case sensitive, 2",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "patternProperties with null valued instance properties",
-          "test": "allows null values",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "properties",
-      "passed": 0,
-      "failed": 15,
+      "passed": 9,
+      "failed": 6,
       "skipped": 0,
       "total": 15,
       "failures": [
         {
           "group": "object properties validation",
-          "test": "both properties present and valid is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object properties validation",
           "test": "one property invalid is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "object properties validation",
           "test": "both properties invalid is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object properties validation",
-          "test": "doesn't invalidate other properties",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object properties validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object properties validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property validates property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
           "test": "property invalidates property",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
           "test": "patternProperty invalidates property",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
           "test": "patternProperty invalidates nonproperty",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty ignores property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty validates others",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
           "test": "additionalProperty invalidates others",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "properties with null valued instance properties",
-          "test": "allows null values",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "ref",
-      "passed": 0,
-      "failed": 27,
+      "passed": 14,
+      "failed": 13,
       "skipped": 0,
       "total": 27,
       "failures": [
         {
           "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "root pointer ref",
           "test": "mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "root pointer ref",
           "test": "recursive mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "relative pointer ref to object",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "relative pointer ref to object",
           "test": "mismatch",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "relative pointer ref to array",
-          "test": "match array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "relative pointer ref to array",
           "test": "mismatch array",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "escaped pointer ref",
           "test": "slash invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "escaped pointer ref",
           "test": "tilde invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "escaped pointer ref",
           "test": "percent invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "slash valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "tilde valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "escaped pointer ref",
-          "test": "percent valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "nested refs",
-          "test": "nested ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "nested refs",
           "test": "nested ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "remote ref valid, maxItems ignored",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "ref overrides any sibling keywords",
           "test": "ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "property named $ref, containing an actual $ref",
           "test": "property named $ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "remote ref, containing refs itself",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "do not evaluate the $ref inside the enum, matching any string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "naive replacement of $ref with its destination is not correct",
           "test": "match the enum exactly",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "false",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
-      "failed": 8,
+      "passed": 4,
+      "failed": 4,
       "skipped": 0,
       "total": 8,
       "failures": [
         {
           "group": "remote ref",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "remote ref",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "fragment within remote ref",
           "test": "remote fragment invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "ref within remote ref",
           "test": "ref within ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "change resolution scope",
-          "test": "changed scope ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "change resolution scope",
           "test": "changed scope ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "required",
-      "passed": 0,
-      "failed": 4,
+      "passed": 3,
+      "failed": 1,
       "skipped": 0,
       "total": 4,
       "failures": [
         {
           "group": "required validation",
-          "test": "present required property is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "required validation",
           "test": "non-present required property is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "required default validation",
-          "test": "not required by default",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "required explicitly false validation",
-          "test": "not required if required is false",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "type",
-      "passed": 0,
-      "failed": 80,
+      "passed": 73,
+      "failed": 7,
       "skipped": 0,
       "total": 80,
       "failures": [
         {
-          "group": "integer type matches integers",
-          "test": "an integer is an integer",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a float is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a string is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a string is still not an integer, even if it looks like one",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "an object is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "an array is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a boolean is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "null is not an integer",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "an integer is a number",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a float with zero fractional part is a number",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a float is a number",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a string is not a number",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a string is still not a number, even if it looks like one",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "an object is not a number",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "an array is not a number",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a boolean is not a number",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "null is not a number",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "1 is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "a float is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "a string is a string",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "a string is still a string, even if it looks like a number",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "an object is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "an array is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "a boolean is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "string type matches strings",
-          "test": "null is not a string",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an integer is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a float is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a string is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an object is an object",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a boolean is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "object type matches objects",
-          "test": "null is not an object",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "an integer is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "a float is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "a string is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "an object is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "an array is an array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "a boolean is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "array type matches arrays",
-          "test": "null is not an array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "an integer is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "a float is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "a string is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "an object is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "an array is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "a boolean is a boolean",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "null is not a boolean",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "an integer is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "a float is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "a string is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "an object is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "an array is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "a boolean is not null",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "null type matches only the null object",
-          "test": "null is null",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes integers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes float",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes string",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes object",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes boolean",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "any type matches any type",
-          "test": "any type includes null",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "an integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a float is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "an object is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "an array is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a boolean is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "null is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
           "group": "types can include schemas",
           "test": "an integer is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "types can include schemas",
           "test": "a string is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "types can include schemas",
           "test": "a float is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "types can include schemas",
-          "test": "an object is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "types can include schemas",
-          "test": "an array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "types can include schemas",
           "test": "a boolean is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "types can include schemas",
           "test": "null is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "applies a nested schema",
-          "test": "an integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "applies a nested schema",
-          "test": "an object is valid only if it is fully valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "applies a nested schema",
           "test": "an object is invalid otherwise",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "types from separate schemas are merged",
           "test": "an integer is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "types from separate schemas are merged",
-          "test": "a string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "types from separate schemas are merged",
-          "test": "an array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "uniqueItems",
-      "passed": 0,
-      "failed": 62,
+      "passed": 45,
+      "failed": 17,
       "skipped": 0,
       "total": 62,
       "failures": [
         {
           "group": "uniqueItems validation",
-          "test": "unique array of integers is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
           "test": "non-unique array of integers is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of more than two integers is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "numbers are unique if mathematically unequal",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of strings is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of strings is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of objects is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of nested objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of nested objects is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of arrays is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of arrays is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique array of more than two arrays is invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "1 and true are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "0 and false are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "[1] and [true] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "[0] and [false] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "nested [1] and [true] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "nested [0] and [false] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique heterogeneous types are valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems validation",
           "test": "non-unique heterogeneous types are invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "{\"a\": false} and {\"a\": 0} are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "{\"a\": true} and {\"a\": 1} are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items",
           "test": "[false, false] from items array is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items",
           "test": "[true, true] from items array is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items",
           "test": "non-unique array extended from [false, true] is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items",
           "test": "non-unique array extended from [true, false] is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items and additionalItems=false",
           "test": "[false, false] from items array is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items and additionalItems=false",
           "test": "[true, true] from items array is not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems with an array of items and additionalItems=false",
           "test": "extra items are invalid even if unique",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "unique array of integers is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "non-unique array of integers is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "numbers are unique if mathematically unequal",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "unique array of objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "non-unique array of objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "unique array of nested objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "non-unique array of nested objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "unique array of arrays is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "non-unique array of arrays is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "1 and true are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "0 and false are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "unique heterogeneous types are valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false validation",
-          "test": "non-unique heterogeneous types are valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[false, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[true, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[false, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[true, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems=false with an array of items and additionalItems=false",
           "test": "extra items are invalid even if unique",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "adapter error: adapter call failed: context canceled\nstderr: "
+          "actual": "true",
+          "passed": false
         }
       ]
     }
   ],
   "summary": {
-    "passed": 0,
-    "failed": 434,
+    "passed": 330,
+    "failed": 104,
     "skipped": 0,
     "total": 434,
-    "percentage": 0
+    "percentage": 76.036866359447
   }
 }
