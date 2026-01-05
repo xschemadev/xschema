@@ -4,6 +4,7 @@ const schema = {{GENERATED_CODE}};
 const testCases: Array<{ data: unknown; valid: boolean }> = {{TEST_CASES}};
 
 const results = testCases.map((tc, index) => {
+  // safeParse handles validation errors; try-catch guards against malformed generated code
   try {
     const result = schema.safeParse(tc.data);
     return {

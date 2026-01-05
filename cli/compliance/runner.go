@@ -164,11 +164,7 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 
 	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, group.Schema)
 	if err != nil {
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return err
-		}
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("adapter error: %v", err))
-		return nil
+		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
 	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)

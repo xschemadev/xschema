@@ -88,12 +88,10 @@ func detectPyHarnessRunner(dir string) (string, []string, error) {
 		return "", nil, err
 	}
 
-	// For Python, the harness runner is similar to the module runner
-	// but we run files directly instead of with -m
-	if len(args) > 0 && args[len(args)-1] == "-m" {
-		return cmd, args[:len(args)-1], nil
+	// Strip -m flag - only used for module execution, not direct files
+	if len(args) == 1 && args[0] == "-m" {
+		return cmd, nil, nil
 	}
-
 	return cmd, args, nil
 }
 
