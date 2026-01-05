@@ -15,8 +15,90 @@ on:
   workflow_dispatch: # manual trigger
 
 jobs:
-  compliance:
+  detect-adapters:
     runs-on: ubuntu-latest
+    outputs:
+      adapters: ${{ steps.detect.outputs.adapters }}
+      has_adapters: ${{ steps.detect.outputs.has_adapters }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need history for diff
+
+      - name: Detect changed adapters
+        id: detect
+        run: |
+          # Determine what changed
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          else
+            # workflow_dispatch - run all adapters
+            BASE=""
+            HEAD=""
+          fi
+
+          # Check if we need to run all adapters (core or cli/compliance changed, or manual trigger)
+          RUN_ALL="false"
+          if [ -z "$BASE" ]; then
+            RUN_ALL="true"
+            echo "Manual trigger - running all adapters"
+          else
+            # Check if core or cli/compliance changed
+            CORE_CHANGES=$(git diff --name-only "$BASE" "$HEAD" -- typescript/packages/core/ cli/compliance/ 2>/dev/null || echo "")
+            if [ -n "$CORE_CHANGES" ]; then
+              RUN_ALL="true"
+              echo "Core or CLI compliance changed - running all adapters"
+            fi
+          fi
+
+          # Build list of adapters to test
+          ADAPTERS=()
+          if [ "$RUN_ALL" = "true" ]; then
+            # Find all adapters with compliance harness
+            for adapter in typescript/packages/adapters/*/; do
+              if [ -f "$adapter/compliance/harness.ts" ]; then
+                name=$(basename "$adapter")
+                ADAPTERS+=("$name")
+              fi
+            done
+          else
+            # Find only changed adapters
+            CHANGED_FILES=$(git diff --name-only "$BASE" "$HEAD" -- typescript/packages/adapters/ 2>/dev/null || echo "")
+            for adapter in typescript/packages/adapters/*/; do
+              if [ -f "$adapter/compliance/harness.ts" ]; then
+                name=$(basename "$adapter")
+                # Check if any files in this adapter changed
+                if echo "$CHANGED_FILES" | grep -q "typescript/packages/adapters/$name/"; then
+                  ADAPTERS+=("$name")
+                fi
+              fi
+            done
+          fi
+
+          # Output as JSON array
+          if [ ${#ADAPTERS[@]} -eq 0 ]; then
+            echo "adapters=[]" >> $GITHUB_OUTPUT
+            echo "has_adapters=false" >> $GITHUB_OUTPUT
+            echo "No adapters to test"
+          else
+            JSON=$(printf '%s\n' "${ADAPTERS[@]}" | jq -R . | jq -sc .)
+            echo "adapters=$JSON" >> $GITHUB_OUTPUT
+            echo "has_adapters=true" >> $GITHUB_OUTPUT
+            echo "Adapters to test: ${ADAPTERS[*]}"
+          fi
+
+  compliance:
+    needs: detect-adapters
+    if: needs.detect-adapters.outputs.has_adapters == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        adapter: ${{ fromJson(needs.detect-adapters.outputs.adapters) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,34 +120,42 @@ jobs:
         run: go build -o xschema .
         working-directory: cli
 
-      - name: Run compliance for all adapters
-        run: |
-          for adapter in typescript/packages/adapters/*/; do
-            if [ -f "$adapter/compliance/harness.ts" ]; then
-              echo "Running compliance for $adapter"
-              (cd "$adapter" && bun run compliance)
-            fi
-          done
-        working-directory: .
+      - name: Run compliance for ${{ matrix.adapter }}
+        run: bun run compliance
+        working-directory: typescript/packages/adapters/${{ matrix.adapter }}
 
       - name: Check for uncommitted changes
         run: |
-          if [[ -n $(git status --porcelain typescript/packages/adapters/*/compliance/results/) ]]; then
+          RESULTS_DIR="typescript/packages/adapters/${{ matrix.adapter }}/compliance/results/"
+          if [[ -n $(git status --porcelain "$RESULTS_DIR") ]]; then
             # Check if there are real changes beyond just the timestamp line
-            real_changes=$(git diff typescript/packages/adapters/*/compliance/results/ | grep -E '^[-+]' | grep -v '^[-+][-+][-+]' | grep -v '^[-+]Generated:' || true)
+            real_changes=$(git diff "$RESULTS_DIR" | grep -E '^[-+]' | grep -v '^[-+][-+][-+]' | grep -v '^[-+]Generated:' || true)
             if [[ -n "$real_changes" ]]; then
-              echo "::error::Compliance results are out of date"
+              echo "::error::Compliance results are out of date for ${{ matrix.adapter }}"
               echo ""
               echo "The following files have changed:"
-              git status --porcelain typescript/packages/adapters/*/compliance/results/
+              git status --porcelain "$RESULTS_DIR"
               echo ""
               echo "Please run 'bun run compliance' in the adapter directory and commit the results."
               echo ""
               echo "Diff:"
-              git diff typescript/packages/adapters/*/compliance/results/
+              git diff "$RESULTS_DIR"
               exit 1
             fi
             echo "✓ Compliance results only have timestamp changes (allowed)"
           else
             echo "✓ Compliance results are up to date"
           fi
+
+  compliance-result:
+    runs-on: ubuntu-latest
+    needs: [detect-adapters, compliance]
+    if: always()
+    steps:
+      - name: Check compliance results
+        run: |
+          if [ "${{ needs.compliance.result }}" = "failure" ]; then
+            echo "Compliance checks failed"
+            exit 1
+          fi
+          echo "All compliance checks passed (or skipped)"
