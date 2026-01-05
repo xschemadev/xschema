@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   release-please:
@@ -28,6 +29,20 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: Trigger CI for release-please PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list --repo ${{ github.repository }} --state open --json headRefName --jq '.[] | select(.headRefName | startswith("release-please--")) | .headRefName')
+          
+          for branch in $prs; do
+            echo "Dispatching CI for branch: $branch"
+            gh workflow run CI --repo ${{ github.repository }} --ref "$branch"
+            
+            echo "Dispatching Compliance Check for branch: $branch"
+            gh workflow run "Compliance Check" --repo ${{ github.repository }} --ref "$branch"
+          done
 
   # Build and publish Go CLI when released
   release-cli:

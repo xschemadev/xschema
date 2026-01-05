@@ -12,7 +12,7 @@ on:
       - "*/packages/adapters/**"
       - "*/packages/core/**"
       - "cli/compliance/**"
-  workflow_dispatch: # manual trigger
+  workflow_dispatch:
 
 jobs:
   detect-adapters:
