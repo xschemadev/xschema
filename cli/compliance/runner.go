@@ -10,17 +10,30 @@ import (
 	"time"
 )
 
+// ProgressUpdate contains info about current test progress
+type ProgressUpdate struct {
+	Draft        string // current draft being tested
+	DraftNum     int    // current draft number (1-based)
+	DraftTotal   int    // total number of drafts
+	Keyword      string // current keyword being tested
+	KeywordNum   int    // current keyword number (1-based)
+	KeywordTotal int    // total keywords in this draft
+}
+
 // RunOptions configures the compliance test run
 type RunOptions struct {
 	AdapterPath    string                          // path to adapter package
 	AdapterName    string                          // adapter name for display
 	AdapterCLIPath func(adapterPath string) string // function to get adapter CLI path
 	Drafts         []string                        // drafts to test (empty = all)
+	Keyword        string                          // specific keyword to test (empty = all)
 	SuitePath      string                          // path to JSON Schema Test Suite
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
 	Verbose        bool
-	OutputFunc     func(string) // for progress output
+	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
+	ProgressFunc   func(ProgressUpdate)    // for live progress updates
+	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
 // Run executes compliance tests for an adapter
@@ -52,31 +65,40 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 		Drafts:      []DraftResult{},
 	}
 
-	for _, draft := range drafts {
+	for i, draft := range drafts {
 		select {
 		case <-ctx.Done():
 			return &report, ctx.Err()
 		default:
 		}
 
-		if opts.OutputFunc != nil {
+		// Legacy output func support
+		if opts.OutputFunc != nil && opts.ProgressFunc == nil {
 			opts.OutputFunc(fmt.Sprintf("Testing %s...", draft))
 		}
 
 		draftResult, err := runDraft(ctx, runDraftOptions{
-			draft:       draft,
-			suitePath:   opts.SuitePath,
-			harnessFile: harnessFile,
-			adapterBin:  adapterBin,
-			runner:      opts.Runner,
-			runnerArgs:  opts.RunnerArgs,
-			workDir:     opts.AdapterPath,
-			verbose:     opts.Verbose,
-			outputFunc:  opts.OutputFunc,
+			draft:        draft,
+			draftNum:     i + 1,
+			draftTotal:   len(drafts),
+			keyword:      opts.Keyword,
+			suitePath:    opts.SuitePath,
+			harnessFile:  harnessFile,
+			adapterBin:   adapterBin,
+			runner:       opts.Runner,
+			runnerArgs:   opts.RunnerArgs,
+			workDir:      opts.AdapterPath,
+			verbose:      opts.Verbose,
+			outputFunc:   opts.OutputFunc,
+			progressFunc: opts.ProgressFunc,
 		})
 
 		if draftResult != nil {
 			report.Drafts = append(report.Drafts, *draftResult)
+			// Notify caller that draft is complete
+			if opts.DraftDoneFunc != nil {
+				opts.DraftDoneFunc(*draftResult)
+			}
 		}
 
 		if err != nil {
@@ -91,15 +113,19 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 }
 
 type runDraftOptions struct {
-	draft       string
-	suitePath   string
-	harnessFile string
-	adapterBin  string
-	runner      string
-	runnerArgs  []string
-	workDir     string // directory to run harness from (for dependency resolution)
-	verbose     bool
-	outputFunc  func(string)
+	draft        string
+	draftNum     int // 1-based
+	draftTotal   int
+	keyword      string // filter to specific keyword (empty = all)
+	suitePath    string
+	harnessFile  string
+	adapterBin   string
+	runner       string
+	runnerArgs   []string
+	workDir      string // directory to run harness from (for dependency resolution)
+	verbose      bool
+	outputFunc   func(string)
+	progressFunc func(ProgressUpdate)
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -122,11 +148,40 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	}
 	sort.Strings(keywords)
 
-	for _, keyword := range keywords {
+	// Filter to specific keyword if requested
+	if opts.keyword != "" {
+		found := false
+		for _, k := range keywords {
+			if k == opts.keyword {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, fmt.Errorf("keyword %q not found in %s (available: %d keywords)", opts.keyword, opts.draft, len(keywords))
+		}
+		keywords = []string{opts.keyword}
+	}
+
+	totalKeywords := len(keywords)
+
+	for i, keyword := range keywords {
 		select {
 		case <-ctx.Done():
 			return &result, ctx.Err()
 		default:
+		}
+
+		// Report progress
+		if opts.progressFunc != nil {
+			opts.progressFunc(ProgressUpdate{
+				Draft:        opts.draft,
+				DraftNum:     opts.draftNum,
+				DraftTotal:   opts.draftTotal,
+				Keyword:      keyword,
+				KeywordNum:   i + 1,
+				KeywordTotal: totalKeywords,
+			})
 		}
 
 		groups := suite[keyword]

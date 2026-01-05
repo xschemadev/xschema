@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -16,6 +17,7 @@ import (
 
 var (
 	complianceDraft     string
+	complianceKeyword   string
 	complianceLang      string
 	complianceDevReport bool
 	complianceVerbose   bool
@@ -37,7 +39,13 @@ Examples:
   xschema compliance --dev-report
 
   # Run specific draft only (prints results, no file output)
-  xschema compliance --draft draft2020-12`,
+  xschema compliance --draft draft2020-12
+
+  # Run specific keyword across all drafts
+  xschema compliance --keyword additionalProperties
+
+  # Run specific keyword for a specific draft
+  xschema compliance --draft draft2020-12 --keyword additionalProperties`,
 	RunE: runCompliance,
 	Args: cobra.NoArgs,
 }
@@ -46,6 +54,7 @@ func init() {
 	rootCmd.AddCommand(complianceCmd)
 
 	complianceCmd.Flags().StringVarP(&complianceDraft, "draft", "d", "", "specific draft to test (e.g., draft2020-12)")
+	complianceCmd.Flags().StringVarP(&complianceKeyword, "keyword", "k", "", "specific keyword to test (e.g., additionalProperties)")
 	complianceCmd.Flags().StringVarP(&complianceLang, "lang", "l", "typescript", "language (typescript, python)")
 	complianceCmd.Flags().BoolVar(&complianceDevReport, "dev-report", false, "write results to compliance/results/ (for adapter developers)")
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
@@ -111,27 +120,63 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 	var drafts []string
 	if complianceDraft != "" {
 		drafts = []string{complianceDraft}
+	} else {
+		drafts = compliance.Drafts
 	}
 
+	// Header
 	ui.Println(ui.Bold.Render("JSON Schema Compliance Testing"))
 	ui.Printf("Adapter: %s\n", ui.Primary.Render(adapterName))
 	ui.Println()
+
+	// Show what we're testing
+	ui.Printf("Testing %d drafts: %s\n", len(drafts), ui.Dim.Render(formatDraftList(drafts)))
+	if complianceKeyword != "" {
+		ui.Printf("Keyword filter: %s\n", ui.Primary.Render(complianceKeyword))
+	}
+	ui.Println()
+
+	// Create progress spinner for live updates
+	spinner := ui.NewProgressSpinner()
 
 	opts := compliance.RunOptions{
 		AdapterPath:    adapterPath,
 		AdapterName:    adapterName,
 		AdapterCLIPath: lang.AdapterCLIPath,
 		Drafts:         drafts,
+		Keyword:        complianceKeyword,
 		SuitePath:      suitePath,
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
 		Verbose:        complianceVerbose,
-		OutputFunc: func(msg string) {
-			ui.Detail(msg)
+		ProgressFunc: func(p compliance.ProgressUpdate) {
+			msg := ui.FormatDraftProgress(p.Draft, p.KeywordNum, p.KeywordTotal, p.Keyword)
+			spinner.Update(msg)
+		},
+		DraftDoneFunc: func(draft compliance.DraftResult) {
+			// Print completion line above spinner
+			status := ui.Success.Render("✓")
+			if draft.Summary.Percentage < 80 {
+				status = ui.Error.Render("✗")
+			} else if draft.Summary.Percentage < 95 {
+				status = ui.Warning.Render("!")
+			}
+			msg := fmt.Sprintf("%s %s: %d/%d (%.1f%%)",
+				status,
+				ui.Bold.Render(draft.Draft),
+				draft.Summary.Passed,
+				draft.Summary.Total,
+				draft.Summary.Percentage,
+			)
+			spinner.PrintAboveSpinner(msg)
 		},
 	}
 
+	// Start spinner and run tests
+	spinner.Start(ui.FormatDraftProgress(drafts[0], 0, 0, "starting..."))
 	report, err := compliance.Run(ctx, opts)
+	spinner.Stop()
+
 	if err != nil && (errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)) {
 		ui.Println()
 		ui.WarnMsg("Aborted by user")
@@ -141,9 +186,6 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("compliance tests failed: %w", err)
 	}
-
-	// Print summary
-	printComplianceSummary(report)
 
 	// Write results if --dev-report
 	if complianceDevReport {
@@ -161,13 +203,14 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 }
 
 func printComplianceSummary(report *compliance.ComplianceReport) {
-	ui.Println("Results:")
+	ui.Println()
+	ui.Println("Summary:")
 	for _, draft := range report.Drafts {
-		status := "✅"
+		status := ui.Success.Render("✓")
 		if draft.Summary.Percentage < 80 {
-			status = "❌"
+			status = ui.Error.Render("✗")
 		} else if draft.Summary.Percentage < 95 {
-			status = "⚠️"
+			status = ui.Warning.Render("!")
 		}
 
 		ui.Printf("  %s %s: %d/%d (%.1f%%)\n",
@@ -178,4 +221,11 @@ func printComplianceSummary(report *compliance.ComplianceReport) {
 			draft.Summary.Percentage,
 		)
 	}
+}
+
+func formatDraftList(drafts []string) string {
+	if len(drafts) <= 3 {
+		return strings.Join(drafts, ", ")
+	}
+	return fmt.Sprintf("%s, %s, ... +%d more", drafts[0], drafts[1], len(drafts)-2)
 }
