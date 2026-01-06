@@ -1,5 +1,5 @@
 {
- "typescript/packages/adapters/zod": "0.1.0",
+ "typescript/packages/adapters/zod": "0.2.0",
  "cli": "0.2.0",
  "typescript/packages/core": "0.0.6",
  "typescript/packages/client": "0.0.4"

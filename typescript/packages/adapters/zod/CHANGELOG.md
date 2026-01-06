@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/xschemadev/xschema/compare/zod-v0.1.0...zod-v0.2.0) (2026-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ts:** adapters protocol improvement and zod perfect compliance
+
+### Features
+
+* **ts:** adapters protocol improvement and zod perfect compliance ([e211a32](https://github.com/xschemadev/xschema/commit/e211a32750554f670ef3e29cfce10883fa0b1e54))
+
 ## [0.1.0](https://github.com/xschemadev/xschema/compare/zod-v0.0.4...zod-v0.1.0) (2026-01-05)
 
 
