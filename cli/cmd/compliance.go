@@ -66,9 +66,8 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 
 	ui.SetVerbose(complianceVerbose)
 
-	// --dev-report and --draft are mutually exclusive
-	if complianceDevReport && complianceDraft != "" {
-		return fmt.Errorf("--dev-report and --draft cannot be used together\n\n--dev-report runs all drafts and writes the full report")
+	if complianceDevReport && (complianceDraft != "" || complianceKeyword != "") {
+		return fmt.Errorf("--dev-report cannot be used with --draft or --keyword")
 	}
 
 	// Get language config

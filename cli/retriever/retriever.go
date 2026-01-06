@@ -49,6 +49,7 @@ type RetrievedSchema struct {
 	ID        string
 	Schema    json.RawMessage
 	Adapter   string
+	SourceURI string // base URI for resolving relative $refs (URL or file path)
 }
 
 // Key returns the full namespaced key like "namespace:id"
@@ -79,8 +80,8 @@ func (c *schemaCache) set(key string, val json.RawMessage) {
 	c.items[key] = val
 }
 
-// retrieveFromURL fetches a JSON schema from a URL with retry
-func retrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMessage, error) {
+// RetrieveFromURL fetches a JSON schema from a URL with retry
+func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMessage, error) {
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
@@ -174,6 +175,31 @@ func retrieveFromFile(ctx context.Context, filePath string, configPath string) (
 	return json.RawMessage(data), nil
 }
 
+// RetrieveFromFilePath reads a JSON schema from an absolute file path
+func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMessage, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
+	ui.Verbosef("reading file: %s", absolutePath)
+
+	data, err := os.ReadFile(absolutePath)
+	if err != nil {
+		ui.Verbosef("failed to read file: path=%s, error=%v", absolutePath, err)
+		return nil, fmt.Errorf("failed to read %s: %w", absolutePath, err)
+	}
+
+	if !json.Valid(data) {
+		ui.Verbosef("invalid JSON in file: %s", absolutePath)
+		return nil, fmt.Errorf("invalid JSON in %s", absolutePath)
+	}
+
+	ui.Verbosef("successfully read file: path=%s, bytes=%d", absolutePath, len(data))
+	return json.RawMessage(data), nil
+}
+
 // Retrieve fetches all schemas from declarations
 func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]RetrievedSchema, error) {
 	if len(decls) == 0 {
@@ -215,6 +241,19 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			cacheKey = "json:" + d.Key()
 		}
 
+		// Compute source URI for bundling
+		var sourceURI string
+		switch d.SourceType {
+		case parser.SourceURL:
+			var url string
+			_ = json.Unmarshal(d.Source, &url)
+			sourceURI = url
+		case parser.SourceFile:
+			var filePath string
+			_ = json.Unmarshal(d.Source, &filePath)
+			sourceURI = filepath.Join(filepath.Dir(d.ConfigPath), filePath)
+		}
+
 		// Check cache first (if enabled)
 		if cache != nil {
 			if cached, ok := cache.get(cacheKey); ok {
@@ -224,12 +263,14 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 					ID:        d.ID,
 					Schema:    cached,
 					Adapter:   d.Adapter,
+					SourceURI: sourceURI,
 				}
 				continue
 			}
 			ui.Verbosef("cache miss: schema=%s, key=%s", d.Key(), cacheKey)
 		}
 
+		srcURI := sourceURI // capture for closure
 		g.Go(func() error {
 			var schema json.RawMessage
 			var err error
@@ -240,7 +281,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				if err := json.Unmarshal(d.Source, &url); err != nil {
 					return fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
 				}
-				schema, err = retrieveFromURL(ctx, url, opts)
+				schema, err = RetrieveFromURL(ctx, url, opts)
 			case parser.SourceFile:
 				var filePath string
 				if err := json.Unmarshal(d.Source, &filePath); err != nil {
@@ -268,6 +309,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				ID:        d.ID,
 				Schema:    schema,
 				Adapter:   d.Adapter,
+				SourceURI: srcURI,
 			}
 			return nil
 		})

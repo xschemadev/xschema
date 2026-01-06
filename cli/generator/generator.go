@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
@@ -63,13 +64,24 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, fmt.Errorf("%s not found: %w", runner, err)
 	}
 
-	// Build input for adapter
+	// Bundle schemas to resolve external $refs
 	adapterInput := make([]GenerateInput, len(input.Schemas))
 	for i, s := range input.Schemas {
+		schema := s.Schema
+		if s.SourceURI != "" {
+			bundled, err := bundler.Bundle(ctx, s.Schema, bundler.Options{
+				BaseURI: s.SourceURI,
+			})
+			if err != nil {
+				ui.Verbosef("failed to bundle schema %s: %v", s.Key(), err)
+				return nil, fmt.Errorf("failed to bundle schema %s: %w", s.Key(), err)
+			}
+			schema = bundled
+		}
 		adapterInput[i] = GenerateInput{
 			Namespace: s.Namespace,
 			ID:        s.ID,
-			Schema:    s.Schema,
+			Schema:    schema,
 		}
 	}
 

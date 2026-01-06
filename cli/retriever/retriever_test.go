@@ -75,7 +75,7 @@ func TestRetrieveFromURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := retrieveFromURL(ctx, tt.url, opts)
+			result, err := RetrieveFromURL(ctx, tt.url, opts)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error, got nil")
@@ -431,7 +431,7 @@ func TestGroupByAdapterSingle(t *testing.T) {
 
 func TestSortedAdapters(t *testing.T) {
 	groups := map[string][]RetrievedSchema{
-		"zod":      {},
+		"zod":               {},
 		"@xschema/pydantic": {},
 		"@xschema/ajv":      {},
 	}
