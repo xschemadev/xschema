@@ -76,15 +76,15 @@
         }
       ]
     },
-    "typescript/packages/core": {
+    "ts/packages/core": {
       "release-type": "node",
       "component": "core"
     },
-    "typescript/packages/client": {
+    "ts/packages/client": {
       "release-type": "node",
       "component": "client"
     },
-    "typescript/packages/adapters/zod": {
+    "ts/packages/adapters/zod": {
       "release-type": "node",
       "component": "zod"
     }

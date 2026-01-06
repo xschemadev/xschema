@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { jsonSchemaToZodCode } from "./typescript/packages/adapters/zod/src/converter";
+import { jsonSchemaToZodCode } from "./ts/packages/adapters/zod/src/converter";
 
 // Test 1: const with object
 const constObjectSchema = {

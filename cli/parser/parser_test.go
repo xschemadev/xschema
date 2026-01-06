@@ -48,8 +48,8 @@ func TestParseConfigFile(t *testing.T) {
 	if config.Namespace != "user" {
 		t.Errorf("expected namespace 'user', got %q", config.Namespace)
 	}
-	if config.Language.Name != "typescript" {
-		t.Errorf("expected language 'typescript', got %q", config.Language.Name)
+	if config.Language.Name != "ts" {
+		t.Errorf("expected language 'ts', got %q", config.Language.Name)
 	}
 	if len(config.Schemas) != 2 {
 		t.Errorf("expected 2 schemas, got %d", len(config.Schemas))
@@ -185,8 +185,8 @@ func TestParse(t *testing.T) {
 		t.Fatalf("Parse: %v", err)
 	}
 
-	if result.Language.Name != "typescript" {
-		t.Errorf("expected language 'typescript', got %q", result.Language.Name)
+	if result.Language.Name != "ts" {
+		t.Errorf("expected language 'ts', got %q", result.Language.Name)
 	}
 	if len(result.Configs) != 2 {
 		t.Errorf("expected 2 configs, got %d", len(result.Configs))
@@ -286,13 +286,13 @@ func TestParseWithLanguageFilter(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	result, err := Parse(ctx, tmpDir, "typescript")
+	result, err := Parse(ctx, tmpDir, "ts")
 	if err != nil {
 		t.Fatalf("Parse with filter: %v", err)
 	}
 
-	if result.Language.Name != "typescript" {
-		t.Errorf("expected language 'typescript', got %q", result.Language.Name)
+	if result.Language.Name != "ts" {
+		t.Errorf("expected language 'ts', got %q", result.Language.Name)
 	}
 	if len(result.Declarations) != 1 {
 		t.Errorf("expected 1 declaration (filtered), got %d", len(result.Declarations))

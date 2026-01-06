@@ -21,10 +21,10 @@ cd xschema
 bun install
 
 # Install TypeScript package dependencies
-cd typescript && bun install && cd ..
+cd ts && bun install && cd ..
 
 # Build TypeScript packages
-cd typescript && bun run build && cd ..
+cd ts && bun run build && cd ..
 
 # Run Go tests
 cd cli && go test ./... && cd ..
@@ -46,8 +46,8 @@ cd cli && go test ./... && cd ..
    # Go
    cd cli && go test ./...
    
-   # TypeScript
-   cd typescript && bun run build && bun run typecheck
+    # TypeScript
+    cd ts && bun run build && bun run typecheck
    ```
 
 4. Commit using conventional commit format (see below)
@@ -65,11 +65,11 @@ xschema/
 │   ├── generator/                # Adapter invocation
 │   ├── injector/                 # Code injection
 │   └── language/                 # Language-specific logic
-├── typescript/                   # TypeScript packages (bun workspace)
+├── ts/                           # TypeScript packages (bun workspace)
 │   ├── packages/
 │   │   ├── core/                 # @xschemadev/core - adapter types
 │   │   ├── client/               # @xschemadev/client - runtime
-│   │   └── zod/                  # @xschemadev/zod - Zod adapter
+│   │   └── adapters/zod/         # @xschemadev/zod - Zod adapter
 │   ├── example/                  # Example project
 │   ├── package.json              # Workspace root
 │   └── tsconfig.base.json        # Shared TS config
@@ -149,7 +149,7 @@ For breaking changes, either:
 
 ### Before Submitting
 
-- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in typescript/)
+- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in ts/)
 - [ ] Commits follow conventional commit format
 - [ ] PR description explains the changes
 

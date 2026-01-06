@@ -16,7 +16,7 @@ cli/                    # Go CLI (github.com/xschemadev/xschema)
   compliance/           # adapter compliance testing
   ui/                   # terminal output helpers
 
-typescript/             # TS packages (bun workspace)
+ts/                     # TS packages (bun workspace)
   packages/core/        # @xschemadev/core - IR types, parser, utils
   packages/adapters/zod/# @xschemadev/zod - zod adapter
   packages/client/      # @xschemadev/client - runtime client
@@ -39,7 +39,7 @@ go vet ./...                            # vet (run in CI)
 go fmt ./...                            # format code
 ```
 
-### TypeScript (run from `typescript/` directory)
+### TypeScript (run from `ts/` directory)
 
 ```bash
 bun install                             # install deps
@@ -153,5 +153,5 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Same ID in same namespace across files = error
 - Multiple languages without `--lang` flag = error
 - `json.RawMessage` preserves raw JSON; don't re-marshal inline schemas
-- Language detected from `$schema` URL: `ts.jsonc` -> typescript, `py.jsonc` -> python
+- Language detected from `$schema` URL: `ts.jsonc` -> ts, `py.jsonc` -> py
 - Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec

@@ -107,30 +107,30 @@ jobs:
           go-version: "1.24"
 
       - uses: oven-sh/setup-bun@v2
-        if: matrix.lang == 'typescript'
+        if: matrix.lang == 'ts'
 
       - name: Install TS dependencies
-        if: matrix.lang == 'typescript'
+        if: matrix.lang == 'ts'
         run: bun install
-        working-directory: typescript
+        working-directory: ts
 
       - name: Build TS packages
-        if: matrix.lang == 'typescript'
+        if: matrix.lang == 'ts'
         run: bun run build
-        working-directory: typescript
+        working-directory: ts
 
       - uses: actions/setup-python@v5
-        if: matrix.lang == 'python'
+        if: matrix.lang == 'py'
         with:
           python-version: "3.12"
 
       - uses: astral-sh/setup-uv@v4
-        if: matrix.lang == 'python'
+        if: matrix.lang == 'py'
 
       - name: Install Python dependencies
-        if: matrix.lang == 'python'
+        if: matrix.lang == 'py'
         run: uv sync
-        working-directory: python
+        working-directory: py
 
       - name: Build CLI
         run: go build -o xschema .

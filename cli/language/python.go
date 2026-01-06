@@ -7,7 +7,7 @@ import (
 )
 
 var python = Language{
-	Name:                 "python",
+	Name:                 "py",
 	Extensions:           []string{".py"},
 	SchemaURL:            XSchemaBaseURL + "py.jsonc",
 	SchemaExt:            "py.jsonc",

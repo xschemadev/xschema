@@ -8,7 +8,7 @@ import (
 )
 
 var typescript = Language{
-	Name:                 "typescript",
+	Name:                 "ts",
 	Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
 	SchemaURL:            XSchemaBaseURL + "ts.jsonc",
 	SchemaExt:            "ts.jsonc",
