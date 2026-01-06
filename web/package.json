@@ -5,9 +5,11 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite dev",
-    "build": "bun run generate:schemas && vite build",
+    "build": "bun run generate && vite build",
     "start": "node .output/server/index.mjs",
+    "generate": "bun run generate:schemas && bun run generate:compliance",
     "generate:schemas": "bun scripts/generate-schemas.ts",
+    "generate:compliance": "bun scripts/generate-compliance.ts",
     "test": "bun test",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx",

@@ -19,3 +19,4 @@ node_modules
 
 # Generated at build time
 /public/schemas
+/content/docs/**/compliance.mdx
