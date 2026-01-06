@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/xschemadev/xschema/compare/arktype-v0.1.1...arktype-v0.1.2) (2026-01-06)
+
+
+### Features
+
+* **ts:** re-run arktype compliance + remove useless files from zod adapter ([abe0dbd](https://github.com/xschemadev/xschema/commit/abe0dbd1a9e54a2d1fa355d5906d2ca3c649332d))
+
 ## [0.1.1](https://github.com/xschemadev/xschema/compare/arktype-v0.1.0...arktype-v0.1.1) (2026-01-06)
 
 
