@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -148,10 +149,16 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, 
 		return b.processRef(obj, ref, baseURI)
 	}
 
-	// Recursively process all properties
+	// Recursively process all properties in sorted order for deterministic error messages
+	keys := make([]string, 0, len(obj))
+	for k := range obj {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	result := make(map[string]any, len(obj))
-	for k, v := range obj {
-		processed, err := b.processNode(v, baseURI)
+	for _, k := range keys {
+		processed, err := b.processNode(obj[k], baseURI)
 		if err != nil {
 			return nil, err
 		}
