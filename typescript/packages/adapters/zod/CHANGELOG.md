@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/xschemadev/xschema/compare/zod-v0.2.0...zod-v0.2.1) (2026-01-06)
+
+
+### Features
+
+* **ts:** re-run arktype compliance + remove useless files from zod adapter ([abe0dbd](https://github.com/xschemadev/xschema/commit/abe0dbd1a9e54a2d1fa355d5906d2ca3c649332d))
+* **web:** initial web setup ([c0c1c66](https://github.com/xschemadev/xschema/commit/c0c1c66075486ae6fc1416709455f590436f76d8))
+
 ## [0.2.0](https://github.com/xschemadev/xschema/compare/zod-v0.1.0...zod-v0.2.0) (2026-01-06)
 
 
