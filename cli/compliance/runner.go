@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/xschemadev/xschema/bundler"
@@ -252,6 +253,9 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 }
 
 func markAllFailed(keywordResult *KeywordResult, summary *DraftSummary, group TestGroup, errorMsg string) {
+	// Normalize error message to remove machine-specific paths
+	errorMsg = normalizeErrorPath(errorMsg)
+
 	for _, tc := range group.Tests {
 		keywordResult.Failed++
 		keywordResult.Total++
@@ -267,6 +271,16 @@ func markAllFailed(keywordResult *KeywordResult, summary *DraftSummary, group Te
 			Error:    errorMsg,
 		})
 	}
+}
+
+// normalizeErrorPath replaces machine-specific cache paths with a placeholder
+// to ensure compliance reports are deterministic across different machines
+func normalizeErrorPath(errorMsg string) string {
+	cacheDir, err := GetCacheDir()
+	if err == nil && cacheDir != "" {
+		errorMsg = strings.ReplaceAll(errorMsg, cacheDir, "$CACHE")
+	}
+	return errorMsg
 }
 
 func processResults(harnessResults []HarnessResult, group TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
@@ -294,7 +308,7 @@ func processResults(harnessResults []HarnessResult, group TestGroup, keywordResu
 				Expected: tc.Valid,
 				Actual:   hr.Actual,
 				Passed:   false,
-				Error:    hr.Error,
+				Error:    normalizeErrorPath(hr.Error),
 			})
 		}
 	}

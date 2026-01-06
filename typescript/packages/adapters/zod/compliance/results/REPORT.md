@@ -1,6 +1,6 @@
 # @xschemadev/zod Compliance Report
 
-Generated: 2026-01-05T23:48:34Z
+Generated: 2026-01-06T00:16:52Z
 
 ## Summary
 
@@ -457,16 +457,16 @@ Generated: 2026-01-05T23:48:34Z
   - Expected: `valid`, Got: `error: bundling error: failed to fetch "foo.json": failed to read foo.json: open foo.json: no such file or directory`
 - **Recursive references between schemas**
   - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to fetch "tree": failed to read tree: open tree: no such file or directory`
+  - Expected: `valid`, Got: `error: bundling error: failed to fetch "node": failed to read node: open node: no such file or directory`
 - **Recursive references between schemas**
   - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "tree": failed to read tree: open tree: no such file or directory`
+  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "node": failed to read node: open node: no such file or directory`
 - **Location-independent identifier with base URI change in subschema**
   - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to fetch "http://localhost:1234/nested.json": failed to read /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: open /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: no such file or directory`
+  - Expected: `valid`, Got: `error: bundling error: failed to fetch "http://localhost:1234/nested.json": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory`
 - **Location-independent identifier with base URI change in subschema**
   - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "http://localhost:1234/nested.json": failed to read /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: open /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: no such file or directory`
+  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "http://localhost:1234/nested.json": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory`
 - **id must be resolved against nearest parent, not just immediate parent**
   - Test: number is valid
   - Expected: `valid`, Got: `error: bundling error: failed to fetch "http://example.com/b/d.json": failed to fetch http://example.com/b/d.json: status 404`

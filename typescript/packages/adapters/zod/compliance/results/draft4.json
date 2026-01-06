@@ -230,7 +230,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
+          "error": "bundling error: failed to fetch \"node\": failed to read node: open node: no such file or directory"
         },
         {
           "group": "Recursive references between schemas",
@@ -238,7 +238,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
+          "error": "bundling error: failed to fetch \"node\": failed to read node: open node: no such file or directory"
         },
         {
           "group": "Location-independent identifier with base URI change in subschema",
@@ -246,7 +246,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: open /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: no such file or directory"
+          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
         },
         {
           "group": "Location-independent identifier with base URI change in subschema",
@@ -254,7 +254,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: open /home/trapani/.cache/xschema/json-schema-test-suite/remotes/nested.json: no such file or directory"
+          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
         },
         {
           "group": "id must be resolved against nearest parent, not just immediate parent",
