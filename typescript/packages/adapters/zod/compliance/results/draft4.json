@@ -119,10 +119,19 @@
     },
     {
       "keyword": "maximum",
-      "passed": 14,
-      "failed": 0,
+      "passed": 13,
+      "failed": 1,
       "skipped": 0,
-      "total": 14
+      "total": 14,
+      "failures": [
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "minItems",
@@ -147,10 +156,19 @@
     },
     {
       "keyword": "minimum",
-      "passed": 17,
-      "failed": 0,
+      "passed": 16,
+      "failed": 1,
       "skipped": 0,
-      "total": 17
+      "total": 17,
+      "failures": [
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "multipleOf",
@@ -230,7 +248,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"node\": failed to read node: open node: no such file or directory"
+          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
         },
         {
           "group": "Recursive references between schemas",
@@ -238,7 +256,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"node\": failed to read node: open node: no such file or directory"
+          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
         },
         {
           "group": "Location-independent identifier with base URI change in subschema",
@@ -378,10 +396,10 @@
     }
   ],
   "summary": {
-    "passed": 579,
-    "failed": 20,
+    "passed": 577,
+    "failed": 22,
     "skipped": 0,
     "total": 599,
-    "percentage": 96.661101836394
+    "percentage": 96.32721202003339
   }
 }

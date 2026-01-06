@@ -1,6 +1,6 @@
 # @xschemadev/zod Compliance Report
 
-Generated: 2026-01-06T00:16:52Z
+Generated: 2026-01-06T01:19:29Z
 
 ## Summary
 
@@ -10,8 +10,8 @@ Generated: 2026-01-06T00:16:52Z
 | draft2019-09 | 1015 | 12 | 0 | 98.8% |
 | draft7 | 869 | 3 | 0 | 99.7% |
 | draft6 | 789 | 3 | 0 | 99.6% |
-| draft4 | 579 | 20 | 0 | 96.7% |
-| draft3 | 411 | 15 | 0 | 96.5% |
+| draft4 | 577 | 22 | 0 | 96.3% |
+| draft3 | 411 | 17 | 0 | 96.0% |
 | v1 | 867 | 12 | 0 | 98.6% |
 
 ## Badges
@@ -20,8 +20,8 @@ Generated: 2026-01-06T00:16:52Z
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.8%25-brightgreen)
 ![draft7](https://img.shields.io/badge/draft7%20compliance-99.7%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-99.6%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-96.7%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-96.5%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-96.3%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-96.0%25-brightgreen)
 ![v1](https://img.shields.io/badge/v1%20compliance-98.6%25-brightgreen)
 
 ## draft2020-12
@@ -406,11 +406,11 @@ Generated: 2026-01-06T00:16:52Z
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
-| maximum | ✅ | 14/14 |
+| maximum | ⚠️ | 13/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
 | minProperties | ✅ | 6/6 |
-| minimum | ✅ | 17/17 |
+| minimum | ⚠️ | 16/17 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
 | oneOf | ✅ | 23/23 |
@@ -444,6 +444,24 @@ Generated: 2026-01-06T00:16:52Z
 </details>
 
 <details>
+<summary>maximum - 1 failure</summary>
+
+- **exclusiveMaximum validation**
+  - Test: boundary point is invalid
+  - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
+<summary>minimum - 1 failure</summary>
+
+- **exclusiveMinimum validation**
+  - Test: boundary point is invalid
+  - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
 <summary>ref - 9 failures</summary>
 
 - **ref overrides any sibling keywords**
@@ -457,10 +475,10 @@ Generated: 2026-01-06T00:16:52Z
   - Expected: `valid`, Got: `error: bundling error: failed to fetch "foo.json": failed to read foo.json: open foo.json: no such file or directory`
 - **Recursive references between schemas**
   - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to fetch "node": failed to read node: open node: no such file or directory`
+  - Expected: `valid`, Got: `error: bundling error: failed to fetch "tree": failed to read tree: open tree: no such file or directory`
 - **Recursive references between schemas**
   - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "node": failed to read node: open node: no such file or directory`
+  - Expected: `invalid`, Got: `error: bundling error: failed to fetch "tree": failed to read tree: open tree: no such file or directory`
 - **Location-independent identifier with base URI change in subschema**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to fetch "http://localhost:1234/nested.json": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory`
@@ -526,16 +544,16 @@ Generated: 2026-01-06T00:16:52Z
 | items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
-| maximum | ✅ | 14/14 |
+| maximum | ⚠️ | 13/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
-| minimum | ✅ | 13/13 |
+| minimum | ⚠️ | 12/13 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
 | ref | ⚠️ | 17/21 |
 | refRemote | ⚠️ | 6/8 |
-| required | ✅ | 2/2 |
+| required | ✅ | 4/4 |
 | type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
@@ -555,6 +573,24 @@ Generated: 2026-01-06T00:16:52Z
 
 - **dependencies**
   - Test: missing dependency
+  - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
+<summary>maximum - 1 failure</summary>
+
+- **exclusiveMaximum validation**
+  - Test: boundary point is invalid
+  - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
+<summary>minimum - 1 failure</summary>
+
+- **exclusiveMinimum validation**
+  - Test: boundary point is invalid
   - Expected: `invalid`, Got: `true`
 
 </details>
