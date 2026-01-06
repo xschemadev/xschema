@@ -87,6 +87,10 @@
     "typescript/packages/adapters/zod": {
       "release-type": "node",
       "component": "zod"
+    },
+    "typescript/packages/adapters/arktype": {
+      "release-type": "node",
+      "component": "arktype"
     }
   },
   "separate-pull-requests": true,

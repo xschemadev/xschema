@@ -16,6 +16,13 @@
 			"sourceType": "file",
 			"source": "./calendar.json",
 			"adapter": "zod"
+		},
+		{
+			// Schema from a local file using ArkType adapter
+			"id": "User",
+			"sourceType": "file",
+			"source": "./user.json",
+			"adapter": "arktype"
 		}
 	]
 }
