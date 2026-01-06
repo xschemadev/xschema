@@ -16,6 +16,3 @@ export function convert(input: ConvertInput): ConvertResult {
 		type: `z.infer<typeof ${varName}>`,
 	};
 }
-
-// Re-export the old function for backwards compatibility during transition
-export { jsonSchemaToZodCode } from "./converter.js";

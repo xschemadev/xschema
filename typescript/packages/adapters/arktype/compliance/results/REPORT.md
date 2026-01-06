@@ -1,6 +1,6 @@
 # @xschemadev/arktype Compliance Report
 
-Generated: 2026-01-06T16:28:04Z
+Generated: 2026-01-06T18:18:17Z
 
 ## Summary
 
