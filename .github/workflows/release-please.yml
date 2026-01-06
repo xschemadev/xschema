@@ -23,26 +23,13 @@ jobs:
       client--release_created: ${{ steps.release.outputs['typescript/packages/client--release_created'] }}
       zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
     steps:
+      # Using PAT instead of GITHUB_TOKEN so PRs trigger workflow runs
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-
-      - name: Trigger CI for release-please PRs
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          prs=$(gh pr list --repo ${{ github.repository }} --state open --json headRefName --jq '.[] | select(.headRefName | startswith("release-please--")) | .headRefName')
-          
-          for branch in $prs; do
-            echo "Dispatching CI for branch: $branch"
-            gh workflow run CI --repo ${{ github.repository }} --ref "$branch"
-            
-            echo "Dispatching Compliance Check for branch: $branch"
-            gh workflow run "Compliance Check" --repo ${{ github.repository }} --ref "$branch"
-          done
 
   # Build and publish Go CLI when released
   release-cli:
