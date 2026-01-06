@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/xschemadev/xschema/compare/cli-v0.1.0...cli-v0.2.0) (2026-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ts:** adapters protocol improvement and zod perfect compliance
+
+### Features
+
+* **cli:** improve dx for cli ([e16b5b3](https://github.com/xschemadev/xschema/commit/e16b5b318efed0c9610cf6b1418f2752b93f7b84))
+* **ts:** adapters protocol improvement and zod perfect compliance ([e211a32](https://github.com/xschemadev/xschema/commit/e211a32750554f670ef3e29cfce10883fa0b1e54))
+
 ## [0.1.0](https://github.com/xschemadev/xschema/compare/cli-v0.0.8...cli-v0.1.0) (2026-01-05)
 
 
