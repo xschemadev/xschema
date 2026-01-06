@@ -1,0 +1,112 @@
+---
+title: Zod
+description: Generate Zod schemas from JSON Schema definitions
+icon: Shield
+---
+
+The Zod adapter converts JSON Schema definitions into [Zod](https://zod.dev) validation schemas with full TypeScript type inference.
+
+## Overview
+
+Zod is a TypeScript-first schema declaration and validation library. XSchema's Zod adapter provides:
+
+- **High compliance** with JSON Schema specifications (98%+ for modern drafts)
+- **Full type inference** - generated schemas include TypeScript types
+- **Runtime validation** - validate data at runtime with detailed error messages
+
+## Installation
+
+The Zod adapter is included with the XSchema CLI. You just need Zod installed in your project:
+
+```bash
+npm install zod
+# or
+bun add zod
+```
+
+## Usage
+
+Specify `"adapter": "zod"` in your schema definitions:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "sourceType": "json",
+      "source": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "name": { "type": "string", "minLength": 1 },
+          "age": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "adapter": "zod"
+    }
+  ]
+}
+```
+
+## Generated Output
+
+Running `xschema generate` produces:
+
+```typescript
+import { z } from "zod";
+
+export const User = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1),
+  age: z.number().int().min(0).optional(),
+});
+
+export type User = z.infer<typeof User>;
+```
+
+## Using Generated Schemas
+
+```typescript
+import { User } from "./__generated__/schemas";
+
+// Validate data
+const result = User.safeParse(userData);
+if (result.success) {
+  console.log(result.data); // Fully typed!
+} else {
+  console.error(result.error.issues);
+}
+
+// Parse and throw on error
+const user = User.parse(userData);
+```
+
+## Supported Features
+
+The Zod adapter supports the vast majority of JSON Schema keywords. See the [Compliance](/docs/ts/adapters/zod/compliance) page for detailed coverage by JSON Schema draft.
+
+### Highlights
+
+- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
+- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
+- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
+- String constraints (`minLength`, `maxLength`, `pattern`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`)
+- Object constraints (`required`, `additionalProperties`, `propertyNames`)
+- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
+- Conditionals (`if`/`then`/`else`)
+- References (`$ref`, `$defs`)
+
+## Limitations
+
+Some advanced JSON Schema features have partial support:
+
+- `$dynamicRef` / `$dynamicAnchor` - complex dynamic references may not resolve correctly
+- `unevaluatedProperties` with cyclic refs - edge cases may pass incorrectly
+- Meta-schema vocabulary validation - custom vocabularies not fully supported
+
+See the [Compliance](/docs/ts/adapters/zod/compliance) page for the full breakdown.

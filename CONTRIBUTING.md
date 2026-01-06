@@ -46,8 +46,8 @@ cd cli && go test ./... && cd ..
    # Go
    cd cli && go test ./...
    
-   # TypeScript
-   cd typescript && bun run build && bun run typecheck
+    # TypeScript
+     cd typescript && bun run build && bun run typecheck
    ```
 
 4. Commit using conventional commit format (see below)
@@ -69,7 +69,7 @@ xschema/
 │   ├── packages/
 │   │   ├── core/                 # @xschemadev/core - adapter types
 │   │   ├── client/               # @xschemadev/client - runtime
-│   │   └── zod/                  # @xschemadev/zod - Zod adapter
+│   │   └── adapters/zod/         # @xschemadev/zod - Zod adapter
 │   ├── example/                  # Example project
 │   ├── package.json              # Workspace root
 │   └── tsconfig.base.json        # Shared TS config
@@ -149,7 +149,7 @@ For breaking changes, either:
 
 ### Before Submitting
 
-- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in typescript/)
+- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in ts/)
 - [ ] Commits follow conventional commit format
 - [ ] PR description explains the changes
 

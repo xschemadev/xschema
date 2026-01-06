@@ -84,7 +84,7 @@ func Parse(ctx context.Context, projectRoot string, langFilter string) (*ParseRe
 
 ```jsonc
 {
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "namespace": "optional-override",
   "schemas": [
     {
@@ -101,7 +101,7 @@ func Parse(ctx context.Context, projectRoot string, langFilter string) (*ParseRe
 
 ```jsonc
 {
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   
   // Optional: override namespace (defaults to filename)
   "namespace": "models",

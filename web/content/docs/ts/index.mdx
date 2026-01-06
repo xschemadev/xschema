@@ -1,0 +1,91 @@
+---
+title: TypeScript
+description: Using XSchema with TypeScript projects
+icon: FileCode
+---
+
+XSchema provides first-class support for TypeScript, generating type-safe validation schemas from JSON Schema definitions.
+
+## Overview
+
+When you run XSchema on a TypeScript project, it:
+
+1. Reads your JSON Schema definitions from config files
+2. Converts them to native TypeScript validation libraries (like Zod)
+3. Generates fully typed schemas with inferred TypeScript types
+
+## Getting Started
+
+### Installation
+
+```bash
+# Install the CLI globally
+npm install -g @xschemadev/cli
+
+# Or use npx
+npx @xschemadev/cli generate
+```
+
+### Configuration
+
+Create a config file (e.g., `schemas.jsonc`) with the `$schema` field pointing to the XSchema schema:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "sourceType": "file",
+      "source": "./user.schema.json",
+      "adapter": "zod"
+    }
+  ]
+}
+```
+
+### Generate
+
+Run the CLI to generate your validation schemas:
+
+```bash
+xschema generate
+```
+
+This creates a `__generated__` directory with your typed schemas ready to import.
+
+## Available Adapters
+
+XSchema supports multiple TypeScript validation libraries:
+
+<Cards>
+  <Card title="Zod" href="/docs/ts/adapters/zod" />
+</Cards>
+
+## Example Output
+
+For a JSON Schema like:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["name"]
+}
+```
+
+XSchema generates (with the Zod adapter):
+
+```typescript
+import { z } from "zod";
+
+export const User = z.object({
+  name: z.string(),
+  age: z.number().int().min(0).optional(),
+});
+
+export type User = z.infer<typeof User>;
+```

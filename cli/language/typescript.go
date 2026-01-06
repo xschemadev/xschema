@@ -10,8 +10,8 @@ import (
 var typescript = Language{
 	Name:                 "typescript",
 	Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
-	SchemaURL:            XSchemaBaseURL + "ts.jsonc",
-	SchemaExt:            "ts.jsonc",
+	SchemaURL:            XSchemaBaseURL + "typescript.jsonc",
+	SchemaExt:            "typescript.jsonc",
 	AdapterBinPrefix:     "xschema-",
 	DetectRunner:         detectTSRunner,
 	BuildSchemasImport:   buildTSSchemasImport,

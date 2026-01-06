@@ -64,7 +64,7 @@ jobs:
         run: go vet ./...
         working-directory: cli
 
-  typescript-build:
+  ts-build:
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.typescript == 'true'
@@ -98,14 +98,14 @@ jobs:
           fi
           echo "go-test passed or was skipped"
 
-  typescript-build-result:
+  ts-build-result:
     runs-on: ubuntu-latest
-    needs: [changes, typescript-build]
+    needs: [changes, ts-build]
     if: always()
     steps:
       - run: |
-          if [ "${{ needs.typescript-build.result }}" = "failure" ]; then
-            echo "typescript-build failed"
+          if [ "${{ needs.ts-build.result }}" = "failure" ]; then
+            echo "ts-build failed"
             exit 1
           fi
-          echo "typescript-build passed or was skipped"
+          echo "ts-build passed or was skipped"

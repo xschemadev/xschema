@@ -27,7 +27,7 @@ func (s SchemaEntry) Key() string {
 type Language struct {
 	Name             string
 	Extensions       []string // file extensions for source files (for injector)
-	SchemaURL        string   // e.g., "https://xschema.dev/schemas/ts.jsonc"
+	SchemaURL        string   // e.g., "https://xschema.dev/schemas/typescript.jsonc"
 	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
 	DetectRunner     func() (cmd string, args []string, err error)
@@ -70,7 +70,7 @@ func init() {
 	}
 }
 
-// BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/ts.jsonc"
+// BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/typescript.jsonc"
 // Returns nil if URL doesn't match xschema.dev pattern
 func BySchemaURL(url string) *Language {
 	if !strings.HasPrefix(url, XSchemaBaseURL) {

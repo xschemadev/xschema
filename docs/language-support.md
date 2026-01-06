@@ -14,7 +14,7 @@ Each xschema config file declares its language via the `$schema` field:
 
 ```jsonc
 {
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [...]
 }
 ```
@@ -126,7 +126,7 @@ type Language struct {
 ```go
 Language{
     Name:                 "typescript",
-    SchemaURL:            "https://xschema.dev/schemas/ts.jsonc",
+    SchemaURL:            "https://xschema.dev/schemas/typescript.jsonc",
     SchemaExt:            "ts.jsonc",
     AdapterBinPrefix:     "xschema-",
     DetectRunner:         detectTSRunner,
@@ -603,7 +603,7 @@ Add to `.github/workflows/compliance.yml`:
 
 ```jsonc
 {
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
       "id": "User",

@@ -13,7 +13,7 @@ func TestParseConfigFile(t *testing.T) {
 
 	// Create a valid xschema config file
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{
 				"id": "User",
@@ -68,7 +68,7 @@ func TestParseConfigFileWithNamespaceOverride(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"namespace": "custom",
 		"schemas": [
 			{
@@ -126,7 +126,7 @@ func TestParseConfigFileWithJSONC(t *testing.T) {
 	// JSONC with comments
 	configContent := `{
 		// This is a comment
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{
 				"id": "Test",
@@ -160,13 +160,13 @@ func TestParse(t *testing.T) {
 
 	// Create two config files
 	config1 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	config2 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "zod"}
 		]
@@ -202,14 +202,14 @@ func TestParseDuplicateIDError(t *testing.T) {
 	// Two config files with same namespace (same filename) but shouldn't happen
 	// Actually - two different files with same ID in same namespace
 	config1 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"namespace": "shared",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
 	config2 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"namespace": "shared",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user2.json", "adapter": "zod"}
@@ -235,7 +235,7 @@ func TestParseMultipleLanguagesError(t *testing.T) {
 
 	// One TypeScript, one Python config
 	tsConfig := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
@@ -266,7 +266,7 @@ func TestParseWithLanguageFilter(t *testing.T) {
 
 	// One TypeScript, one Python config
 	tsConfig := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
@@ -314,7 +314,7 @@ func TestParseConfigFileEmptySchemas(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": []
 	}`
 
@@ -343,8 +343,8 @@ func TestParseConfigFileMalformedJSON(t *testing.T) {
 		name    string
 		content string
 	}{
-		{"truncated", `{"$schema": "https://xschema.dev/schemas/ts.jsonc"`},
-		{"invalid syntax", `{"$schema": "https://xschema.dev/schemas/ts.jsonc", schemas: []}`},
+		{"truncated", `{"$schema": "https://xschema.dev/schemas/typescript.jsonc"`},
+		{"invalid syntax", `{"$schema": "https://xschema.dev/schemas/typescript.jsonc", schemas: []}`},
 		{"empty file", ``},
 		{"not json", `this is not json`},
 	}
@@ -431,7 +431,7 @@ func TestParseConfigFileInSubdirectory(t *testing.T) {
 	}
 
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
@@ -457,7 +457,7 @@ func TestParseConfigFileWithAllSourceTypes(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "FromURL", "sourceType": "url", "source": "https://example.com/schema.json", "adapter": "zod"},
 			{"id": "FromFile", "sourceType": "file", "source": "./local.json", "adapter": "zod"},
@@ -539,7 +539,7 @@ func TestParseContextCancellation(t *testing.T) {
 
 	// Create a config file
 	configContent := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}]
 	}`
 	if err := os.WriteFile(filepath.Join(tmpDir, "test.jsonc"), []byte(configContent), 0644); err != nil {

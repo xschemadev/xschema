@@ -83,7 +83,7 @@ func TestInject_Python(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "python",
+		Language: "py",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{

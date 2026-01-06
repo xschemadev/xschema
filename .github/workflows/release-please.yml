@@ -141,7 +141,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # Publish TypeScript packages when released
-  release-typescript:
+  release-ts:
     needs: release-please
     if: |
       needs.release-please.outputs.core--release_created == 'true' ||

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run main.ts",
-    "generate": "cd ../../cli && go run . generate --project ../typescript/example"
+    "generate": "cd ../../cli && go run . generate --project ../ts/example"
   },
   "dependencies": {
     "@xschemadev/arktype": "workspace:*",
