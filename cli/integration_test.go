@@ -16,13 +16,13 @@ func TestIntegration_MultipleConfigs(t *testing.T) {
 
 	// Create two config files with different namespaces
 	config1 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "json", "source": {"type": "string"}, "adapter": "zod"}
 		]
 	}`
 	config2 := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "Post", "sourceType": "json", "source": {"type": "number"}, "adapter": "zod"}
 		]
@@ -64,7 +64,7 @@ func TestIntegration_InlineJSONPassthrough(t *testing.T) {
 
 	inlineSchema := `{"type": "object", "properties": {"test": {"type": "boolean"}}}`
 	config := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "Inline", "sourceType": "json", "source": ` + inlineSchema + `, "adapter": "zod"}
 		]
@@ -96,7 +96,7 @@ func TestIntegration_AdapterGrouping(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	config := `{
-		"$schema": "https://xschema.dev/schemas/ts.jsonc",
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "Zod1", "sourceType": "json", "source": {"type": "string"}, "adapter": "zod"},
 			{"id": "Zod2", "sourceType": "json", "source": {"type": "number"}, "adapter": "zod"},

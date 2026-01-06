@@ -196,7 +196,7 @@ describe("generateSchema", () => {
     const properties = schema.properties as Record<string, unknown>;
     const schemaProperty = properties.$schema as Record<string, unknown>;
 
-    expect(schemaProperty.const).toBe("https://xschema.dev/schemas/ts.jsonc");
+    expect(schemaProperty.const).toBe("https://xschema.dev/schemas/typescript.jsonc");
   });
 
   test("adapter enum contains all adapters", () => {

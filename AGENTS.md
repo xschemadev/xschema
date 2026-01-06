@@ -16,7 +16,7 @@ cli/                    # Go CLI (github.com/xschemadev/xschema)
   compliance/           # adapter compliance testing
   ui/                   # terminal output helpers
 
-ts/                     # TS packages (bun workspace)
+typescript/             # TS packages (bun workspace)
   packages/core/        # @xschemadev/core - IR types, parser, utils
   packages/adapters/zod/# @xschemadev/zod - zod adapter
   packages/client/      # @xschemadev/client - runtime client
@@ -39,7 +39,7 @@ go vet ./...                            # vet (run in CI)
 go fmt ./...                            # format code
 ```
 
-### TypeScript (run from `ts/` directory)
+### TypeScript (run from `typescript/` directory)
 
 ```bash
 bun install                             # install deps

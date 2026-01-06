@@ -1,7 +1,7 @@
 {
 	// Another config file - namespace defaults to "another"
 	// Multiple config files are merged into one output
-	"$schema": "https://xschema.dev/schemas/ts.jsonc",
+	"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 	"schemas": [
 		{
 			"id": "TSConfig",

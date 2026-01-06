@@ -14,7 +14,7 @@ func TestInject_TypeScript(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
@@ -171,7 +171,7 @@ func TestInject_TypeOnly(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
@@ -209,7 +209,7 @@ func TestInject_SchemaOnly(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
@@ -248,7 +248,7 @@ func TestInject_CreatesDirectory(t *testing.T) {
 	outDir := filepath.Join(tmpDir, "nested", ".xschema")
 
 	err := Inject(InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   outDir,
 		Outputs: []generator.GenerateOutput{
 			{Namespace: "test", ID: "Test", Schema: "z.string()", Imports: []string{}},
@@ -280,7 +280,7 @@ export const xschema = createXSchemaClient({
 	}
 
 	// Inject
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
@@ -324,7 +324,7 @@ export const xschema = createXSchemaClient({});
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
@@ -362,7 +362,7 @@ export const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" }
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
@@ -400,7 +400,7 @@ export const xschema = createXSchemaClient({ schemas: schemas, defaultNamespace:
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
@@ -428,7 +428,7 @@ func TestInject_EmptyOutputs(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs:  []generator.GenerateOutput{},
 	}
@@ -454,7 +454,7 @@ func TestInject_MixedSchemaAndType(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
@@ -509,7 +509,7 @@ func TestInject_MultipleNamespaces(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{Namespace: "user", ID: "User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
@@ -546,7 +546,7 @@ func TestInject_DifferentImports(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{
@@ -595,7 +595,7 @@ func TestInject_OverwriteExisting(t *testing.T) {
 	}
 
 	input := InjectInput{
-		Language: "ts",
+		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []generator.GenerateOutput{
 			{Namespace: "user", ID: "New", Schema: "z.string()", Imports: []string{}},
@@ -636,7 +636,7 @@ export const foo = "bar";
 		t.Fatalf("Failed to write client file: %v", err)
 	}
 
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: clientFile,
@@ -661,7 +661,7 @@ export const foo = "bar";
 }
 
 func TestInjectClient_FileNotFound(t *testing.T) {
-	lang := language.ByName("ts")
+	lang := language.ByName("typescript")
 
 	err := InjectClient(InjectClientInput{
 		ClientFile: "/nonexistent/path/main.ts",

@@ -21,10 +21,10 @@ cd xschema
 bun install
 
 # Install TypeScript package dependencies
-cd ts && bun install && cd ..
+cd typescript && bun install && cd ..
 
 # Build TypeScript packages
-cd ts && bun run build && cd ..
+cd typescript && bun run build && cd ..
 
 # Run Go tests
 cd cli && go test ./... && cd ..
@@ -47,7 +47,7 @@ cd cli && go test ./... && cd ..
    cd cli && go test ./...
    
     # TypeScript
-    cd ts && bun run build && bun run typecheck
+     cd typescript && bun run build && bun run typecheck
    ```
 
 4. Commit using conventional commit format (see below)
@@ -65,7 +65,7 @@ xschema/
 │   ├── generator/                # Adapter invocation
 │   ├── injector/                 # Code injection
 │   └── language/                 # Language-specific logic
-├── ts/                           # TypeScript packages (bun workspace)
+├── typescript/                   # TypeScript packages (bun workspace)
 │   ├── packages/
 │   │   ├── core/                 # @xschemadev/core - adapter types
 │   │   ├── client/               # @xschemadev/client - runtime

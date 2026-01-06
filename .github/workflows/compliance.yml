@@ -107,17 +107,17 @@ jobs:
           go-version: "1.24"
 
       - uses: oven-sh/setup-bun@v2
-        if: matrix.lang == 'ts'
+        if: matrix.lang == 'typescript'
 
       - name: Install TS dependencies
-        if: matrix.lang == 'ts'
+        if: matrix.lang == 'typescript'
         run: bun install
-        working-directory: ts
+        working-directory: typescript
 
       - name: Build TS packages
-        if: matrix.lang == 'ts'
+        if: matrix.lang == 'typescript'
         run: bun run build
-        working-directory: ts
+        working-directory: typescript
 
       - uses: actions/setup-python@v5
         if: matrix.lang == 'py'
