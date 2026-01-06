@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/xschemadev/xschema/compare/cli-v0.2.0...cli-v0.2.1) (2026-01-06)
+
+
+### Features
+
+* **cli:** deterministic compliance ([9498a9c](https://github.com/xschemadev/xschema/commit/9498a9c53e1fdac4eb56871c51d3afabb2bd3a36))
+* **web:** initial web setup ([c0c1c66](https://github.com/xschemadev/xschema/commit/c0c1c66075486ae6fc1416709455f590436f76d8))
+
 ## [0.2.0](https://github.com/xschemadev/xschema/compare/cli-v0.1.0...cli-v0.2.0) (2026-01-06)
 
 
