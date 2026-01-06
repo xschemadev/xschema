@@ -1,0 +1,426 @@
+{
+  "draft": "draft2019-09",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "total": 19
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 20,
+      "failed": 1,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "additionalProperties does not look in applicators",
+          "test": "properties defined in allOf are not examined",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "allOf",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "total": 30
+    },
+    {
+      "keyword": "anchor",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "total": 54
+    },
+    {
+      "keyword": "contains",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "total": 21
+    },
+    {
+      "keyword": "content",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "defs",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependentRequired",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "dependentSchemas",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "enum",
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "total": 45
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "format",
+      "passed": 114,
+      "failed": 0,
+      "skipped": 0,
+      "total": 114
+    },
+    {
+      "keyword": "if-then-else",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "total": 30
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "maxContains",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "total": 12
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "maximum",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minContains",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "minItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "minLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minimum",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "total": 11
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "not",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "total": 38
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "total": 27
+    },
+    {
+      "keyword": "pattern",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "total": 23
+    },
+    {
+      "keyword": "properties",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "recursiveRef",
+      "passed": 21,
+      "failed": 9,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "two levels, no match",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node does not match: recursion uses the inner schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node does not match: recursion only uses inner schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "ref",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "total": 35
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "total": 17
+    },
+    {
+      "keyword": "required",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "type",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "total": 80
+    },
+    {
+      "keyword": "unevaluatedItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "unevaluatedProperties",
+      "passed": 43,
+      "failed": 1,
+      "skipped": 0,
+      "total": 44,
+      "failures": [
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 3rd level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 69,
+      "failed": 0,
+      "skipped": 0,
+      "total": 69
+    },
+    {
+      "keyword": "vocabulary",
+      "passed": 4,
+      "failed": 1,
+      "skipped": 0,
+      "total": 5,
+      "failures": [
+        {
+          "group": "schema that uses custom metaschema with with no validation vocabulary",
+          "test": "no validation: invalid number, but it still validates",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 1015,
+    "failed": 12,
+    "skipped": 0,
+    "total": 1027,
+    "percentage": 98.83154819863681
+  }
+}

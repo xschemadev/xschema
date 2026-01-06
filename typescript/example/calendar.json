@@ -44,7 +44,12 @@
       "type": "string"
     },
     "geo": {
-      "$ref": "https://example.com/geographical-location.schema.json"
+      "type": "object",
+      "description": "Geographical location",
+      "properties": {
+        "lat": { "type": "number" },
+        "lng": { "type": "number" }
+      }
     }
   }
 }
