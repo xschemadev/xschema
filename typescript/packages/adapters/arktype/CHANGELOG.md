@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/xschemadev/xschema/compare/arktype-v0.1.0...arktype-v0.1.1) (2026-01-06)
+
+
+### Features
+
+* **ts:** arktype implementation of xschema ([#37](https://github.com/xschemadev/xschema/issues/37)) ([1b5ca3c](https://github.com/xschemadev/xschema/commit/1b5ca3cb4e661ebb8799cc6bf6a36300fae1e59d))
+
 ## [0.1.0](https://github.com/xschemadev/xschema/releases/tag/arktype-v0.1.0) (2026-01-06)
 
 ### Features
