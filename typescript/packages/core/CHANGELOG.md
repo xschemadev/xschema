@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.0](https://github.com/xschemadev/xschema/compare/core-v0.0.6...core-v0.1.0) (2026-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ts:** adapters protocol improvement and zod perfect compliance
+
+### Features
+
+* **ts:** adapters protocol improvement and zod perfect compliance ([e211a32](https://github.com/xschemadev/xschema/commit/e211a32750554f670ef3e29cfce10883fa0b1e54))
+
 ## [0.0.6](https://github.com/xschemadev/xschema/compare/core-v0.0.5...core-v0.0.6) (2026-01-04)
 
 
