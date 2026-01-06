@@ -3,11 +3,13 @@
  * 
  * This example shows how to use xschema to:
  * 1. Define JSON Schema sources in config files (*.jsonc)
- * 2. Generate type-safe Zod validators
+ * 2. Generate type-safe validators (Zod, ArkType, etc.)
  * 3. Use the generated schemas with full type inference
  * 
  * Run `bun run generate` to regenerate schemas, then `bun run start` to run this file.
  */
+
+import { type } from "arktype";
 
 import { schemas } from "./.xschema/xschema.gen";
 import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
@@ -24,6 +26,7 @@ export const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" }
 export type CalendarType = XSchemaType<"user:Calendar">;
 export type ProfileType = XSchemaType<"user:Profile">;
 export type TSConfigType = XSchemaType<"another:TSConfig">;
+export type UserType = XSchemaType<"user:User">;
 
 // ============================================
 // Schema lookup - explicit namespace
@@ -60,6 +63,34 @@ if (!result.success) {
 // Type inference works automatically
 type InferredCalendar = typeof validCalendar;
 //   ^? { startDate?: string, endDate?: string, summary: string, ... }
+
+// ============================================
+// ArkType schemas - different adapter, different API
+// ============================================
+
+// The User schema uses ArkType adapter (see user.jsonc)
+const user = xschema("User");
+
+// ArkType schemas are called as functions - returns data or ArkErrors
+const validUser = user({
+	id: "123",
+	email: "alice@example.com",
+	name: "Alice",
+	age: 30,
+});
+
+// ArkType returns errors differently - check with instanceof type.errors
+const userResult = user({ invalid: "data" });
+if (userResult instanceof type.errors) {
+	console.log("ArkType validation errors:", userResult.summary);
+} else {
+	// userResult is the validated data
+	console.log("Valid user:", userResult);
+}
+
+// Type inference works the same way
+type InferredUser = typeof user.infer;
+//   ^? { id: string, email: string, name?: string, age?: number }
 
 console.log("XSchema example running successfully!");
 console.log("Available schemas:", Object.keys(schemas));

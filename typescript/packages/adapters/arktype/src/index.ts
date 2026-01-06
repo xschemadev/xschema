@@ -11,8 +11,8 @@ export function convert(input: ConvertInput): ConvertResult {
 	return {
 		namespace,
 		id,
-		imports: ['import { z } from "zod"'],
+		imports: ['import { type } from "arktype"'],
 		schema: schemaCode,
-		type: `z.infer<typeof ${varName}>`,
+		type: `typeof ${varName}.infer`,
 	};
 }
