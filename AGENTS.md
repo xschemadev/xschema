@@ -6,17 +6,19 @@ JSON Schema to native validators (Zod, Pydantic, etc.) with full type safety.
 
 ```
 cli/                    # Go CLI (github.com/xschemadev/xschema)
-  cmd/                  # cobra commands
+  cmd/                  # cobra commands (root, generate, compliance)
   parser/               # parses JSON/JSONC config files
   retriever/            # fetches schemas from URL/file/inline
   generator/            # calls adapters to convert schemas
   injector/             # writes generated code
   language/             # language-specific config (TS, Python)
+  bundler/              # bundles schemas
+  compliance/           # adapter compliance testing
   ui/                   # terminal output helpers
 
 typescript/             # TS packages (bun workspace)
-  packages/core/        # @xschemadev/core - shared types
-  packages/zod/         # @xschemadev/zod - zod adapter
+  packages/core/        # @xschemadev/core - IR types, parser, utils
+  packages/adapters/zod/# @xschemadev/zod - zod adapter
   packages/client/      # @xschemadev/client - runtime client
   example/              # example project
 ```
@@ -29,28 +31,35 @@ typescript/             # TS packages (bun workspace)
 go test ./...                           # run all tests
 go test ./parser/                       # run single package tests
 go test ./parser/ -run TestParse        # run single test by name
-go test ./parser/ -v                    # verbose output
+go test ./parser/ -run TestParse -v     # verbose output
 go test ./... -short                    # skip integration tests
-go test . -run TestIntegration          # run integration tests only
+go test . -run TestIntegration          # integration tests only
 go build -o xschema .                   # build binary
+go vet ./...                            # vet (run in CI)
 go fmt ./...                            # format code
-golangci-lint run                       # lint (if installed)
 ```
 
 ### TypeScript (run from `typescript/` directory)
 
 ```bash
 bun install                             # install deps
-bun run build                           # build all packages
+bun run build                           # build all packages (core first)
 bun run typecheck                       # type check all packages
-bunx tsc --noEmit                       # type check single package
+bunx tsc --noEmit                       # type check single package (in pkg dir)
+```
+
+### Root (commitlint/husky)
+
+```bash
+bun install                             # install commitlint + husky
+bunx commitlint --from HEAD~1 --to HEAD # validate last commit
 ```
 
 ## Code Style Guidelines
 
 ### Go Code
 
-**Imports**: stdlib first, external second, internal third (grouped with blank lines):
+**Imports**: stdlib first, external second, internal third (blank lines between):
 ```go
 import (
     "context"
@@ -65,9 +74,11 @@ import (
 
 **Naming**: Exported `PascalCase`, unexported `camelCase`, acronyms uppercase (`URL`, `ID`)
 
-**Error handling**: wrap with context `fmt.Errorf("failed to X: %w", err)`, return early, use `ui.Verbosef()` for debug logging
+**Error handling**: wrap with context `fmt.Errorf("failed to X: %w", err)`, return early
 
-**Functions**: accept `context.Context` as first param for cancellable ops
+**Logging**: use `ui.Verbosef()` for debug output (shown with `--verbose` flag)
+
+**Functions**: accept `context.Context` as first param for cancellable operations
 
 **Types**: define close to usage, use `json.RawMessage` for arbitrary JSON, prefer structs over maps
 
@@ -76,20 +87,22 @@ import (
 **Imports**: external packages first, then relative (blank line between):
 ```typescript
 import type { ConvertInput, ConvertResult } from "@xschemadev/core";
-import { jsonSchemaToZod } from "json-schema-to-zod";
+import { parse } from "@xschemadev/core";
 
-import { convert } from "./index";
+import { render } from "./renderer.js";
 ```
 
-**Naming**: types/interfaces `PascalCase`, functions `camelCase`
+**Naming**: types/interfaces `PascalCase`, functions/variables `camelCase`
 
-**Types**: use `interface` for object shapes, `type` for unions/aliases, use `object` not `Object`
+**Types**: use `interface` for object shapes, `type` for unions/aliases
 
-**Exports**: named exports preferred, re-export types with `export type { ... }`
+**Exports**: named exports preferred, use `export type { ... }` for type re-exports
+
+**File extensions**: always use `.js` extension in imports (ESM)
 
 ## Commit Conventions
 
-Uses conventional commits with these scopes:
+Uses conventional commits with enforced scopes (commitlint + husky):
 - `cli` - Go CLI changes
 - `ts` - TypeScript packages
 - `py` - Python packages (future)
@@ -98,24 +111,20 @@ Uses conventional commits with these scopes:
 
 Examples: `feat(cli): add watch mode`, `fix(ts): handle null schemas`
 
+## Testing Patterns
+
+### Go Tests
+
+- Use `t.TempDir()` for temp files (auto-cleaned)
+- Table-driven tests: `tests := []struct{...}{}` with `t.Run(tt.name, ...)`
+- Integration tests: prefix with `TestIntegration_`, skip with `if testing.Short() { t.Skip() }`
+- Assertions: use `t.Errorf` for non-fatal, `t.Fatalf` for fatal errors
+
+### TypeScript
+
+No test framework currently - validation via `bun run typecheck` and `bun run build`
+
 ## Architecture Notes
-
-### Config File Format
-
-```jsonc
-{
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
-  "namespace": "api",  // optional, defaults to filename
-  "schemas": [
-    {
-      "id": "User",
-      "sourceType": "url",     // "url" | "file" | "json"
-      "source": "https://...", // or "./path.json" or {...}
-      "adapter": "@xschemadev/zod"
-    }
-  ]
-}
-```
 
 ### Pipeline Flow
 
@@ -137,12 +146,6 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - `parser.Declaration`: Namespace, ID, Adapter, ConfigPath, SourceType, Source (json.RawMessage)
 - `generator.GenerateOutput`: Namespace, ID, Schema (code), Type (expression), Imports
 
-## Testing Patterns
-
-- Use `t.TempDir()` for temp files
-- Table-driven tests: `tests := []struct{...}{}` with `t.Run(tt.name, ...)`
-- Integration tests skip with `if testing.Short() { t.Skip() }`
-
 ## Common Gotchas
 
 - Config file paths are relative to the config file's directory, not cwd
@@ -151,4 +154,4 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Multiple languages without `--lang` flag = error
 - `json.RawMessage` preserves raw JSON; don't re-marshal inline schemas
 - Language detected from `$schema` URL: `ts.jsonc` -> typescript, `py.jsonc` -> python
-- Runner auto-detected from lockfiles (bun.lock -> bunx, pnpm-lock.yaml -> pnpm exec)
+- Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec
