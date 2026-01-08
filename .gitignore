@@ -16,11 +16,9 @@ go.work
 __pycache__/
 .venv/
 *.pyc
-uv.lock
 
 # TypeScript/Node
 node_modules/
-bun.lock
 
 # IDE
 .idea/
