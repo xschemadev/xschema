@@ -45,3 +45,21 @@ unit-tests completed
 updated existing injector tests (TestInject_TypeOnly, TestInject_SchemaOnly) to verify schemas object membership using proper block extraction logic. TestInject_TypeOnly now checks that type-only entries are NOT in the schemas object but ARE in SchemaTypes. TestInject_SchemaOnly now checks that schema-only entries ARE in the schemas object AND in SchemaTypes with typeof. added new test TestGenerateNeitherSchemaOrType in generator_test.go to verify validation logic for outputs with neither schema nor type (lines 117-121 in generator.go). all go checks pass (build, vet, test).
 
 ---
+
+## 2026-01-08
+
+integration-verification completed
+
+verified end-to-end generation flow works correctly with existing adapters (zod, arktype). ran xschema generate in typescript/example/ - completed successfully without CLI errors. verified generated xschema.gen.ts has correct structure:
+- schemas object (lines 590-595) contains all 4 runtime validators (user:User, another:TSConfig, user:Profile, user:Calendar)
+- SchemaTypes type (lines 597-602) contains all 4 type definitions with proper type inference
+
+decision: marked task as passing despite pre-existing typecheck error on line 509 of generated file. this error exists in the generated schema code itself (adapter bug with `.min()` on ZodEffects) and is unrelated to our schema-only/type-only implementation changes. git status confirms the generated file is unchanged from baseline, proving the error is pre-existing and not caused by our work.
+
+all acceptance criteria met:
+✓ xschema generate completes without errors
+✓ schemas object contains runtime validators
+✓ SchemaTypes contains type definitions
+✓ generation unchanged for existing adapters (backward compatible)
+
+---
