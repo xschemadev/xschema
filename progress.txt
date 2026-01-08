@@ -29,3 +29,11 @@ template-schemas-conditional completed
 added conditional logic to TSTemplate schemas object export - now only includes entries with .Code field (runtime schemas), excluding type-only entries. SchemaTypes already had proper conditional logic for all cases. all go checks pass (build, vet, test).
 
 ---
+
+## 2026-01-08
+
+client-types-separation completed
+
+updated client types to separate compile-time type access from runtime lookup. added SchemaTypeKeys type derived from Register['schemaTypes'] to include all entries (type-only, schema-only, both). XSchemaType<N> now accepts SchemaTypeKeys instead of SchemaKeys, allowing type-only entries. lookup() already correctly restricted to RegisteredSchemas (runtime schemas only) through ValidKeys<T> constraint. type-only entries can now be used with XSchemaType but cause compile error if passed to lookup(). all typescript checks pass (build, typecheck).
+
+---

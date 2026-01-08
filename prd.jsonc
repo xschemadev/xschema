@@ -61,7 +61,7 @@
         "attempting to lookup a type-only key causes a compile error",
         "run bun run build and bun run typecheck in typescript/ - passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Goal: type-only entries can be used with XSchemaType but not with runtime lookup"
     },
     {
