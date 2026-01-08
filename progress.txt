@@ -1,0 +1,26 @@
+# Progress: Schema-only and Type-only Adapter Support
+
+## Sprint Goal
+Enable adapters to output schema-only or type-only (not necessarily both), with proper CLI validation, template handling, and client type safety.
+
+## Status: Not Started
+
+## Items
+
+| ID | Description | Status |
+|----|-------------|--------|
+| core-types-optional | Make schema/type optional in ConvertResult | pending |
+| cli-validation | Validate adapter returns at least one of schema/type | pending |
+| template-schemas-conditional | Fix TS template schemas object conditional | pending |
+| client-types-separation | XSchemaType accepts all keys, lookup only schema keys | pending |
+| unit-tests | Add/update Go tests for new behavior | pending |
+| client-readme | Create client README with documentation | pending |
+| integration-verification | Verify full flow with existing example | pending |
+
+## Notes
+- No adapter changes needed - existing adapters (zod, arktype) already return both
+- Python template has same issue but is out of scope (per user request)
+- Existing injector tests need updating to verify schemas object membership
+
+## Log
+- [timestamp] PRD created
