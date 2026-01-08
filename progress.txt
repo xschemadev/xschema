@@ -3,13 +3,13 @@
 ## Sprint Goal
 Enable adapters to output schema-only or type-only (not necessarily both), with proper CLI validation, template handling, and client type safety.
 
-## Status: Not Started
+## Status: In Progress
 
 ## Items
 
 | ID | Description | Status |
 |----|-------------|--------|
-| core-types-optional | Make schema/type optional in ConvertResult | pending |
+| core-types-optional | Make schema/type optional in ConvertResult | ✓ completed |
 | cli-validation | Validate adapter returns at least one of schema/type | pending |
 | template-schemas-conditional | Fix TS template schemas object conditional | pending |
 | client-types-separation | XSchemaType accepts all keys, lookup only schema keys | pending |
@@ -24,3 +24,4 @@ Enable adapters to output schema-only or type-only (not necessarily both), with 
 
 ## Log
 - [timestamp] PRD created
+- [2026-01-08] core-types-optional completed - made ConvertResult.schema and .type optional fields, typecheck passes

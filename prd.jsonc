@@ -22,7 +22,7 @@
         "ConvertResult.type is an optional field",
         "run bun run typecheck in typescript/ - passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "cli-validation",
