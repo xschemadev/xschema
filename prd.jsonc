@@ -90,7 +90,7 @@
         "explains that type-only adapters cannot be looked up at runtime",
         "covers schema-only vs type-only vs both scenarios"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "integration-verification",

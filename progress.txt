@@ -63,3 +63,34 @@ all acceptance criteria met:
 ✓ generation unchanged for existing adapters (backward compatible)
 
 ---
+
+## 2026-01-08
+
+client-readme completed
+
+created comprehensive README.md at typescript/packages/client/ documenting the @xschemadev/client package. includes:
+
+- installation and basic usage examples
+- createXSchemaClient setup with and without defaultNamespace
+- XSchemaType helper for type extraction
+- detailed explanation of 3 adapter output scenarios:
+  1. schema + type (zod, arktype): both runtime and compile-time available
+  2. type-only: XSchemaType works, runtime lookup causes compile error
+  3. schema-only: runtime lookup works, types inferred via typeof
+- examples for zod and arktype usage patterns
+- error handling and typescript safety features
+- links to docs and repository
+
+decision: focused on practical examples showing when runtime lookup works vs when only type extraction is available. emphasized that typescript provides compile-time safety to prevent using type-only keys with xschema() runtime client.
+
+all acceptance criteria met:
+✓ README.md exists at typescript/packages/client/
+✓ documents createXSchemaClient with code examples (basic, default namespace, zod, arktype)
+✓ documents XSchemaType helper with code examples (type extraction section)
+✓ explains type-only cannot be looked up at runtime (dedicated section with compile error example)
+✓ covers schema-only vs type-only vs both (comprehensive 3-scenario breakdown with code samples)
+
+bun run typecheck passes for all typescript packages.
+
+---
+
