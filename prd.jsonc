@@ -48,7 +48,7 @@
         "SchemaTypes includes all entries regardless of schema/type presence",
         "run go build, go test in cli/ - passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "The SchemaTypes section already has conditional logic for all 3 cases. Only the schemas object needs fixing."
     },
     {
