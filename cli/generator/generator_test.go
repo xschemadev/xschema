@@ -109,29 +109,53 @@ func TestGenerateInputJSON(t *testing.T) {
 	}
 }
 
-func TestGenerateNeitherSchemaOrType(t *testing.T) {
-	// This test verifies the validation logic for outputs with neither schema nor type
-	outputs := []GenerateOutput{
+func TestValidateOutputs(t *testing.T) {
+	tests := []struct {
+		name    string
+		outputs []GenerateOutput
+		wantErr bool
+	}{
 		{
-			Namespace: "user",
-			ID:        "Test",
-			Schema:    "", // no schema
-			Type:      "", // no type
-			Imports:   []string{},
+			name:    "empty outputs",
+			outputs: []GenerateOutput{},
+			wantErr: false,
+		},
+		{
+			name: "valid with schema only",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: ""},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid with type only",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "", Type: "string"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid with both",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: "string"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid with neither",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "", Type: ""},
+			},
+			wantErr: true,
 		},
 	}
 
-	// Manually validate like Generate() does (lines 117-121 in generator.go)
-	for _, output := range outputs {
-		if output.Schema == "" && output.Type == "" {
-			// Validation should catch this and return error
-			if output.Key() != "user:Test" {
-				t.Errorf("expected key 'user:Test', got %q", output.Key())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateOutputs(tt.outputs, "test-adapter")
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validateOutputs() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			// This is the expected path - validation should fail
-			return
-		}
+		})
 	}
-
-	t.Error("Expected validation to catch missing schema and type")
 }
