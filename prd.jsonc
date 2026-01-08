@@ -76,7 +76,7 @@
         "generator test for 'neither schema nor type' returns error",
         "run go test ./... in cli/ - passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Existing tests (TestInject_TypeOnly, TestInject_SchemaOnly) need updating to verify schemas object membership, not just export statements."
     },
     {

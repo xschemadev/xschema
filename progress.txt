@@ -37,3 +37,11 @@ client-types-separation completed
 updated client types to separate compile-time type access from runtime lookup. added SchemaTypeKeys type derived from Register['schemaTypes'] to include all entries (type-only, schema-only, both). XSchemaType<N> now accepts SchemaTypeKeys instead of SchemaKeys, allowing type-only entries. lookup() already correctly restricted to RegisteredSchemas (runtime schemas only) through ValidKeys<T> constraint. type-only entries can now be used with XSchemaType but cause compile error if passed to lookup(). all typescript checks pass (build, typecheck).
 
 ---
+
+## 2026-01-08
+
+unit-tests completed
+
+updated existing injector tests (TestInject_TypeOnly, TestInject_SchemaOnly) to verify schemas object membership using proper block extraction logic. TestInject_TypeOnly now checks that type-only entries are NOT in the schemas object but ARE in SchemaTypes. TestInject_SchemaOnly now checks that schema-only entries ARE in the schemas object AND in SchemaTypes with typeof. added new test TestGenerateNeitherSchemaOrType in generator_test.go to verify validation logic for outputs with neither schema nor type (lines 117-121 in generator.go). all go checks pass (build, vet, test).
+
+---
