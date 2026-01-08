@@ -35,7 +35,7 @@
         "CLI accepts outputs with only type (no schema)",
         "run go build, go vet, go test in cli/ - all pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "template-schemas-conditional",

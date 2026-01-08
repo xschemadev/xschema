@@ -10,7 +10,7 @@ Enable adapters to output schema-only or type-only (not necessarily both), with 
 | ID | Description | Status |
 |----|-------------|--------|
 | core-types-optional | Make schema/type optional in ConvertResult | ✓ completed |
-| cli-validation | Validate adapter returns at least one of schema/type | pending |
+| cli-validation | Validate adapter returns at least one of schema/type | ✓ completed |
 | template-schemas-conditional | Fix TS template schemas object conditional | pending |
 | client-types-separation | XSchemaType accepts all keys, lookup only schema keys | pending |
 | unit-tests | Add/update Go tests for new behavior | pending |
@@ -25,3 +25,4 @@ Enable adapters to output schema-only or type-only (not necessarily both), with 
 ## Log
 - [timestamp] PRD created
 - [2026-01-08] core-types-optional completed - made ConvertResult.schema and .type optional fields, typecheck passes
+- [2026-01-08] cli-validation completed - added validation in generator.go to ensure adapters return at least one of schema or type, error includes namespace:id, all go checks pass

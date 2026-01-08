@@ -113,6 +113,13 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", binName, err, stdout.String())
 	}
 
+	// Validate that each output has at least one of schema or type
+	for _, output := range outputs {
+		if output.Schema == "" && output.Type == "" {
+			return nil, fmt.Errorf("adapter %s returned neither schema nor type for %s", binName, output.Key())
+		}
+	}
+
 	ui.Verbosef("adapter execution successful: %s (outputs: %d)", binName, len(outputs))
 	return outputs, nil
 }
