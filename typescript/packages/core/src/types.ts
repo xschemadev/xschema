@@ -15,6 +15,6 @@ export interface ConvertResult {
   namespace: string;
   id: string;
   imports: string[];
-  schema: string;
-  type: string;
+  schema?: string;
+  type?: string;
 }

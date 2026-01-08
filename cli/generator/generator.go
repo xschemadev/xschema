@@ -34,6 +34,16 @@ func (o GenerateOutput) Key() string {
 	return o.Namespace + ":" + o.ID
 }
 
+// validateOutputs checks that each output has at least schema or type
+func validateOutputs(outputs []GenerateOutput, adapterName string) error {
+	for _, output := range outputs {
+		if output.Schema == "" && output.Type == "" {
+			return fmt.Errorf("adapter %s returned neither schema nor type for %s", adapterName, output.Key())
+		}
+	}
+	return nil
+}
+
 // GenerateBatchInput groups schemas by adapter for batch processing
 type GenerateBatchInput struct {
 	Adapter  string // adapter package e.g., "zod"
@@ -111,6 +121,10 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
 		ui.Verbosef("invalid adapter output from %s: %s", binName, stdout.String())
 		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", binName, err, stdout.String())
+	}
+
+	if err := validateOutputs(outputs, binName); err != nil {
+		return nil, err
 	}
 
 	ui.Verbosef("adapter execution successful: %s (outputs: %d)", binName, len(outputs))

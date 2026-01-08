@@ -3,11 +3,15 @@ export interface Register {
   // Populated by generated code via declare module
 }
 
-// Type helper to get registered schemas
+// Type helper to get registered schemas (runtime only)
 export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
 
 // Get all registered schema keys as a union type (e.g., "user:Profile" | "another:TSConfig")
+// This is for runtime schemas only
 type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+
+// Get all registered schema type keys (includes type-only, schema-only, and both)
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
 
 // Extract the ID part from "namespace:id" keys for a specific namespace
 // e.g., ExtractID<"user:Profile" | "user:Calendar", "user"> = "Profile" | "Calendar"
@@ -31,9 +35,10 @@ type ResolveKey<K extends string, DefaultNS extends string | undefined> =
       : K;  // No default namespace
 
 // Type helper to extract schema types by name
+// Accepts all schemaTypes keys (including type-only entries)
 // Only accepts full "namespace:id" keys for explicitness
 // Use the xschema client for shorthand ID lookups
-export type XSchemaType<N extends SchemaKeys> = 
+export type XSchemaType<N extends SchemaTypeKeys> = 
   Register extends { schemaTypes: infer T }
     ? N extends keyof T 
       ? T[N]

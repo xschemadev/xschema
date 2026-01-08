@@ -1,11 +1,11 @@
 /**
  * XSchema Example - TypeScript
- * 
+ *
  * This example shows how to use xschema to:
  * 1. Define JSON Schema sources in config files (*.jsonc)
  * 2. Generate type-safe validators (Zod, ArkType, etc.)
  * 3. Use the generated schemas with full type inference
- * 
+ *
  * Run `bun run generate` to regenerate schemas, then `bun run start` to run this file.
  */
 
@@ -16,7 +16,10 @@ import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
 
 // Create the xschema client with generated schemas
 // defaultNamespace allows shorthand lookups: xschema("Calendar") instead of xschema("user:Calendar")
-export const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
+export const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
 
 // ============================================
 // Type extraction using XSchemaType helper
@@ -41,8 +44,8 @@ const calendarSchema = xschema("user:Calendar");
 // ============================================
 
 // When defaultNamespace is set, you can omit it for that namespace
-const calendar = xschema("Calendar");  // Same as xschema("user:Calendar")
-const profile = xschema("Profile");    // Same as xschema("user:Profile")
+const calendar = xschema("Calendar"); // Same as xschema("user:Calendar")
+const profile = xschema("Profile"); // Same as xschema("user:Profile")
 
 // ============================================
 // Using the schemas - full Zod API available
@@ -50,14 +53,14 @@ const profile = xschema("Profile");    // Same as xschema("user:Profile")
 
 // Parse data (throws on invalid)
 const validCalendar = calendar.parse({
-	dtstart: "2024-01-01",
-	summary: "New Year's Day",
+  dtstart: "2024-01-01",
+  summary: "New Year's Day",
 });
 
 // Safe parse (returns result object)
 const result = calendar.safeParse({ invalid: "data" });
 if (!result.success) {
-	console.log("Validation errors:", result.error.issues);
+  console.log("Validation errors:", result.error.issues);
 }
 
 // Type inference works automatically
@@ -73,19 +76,19 @@ const user = xschema("User");
 
 // ArkType schemas are called as functions - returns data or ArkErrors
 const validUser = user({
-	id: "123",
-	email: "alice@example.com",
-	name: "Alice",
-	age: 30,
+  id: "123",
+  email: "alice@example.com",
+  name: "Alice",
+  age: 30,
 });
 
 // ArkType returns errors differently - check with instanceof type.errors
 const userResult = user({ invalid: "data" });
 if (userResult instanceof type.errors) {
-	console.log("ArkType validation errors:", userResult.summary);
+  console.log("ArkType validation errors:", userResult.summary);
 } else {
-	// userResult is the validated data
-	console.log("Valid user:", userResult);
+  // userResult is the validated data
+  console.log("Valid user:", userResult);
 }
 
 // Type inference works the same way

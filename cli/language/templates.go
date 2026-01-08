@@ -19,7 +19,9 @@ type {{.VarName}}Type = {{.Type}};
 {{end}}
 export const schemas = {
 {{- range .Schemas}}
+{{- if .Code}}
   "{{.Key}}": {{.VarName}},
+{{- end}}
 {{- end}}
 } as const;
 

@@ -108,3 +108,54 @@ func TestGenerateInputJSON(t *testing.T) {
 		t.Errorf("round-trip failed: %+v", decoded)
 	}
 }
+
+func TestValidateOutputs(t *testing.T) {
+	tests := []struct {
+		name    string
+		outputs []GenerateOutput
+		wantErr bool
+	}{
+		{
+			name:    "empty outputs",
+			outputs: []GenerateOutput{},
+			wantErr: false,
+		},
+		{
+			name: "valid with schema only",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: ""},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid with type only",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "", Type: "string"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid with both",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: "string"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid with neither",
+			outputs: []GenerateOutput{
+				{Namespace: "test", ID: "Test", Schema: "", Type: ""},
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateOutputs(tt.outputs, "test-adapter")
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validateOutputs() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

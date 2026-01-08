@@ -574,9 +574,6 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
       })])));
 type another_TSConfigType = z.infer<typeof another_TSConfig>;
 
-const user_Profile = z.any();
-type user_ProfileType = z.infer<typeof user_Profile>;
-
 const user_Calendar = z.object({ ["category"]: z.string().optional(), ["description"]: z.string().optional(), ["duration"]: z.string().optional(), ["endDate"]: z.string().optional(), ["geo"]: z.object({ ["lat"]: z.number().optional(), ["lng"]: z.number().optional() }).passthrough().optional(), ["location"]: z.string().optional(), ["recurrenceDate"]: z.string().optional(), ["recurrenceDule"]: z.string().optional(), ["startDate"]: z.string().optional(), ["summary"]: z.string(), ["url"]: z.string().optional(), ["dtstart"]: z.any() }).passthrough().superRefine((val, ctx) => {
       const required = ["summary","dtstart"];
       for (const key of required) {
@@ -590,14 +587,12 @@ type user_CalendarType = z.infer<typeof user_Calendar>;
 export const schemas = {
   "user:User": user_User,
   "another:TSConfig": another_TSConfig,
-  "user:Profile": user_Profile,
   "user:Calendar": user_Calendar,
 } as const;
 
 export type SchemaTypes = {
   "user:User": user_UserType;
   "another:TSConfig": another_TSConfigType;
-  "user:Profile": user_ProfileType;
   "user:Calendar": user_CalendarType;
 };
 

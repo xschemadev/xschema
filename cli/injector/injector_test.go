@@ -203,6 +203,28 @@ func TestInject_TypeOnly(t *testing.T) {
 	if strings.Contains(output, "const user_User =") {
 		t.Error("Should not have const export for type-only")
 	}
+
+	// Type-only entries should NOT be in schemas object
+	schemasStart := strings.Index(output, "export const schemas = {")
+	schemasEnd := strings.Index(output, "} as const;")
+	if schemasStart == -1 || schemasEnd == -1 {
+		t.Fatalf("Could not find schemas object in output")
+	}
+	schemasBlock := output[schemasStart:schemasEnd]
+	if strings.Contains(schemasBlock, `"user:User": user_User`) {
+		t.Errorf("Type-only entry should NOT be in schemas object, got:\n%s", schemasBlock)
+	}
+
+	// Type-only entries SHOULD be in SchemaTypes
+	schemaTypesStart := strings.Index(output, "export type SchemaTypes = {")
+	schemaTypesEnd := strings.Index(output[schemaTypesStart:], "};")
+	if schemaTypesStart == -1 || schemaTypesEnd == -1 {
+		t.Fatalf("Could not find SchemaTypes in output")
+	}
+	schemaTypesBlock := output[schemaTypesStart : schemaTypesStart+schemaTypesEnd]
+	if !strings.Contains(schemaTypesBlock, `"user:User": user_User`) {
+		t.Errorf("Type-only entry should be in SchemaTypes, got:\n%s", schemaTypesBlock)
+	}
 }
 
 func TestInject_SchemaOnly(t *testing.T) {
@@ -240,6 +262,28 @@ func TestInject_SchemaOnly(t *testing.T) {
 	}
 	if strings.Contains(output, "export type user_User =") {
 		t.Error("Should not have type export for schema-only")
+	}
+
+	// Schema-only entries SHOULD be in schemas object
+	schemasStart := strings.Index(output, "export const schemas = {")
+	schemasEnd := strings.Index(output, "} as const;")
+	if schemasStart == -1 || schemasEnd == -1 {
+		t.Fatalf("Could not find schemas object in output")
+	}
+	schemasBlock := output[schemasStart:schemasEnd]
+	if !strings.Contains(schemasBlock, `"user:User": user_User`) {
+		t.Errorf("Schema-only entry should be in schemas object, got:\n%s", schemasBlock)
+	}
+
+	// Schema-only entries SHOULD be in SchemaTypes with typeof
+	schemaTypesStart := strings.Index(output, "export type SchemaTypes = {")
+	schemaTypesEnd := strings.Index(output[schemaTypesStart:], "};")
+	if schemaTypesStart == -1 || schemaTypesEnd == -1 {
+		t.Fatalf("Could not find SchemaTypes in output")
+	}
+	schemaTypesBlock := output[schemaTypesStart : schemaTypesStart+schemaTypesEnd]
+	if !strings.Contains(schemaTypesBlock, `"user:User": typeof user_User`) {
+		t.Errorf("Schema-only entry should be in SchemaTypes with typeof, got:\n%s", schemaTypesBlock)
 	}
 }
 
