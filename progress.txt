@@ -883,3 +883,24 @@ key decisions:
 - harness uses Ajv because Value.Check doesn't understand raw JSON Schema conditionals
 - this is acceptable because Ajv is widely used and well-tested
 - the generated code still uses TypeBox types for static type inference
+
+### typebox-renderer-combinators (COMPLETED - already implemented)
+- verified all combinator types were already implemented during typebox-renderer-containers task
+- implementation in src/renderer.ts:
+  - renderUnion (anyOf): Type.Union([schemas]) for multiple variants
+  - renderIntersection (allOf): Type.Intersect([schemas]) for multiple schemas
+  - renderOneOf (oneOf): Type.Unsafe<unknown>({ oneOf: [schemas] }) - uses raw JSON Schema
+  - renderNot (not): Type.Not(schema) - TypeBox has native support
+- compliance test results (draft2020-12):
+  - anyOf: 18/18 (100.0%) ✓ perfect
+  - allOf: 30/30 (100.0%) ✓ perfect
+  - oneOf: 27/27 (100.0%) ✓ perfect
+  - not: 38/38 (100.0%) ✓ perfect
+- typecheck passed with no errors across all packages
+- task was already complete from previous work, just needed verification and marking as passed
+
+key observations:
+- TypeBox's JSON Schema compatibility allowed direct use of Type.Intersect and Type.Union
+- Type.Not is native to TypeBox (unlike valibot/effect which needed custom filters)
+- oneOf uses Type.Unsafe to generate raw JSON Schema (Ajv validates correctly)
+- no additional code changes needed - only verification of existing implementation

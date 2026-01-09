@@ -278,7 +278,8 @@
 				"verify 'anyOf', 'allOf', 'oneOf', 'not' tests pass",
 				"run: bun run typecheck (from typescript/) - verify no type errors"
 			],
-			"passes": false
+			"passes": true,
+			"notes": "Implementation completed during typebox-renderer-containers task - used Type.Union for anyOf, Type.Intersect for allOf, Type.Unsafe for oneOf, Type.Not for not"
 		},
 		{
 			"id": "typebox-renderer-special",
