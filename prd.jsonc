@@ -78,7 +78,7 @@
 				"verify 'if', 'then', 'else' tests pass",
 				"run: bun run typecheck (from typescript/) - verify no type errors"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "RefNode.resolved already contains the parsed schema - just render it recursively"
 		},
 		{

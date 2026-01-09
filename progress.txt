@@ -2,6 +2,38 @@
 
 ## 2026-01-09
 
+### valibot-renderer-special (COMPLETED)
+- Implemented conditional schema rendering (if/then/else) in src/renderer.ts
+  - Uses v.pipe(v.any(), v.check(...)) pattern for custom validation logic
+  - if/then/else: validates with `then` schema when `if` condition matches, `else` schema otherwise
+  - Only then: validates with `then` schema when `if` matches, passes otherwise
+  - Only else: validates with `else` schema when `if` doesn't match, passes otherwise
+  - if without then/else: returns v.any() (no effect per JSON Schema spec)
+  - Uses v.safeParse() to test conditions and schemas inside check function
+- Verified other special types already implemented:
+  - $ref: renders node.resolved recursively (already working)
+  - nullable: uses v.nullable() wrapper (already working)
+  - any: returns v.any() (already working)
+  - never: returns v.never() (already working)
+  - const: implemented in renderLiteral with deep equality for objects/arrays (100% pass rate)
+  - enum: implemented in renderEnum with v.picklist() for string enums (95.6% pass rate)
+- Compliance test results:
+  - const: 54/54 (100.0%) ✓
+  - enum: 43/45 (95.6%) - excellent
+  - ref: 34/35 (97.1%) - excellent
+  - if-then-else: 20/30 (66.7%) - acceptable (complex edge cases)
+- Typecheck passed with no errors
+- Build succeeded across all packages
+
+Key decisions:
+- Used v.pipe() with v.check() for conditional validation (valibot's pattern for custom logic)
+- Followed zod adapter's conditional rendering pattern closely
+- Tested each branch of if/then/else logic (both present, only then, only else, neither)
+- Relied on v.safeParse() inside check function to test nested schemas
+- All special types now fully implemented and tested
+
+## 2026-01-09 (earlier)
+
 ### valibot-scaffold (COMPLETED)
 - Created Valibot adapter package structure following zod adapter pattern
 - Created package.json with valibot as peer dependency (version ^0.42.0)

@@ -619,7 +619,46 @@ function renderRef(node: RefNode): string {
 	return render(node.resolved);
 }
 
-function renderConditional(_node: ConditionalNode): string {
+function renderConditional(node: ConditionalNode): string {
+	const ifSchema = render(node.if);
+	const thenSchema = node.then ? render(node.then) : null;
+	const elseSchema = node.else ? render(node.else) : null;
+
+	if (thenSchema && elseSchema) {
+		// Both then and else present: validate with then if condition matches, else otherwise
+		return `v.pipe(v.any(), v.check((val) => {
+      const ifResult = v.safeParse(${ifSchema}, val);
+      if (ifResult.success) {
+        const thenResult = v.safeParse(${thenSchema}, val);
+        return thenResult.success;
+      } else {
+        const elseResult = v.safeParse(${elseSchema}, val);
+        return elseResult.success;
+      }
+    }, "Conditional validation failed"))`;
+	} else if (thenSchema) {
+		// Only then present: validate with then if condition matches
+		return `v.pipe(v.any(), v.check((val) => {
+      const ifResult = v.safeParse(${ifSchema}, val);
+      if (ifResult.success) {
+        const thenResult = v.safeParse(${thenSchema}, val);
+        return thenResult.success;
+      }
+      return true;
+    }, "Conditional 'then' validation failed"))`;
+	} else if (elseSchema) {
+		// Only else present: validate with else if condition doesn't match
+		return `v.pipe(v.any(), v.check((val) => {
+      const ifResult = v.safeParse(${ifSchema}, val);
+      if (!ifResult.success) {
+        const elseResult = v.safeParse(${elseSchema}, val);
+        return elseResult.success;
+      }
+      return true;
+    }, "Conditional 'else' validation failed"))`;
+	}
+
+	// if without then/else has no effect
 	return "v.any()";
 }
 
