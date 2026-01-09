@@ -1,16 +1,27 @@
 import { Schema as S } from "effect";
 
-// {{GENERATED_CODE}}
-const schema = S.Unknown;
+const schema = {{GENERATED_CODE}};
+// Use JSON.parse to ensure __proto__ and other special property names are preserved as own properties
+// (directly embedding as JS object literals would interpret __proto__ as prototype setter)
+const testCases: Array<{ data: unknown; valid: boolean }> = JSON.parse({{TEST_CASES_STRING}});
 
-const testCases: Array<{ id: string; data: unknown }> = []; // {{TEST_CASES_STRING}}
+const results = testCases.map((tc, index) => {
+	// decodeUnknownEither handles validation errors; try-catch guards against malformed generated code
+	try {
+		const result = S.decodeUnknownEither(schema)(tc.data);
+		return {
+			index,
+			expected: tc.valid,
+			actual: result._tag === "Right" ? "true" : "false",
+		};
+	} catch (e) {
+		return {
+			index,
+			expected: tc.valid,
+			actual: "error",
+			error: e instanceof Error ? e.message : String(e),
+		};
+	}
+});
 
-for (const tc of testCases) {
-	const result = S.decodeUnknownEither(schema)(tc.data);
-	console.log(
-		JSON.stringify({
-			id: tc.id,
-			valid: result._tag === "Right",
-		})
-	);
-}
+console.log(JSON.stringify(results));

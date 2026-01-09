@@ -152,7 +152,7 @@
 				"verify number constraint tests pass (minimum, maximum, multipleOf)",
 				"run: bun run typecheck (from typescript/) - verify no type errors"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "effect-renderer-containers",

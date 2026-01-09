@@ -75,13 +75,120 @@ export function render(node: SchemaNode): string {
 }
 
 function renderString(node: StringNode): string {
-	// TODO: Implement string constraints
-	return "S.String";
+	let result = "S.String";
+
+	// Format validations
+	if (node.format) {
+		switch (node.format) {
+			case "email":
+				result = "S.String.pipe(S.email())";
+				break;
+			case "uri":
+			case "uri-reference":
+				result = "S.String.pipe(S.url())";
+				break;
+			case "uuid":
+				result = "S.String.pipe(S.uuid())";
+				break;
+			case "date-time":
+				result = "S.String.pipe(S.isoDateTime())";
+				break;
+			case "date":
+				result = "S.String.pipe(S.date())";
+				break;
+			case "time":
+				result = "S.String.pipe(S.time())";
+				break;
+			case "ipv4":
+				result = "S.String.pipe(S.ipv4())";
+				break;
+			case "ipv6":
+				result = "S.String.pipe(S.ipv6())";
+				break;
+			case "hostname":
+			case "idn-hostname":
+				result = `S.String.pipe(S.pattern(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/))`;
+				break;
+			default:
+				// Unknown format - ignore per JSON Schema spec
+				result = "S.String";
+		}
+	}
+
+	// Constraints - use grapheme cluster counting per JSON Schema spec
+	const { minLength, maxLength, pattern } = node.constraints;
+	const hasConstraints = minLength !== undefined || maxLength !== undefined || pattern !== undefined;
+
+	if (hasConstraints) {
+		const filters: string[] = [];
+
+		if (minLength !== undefined) {
+			filters.push(`S.filter((val) => [...new Intl.Segmenter().segment(val)].length >= ${minLength}, { message: () => "String must have at least ${minLength} character(s)" })`);
+		}
+		if (maxLength !== undefined) {
+			filters.push(`S.filter((val) => [...new Intl.Segmenter().segment(val)].length <= ${maxLength}, { message: () => "String must have at most ${maxLength} character(s)" })`);
+		}
+		if (pattern) {
+			filters.push(`S.pattern(new RegExp(${escapeString(pattern)}))`);
+		}
+
+		// If we already have format pipe, extend it
+		if (node.format && node.format !== "hostname" && node.format !== "idn-hostname") {
+			// Remove the closing paren and add filters
+			result = result.slice(0, -1) + ", " + filters.join(", ") + ")";
+		} else {
+			// Create new pipe
+			result = `S.String.pipe(${filters.join(", ")})`;
+		}
+	}
+
+	return result;
 }
 
 function renderNumber(node: NumberNode): string {
-	// TODO: Implement number constraints
-	return "S.Number";
+	const filters: string[] = [];
+	const {
+		minimum,
+		maximum,
+		exclusiveMinimum,
+		exclusiveMaximum,
+		multipleOf,
+	} = node.constraints;
+
+	// Integer check
+	if (node.integer) {
+		filters.push("S.int()");
+	}
+
+	// Range constraints
+	if (minimum !== undefined) {
+		filters.push(`S.greaterThanOrEqualTo(${minimum})`);
+	}
+	if (exclusiveMinimum !== undefined) {
+		filters.push(`S.greaterThan(${exclusiveMinimum})`);
+	}
+	if (maximum !== undefined) {
+		filters.push(`S.lessThanOrEqualTo(${maximum})`);
+	}
+	if (exclusiveMaximum !== undefined) {
+		filters.push(`S.lessThan(${exclusiveMaximum})`);
+	}
+
+	// Multiple of
+	if (multipleOf !== undefined) {
+		// For small values, use epsilon-based comparison for float precision
+		if (multipleOf < 1 && multipleOf > 0) {
+			filters.push(`S.filter((val) => Math.abs(val - Math.round(val / ${multipleOf}) * ${multipleOf}) < 1e-10, { message: () => "Number must be a multiple of ${multipleOf}" })`);
+		} else {
+			filters.push(`S.multipleOf(${multipleOf})`);
+		}
+	}
+
+	if (filters.length === 0) {
+		return "S.Number";
+	}
+
+	return `S.Number.pipe(${filters.join(", ")})`;
 }
 
 function renderObject(node: ObjectNode): string {

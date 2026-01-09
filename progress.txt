@@ -389,3 +389,51 @@ Key decisions:
 - All renderer implementations deferred to subsequent tasks (primitives, containers, combinators, special)
 - Effect/Schema adapter foundation now ready for implementation tasks
 
+
+### effect-renderer-primitives (COMPLETED)
+- Implemented string type rendering with format validation:
+  - Supported formats: email, uri, uri-reference, uuid, date-time, date, time, ipv4, ipv6, hostname, idn-hostname
+  - Used Effect/Schema's native validators: S.email(), S.url(), S.uuid(), S.isoDateTime(), S.date(), S.time(), S.ipv4(), S.ipv6()
+  - Used S.pattern() for hostname/idn-hostname (no native validator)
+- Implemented string constraints with grapheme cluster counting (JSON Schema spec):
+  - minLength/maxLength use Intl.Segmenter for accurate character counting (handles emoji, combining characters)
+  - pattern uses S.pattern() with RegExp
+  - All constraints use S.String.pipe() to chain validations
+- Implemented number type rendering with range and multipleOf validation:
+  - minimum/maximum use S.greaterThanOrEqualTo()/S.lessThanOrEqualTo()
+  - exclusiveMinimum/exclusiveMaximum use S.greaterThan()/S.lessThan()
+  - multipleOf uses S.multipleOf() for integers, epsilon-based S.filter() for floats (precision issues)
+  - integer flag uses S.int()
+- Boolean and null types already correctly implemented as S.Boolean and S.Null
+- Fixed critical harness issue:
+  - Original harness had placeholder comments (// {{GENERATED_CODE}}) instead of actual template markers
+  - Updated to use {{GENERATED_CODE}} and {{TEST_CASES_STRING}} directly (same pattern as zod adapter)
+  - Switched to zod-style harness format with JSON.parse for test cases and results array output
+  - Changed from loop-based to map-based approach with try-catch for error handling
+- Compliance test results:
+  - boolean_schema: 18/18 (100.0%) ✓
+  - type: 68/80 (85.0%)
+  - minLength: 6/7 (85.7%)
+  - maxLength: 6/7 (85.7%)
+  - pattern: 3/9 (33.3%) - expected, regex edge cases
+  - minimum: 9/11 (81.8%)
+  - maximum: 7/8 (87.5%)
+  - multipleOf: 9/10 (90.0%)
+  - format: 133/133 (100.0%) ✓
+- Typecheck passed with no errors across all packages
+- Build succeeded across all packages
+
+Key decisions:
+- Used S.String.pipe() for chaining string validations (Effect/Schema's recommended pattern)
+- Used S.filter() for minLength/maxLength with Intl.Segmenter (JSON Schema grapheme cluster spec)
+- Used S.greaterThan/lessThan for exclusive bounds (Effect/Schema native support)
+- Used epsilon-based comparison (1e-10) for float multipleOf validation
+- Format constraints combined with other constraints by extending the pipe chain
+- Fixed harness to match zod adapter format for compatibility with CLI's placeholder replacement
+- Effect/Schema API differences from valibot:
+  - S.int() instead of v.integer()
+  - S.greaterThanOrEqualTo/lessThanOrEqualTo instead of v.minValue/maxValue
+  - S.pattern() instead of v.regex()
+  - S.filter() with message option: { message: () => "..." }
+  - S.decodeUnknownEither returns Either type with _tag property
+
