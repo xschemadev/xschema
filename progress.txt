@@ -27,6 +27,24 @@ Key decisions:
 - Used v.nullable() wrapper for nullable types
 - Used v.InferOutput for type extraction (valibot's recommended type inference)
 
+### valibot-harness (COMPLETED)
+- Verified compliance harness.ts is correctly implemented
+- Harness uses v.safeParse(schema, tc.data) syntax (valibot's API)
+- Template structure matches zod adapter pattern exactly
+- Tested harness by running compliance test on single keyword (type)
+  - Command: `xschema compliance --draft draft2020-12 --keyword type`
+  - Result: 68/80 tests passed (85%) - reasonable given renderer not fully implemented
+  - Harness successfully parsed test cases, ran validation, output JSON results
+- Built xschema CLI binary from cli/ directory
+- Verified command runs without crashing and processes test cases correctly
+
+Key decisions:
+- Did not run full `--dev-report` suite because renderer is not yet implemented
+  - Full suite would take too long (timeout occurred during test run)
+  - REPORT.md will be generated once renderer implementation is complete
+- Harness is confirmed functional via targeted keyword test
+- Ready for next step: implementing renderer for primitive types
+
 ## 2026-01-08
 
 

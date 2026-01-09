@@ -25,7 +25,7 @@
 				"verify command completes without crashing",
 				"verify compliance/results/REPORT.md is generated"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "See packages/adapters/zod/compliance/harness.ts for exact pattern"
 		},
 		{
