@@ -1006,3 +1006,18 @@ key decisions:
 - documented JS object property names issue (unique to TypeBox due to Ajv edge cases)
 - noted Ajv usage for validation (not Value.Check) for full JSON Schema support
 - kept language clear and technical
+
+### typebox-docs (COMPLETED)
+- created CHANGELOG.md following valibot/effect adapter pattern
+  - version 0.1.0 (unreleased) with 98.3% draft2020-12 compliance noted
+- verified all compliance results already exist:
+  - ✅ CHANGELOG.md created
+  - ✅ compliance/results/REPORT.md exists (31KB, generated 2026-01-09T16:52)
+  - ✅ all 7 draft JSON files exist: v1.json, draft3.json, draft4.json, draft6.json, draft7.json, draft2019-09.json, draft2020-12.json
+- typecheck passed across all packages
+- TypeBox adapter now 100% complete (8/8 tasks)
+
+key decisions:
+- followed valibot/effect CHANGELOG structure exactly (minimal for initial release)
+- used draft2020-12 compliance rate (98.3%) as headline metric
+- typebox adapter is now ready for production use

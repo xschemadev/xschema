@@ -324,7 +324,7 @@
 				"verify compliance/results/REPORT.md exists",
 				"verify compliance/results/*.json files exist"
 			],
-			"passes": false
+			"passes": true
 		},
 		// ============================================
 		// TYPESCRIPT (TYPE-ONLY) ADAPTER
