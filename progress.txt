@@ -1057,3 +1057,18 @@ key decisions:
 - primitives fully implemented (string/number/boolean/null → TS primitive names)
 - runtime constraints (minLength, pattern, minimum, etc.) deliberately ignored - documented in comments
 - followed exact same file structure as zod/valibot/effect/typebox adapters
+
+### typescript-renderer-primitives (COMPLETED)
+- verified primitive type rendering already correctly implemented during scaffold:
+  - renderString(_node: StringNode) → returns "string"
+  - renderNumber(node: NumberNode) → returns "number" (integer constraint documented as not enforceable)
+  - boolean case → returns "boolean"
+  - null case → returns "null"
+- ran `bun run typecheck` from typescript/ - all 8 packages pass with exit code 0
+- no code changes needed - implementation was complete during typescript-scaffold task
+- task was verification-only: confirming primitives render to correct TS type names
+
+key observations:
+- scaffold task was thorough - primitives were fully implemented from the start
+- constraints (minLength, pattern, minimum, etc.) correctly ignored with clear comments
+- typecheck confirms no type errors in renderer implementation

@@ -349,8 +349,8 @@
 				"verify string/number/boolean/null schemas render to correct TS primitive type names",
 				"run: bun run typecheck (from typescript/) - verify no type errors"
 			],
-			"passes": false,
-			"notes": "Constraints are NOT expressible in TS types - document this clearly"
+			"passes": true,
+			"notes": "Constraints are NOT expressible in TS types - document this clearly. Already implemented during scaffold."
 		},
 		{
 			"id": "typescript-renderer-containers",
