@@ -13,7 +13,7 @@
 				"run: bun run build (from typescript/)",
 				"verify build succeeds without errors"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "Follow zod adapter pattern exactly - see packages/adapters/zod/ for reference"
 		},
 		{

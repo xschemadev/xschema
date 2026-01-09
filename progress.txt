@@ -1,5 +1,32 @@
 # Progress Log
 
+## 2026-01-09
+
+### valibot-scaffold (COMPLETED)
+- Created Valibot adapter package structure following zod adapter pattern
+- Created package.json with valibot as peer dependency (version ^0.42.0)
+- Created tsconfig.json extending the base config
+- Created src/index.ts with convert function that:
+  - Uses @xschemadev/core parse and render functions
+  - Returns proper ConvertResult with valibot imports
+  - Uses v.InferOutput for type inference (valibot's type extraction API)
+- Created src/cli.ts with stdin/stdout protocol using createAdapterCLI
+- Created src/renderer.ts skeleton with all SchemaNode kind handlers
+  - Handled TypeGuardedNode.guards array structure (not .schema)
+  - Handled NullableNode.inner property (not .schema)
+  - Used valibot API conventions (v.null_() instead of v.null())
+- Created compliance/harness.ts template with placeholders
+  - Uses v.safeParse for validation (valibot's validation API)
+- Created compliance/results directory structure
+- Verified build succeeds with `bun run build`
+- Verified typecheck passes with `bun run typecheck`
+
+Key decisions:
+- Used valibot import style: `import * as v from "valibot"`
+- Used v.null_() for null type (valibot uses underscore to avoid reserved word conflict)
+- Used v.nullable() wrapper for nullable types
+- Used v.InferOutput for type extraction (valibot's recommended type inference)
+
 ## 2026-01-08
 
 
