@@ -232,7 +232,7 @@
 				"run: bun run build (from typescript/)",
 				"verify build succeeds without errors"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "TypeBox was designed for JSON Schema compatibility - expect high compliance"
 		},
 		{

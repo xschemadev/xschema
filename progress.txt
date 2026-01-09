@@ -697,3 +697,43 @@ key decisions:
 - followed valibot CHANGELOG structure exactly (minimal for initial release)
 - used draft2020-12 compliance rate (94.3%) as headline metric
 - effect adapter is now ready for production use
+
+### typebox-scaffold (COMPLETED)
+- created TypeBox adapter package following zod/valibot/effect adapter structure
+- created package.json with @sinclair/typebox as peer dependency (version ^0.34.0)
+  - devDependency on @sinclair/typebox@^0.34.0 for testing
+  - binary: xschema-typebox at dist/cli.js
+- created tsconfig.json extending base config
+- created src/index.ts with convert function:
+  - uses Type and Static from @sinclair/typebox
+  - uses Value from @sinclair/typebox/value for validation
+  - returns two imports: Type/Static and Value
+  - type inference: `Static<typeof varName>` (TypeBox's type extraction API)
+- created src/cli.ts with stdin/stdout protocol using createAdapterCLI
+- created src/renderer.ts skeleton with all SchemaNode kind handlers:
+  - primitives: Type.String(), Type.Number(), Type.Boolean(), Type.Null()
+  - containers: Type.Object(), Type.Array(), Type.Tuple()
+  - combinators: Type.Union(), Type.Intersect(), Type.Not()
+  - special: Type.Literal(), Type.Any(), Type.Never()
+  - TypeGuardedNode: renders as union of guarded schemas
+  - NullableNode: Type.Union([inner, Type.Null()])
+  - all complex logic marked with TODO comments for next tasks
+- created compliance/harness.ts template:
+  - uses Value.Check(schema, data) for validation (TypeBox's validation API)
+  - returns boolean directly (simpler than other adapters' Either/safeParse)
+- created compliance/results directory structure with .gitkeep
+- ran bun install to get @sinclair/typebox@0.34.33
+- build succeeded with `bun run build` from typescript/
+- typecheck passed with `bun run typecheck` from typescript/
+- verified dist/ directory contains all compiled output (.js, .d.ts, .map files)
+
+key decisions:
+- used @sinclair/typebox import pattern: `import { Type, type Static } from "@sinclair/typebox"`
+- Value module imported separately: `import { Value } from "@sinclair/typebox/value"`
+- type extraction uses Static<typeof schema> (TypeBox's compile-time type inference)
+- validation uses Value.Check() which returns boolean directly
+- followed valibot/effect adapter patterns exactly for consistency
+- TypeBox's API is closer to JSON Schema than other validation libs (designed for it)
+- used Type.Union([inner, Type.Null()]) for nullable (TypeBox has no dedicated nullable type)
+- all renderer implementations deferred to subsequent tasks (primitives, containers, combinators, special)
+- TypeBox adapter foundation now ready for implementation tasks
