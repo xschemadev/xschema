@@ -201,13 +201,60 @@ function renderNot(_node: NotNode): string {
 }
 
 function renderLiteral(node: LiteralNode): string {
-  // TODO: implement in typescript-renderer-special task
+  return valueToLiteralType(node.value);
+}
+
+/**
+ * Converts a JavaScript value to its TypeScript literal type representation.
+ * - strings: "hello" → '"hello"'
+ * - numbers: 42 → '42'
+ * - booleans: true → 'true'
+ * - null: null → 'null'
+ * - arrays: [1, 2] → 'readonly [1, 2]'
+ * - objects: {a: 1} → '{ readonly a: 1 }'
+ */
+function valueToLiteralType(value: unknown): string {
+  if (value === null) {
+    return "null";
+  }
+  if (typeof value === "string") {
+    return JSON.stringify(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return "readonly []";
+    }
+    const elements = value.map((v) => valueToLiteralType(v));
+    return `readonly [${elements.join(", ")}]`;
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length === 0) {
+      return "Record<string, never>";
+    }
+    const props = entries.map(([k, v]) => {
+      const safeKey = needsQuotes(k) ? JSON.stringify(k) : k;
+      return `readonly ${safeKey}: ${valueToLiteralType(v)}`;
+    });
+    return `{ ${props.join("; ")} }`;
+  }
+  // Fallback for undefined or other types
   return "unknown";
 }
 
 function renderEnum(node: EnumNode): string {
-  // TODO: implement in typescript-renderer-special task
-  return "unknown";
+  if (node.values.length === 0) {
+    return "never";
+  }
+  if (node.values.length === 1) {
+    return valueToLiteralType(node.values[0]);
+  }
+  // Union of literal types
+  const literals = node.values.map((v) => valueToLiteralType(v));
+  return literals.join(" | ");
 }
 
 function renderRef(node: RefNode): string {
@@ -216,17 +263,35 @@ function renderRef(node: RefNode): string {
 }
 
 function renderConditional(node: ConditionalNode): string {
-  // if/then/else cannot be expressed in TypeScript types at compile time
-  // Best approximation: union of then and else types (or unknown if neither)
-  // TODO: implement in typescript-renderer-special task
-  return "unknown";
+  // if/then/else is runtime validation - cannot be expressed in TypeScript types.
+  // Best approximation: union of then and else types (covers possible output types).
+  const types: string[] = [];
+  if (node.then) {
+    types.push(render(node.then));
+  }
+  if (node.else) {
+    types.push(render(node.else));
+  }
+  if (types.length === 0) {
+    return "unknown";
+  }
+  if (types.length === 1) {
+    return types[0];
+  }
+  return types.join(" | ");
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-  // TypeGuardedNode contains type-specific schemas
-  // At type level, this becomes a union of all possible types
-  // TODO: implement in typescript-renderer-special task
-  return "unknown";
+  // TypeGuardedNode contains type-specific schemas that apply based on runtime type.
+  // At type level: union of all guarded schemas (all possible types the value could be).
+  if (node.guards.length === 0) {
+    return "unknown";
+  }
+  if (node.guards.length === 1) {
+    return render(node.guards[0].schema);
+  }
+  const types = node.guards.map((g) => render(g.schema));
+  return types.join(" | ");
 }
 
 function renderNullable(node: NullableNode): string {

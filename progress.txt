@@ -1127,3 +1127,48 @@ key decisions:
 - empty intersection → `unknown` (everything satisfies empty intersection)
 - single-element union/intersection → unwrap to single type (cleaner output)
 - UnionNode.variants vs IntersectionNode/OneOfNode.schemas naming difference handled
+
+### typescript-renderer-special (COMPLETED)
+- implemented special type rendering in src/renderer.ts for TypeScript type-only adapter
+- literal types (const):
+  - created `valueToLiteralType` helper for recursive literal type generation
+  - primitives: string → `"value"`, number → `42`, boolean → `true`, null → `null`
+  - arrays: `[1, 2]` → `readonly [1, 2]` (readonly to enforce immutability of literals)
+  - objects: `{a: 1}` → `{ readonly a: 1 }` (readonly properties)
+  - empty array: `readonly []`
+  - empty object: `Record<string, never>` (no keys allowed)
+  - nested values handled recursively
+- enum types:
+  - empty enum → `never` (impossible to satisfy)
+  - single value → delegates to `valueToLiteralType`
+  - multiple values → union of literal types: `"a" | "b" | 1`
+- conditional validation (if/then/else):
+  - runtime validation cannot be expressed in TS types
+  - best approximation: union of then and else types
+  - only then → single type
+  - only else → single type
+  - both → union `ThenType | ElseType`
+  - neither → `unknown`
+- typeGuarded nodes:
+  - union of all guard schemas (all possible runtime types)
+  - empty guards → `unknown`
+  - single guard → unwrap to single type
+  - multiple guards → union of all schema types
+- verified other special types already correct:
+  - $ref: `render(node.resolved)` - refs pre-resolved in IR
+  - nullable: `${inner} | null`
+  - any: `unknown`
+  - never: `never`
+- all acceptance criteria met:
+  - ✅ const: 'hello' renders to '"hello"' (literal type)
+  - ✅ enum: ['a', 'b'] renders to '"a" | "b"'
+  - ✅ nullable renders to T | null
+  - ✅ typecheck passes across all 8 packages
+  - ✅ build succeeds across all packages
+
+key decisions:
+- used `readonly` modifier for array/object literals to enforce immutability at type level
+- reused `needsQuotes` helper for safe property key quoting in object literals
+- union of then/else for conditionals gives widest possible type (safest approximation)
+- typeGuarded as union covers all possible runtime shapes
+- kept consistent with other adapters' approach to runtime-only features (graceful degradation)
