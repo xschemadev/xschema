@@ -423,7 +423,7 @@
 				"verify it explains TYPE-ONLY nature and why validation tests don't apply",
 				"verify it lists supported JSON Schema features (structural) vs unsupported (runtime constraints)"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "Type-only adapters don't run the standard compliance test suite"
 		},
 		{

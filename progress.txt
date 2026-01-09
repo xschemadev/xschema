@@ -1248,3 +1248,24 @@ key decisions:
 - kept changelog minimal following other adapters' pattern
 - emphasized "type-only" and "no runtime validation" as the defining characteristic
 - typescript adapter basic documentation now complete (README + CHANGELOG)
+
+### typescript-compliance-docs (COMPLETED)
+- verified compliance/results/REPORT.md exists at packages/adapters/typescript/compliance/results/REPORT.md
+- REPORT.md comprehensively documents:
+  - TYPE-ONLY nature of the adapter (no runtime validation code produced)
+  - why standard compliance tests cannot run (types exist only at compile-time)
+  - supported structural features table (primitives, objects, arrays, tuples, unions, intersections, literals, enums, refs, nullable)
+  - unsupported runtime constraints table (minLength, maxLength, pattern, format, minimum, maximum, multipleOf, etc.)
+  - validation approach (TypeScript compiler for type-checking, syntax validation)
+  - guidance on when to use this adapter vs runtime validation adapters
+- all acceptance criteria met:
+  - ✅ compliance/results/REPORT.md exists
+  - ✅ explains TYPE-ONLY nature and why validation tests don't apply
+  - ✅ lists supported features (structural) vs unsupported (runtime constraints)
+- typecheck passed across all 8 packages
+- REPORT.md was created in previous session (2026-01-09T19:00:00Z)
+
+key observations:
+- type-only adapters require different compliance documentation approach
+- cannot generate pass/fail metrics since there's no runtime to test against
+- documentation focuses on structural type mapping correctness instead
