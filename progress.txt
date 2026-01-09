@@ -682,3 +682,18 @@ key decisions:
 - remaining ~6% failures are genuine spec edge cases or library limitations
 - effect/schema API different from zod: uses S.decodeUnknownEither with Either type
 - 95.4% on draft7 exceeds the 95% threshold for green badge
+
+### effect-docs (COMPLETED)
+- created CHANGELOG.md following valibot adapter pattern
+  - version 0.1.0 (unreleased) with 94.3% draft2020-12 compliance noted
+- verified all compliance results already exist:
+  - ✅ CHANGELOG.md created
+  - ✅ compliance/results/REPORT.md exists (generated 2026-01-09T09:55:50Z)
+  - ✅ all 7 draft JSON files exist: v1.json, draft3.json, draft4.json, draft6.json, draft7.json, draft2019-09.json, draft2020-12.json
+- typecheck passed across all packages
+- effect/schema adapter now 100% complete (8/8 tasks)
+
+key decisions:
+- followed valibot CHANGELOG structure exactly (minimal for initial release)
+- used draft2020-12 compliance rate (94.3%) as headline metric
+- effect adapter is now ready for production use
