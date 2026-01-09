@@ -1203,3 +1203,36 @@ key observations:
 - tested via direct stdin/stdout to bypass this limitation
 - additionalProperties: undefined defaults to true per JSON Schema spec, so objects get `[key: string]: unknown` unless explicitly set to false
 - all output types validated against TypeScript compiler via typecheck
+
+### typescript-readme (COMPLETED)
+- created comprehensive README.md for TypeScript type-only adapter
+- emphasized TYPE-ONLY nature prominently in title and opening paragraph
+- documented what the adapter does (structural types):
+  - primitives: string, number, boolean, null
+  - objects with optional/required properties and index signatures
+  - arrays and tuples (strict and variadic)
+  - unions (anyOf, oneOf) and intersections (allOf)
+  - literals and enums as literal types
+- documented what cannot be expressed (runtime constraints):
+  - string constraints: minLength, maxLength, pattern, format
+  - number constraints: minimum, maximum, multipleOf
+  - array constraints: minItems, maxItems, uniqueItems, contains
+  - object constraints: minProperties, maxProperties, patternProperties, propertyNames
+  - conditional validation: if/then/else (renders as union)
+  - negation: not (renders as unknown)
+- included output format section explaining schema="", type=expression, imports=[]
+- added usage example with xschema config and generated output
+- added comparison table with @xschemadev/zod showing tradeoffs
+- added detailed type rendering examples for objects, tuples, literals, conditionals
+- verified all acceptance criteria:
+  - ✅ README.md clearly states TYPE-ONLY in title/description
+  - ✅ lists expressible vs non-expressible features (two clear sections)
+  - ✅ usage example shows generated type output
+- ran bun run typecheck - all 8 packages pass
+
+key decisions:
+- followed zod README structure but adapted for type-only nature
+- split into "What This Adapter Does" and "What Cannot Be Expressed" sections
+- added comparison table to help users choose between typescript vs zod adapters
+- included detailed examples for each type category (objects, tuples, literals, etc.)
+- documented readonly modifier usage for literal arrays/objects

@@ -412,7 +412,7 @@
 				"verify it lists expressible vs non-expressible features",
 				"verify usage example shows generated type output"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "typescript-compliance-docs",
