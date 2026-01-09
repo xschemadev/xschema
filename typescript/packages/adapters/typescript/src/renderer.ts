@@ -83,18 +83,81 @@ function renderNumber(node: NumberNode): string {
 }
 
 function renderObject(node: ObjectNode): string {
-  // TODO: implement in typescript-renderer-containers task
-  return "Record<string, unknown>";
+  const propKeys = Array.from(node.properties.keys());
+
+  // No defined properties
+  if (propKeys.length === 0) {
+    // Pure record type based on additionalProperties
+    if (node.additionalProperties === false) {
+      // No properties allowed - empty object
+      return "Record<string, never>";
+    } else if (
+      typeof node.additionalProperties === "object" &&
+      node.additionalProperties.kind !== "any"
+    ) {
+      const valueType = render(node.additionalProperties);
+      return `Record<string, ${valueType}>`;
+    } else {
+      return "Record<string, unknown>";
+    }
+  }
+
+  // Build property types
+  const props = propKeys.map((key) => {
+    const prop = node.properties.get(key)!;
+    const propType = render(prop.schema as SchemaNode);
+    const safeKey = needsQuotes(key) ? JSON.stringify(key) : key;
+    const optional = prop.required ? "" : "?";
+    return `${safeKey}${optional}: ${propType}`;
+  });
+
+  // Handle additional properties
+  let indexSignature = "";
+  if (node.additionalProperties === true) {
+    indexSignature = "[key: string]: unknown";
+  } else if (
+    typeof node.additionalProperties === "object" &&
+    node.additionalProperties.kind !== "any"
+  ) {
+    const valueType = render(node.additionalProperties);
+    indexSignature = `[key: string]: ${valueType}`;
+  }
+  // additionalProperties: false means strict object - no index signature
+
+  const allMembers = indexSignature ? [...props, indexSignature] : props;
+  return `{ ${allMembers.join("; ")} }`;
+}
+
+// Check if a property key needs to be quoted
+function needsQuotes(key: string): boolean {
+  // Valid JS identifier regex (simplified)
+  return !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
 }
 
 function renderArray(node: ArrayNode): string {
-  // TODO: implement in typescript-renderer-containers task
-  return "unknown[]";
+  // Runtime constraints (minItems, maxItems, uniqueItems, contains) cannot be
+  // expressed in TypeScript types - only structural type is rendered
+  const itemType = render(node.items);
+  return `${itemType}[]`;
 }
 
 function renderTuple(node: TupleNode): string {
-  // TODO: implement in typescript-renderer-containers task
-  return "unknown[]";
+  // Runtime constraints (minItems, maxItems, uniqueItems, contains) cannot be
+  // expressed in TypeScript types
+  const prefixTypes = node.prefixItems.map((item) => render(item));
+
+  if (node.restItems === false) {
+    // Strict tuple - no additional items allowed
+    return `[${prefixTypes.join(", ")}]`;
+  }
+
+  // Variadic tuple with rest element
+  const restType = render(node.restItems);
+  if (prefixTypes.length === 0) {
+    // Just rest items = array
+    return `${restType}[]`;
+  }
+  return `[${prefixTypes.join(", ")}, ...${restType}[]]`;
 }
 
 function renderUnion(node: UnionNode): string {
