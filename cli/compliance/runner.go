@@ -235,7 +235,7 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)
+	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput, group.Tests, opts.workDir)
 	if err != nil {
 		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
 		return nil
@@ -307,10 +307,17 @@ func processResults(harnessResults []HarnessResult, group TestGroup, keywordResu
 		}
 		tc := group.Tests[i]
 
-		passed := (hr.Actual == "true" && tc.Valid) || (hr.Actual == "false" && !tc.Valid)
-
 		keywordResult.Total++
 		summary.Total++
+
+		// Handle skipped results (from type-only adapters)
+		if hr.Actual == "skipped" {
+			keywordResult.Skipped++
+			summary.Skipped++
+			continue
+		}
+
+		passed := (hr.Actual == "true" && tc.Valid) || (hr.Actual == "false" && !tc.Valid)
 
 		if passed {
 			keywordResult.Passed++

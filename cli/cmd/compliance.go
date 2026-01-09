@@ -168,18 +168,24 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		},
 		DraftDoneFunc: func(draft compliance.DraftResult) {
 			// Print completion line above spinner
-			status := ui.Success.Render("✓")
-			if draft.Summary.Percentage < 80 {
-				status = ui.Error.Render("✗")
-			} else if draft.Summary.Percentage < 95 {
-				status = ui.Warning.Render("!")
+			isTypeOnly := draft.Summary.Skipped == draft.Summary.Total && draft.Summary.Total > 0
+			var status, coverage string
+			if isTypeOnly {
+				status = ui.Bold.Render("○")
+				coverage = "type-only (skipped)"
+			} else {
+				status = ui.Success.Render("✓")
+				if draft.Summary.Percentage < 80 {
+					status = ui.Error.Render("✗")
+				} else if draft.Summary.Percentage < 95 {
+					status = ui.Warning.Render("!")
+				}
+				coverage = fmt.Sprintf("%d/%d (%.1f%%)", draft.Summary.Passed, draft.Summary.Total, draft.Summary.Percentage)
 			}
-			msg := fmt.Sprintf("%s %s: %d/%d (%.1f%%)",
+			msg := fmt.Sprintf("%s %s: %s",
 				status,
 				ui.Bold.Render(draft.Draft),
-				draft.Summary.Passed,
-				draft.Summary.Total,
-				draft.Summary.Percentage,
+				coverage,
 			)
 			spinner.PrintAboveSpinner(msg)
 		},
@@ -219,20 +225,22 @@ func printComplianceSummary(report *compliance.ComplianceReport) {
 	ui.Println()
 	ui.Println("Summary:")
 	for _, draft := range report.Drafts {
-		status := ui.Success.Render("✓")
-		if draft.Summary.Percentage < 80 {
-			status = ui.Error.Render("✗")
-		} else if draft.Summary.Percentage < 95 {
-			status = ui.Warning.Render("!")
+		isTypeOnly := draft.Summary.Skipped == draft.Summary.Total && draft.Summary.Total > 0
+		var status, coverage string
+		if isTypeOnly {
+			status = ui.Bold.Render("○")
+			coverage = "type-only (skipped)"
+		} else {
+			status = ui.Success.Render("✓")
+			if draft.Summary.Percentage < 80 {
+				status = ui.Error.Render("✗")
+			} else if draft.Summary.Percentage < 95 {
+				status = ui.Warning.Render("!")
+			}
+			coverage = fmt.Sprintf("%d/%d (%.1f%%)", draft.Summary.Passed, draft.Summary.Total, draft.Summary.Percentage)
 		}
 
-		ui.Printf("  %s %s: %d/%d (%.1f%%)\n",
-			status,
-			draft.Draft,
-			draft.Summary.Passed,
-			draft.Summary.Total,
-			draft.Summary.Percentage,
-		)
+		ui.Printf("  %s %s: %s\n", status, draft.Draft, coverage)
 	}
 }
 

@@ -41,7 +41,7 @@ func FindHarness(adapterPath string) (string, error) {
 
 // GenerateTempHarness creates a temporary harness file with injected code and test cases
 // The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []TestCase, targetDir string) (string, error) {
+func GenerateTempHarness(harnessTemplate string, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string) (string, error) {
 	// Read template
 	templateBytes, err := os.ReadFile(harnessTemplate)
 	if err != nil {
@@ -63,9 +63,17 @@ func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []Test
 		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
 	}
 
+	// For type-only adapters, use the type field as generated code
+	// This allows type-only adapters to pass type expressions through {{GENERATED_CODE}}
+	generatedCode := adapterOutput.Schema
+	if generatedCode == "" && adapterOutput.Type != "" {
+		generatedCode = adapterOutput.Type
+	}
+
 	// Replace placeholders
 	content := template
 	content = strings.ReplaceAll(content, "{{GENERATED_CODE}}", generatedCode)
+	content = strings.ReplaceAll(content, "{{GENERATED_TYPE}}", adapterOutput.Type)
 	content = strings.ReplaceAll(content, "{{TEST_CASES_STRING}}", string(testCasesString))
 	// Keep legacy support for {{TEST_CASES}} in case other adapters use it
 	content = strings.ReplaceAll(content, "{{TEST_CASES}}", string(testCasesJSON))

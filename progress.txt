@@ -1269,3 +1269,83 @@ key observations:
 - type-only adapters require different compliance documentation approach
 - cannot generate pass/fail metrics since there's no runtime to test against
 - documentation focuses on structural type mapping correctness instead
+
+---
+
+## 2026-01-09
+
+### harness-typecheck (COMPLETED)
+- added typecheck step to compliance harness for TypeScript adapters
+- typecheck runs `tsc --noEmit --skipLibCheck` on each generated harness file
+- typecheck failures mark all tests in group as failed with tsc error output
+
+implementation:
+- cli/compliance/harness.go:
+  - added TypecheckConfig struct with Enabled, Runner, RunnerArgs fields
+  - added TypecheckResult struct with Success bool and Output string
+  - added TypecheckHarness() function to run tsc on generated .ts/.tsx files
+- cli/compliance/runner.go:
+  - integrated TypecheckHarness() call in processGroup() after GenerateTempHarness()
+  - added TypecheckConfig to RunOptions struct
+- cli/language/typescript.go:
+  - added detectTSTypecheckRunner() to detect tsc runner for each package manager
+  - bun → bun run tsc, npx → npx tsc, pnpm → pnpm exec tsc, yarn → yarn tsc
+- cli/language/language.go:
+  - added DetectTypecheckRunner field to Language struct
+- cli/cmd/compliance.go:
+  - detect and configure typecheck runner when available
+
+verification:
+- ran compliance on zod adapter, confirmed typecheck runs (debug output visible)
+- introduced deliberate type error (z.INVALID_TYPE_ERROR()), confirmed typecheck caught it
+- reverted error, confirmed zod adapter passes (100% on type keyword)
+- typecheck errors appear in failure messages with tsc output
+
+key decisions:
+- typecheck only runs on .ts/.tsx files (skips .js, .py, etc.)
+- typecheck runs after harness generation, before execution
+- typecheck failures mark ALL tests in group as failed (matches bundling/generation error behavior)
+- uses --skipLibCheck to avoid checking node_modules (faster, fewer false positives)
+
+---
+
+### harness-typeonly-mode (COMPLETED)
+- added support for type-only adapters in compliance harness
+- when adapter returns empty schema (no runtime code), harness outputs "skipped" for all tests
+- typecheck still runs on generated types via tsc --noEmit
+
+implementation:
+- cli/compliance/harness.go:
+  - GenerateTempHarness now accepts *AdapterOutput instead of just schema string
+  - when Schema is empty but Type is not, uses Type for {{GENERATED_CODE}} placeholder
+  - added {{GENERATED_TYPE}} placeholder support for future use
+- cli/compliance/runner.go:
+  - updated processGroup to pass full AdapterOutput to GenerateTempHarness
+  - processResults handles "skipped" actual value - increments Skipped counter instead of Failed
+- cli/compliance/report.go:
+  - added isTypeOnlyAdapter() function: returns true when totalPassed == 0 && totalSkipped > 0
+  - GenerateMarkdownReport shows "## Type-Only Adapter" section for type-only adapters
+  - Summary table shows "N/A (type-only)" for Coverage column
+  - Badges section skipped for type-only adapters (no meaningful percentage)
+  - Added note explaining that failures indicate typecheck errors, not runtime failures
+- cli/cmd/compliance.go:
+  - DraftDoneFunc shows "○ draft: type-only (skipped)" for type-only drafts
+  - printComplianceSummary uses same logic for summary display
+- typescript/packages/adapters/typescript/compliance/harness.ts:
+  - type-only harness template outputs "skipped" for all test results
+  - uses `type GeneratedType = {{GENERATED_CODE}}` for compile-time type checking
+
+verification:
+- ran compliance on typescript adapter with single keyword (boolean_schema)
+  - output: "○ draft2020-12: type-only (skipped)"
+- verified typecheck catches errors by introducing deliberate invalid type
+  - output showed typecheck failure with tsc error message
+- all 8 TypeScript packages pass typecheck
+- Go CLI builds without errors
+
+key decisions:
+- type-only detection: Passed == 0 AND Skipped > 0 (allows failures from typecheck errors)
+- per-draft display shows type-only only when ALL tests in draft are skipped
+- report-level display shows type-only when aggregate has no passed tests but has skipped
+- harness falls back to Type field when Schema is empty (enables type-only adapters)
+- "skipped" result value handled specially in processResults (not counted as failure)

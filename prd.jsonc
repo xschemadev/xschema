@@ -449,7 +449,7 @@
 				"verify typecheck failure is captured in results",
 				"revert the deliberate error, verify zod adapter still passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "This is a Go CLI change in cli/compliance/"
 		},
 		{
@@ -462,7 +462,8 @@
 				"verify typecheck still runs on generated types",
 				"verify REPORT.md is generated with appropriate type-only messaging"
 			],
-			"passes": false
+			"passes": true,
+			"notes": "Type-only mode detection via isTypeOnlyAdapter(). Harness outputs 'skipped' for all tests. Typecheck still runs via tsc --noEmit. Display shows '○ draft: type-only (skipped)' for type-only adapters."
 		}
 	]
 }
