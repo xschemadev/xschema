@@ -73,13 +73,85 @@ export function render(node: SchemaNode): string {
 }
 
 function renderString(node: StringNode): string {
-	// TODO: implement string constraints (minLength, maxLength, pattern, format)
-	return "Type.String()";
+	const options: string[] = [];
+
+	// Format - TypeBox supports format directly in options
+	if (node.format) {
+		switch (node.format) {
+			case "email":
+			case "uri":
+			case "uri-reference":
+			case "uuid":
+			case "date-time":
+			case "date":
+			case "time":
+			case "ipv4":
+			case "ipv6":
+			case "hostname":
+			case "idn-hostname":
+				options.push(`format: ${escapeString(node.format)}`);
+				break;
+			// Unknown formats ignored per JSON Schema spec
+		}
+	}
+
+	// Constraints
+	const { minLength, maxLength, pattern } = node.constraints;
+
+	if (minLength !== undefined) {
+		options.push(`minLength: ${minLength}`);
+	}
+	if (maxLength !== undefined) {
+		options.push(`maxLength: ${maxLength}`);
+	}
+	if (pattern) {
+		options.push(`pattern: ${escapeString(pattern)}`);
+	}
+
+	if (options.length === 0) {
+		return "Type.String()";
+	}
+
+	return `Type.String({ ${options.join(", ")} })`;
 }
 
 function renderNumber(node: NumberNode): string {
-	// TODO: implement number constraints (minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf, integer)
-	return "Type.Number()";
+	const options: string[] = [];
+	const {
+		minimum,
+		maximum,
+		exclusiveMinimum,
+		exclusiveMaximum,
+		multipleOf,
+	} = node.constraints;
+
+	// Range constraints - TypeBox supports these directly in options
+	if (minimum !== undefined) {
+		options.push(`minimum: ${minimum}`);
+	}
+	if (exclusiveMinimum !== undefined) {
+		options.push(`exclusiveMinimum: ${exclusiveMinimum}`);
+	}
+	if (maximum !== undefined) {
+		options.push(`maximum: ${maximum}`);
+	}
+	if (exclusiveMaximum !== undefined) {
+		options.push(`exclusiveMaximum: ${exclusiveMaximum}`);
+	}
+
+	// Multiple of
+	if (multipleOf !== undefined) {
+		options.push(`multipleOf: ${multipleOf}`);
+	}
+
+	// Use Type.Integer() for integer constraint, Type.Number() otherwise
+	const baseType = node.integer ? "Type.Integer" : "Type.Number";
+
+	if (options.length === 0) {
+		return `${baseType}()`;
+	}
+
+	return `${baseType}({ ${options.join(", ")} })`;
 }
 
 function renderObject(node: ObjectNode): string {

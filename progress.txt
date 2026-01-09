@@ -766,3 +766,43 @@ key decisions:
 - TypeBox's high compliance even with skeleton (68-70%) shows it was designed for JSON Schema
 - 97.5% on type keyword with skeleton shows TypeBox's API maps very closely to JSON Schema
 - ready for next task: typebox-renderer-primitives
+
+### typebox-renderer-primitives (COMPLETED)
+- implemented primitive type rendering in src/renderer.ts for TypeBox adapter
+- string type with constraints:
+  - format: directly supported via Type.String({ format: "email" }) etc.
+  - minLength/maxLength: Type.String({ minLength: N, maxLength: N })
+  - pattern: Type.String({ pattern: "regex" })
+  - supported formats: email, uri, uri-reference, uuid, date-time, date, time, ipv4, ipv6, hostname, idn-hostname
+- number type with constraints:
+  - minimum/maximum: Type.Number({ minimum: N, maximum: N })
+  - exclusiveMinimum/exclusiveMaximum: Type.Number({ exclusiveMinimum: N, exclusiveMaximum: N })
+  - multipleOf: Type.Number({ multipleOf: N })
+  - integer: uses Type.Integer() instead of Type.Number()
+- boolean: Type.Boolean()
+- null: Type.Null()
+- compliance test results (draft2020-12):
+  - type: 80/80 (100.0%) ✓ perfect
+  - boolean_schema: 18/18 (100.0%) ✓ perfect
+  - format: 133/133 (100.0%) ✓ perfect
+  - minimum: 9/11 (81.8%) - 2 failures are TypeGuardedNode issues ("ignores non-numbers")
+  - maximum: 7/8 (87.5%) - same TypeGuardedNode issue
+  - exclusiveMinimum: 3/4 (75.0%) - same TypeGuardedNode issue
+  - exclusiveMaximum: 3/4 (75.0%) - same TypeGuardedNode issue
+  - minLength: 5/7 (71.4%) - TypeGuardedNode issue
+  - maxLength: 5/7 (71.4%) - TypeGuardedNode issue
+  - multipleOf: 7/10 (70.0%) - TypeGuardedNode issue
+  - pattern: 3/9 (33.3%) - TypeGuardedNode issue
+- typecheck passed with no errors across all packages
+- build succeeded across all packages
+
+key decisions:
+- TypeBox has native JSON Schema support - constraints go directly in options object
+- Type.Integer() used for integer constraint (separate type from Type.Number)
+- all constraint options map directly to JSON Schema keywords (minLength, maxLength, pattern, format, minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf)
+- no need for custom refinements like valibot/zod/effect - TypeBox validates these natively via Value.Check()
+- remaining failures in constraint tests are due to TypeGuardedNode rendering, not primitive types
+- schemas without explicit "type" get parsed to TypeGuardedNode (e.g., { minimum: 1 } without "type": "number")
+- JSON Schema spec requires "ignores non-numbers" behavior which requires TypeGuardedNode fix in later task
+- with explicit type (e.g., { type: "number", minimum: 1 }), validation works correctly
+- TypeBox's direct JSON Schema compatibility makes implementation much simpler than other adapters
