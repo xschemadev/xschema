@@ -1,0 +1,2661 @@
+{
+  "draft": "draft2019-09",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 12,
+      "failed": 7,
+      "skipped": 0,
+      "total": 19,
+      "failures": [
+        {
+          "group": "additionalItems as schema",
+          "test": "additional items match schema",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalItems as false without items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalItems are allowed by default",
+          "test": "only the first item is validated",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items validation adjusts the starting index for additionalItems",
+          "test": "valid items",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 9,
+      "failed": 12,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "an additional property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-ASCII pattern with additionalProperties",
+          "test": "not matching the pattern is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties with schema",
+          "test": "an additional invalid property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties can exist by itself",
+          "test": "an additional invalid property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties does not look in applicators",
+          "test": "properties defined in allOf are not examined",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties with propertyNames",
+          "test": "Valid against propertyNames, but not additionalProperties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties doesn't consider dependentSchemas",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties can't see bar",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties can't see bar even when foo2 is present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "allOf",
+      "passed": 15,
+      "failed": 15,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "allOf",
+          "test": "mismatch second",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf",
+          "test": "mismatch first",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch base schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch first allOf",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch second allOf",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf simple types",
+          "test": "mismatch one",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: false, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: false, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: true, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: true, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: false, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: false, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: true, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "anchor",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 15,
+      "failed": 3,
+      "skipped": 0,
+      "total": 18,
+      "failures": [
+        {
+          "group": "anyOf",
+          "test": "neither anyOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf with base schema",
+          "test": "both anyOf invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf complex types",
+          "test": "neither anyOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 47,
+      "failed": 7,
+      "skipped": 0,
+      "total": 54,
+      "failures": [
+        {
+          "group": "const with object",
+          "test": "same object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with object",
+          "test": "same object with different property order is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with array",
+          "test": "same array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with [false] does not match [0]",
+          "test": "[false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with [true] does not match [1]",
+          "test": "[true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with {\"a\": false} does not match {\"a\": 0}",
+          "test": "{\"a\": false} is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with {\"a\": true} does not match {\"a\": 1}",
+          "test": "{\"a\": true} is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "contains",
+      "passed": 9,
+      "failed": 12,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "contains keyword validation",
+          "test": "array without items matching schema is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword validation",
+          "test": "empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword validation",
+          "test": "not array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with const keyword",
+          "test": "array without item 5 is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with boolean schema true",
+          "test": "empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with boolean schema false",
+          "test": "any non-empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with boolean schema false",
+          "test": "empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with boolean schema false",
+          "test": "non-arrays are valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items + contains",
+          "test": "matches items, does not match contains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items + contains",
+          "test": "does not match items, matches contains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items + contains",
+          "test": "matches neither items nor contains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "contains with false if subschema",
+          "test": "empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "content",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "default",
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "the default keyword does not do anything if the property is missing",
+          "test": "an explicit property value is checked against maximum (failing)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "defs",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependentRequired",
+      "passed": 10,
+      "failed": 10,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "single dependency",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "empty dependents",
+          "test": "non-object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing other dependency",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing both dependencies",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "CRLF missing dependent",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quotes missing dependent",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "dependentSchemas",
+      "passed": 7,
+      "failed": 13,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "single dependency",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "wrong type other",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "wrong type both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "boolean subschemas",
+          "test": "object with property having schema false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "boolean subschemas",
+          "test": "object with both properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quote",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted tab invalid under dependent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quote invalid under dependent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependent subschema incompatible with root",
+          "test": "matches root",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependent subschema incompatible with root",
+          "test": "matches both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "enum",
+      "passed": 33,
+      "failed": 12,
+      "skipped": 0,
+      "total": 45,
+      "failures": [
+        {
+          "group": "heterogeneous enum validation",
+          "test": "one of the enum is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "valid object matches",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "wrong foo value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "wrong bar value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "missing required property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "missing all properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "enum with [false] does not match [0]",
+          "test": "[false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [true] does not match [1]",
+          "test": "[true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [0] does not match [false]",
+          "test": "[0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [0] does not match [false]",
+          "test": "[0.0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [1] does not match [true]",
+          "test": "[1] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [1] does not match [true]",
+          "test": "[1.0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 1,
+      "failed": 3,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "above the exclusiveMaximum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 1,
+      "failed": 3,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "below the exclusiveMinimum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "format",
+      "passed": 114,
+      "failed": 0,
+      "skipped": 0,
+      "total": 114
+    },
+    {
+      "keyword": "if-then-else",
+      "passed": 20,
+      "failed": 10,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "if and then without else",
+          "test": "invalid through then",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if and else without then",
+          "test": "invalid through else",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "validate against correct branch, then vs else",
+          "test": "invalid through then",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "validate against correct branch, then vs else",
+          "test": "invalid through else",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if with boolean schema true",
+          "test": "boolean schema true in if always chooses the then path (invalid)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if with boolean schema false",
+          "test": "boolean schema false in if always chooses the else path (invalid)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if appears at the end when serialized (keyword processing sequence)",
+          "test": "no redirects to then and fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if appears at the end when serialized (keyword processing sequence)",
+          "test": "invalid redirects to else and fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "then: false fails when condition matches",
+          "test": "matches if → then=false → invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "else: false fails when condition does not match",
+          "test": "does not match if → else executes → invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "total": 2,
+      "failures": [
+        {
+          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
+          "test": "failing case",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "items",
+      "passed": 18,
+      "failed": 10,
+      "skipped": 0,
+      "total": 28,
+      "failures": [
+        {
+          "group": "a schema given for items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "a schema given for items",
+          "test": "JavaScript pseudo-array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "incomplete array of items",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "array with additional items",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "JavaScript pseudo-array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items with boolean schemas",
+          "test": "array with one item is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items with boolean schemas",
+          "test": "empty array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "wrong sub-item",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "fewer items is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxContains",
+      "passed": 6,
+      "failed": 6,
+      "skipped": 0,
+      "total": 12,
+      "failures": [
+        {
+          "group": "maxContains with contains",
+          "test": "empty data",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains with contains",
+          "test": "all elements match, invalid maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains with contains",
+          "test": "some elements match, invalid maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains with contains, value with a decimal",
+          "test": "too many elements match, invalid maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains \u003c maxContains",
+          "test": "actual \u003c minContains \u003c maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains \u003c maxContains",
+          "test": "minContains \u003c maxContains \u003c actual",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 3,
+      "failed": 3,
+      "skipped": 0,
+      "total": 6,
+      "failures": [
+        {
+          "group": "maxItems validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxItems validation with a decimal",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 4,
+      "failed": 3,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "maxLength validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxLength validation with a decimal",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 4,
+      "failed": 6,
+      "skipped": 0,
+      "total": 10,
+      "failures": [
+        {
+          "group": "maxProperties validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation with a decimal",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxProperties = 0 means the object is empty",
+          "test": "one property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maximum",
+      "passed": 5,
+      "failed": 3,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "maximum validation",
+          "test": "above the maximum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maximum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maximum validation with unsigned integer",
+          "test": "above the maximum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minContains",
+      "passed": 14,
+      "failed": 14,
+      "skipped": 0,
+      "total": 28,
+      "failures": [
+        {
+          "group": "minContains=1 with contains",
+          "test": "empty data",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains=1 with contains",
+          "test": "no elements match",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "empty data",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "all elements match, invalid minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "some elements match, invalid minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains with a decimal value",
+          "test": "one element matches, invalid minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains = minContains",
+          "test": "empty data",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains = minContains",
+          "test": "all elements match, invalid minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains = minContains",
+          "test": "all elements match, invalid maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains \u003c minContains",
+          "test": "empty data",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains \u003c minContains",
+          "test": "invalid minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains \u003c minContains",
+          "test": "invalid maxContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxContains \u003c minContains",
+          "test": "invalid maxContains and minContains",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minContains = 0 with maxContains",
+          "test": "too many",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minItems",
+      "passed": 3,
+      "failed": 3,
+      "skipped": 0,
+      "total": 6,
+      "failures": [
+        {
+          "group": "minItems validation",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minItems validation with a decimal",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minLength",
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "minLength validation",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minLength validation",
+          "test": "one grapheme is not long enough",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minLength validation with a decimal",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 3,
+      "failed": 5,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "minProperties validation",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation with a decimal",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minimum",
+      "passed": 6,
+      "failed": 5,
+      "skipped": 0,
+      "total": 11,
+      "failures": [
+        {
+          "group": "minimum validation",
+          "test": "below the minimum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minimum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "float below the minimum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "int below the minimum is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 5,
+      "failed": 5,
+      "skipped": 0,
+      "total": 10,
+      "failures": [
+        {
+          "group": "by int",
+          "test": "int by int fail",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "by int",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "by number",
+          "test": "35 is not multiple of 1.5",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "by small number",
+          "test": "0.00751 is not multiple of 0.0001",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "float division = inf",
+          "test": "always invalid, but naive implementations may raise an overflow error",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "not",
+      "passed": 36,
+      "failed": 2,
+      "skipped": 0,
+      "total": 38,
+      "failures": [
+        {
+          "group": "not more complex schema",
+          "test": "other match",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "forbidden property",
+          "test": "property present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 15,
+      "failed": 12,
+      "skipped": 0,
+      "total": 27,
+      "failures": [
+        {
+          "group": "oneOf",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf",
+          "test": "neither oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with base schema",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with boolean schemas, all true",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with boolean schemas, more than one true",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf complex types",
+          "test": "both oneOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf complex types",
+          "test": "neither oneOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with empty schema",
+          "test": "both valid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with required",
+          "test": "both invalid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with required",
+          "test": "both valid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with missing optional property",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with missing optional property",
+          "test": "neither oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "pattern",
+      "passed": 2,
+      "failed": 7,
+      "skipped": 0,
+      "total": 9,
+      "failures": [
+        {
+          "group": "pattern validation",
+          "test": "a non-matching pattern is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores booleans",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores integers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores floats",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores null",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 10,
+      "failed": 13,
+      "skipped": 0,
+      "total": 23,
+      "failures": [
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "a single invalid match is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "multiple invalid matches is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to one is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to the other is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to both is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "recognized members are accounted for",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "regexes are case sensitive, 2",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with property matching schema false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with both properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with a property matching both true and false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "properties",
+      "passed": 12,
+      "failed": 16,
+      "skipped": 0,
+      "total": 28,
+      "failures": [
+        {
+          "group": "object properties validation",
+          "test": "one property invalid is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "object properties validation",
+          "test": "both properties invalid is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "object properties validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "object properties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "property invalidates property",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates property",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates nonproperty",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "additionalProperty invalidates others",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties with boolean schema",
+          "test": "only 'false' property present is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties with boolean schema",
+          "test": "both properties present is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties with escaped characters",
+          "test": "object with strings is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "__proto__ not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "constructor not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 12,
+      "failed": 8,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "propertyNames validation",
+          "test": "some property names invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation with pattern",
+          "test": "non-matching property name is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with boolean schema false",
+          "test": "object with any properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with const",
+          "test": "object with any other property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with enum",
+          "test": "object with any other property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "recursiveRef",
+      "passed": 18,
+      "failed": 12,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "two levels, no match",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node does not match; no recursion",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node does not match: recursion uses the inner schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node does not match; no recursion",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node does not match: recursion only uses inner schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "ref",
+      "passed": 22,
+      "failed": 13,
+      "skipped": 0,
+      "total": 35,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "relative pointer ref to object",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref applies alongside sibling keywords",
+          "test": "ref valid, maxItems invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref applies alongside sibling keywords",
+          "test": "ref invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "property named $ref that is not a reference",
+          "test": "property named $ref invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "property named $ref, containing an actual $ref",
+          "test": "property named $ref invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref creates new scope when adjacent to keywords",
+          "test": "referenced subschema doesn't see annotations from properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "naive replacement of $ref with its destination is not correct",
+          "test": "match the enum exactly",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "simple URN base URI with JSON pointer",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "URN base URI with NSS",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "URN base URI with r-component",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "URN base URI with q-component",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 15,
+      "failed": 2,
+      "skipped": 0,
+      "total": 17,
+      "failures": [
+        {
+          "group": "root ref in remote ref",
+          "test": "object is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "remote ref with ref to defs",
+          "test": "invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "required",
+      "passed": 5,
+      "failed": 11,
+      "skipped": 0,
+      "total": 16,
+      "failures": [
+        {
+          "group": "required validation",
+          "test": "non-present required property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required with escaped characters",
+          "test": "object with some properties missing is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "toString present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "type",
+      "passed": 78,
+      "failed": 2,
+      "skipped": 0,
+      "total": 80,
+      "failures": [
+        {
+          "group": "integer type matches integers",
+          "test": "a float is not an integer",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "a float is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "unevaluatedItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "unevaluatedProperties",
+      "passed": 19,
+      "failed": 25,
+      "skipped": 0,
+      "total": 44,
+      "failures": [
+        {
+          "group": "unevaluatedProperties schema",
+          "test": "with invalid unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties false",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties with adjacent properties",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties with adjacent patternProperties",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties can't see inside cousins",
+          "test": "always fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties can't see inside cousins (reverse order)",
+          "test": "always fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, true with properties",
+          "test": "with no nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, true with properties",
+          "test": "with nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, false with properties",
+          "test": "with nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
+          "test": "uncle keyword evaluation is not significant",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, allOf has unevaluated",
+          "test": "base case: both properties present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, allOf has unevaluated",
+          "test": "in place applicator siblings, foo is missing",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, anyOf has unevaluated",
+          "test": "base case: both properties present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, anyOf has unevaluated",
+          "test": "in place applicator siblings, bar is missing",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 1st level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 2nd level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 3rd level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores booleans",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores integers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores floats",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores null",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties not affected by propertyNames",
+          "test": "string property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "Evaluated properties collection needs to consider instance location",
+          "test": "with an unevaluated property that exists at another location",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 48,
+      "failed": 21,
+      "skipped": 0,
+      "total": 69,
+      "failures": [
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of integers is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of more than two integers is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "numbers are unique if mathematically unequal",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of strings is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of objects is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "property order of array of objects is ignored",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of nested objects is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of arrays is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of more than two arrays is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique heterogeneous types are invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "objects are non-unique despite key order",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[false, false] from items array is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[true, true] from items array is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[false, false] from items array is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[true, true] from items array is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "non-unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "non-unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "vocabulary",
+      "passed": 4,
+      "failed": 1,
+      "skipped": 0,
+      "total": 5,
+      "failures": [
+        {
+          "group": "schema that uses custom metaschema with with no validation vocabulary",
+          "test": "applicator vocabulary still works",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 706,
+    "failed": 321,
+    "skipped": 0,
+    "total": 1027,
+    "percentage": 68.74391431353457
+  }
+}

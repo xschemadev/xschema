@@ -737,3 +737,32 @@ key decisions:
 - used Type.Union([inner, Type.Null()]) for nullable (TypeBox has no dedicated nullable type)
 - all renderer implementations deferred to subsequent tasks (primitives, containers, combinators, special)
 - TypeBox adapter foundation now ready for implementation tasks
+
+### typebox-harness (COMPLETED)
+- verified compliance harness at compliance/harness.ts is correctly implemented
+  - uses Value.Check(schema, data) for validation (TypeBox's boolean-returning API)
+  - template structure matches zod/valibot/effect adapter patterns exactly
+- tested harness with single keyword tests:
+  - boolean_schema: 18/18 (100.0%) - perfect
+  - type: 78/80 (97.5%) - excellent even with skeleton renderer
+  - minimum: 6/11 (54.5%) - expected with skeleton renderer (validates harness works)
+- ran full compliance suite with --dev-report flag:
+  - draft2020-12: 710/1030 (68.9%)
+  - draft2019-09: 706/1027 (68.7%)
+  - draft7: 615/872 (70.5%)
+  - draft6: 546/792 (68.9%)
+  - draft4: 388/599 (64.8%)
+  - draft3: 299/428 (69.9%)
+  - v1: 560/879 (63.7%)
+- verified all compliance results generated:
+  - ✅ compliance/results/REPORT.md exists (236KB)
+  - ✅ all 7 draft JSON files: v1.json, draft3.json, draft4.json, draft6.json, draft7.json, draft2019-09.json, draft2020-12.json
+- typecheck passed across all packages
+- build succeeded across all packages
+
+key decisions:
+- harness already correctly implemented during scaffold phase
+- uses Value.Check() which returns boolean directly (simpler than zod's safeParse/valibot's safeParse/effect's Either)
+- TypeBox's high compliance even with skeleton (68-70%) shows it was designed for JSON Schema
+- 97.5% on type keyword with skeleton shows TypeBox's API maps very closely to JSON Schema
+- ready for next task: typebox-renderer-primitives
