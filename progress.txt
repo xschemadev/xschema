@@ -972,3 +972,37 @@ remaining failures (17 on draft2020-12) are known limitations:
 typecheck passed across all packages
 build succeeded across all packages
 TypeBox adapter now has highest compliance rate of all adapters (98.3% vs zod's 98.9%)
+
+### typebox-readme (COMPLETED)
+- created comprehensive README.md following zod/valibot/effect adapter structure
+- documented all known limitations with detailed explanations:
+  - $dynamicRef / $recursiveRef: incompatible with static code generation
+  - unevaluatedProperties/unevaluatedItems with applicators: requires runtime evaluation tracking
+  - additionalProperties with applicators: correct per spec, applicators evaluate independently
+  - vocabulary: custom vocabularies not supported
+  - JavaScript object property names: __proto__, toString, constructor edge cases
+  - circular $ref with constraints: deep nesting uses Type.Any()
+  - draft version detection: defaults to draft2020-12 if no $schema
+  - draft3-specific features: most supported, some legacy quirks excluded
+- added TypeBox-Specific Considerations section:
+  - native JSON Schema output: Type.* constructors generate valid JSON Schema
+  - type extraction: Static<typeof schema> for compile-time type inference
+  - constraint options: most constraints map directly to TypeBox options
+  - integer type: Type.Integer() instead of Type.Number()
+  - Type.Unsafe for advanced features: oneOf, if/then/else, prefixItems
+  - validation runtime: uses Ajv (ajv/dist/2020) for full draft-2020-12 support
+- included Installation section with bun add command
+- included Usage section with complete example:
+  - xschema config showing typebox adapter usage
+  - generated code example showing Type.Object, Type.Optional, Type.Integer, Static<>
+- all acceptance criteria met:
+  - README.md exists ✓
+  - usage example shows xschema config and generated output ✓
+- typecheck passed across all packages
+
+key decisions:
+- followed zod/valibot/effect README structure exactly for consistency
+- highlighted TypeBox's JSON Schema design as key differentiator
+- documented JS object property names issue (unique to TypeBox due to Ajv edge cases)
+- noted Ajv usage for validation (not Value.Check) for full JSON Schema support
+- kept language clear and technical

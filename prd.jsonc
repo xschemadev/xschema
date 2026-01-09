@@ -313,7 +313,7 @@
 				"verify README.md exists",
 				"verify usage example shows xschema config and generated output"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "typebox-docs",
