@@ -197,7 +197,7 @@
 				"verify all fixable issues are resolved",
 				"verify remaining failures are documented in README"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "effect-readme",

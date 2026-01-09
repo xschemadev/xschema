@@ -438,33 +438,36 @@ function renderArrayConstraints(constraints: ArrayNode["constraints"]): string[]
 
 function renderTuple(node: TupleNode): string {
 	const tupleSchemas = node.prefixItems.map((item) => render(item));
+	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
-	let result = "";
+	// Use custom validation to allow arrays shorter than prefixItems length
+	// JSON Schema allows [1] to be valid for prefixItems: [number, string] with items: false
+	let result = `S.Array(S.Unknown).pipe(S.filter((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const result = S.decodeUnknownEither(schemas[i])(val[i]);
+        if (result._tag === "Left") return false;
+      }
+      return true;
+    }, { message: () => "Tuple item validation failed" }))`;
 
 	// Rest items handling
 	if (node.restItems === false) {
-		// Strict tuple - no additional items (schemas as individual arguments)
-		if (tupleSchemas.length === 0) {
-			result = "S.Tuple()";
-		} else {
-			result = `S.Tuple(${tupleSchemas.join(", ")})`;
-		}
+		// No additional items beyond prefixItems length
+		result += `.pipe(S.filter((val) => val.length <= ${node.prefixItems.length}, { message: () => "Array must not have more than ${node.prefixItems.length} items" }))`;
 	} else if (node.restItems.kind !== "any") {
-		// Tuple with rest items - first arg is array of schemas, second is rest schema
+		// Validate rest items against schema
 		const restSchema = render(node.restItems);
-		if (tupleSchemas.length === 0) {
-			result = `S.Array(${restSchema})`;
-		} else {
-			result = `S.Tuple([${tupleSchemas.join(", ")}], ${restSchema})`;
-		}
-	} else {
-		// Tuple allowing any rest items
-		if (tupleSchemas.length === 0) {
-			result = "S.Array(S.Unknown)";
-		} else {
-			result = `S.Tuple([${tupleSchemas.join(", ")}], S.Unknown)`;
-		}
+		result += `.pipe(S.filter((val) => {
+        const restSchema = ${restSchema};
+        for (let i = ${node.prefixItems.length}; i < val.length; i++) {
+          const result = S.decodeUnknownEither(restSchema)(val[i]);
+          if (result._tag === "Left") return false;
+        }
+        return true;
+      }, { message: () => "Rest items validation failed" }))`;
 	}
+	// If restItems is any, no additional validation needed
 
 	const filters = renderArrayConstraints(node.constraints);
 	if (filters.length > 0) {
@@ -655,10 +658,44 @@ function renderConditional(node: ConditionalNode): string {
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-	// For now, render as union of all guarded schemas
 	if (node.guards.length === 0) return "S.Unknown";
-	if (node.guards.length === 1) return render(node.guards[0].schema);
-	return `S.Union(${node.guards.map((g) => render(g.schema)).join(", ")})`;
+
+	const checks: string[] = [];
+
+	for (const guard of node.guards) {
+		const schema = render(guard.schema);
+		switch (guard.check) {
+			case "object":
+				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          const result = S.decodeUnknownEither(${schema})(val);
+          if (result._tag === "Left") return false;
+        }`);
+				break;
+			case "array":
+				checks.push(`if (Array.isArray(val)) {
+          const result = S.decodeUnknownEither(${schema})(val);
+          if (result._tag === "Left") return false;
+        }`);
+				break;
+			case "string":
+				checks.push(`if (typeof val === "string") {
+          const result = S.decodeUnknownEither(${schema})(val);
+          if (result._tag === "Left") return false;
+        }`);
+				break;
+			case "number":
+				checks.push(`if (typeof val === "number") {
+          const result = S.decodeUnknownEither(${schema})(val);
+          if (result._tag === "Left") return false;
+        }`);
+				break;
+		}
+	}
+
+	return `S.Unknown.pipe(S.filter((val) => {
+        ${checks.join("\n        ")}
+        return true;
+      }, { message: () => "Type-guarded validation failed" }))`;
 }
 
 function renderNullable(node: NullableNode): string {
