@@ -600,6 +600,43 @@ key decisions:
 - effect/schema adapter now has all core renderer functionality complete (primitives, containers, combinators, special)
 - ready for next task: effect-compliance-complete (full compliance suite and analysis)
 
+### effect-readme (COMPLETED)
+- created comprehensive README.md following zod/valibot adapter structure
+- documented all known limitations with detailed explanations:
+  - $dynamicRef / $recursiveRef: incompatible with static code generation
+  - unevaluatedProperties/unevaluatedItems with applicators: requires runtime evaluation tracking
+  - additionalProperties with applicators: correct per spec, applicators evaluate independently
+  - vocabulary: custom vocabularies not supported
+  - circular $ref with constraints: deep nesting uses S.Unknown
+  - draft version detection: defaults to draft2020-12 if no $schema
+  - draft3-specific features: most supported, some legacy quirks excluded
+- added Effect/Schema-Specific Considerations section:
+  - schema namespace: all types via S. prefix (import { Schema as S } from "effect")
+  - type extraction: typeof schema.Type (differs from z.infer<> and v.InferOutput<>)
+  - pipe syntax: S.String.pipe(S.minLength(1), S.maxLength(100))
+  - filter validation: S.filter() with { message: () => "..." } syntax
+  - Either-based validation: decodeUnknownEither returns Either with _tag property
+  - object types: S.Struct with S.Record for catchall
+  - union types: S.Union(schema1, schema2, ...) - schemas as individual args
+  - intersection types: S.extend for objects, S.filter for general
+  - optional properties: S.optional(schema) wrapper
+- included Installation section with bun add command
+- included Usage section with complete example:
+  - xschema config showing effect adapter usage
+  - generated code example showing S.Struct, S.optional, typeof User.Type
+  - shows how integer constraint becomes S.Number.pipe(S.int())
+- all acceptance criteria met:
+  - ✅ README.md exists with Known Limitations section
+  - ✅ usage example shows xschema config and generated output
+- typecheck passed with no errors
+
+key decisions:
+- followed zod/valibot README structure exactly for consistency
+- emphasized Effect/Schema-specific differences (functional API, Either-based validation)
+- included concrete code example in usage section to show output format
+- documented workarounds for each limitation where possible
+- kept language clear and technical
+
 ### effect-compliance-complete (COMPLETED)
 - ran full compliance suite on effect/schema adapter
 - initial results: 89.5% on draft2020-12, 89.0% on draft2019-09, ~89% across all drafts
