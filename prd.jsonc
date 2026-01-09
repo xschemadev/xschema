@@ -433,7 +433,7 @@
 			"steps": [
 				"verify CHANGELOG.md exists"
 			],
-			"passes": false
+			"passes": true
 		},
 		// ============================================
 		// COMPLIANCE HARNESS ENHANCEMENT

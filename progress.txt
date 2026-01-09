@@ -1236,3 +1236,15 @@ key decisions:
 - added comparison table to help users choose between typescript vs zod adapters
 - included detailed examples for each type category (objects, tuples, literals, etc.)
 - documented readonly modifier usage for literal arrays/objects
+
+### typescript-docs (COMPLETED)
+- created CHANGELOG.md at packages/adapters/typescript/CHANGELOG.md
+- followed valibot/effect/typebox adapter CHANGELOG pattern (minimal for initial release)
+- version 0.1.0 (unreleased) with type-only nature noted as key feature
+- acceptance criteria met: ✅ CHANGELOG.md exists
+- typecheck passed across all 8 packages
+
+key decisions:
+- kept changelog minimal following other adapters' pattern
+- emphasized "type-only" and "no runtime validation" as the defining characteristic
+- typescript adapter basic documentation now complete (README + CHANGELOG)
