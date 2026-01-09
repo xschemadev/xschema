@@ -80,6 +80,57 @@ Key decisions:
 - Used epsilon-based comparison (1e-10) for float multipleOf validation
 - Format constraints combined with other constraints by extending the pipe chain
 
+### valibot-renderer-containers (COMPLETED)
+- Implemented container type rendering in src/renderer.ts
+- Object types with multiple modes based on additionalProperties:
+  - v.strictObject({...}) - when additionalProperties: false (rejects unknown keys)
+  - v.objectWithRest({...}, schema) - when additionalProperties is a schema (validates unknown keys)
+  - v.looseObject({...}) - when additionalProperties: true or undefined (allows unknown keys)
+  - v.record(keySchema, valueSchema) - for dynamic key-value objects without defined properties
+  - v.optional(schema) - for optional properties (properties not in required array)
+- Object constraints and validations:
+  - patternProperties: custom v.check() validation with regex matching
+  - propertyNames: v.check() validation that tests all keys against schema
+  - minProperties/maxProperties: v.check() validation counting Object.keys()
+  - dependencies: v.check() for property dependencies, v.safeParse for schema dependencies
+- Array types:
+  - v.array(itemSchema) - homogeneous arrays
+  - v.pipe(v.array(...), v.minLength(), v.maxLength()) - array length constraints
+  - uniqueItems: v.check() with JSON.stringify-based Set deduplication
+  - contains: v.check() counting items matching schema with minContains/maxContains
+- Tuple types:
+  - v.tuple([...]) - when restItems: false (strict length)
+  - v.tupleWithRest([...], restSchema) - when restItems is schema (variable length with typed rest)
+  - Combined with same array constraints (minItems, maxItems, uniqueItems, contains)
+- Refactored validation chaining:
+  - Initially had issue with chaining multiple `.pipe()` calls
+  - Fixed by collecting all validation actions in arrays and applying in single v.pipe() call
+  - Helper functions return string[] of actions instead of concatenating strings
+  - Pattern: `v.pipe(baseSchema, action1, action2, action3)`
+- Compliance test results:
+  - properties: 19/28 (67.9%)
+  - required: 5/16 (31.2%) - lower rate due to complex edge cases
+  - additionalProperties: 16/21 (76.2%)
+  - items: 19/29 (65.5%)
+  - minItems: 5/6 (83.3%)
+  - maxItems: 5/6 (83.3%)
+  - uniqueItems: 67/69 (97.1%) - excellent!
+  - prefixItems: 6/11 (54.5%)
+  - contains: 17/21 (81.0%)
+  - minProperties: 5/8 (62.5%)
+  - maxProperties: 7/10 (70.0%)
+- Typecheck passed with no errors
+- Build succeeded across all packages
+
+Key decisions:
+- Used valibot's object type variants for different additionalProperties modes
+- Collected validation actions in arrays before applying in single pipe (critical fix)
+- Used v.safeParse() inside v.check() for nested schema validation
+- Pattern properties require custom validation logic (valibot has no native support)
+- Property dependencies use Object.hasOwn() for existence checks
+- uniqueItems uses JSON.stringify for deep equality comparison (same as zod adapter)
+- contains validation counts matches with v.safeParse success checks
+
 ## 2026-01-08
 
 

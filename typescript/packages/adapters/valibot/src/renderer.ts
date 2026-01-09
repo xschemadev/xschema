@@ -189,16 +189,317 @@ function renderNumber(node: NumberNode): string {
 	return `v.pipe(v.number(), ${actions.join(", ")})`;
 }
 
-function renderObject(_node: ObjectNode): string {
-	return "v.object({})";
+function renderObject(node: ObjectNode): string {
+	const propKeys = Array.from(node.properties.keys());
+	const hasPatternProps = node.patternProperties.length > 0;
+	const needsPassthrough = hasPatternProps || node.propertyNames !== undefined;
+
+	// If only pattern properties or property names validation, render superRefine
+	if (propKeys.length === 0 && needsPassthrough) {
+		return renderObjectWithPatternProps(node);
+	}
+
+	// If using record-style (no properties, just additionalProperties schema)
+	if (
+		propKeys.length === 0 &&
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const valueSchema = render(node.additionalProperties);
+		let result = `v.record(v.string(), ${valueSchema})`;
+		const actions = renderObjectConstraintsActions(node);
+		if (actions.length > 0) {
+			result = `v.pipe(${result}, ${actions.join(", ")})`;
+		}
+		return result;
+	}
+
+	// Build shape
+	const shape = propKeys.map((key) => {
+		const prop = node.properties.get(key)!;
+		let propCode = render(prop.schema as SchemaNode);
+		if (!prop.required) {
+			propCode = `v.optional(${propCode})`;
+		}
+		return `${escapeString(key)}: ${propCode}`;
+	});
+
+	let result = "";
+
+	// Choose object type based on additionalProperties
+	if (node.additionalProperties === false) {
+		// Strict mode - no additional properties
+		result =
+			shape.length > 0
+				? `v.strictObject({ ${shape.join(", ")} })`
+				: "v.strictObject({})";
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		// Validate additional properties against schema
+		const restSchema = render(node.additionalProperties);
+		result =
+			shape.length > 0
+				? `v.objectWithRest({ ${shape.join(", ")} }, ${restSchema})`
+				: `v.record(v.string(), ${restSchema})`;
+	} else {
+		// Allow additional properties (loose mode)
+		result =
+			shape.length > 0
+				? `v.looseObject({ ${shape.join(", ")} })`
+				: "v.looseObject({})";
+	}
+
+	// Collect all validation actions
+	const actions: string[] = [];
+
+	// Pattern properties validation
+	if (hasPatternProps) {
+		actions.push(...renderPatternPropsActions(node, propKeys));
+	}
+
+	// Property names validation
+	if (node.propertyNames) {
+		const keySchema = render(node.propertyNames);
+		actions.push(`v.check((val) => {
+      for (const key of Object.keys(val)) {
+        const result = v.safeParse(${keySchema}, key);
+        if (!result.success) return false;
+      }
+      return true;
+    }, "Invalid property name")`);
+	}
+
+	// Min/max properties
+	actions.push(...renderObjectConstraintsActions(node));
+
+	// Dependencies
+	actions.push(...renderDependenciesActions(node));
+
+	// Apply all actions in single pipe
+	if (actions.length > 0) {
+		result = `v.pipe(${result}, ${actions.join(", ")})`;
+	}
+
+	return result;
 }
 
-function renderArray(_node: ArrayNode): string {
-	return "v.array(v.any())";
+function renderObjectWithPatternProps(node: ObjectNode): string {
+	const patterns = node.patternProperties;
+	const definedProps = JSON.stringify(Array.from(node.properties.keys()));
+
+	let checks: string[] = [];
+
+	// Validate pattern properties
+	patterns.forEach((p) => {
+		const patternCode = render(p.schema as SchemaNode);
+		const patternStr = escapeString(p.pattern);
+		checks.push(`
+      for (const [key, value] of Object.entries(val)) {
+        if (new RegExp(${patternStr}).test(key)) {
+          const result = v.safeParse(${patternCode}, value);
+          if (!result.success) return false;
+        }
+      }`);
+	});
+
+	// Additional properties validation
+	if (node.additionalProperties === false) {
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const key of Object.keys(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) return false;
+      }`);
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const additionalSchema = render(node.additionalProperties);
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const [key, value] of Object.entries(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) {
+          const result = v.safeParse(${additionalSchema}, value);
+          if (!result.success) return false;
+        }
+      }`);
+	}
+
+	const allActions: string[] = [];
+	allActions.push(`v.check((val) => {${checks.join("")}
+      return true;
+    }, "Object validation failed")`);
+	allActions.push(...renderObjectConstraintsActions(node));
+	allActions.push(...renderDependenciesActions(node));
+
+	return `v.pipe(v.looseObject({}), ${allActions.join(", ")})`;
 }
 
-function renderTuple(_node: TupleNode): string {
-	return "v.tuple([])";
+function renderPatternPropsActions(
+	node: ObjectNode,
+	propKeys: string[],
+): string[] {
+	const patterns = node.patternProperties;
+
+	let checks: string[] = [];
+
+	// Validate pattern properties
+	patterns.forEach((p) => {
+		const patternCode = render(p.schema as SchemaNode);
+		const patternStr = escapeString(p.pattern);
+		checks.push(`
+      for (const [key, value] of Object.entries(val)) {
+        if (new RegExp(${patternStr}).test(key)) {
+          const result = v.safeParse(${patternCode}, value);
+          if (!result.success) return false;
+        }
+      }`);
+	});
+
+	return [`v.check((val) => {${checks.join("")}
+      return true;
+    }, "Pattern property validation failed")`];
+}
+
+function renderObjectConstraintsActions(node: ObjectNode): string[] {
+	const actions: string[] = [];
+
+	if (node.minProperties !== undefined) {
+		actions.push(`v.check((val) => Object.keys(val).length >= ${node.minProperties}, "Object must have at least ${node.minProperties} properties")`);
+	}
+	if (node.maxProperties !== undefined) {
+		actions.push(`v.check((val) => Object.keys(val).length <= ${node.maxProperties}, "Object must have at most ${node.maxProperties} properties")`);
+	}
+
+	return actions;
+}
+
+function renderDependenciesActions(node: ObjectNode): string[] {
+	const actions: string[] = [];
+
+	for (const [prop, dep] of node.dependencies) {
+		if (dep.kind === "property") {
+			if (dep.requiredProperties.length > 0) {
+				const message = escapeString(
+					`Property ${prop} requires ${dep.requiredProperties.join(", ")}`,
+				);
+				actions.push(`v.check((val) => {
+          if (Object.hasOwn(val, ${escapeString(prop)})) {
+            return ${dep.requiredProperties.map((d) => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")};
+          }
+          return true;
+        }, ${message})`);
+			}
+		} else {
+			const depCode = render(dep.schema as SchemaNode);
+			actions.push(`v.check((val) => {
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          const result = v.safeParse(${depCode}, val);
+          return result.success;
+        }
+        return true;
+      }, "Schema dependency validation failed")`);
+		}
+	}
+
+	return actions;
+}
+
+function renderArray(node: ArrayNode): string {
+	const itemSchema = render(node.items);
+	const constraints = renderArrayConstraints(node.constraints);
+	
+	if (constraints) {
+		return `v.pipe(v.array(${itemSchema})${constraints})`;
+	}
+	return `v.array(${itemSchema})`;
+}
+
+function renderTuple(node: TupleNode): string {
+	const tupleSchemas = node.prefixItems.map((item) => render(item));
+
+	let result = "";
+
+	// Rest items handling
+	if (node.restItems === false) {
+		// Strict tuple - no additional items
+		result = `v.tuple([${tupleSchemas.join(", ")}])`;
+	} else if (node.restItems.kind !== "any") {
+		// Tuple with rest items
+		const restSchema = render(node.restItems);
+		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], ${restSchema})`;
+	} else {
+		// Tuple allowing any rest items
+		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], v.any())`;
+	}
+
+	const constraints = renderArrayConstraints(node.constraints);
+	if (constraints) {
+		result = `v.pipe(${result}${constraints})`;
+	}
+	return result;
+}
+
+function renderArrayConstraints(
+	constraints: ArrayNode["constraints"],
+): string {
+	const actions: string[] = [];
+
+	if (constraints.minItems !== undefined) {
+		actions.push(`v.minLength(${constraints.minItems})`);
+	}
+	if (constraints.maxItems !== undefined) {
+		actions.push(`v.maxLength(${constraints.maxItems})`);
+	}
+
+	if (constraints.uniqueItems) {
+		actions.push(`v.check((arr) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return false;
+        seen.add(key);
+      }
+      return true;
+    }, "Array items must be unique")`);
+	}
+
+	if (constraints.contains) {
+		const containsSchema = render(constraints.contains.schema as SchemaNode);
+		const minContains = constraints.contains.minContains;
+		const maxContains = constraints.contains.maxContains;
+
+		if (maxContains !== undefined) {
+			actions.push(`v.check((arr) => {
+        let count = 0;
+        for (const item of arr) {
+          if (v.safeParse(${containsSchema}, item).success) count++;
+        }
+        return count >= ${minContains} && count <= ${maxContains};
+      }, "Array must contain between ${minContains} and ${maxContains} items matching schema")`);
+		} else {
+			actions.push(`v.check((arr) => {
+        let count = 0;
+        for (const item of arr) {
+          if (v.safeParse(${containsSchema}, item).success) count++;
+        }
+        return count >= ${minContains};
+      }, "Array must contain at least ${minContains} item(s) matching schema")`);
+		}
+	}
+
+	if (actions.length === 0) {
+		return "";
+	}
+
+	return `, ${actions.join(", ")}`;
 }
 
 function renderUnion(_node: UnionNode): string {
