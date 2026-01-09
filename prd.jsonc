@@ -114,7 +114,7 @@
 				"verify compliance/results/REPORT.md exists",
 				"verify compliance/results/*.json files exist for each draft version"
 			],
-			"passes": false
+			"passes": true
 		},
 		// ============================================
 		// EFFECT/SCHEMA ADAPTER
