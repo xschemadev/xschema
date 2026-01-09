@@ -1099,3 +1099,31 @@ key decisions:
 - runtime constraints deliberately ignored with clear comments in code
 - strict objects (additionalProperties: false) render without index signature
 - empty strict objects use `Record<string, never>` (allows no keys)
+
+### typescript-renderer-combinators (COMPLETED)
+- implemented combinator type rendering in src/renderer.ts for TypeScript type-only adapter
+- union types (anyOf):
+  - returns `never` for empty unions (impossible to satisfy)
+  - returns single type if only one variant
+  - joins variants with ` | ` for multiple types
+  - note: UnionNode uses `variants` property, not `schemas` like other nodes
+- intersection types (allOf):
+  - returns `unknown` for empty intersections (matches anything)
+  - returns single type if only one schema
+  - joins schemas with ` & ` for multiple types
+- oneOf types:
+  - identical to union at type level (runtime "exactly one" constraint not expressible)
+  - same logic as renderUnion but using `schemas` property
+- not types:
+  - already correctly returns `unknown` (negation types not expressible in TS)
+- all acceptance criteria met:
+  - ✅ anyOf renders to `T1 | T2 | T3`
+  - ✅ allOf renders to `T1 & T2 & T3`
+  - ✅ oneOf renders to union (same as anyOf)
+  - ✅ typecheck passes across all packages
+
+key decisions:
+- empty union → `never` (nothing can satisfy empty union)
+- empty intersection → `unknown` (everything satisfies empty intersection)
+- single-element union/intersection → unwrap to single type (cleaner output)
+- UnionNode.variants vs IntersectionNode/OneOfNode.schemas naming difference handled

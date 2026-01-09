@@ -161,19 +161,38 @@ function renderTuple(node: TupleNode): string {
 }
 
 function renderUnion(node: UnionNode): string {
-  // TODO: implement in typescript-renderer-combinators task
-  return "unknown";
+  if (node.variants.length === 0) {
+    return "never";
+  }
+  if (node.variants.length === 1) {
+    return render(node.variants[0]);
+  }
+  const types = node.variants.map((s) => render(s));
+  return types.join(" | ");
 }
 
 function renderIntersection(node: IntersectionNode): string {
-  // TODO: implement in typescript-renderer-combinators task
-  return "unknown";
+  if (node.schemas.length === 0) {
+    return "unknown";
+  }
+  if (node.schemas.length === 1) {
+    return render(node.schemas[0]);
+  }
+  const schemas = node.schemas.map((s) => render(s));
+  return schemas.join(" & ");
 }
 
 function renderOneOf(node: OneOfNode): string {
-  // TODO: implement in typescript-renderer-combinators task
-  // oneOf renders same as union at type level (no runtime distinction)
-  return "unknown";
+  // oneOf renders same as union at type level - runtime "exactly one" constraint
+  // cannot be expressed in TypeScript types
+  if (node.schemas.length === 0) {
+    return "never";
+  }
+  if (node.schemas.length === 1) {
+    return render(node.schemas[0]);
+  }
+  const variants = node.schemas.map((s) => render(s));
+  return variants.join(" | ");
 }
 
 function renderNot(_node: NotNode): string {
