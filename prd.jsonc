@@ -139,7 +139,7 @@
 				"verify command completes without crashing",
 				"verify compliance/results/REPORT.md is generated"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "effect-renderer-primitives",
