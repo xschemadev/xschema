@@ -103,7 +103,7 @@
 				"verify each limitation has explanation and workaround",
 				"verify usage example shows xschema config and generated output"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "valibot-docs",

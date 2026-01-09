@@ -262,3 +262,37 @@ Key decisions:
 - All fixable issues from previous renderer tasks are now resolved
 - Remaining issues are documented for the upcoming README task
 
+### valibot-readme (COMPLETED)
+- Created comprehensive README.md following zod adapter structure
+- Documented all known limitations with detailed explanations:
+  - $dynamicRef / $recursiveRef: incompatible with static code generation
+  - unevaluatedProperties/unevaluatedItems with applicators: requires runtime evaluation tracking
+  - additionalProperties with applicators: correct per spec, applicators evaluate independently
+  - vocabulary: custom vocabularies not supported
+  - Circular $ref with constraints: deep nesting uses v.lazy(() => v.any())
+  - Draft version detection: defaults to draft2020-12 if no $schema
+  - draft3-specific features: most supported, some legacy quirks excluded
+- Added Valibot-Specific Considerations section:
+  - Object validation modes: v.strictObject, v.looseObject, v.objectWithRest
+  - Pipe validation order: must collect actions and apply in single v.pipe()
+  - Exclusive bounds: implemented with v.check() (no native support in v0.42)
+  - Pattern properties: custom v.check() validation (no native support)
+- Included Installation section with bun add command
+- Included Usage section with complete example:
+  - xschema config showing valibot adapter usage
+  - Generated code example showing v.object, v.optional, v.InferOutput
+  - Shows how integer constraint becomes v.pipe(v.number(), v.integer())
+- All acceptance criteria met:
+  - README.md exists with Known Limitations section ✓
+  - Each limitation has explanation and workaround ✓
+  - Usage example shows xschema config and generated output ✓
+- Typecheck passed with no errors
+- Valibot adapter documentation is now complete and production-ready
+
+Key decisions:
+- Followed zod adapter README structure exactly for consistency
+- Emphasized Valibot-specific differences (functional API vs chaining)
+- Included concrete code example in usage section to show output format
+- Documented workarounds for each limitation where possible
+- Kept language clear and technical, avoiding unnecessary praise
+
