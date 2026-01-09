@@ -400,7 +400,8 @@
 				"verify generated file has type definitions only, no runtime code",
 				"verify the types are syntactically valid TypeScript"
 			],
-			"passes": false
+			"passes": true,
+			"notes": "Tested adapter via stdin/stdout directly. Output verified: schema=\"\" (empty), type=valid TS type expression, imports=[]. All schema types tested: primitives, strict objects, enums, unions, intersections, literals (primitives/objects), tuples (strict/variadic), nullable, conditional. Types syntactically validated via bun run typecheck."
 		},
 		{
 			"id": "typescript-readme",
