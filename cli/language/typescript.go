@@ -8,24 +8,25 @@ import (
 )
 
 var typescript = Language{
-	Name:                 "typescript",
-	Extensions:           []string{".ts", ".tsx", ".js", ".jsx"},
-	SchemaURL:            XSchemaBaseURL + "typescript.jsonc",
-	SchemaExt:            "typescript.jsonc",
-	AdapterBinPrefix:     "xschema-",
-	DetectRunner:         detectTSRunner,
-	BuildSchemasImport:   buildTSSchemasImport,
-	ImportPattern:        `(?m)^import\s+.*$`,
-	InjectSchemasKey:     injectSchemasKeyBrace,
-	ClientFactoryPattern: `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
-	OutputFile:           "xschema.gen.ts",
-	Template:             TSTemplate,
-	MergeImports:         MergeTSImports,
-	BuildVarName:         buildVarNameUnderscore,
-	IgnoreDirs:           []string{"node_modules", "dist", "build"},
-	DetectHarnessRunner:  detectTSHarnessRunner,
-	GetPackageName:       getTSPackageName,
-	AdapterCLIPath:       getTSAdapterCLIPath,
+	Name:                  "typescript",
+	Extensions:            []string{".ts", ".tsx", ".js", ".jsx"},
+	SchemaURL:             XSchemaBaseURL + "typescript.jsonc",
+	SchemaExt:             "typescript.jsonc",
+	AdapterBinPrefix:      "xschema-",
+	DetectRunner:          detectTSRunner,
+	BuildSchemasImport:    buildTSSchemasImport,
+	ImportPattern:         `(?m)^import\s+.*$`,
+	InjectSchemasKey:      injectSchemasKeyBrace,
+	ClientFactoryPattern:  `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
+	OutputFile:            "xschema.gen.ts",
+	Template:              TSTemplate,
+	MergeImports:          MergeTSImports,
+	BuildVarName:          buildVarNameUnderscore,
+	IgnoreDirs:            []string{"node_modules", "dist", "build"},
+	DetectHarnessRunner:   detectTSHarnessRunner,
+	DetectTypecheckRunner: detectTSTypecheckRunner,
+	GetPackageName:        getTSPackageName,
+	AdapterCLIPath:        getTSAdapterCLIPath,
 }
 
 func detectTSRunner() (string, []string, error) {
@@ -131,6 +132,31 @@ func detectTSHarnessRunner(dir string) (string, []string, error) {
 		return "yarn", []string{"dlx", "tsx"}, nil
 	default:
 		return "npx", []string{"tsx"}, nil
+	}
+}
+
+func detectTSTypecheckRunner(dir string) (string, []string, error) {
+	cmd, _, err := detectTSRunnerInDir(dir)
+	if err != nil {
+		return "", nil, err
+	}
+
+	// Transform package runner to tsc runner:
+	// bunx/bun → bun run tsc (uses local tsc from node_modules)
+	// npx → npx tsc
+	// pnpm → pnpm exec tsc
+	// yarn → yarn tsc
+	switch cmd {
+	case "bunx", "bun":
+		return "bun", []string{"run", "tsc"}, nil
+	case "npx":
+		return "npx", []string{"tsc"}, nil
+	case "pnpm":
+		return "pnpm", []string{"exec", "tsc"}, nil
+	case "yarn":
+		return "yarn", []string{"tsc"}, nil
+	default:
+		return "npx", []string{"tsc"}, nil
 	}
 }
 

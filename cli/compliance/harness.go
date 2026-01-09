@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+// TypecheckConfig configures how typecheck runs
+type TypecheckConfig struct {
+	Enabled    bool     // whether typecheck is enabled
+	Runner     string   // command to run tsc (e.g., "bun", "npx")
+	RunnerArgs []string // args to pass before tsc (e.g., ["run"] for bun, ["tsc"] for npx)
+}
+
 // FindHarness locates the harness file in an adapter's compliance directory
 func FindHarness(adapterPath string) (string, error) {
 	complianceDir := filepath.Join(adapterPath, "compliance")
@@ -154,4 +161,62 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 	}
 
 	return &outputs[0], nil
+}
+
+// TypecheckResult contains the result of typechecking a harness file
+type TypecheckResult struct {
+	Success bool
+	Output  string // stderr from tsc (contains error messages)
+}
+
+// TypecheckHarness runs the TypeScript compiler on a harness file to catch type errors.
+// The harness file must be a .ts file.
+// workDir is used for dependency resolution (finding tsconfig.json and node_modules).
+func TypecheckHarness(ctx context.Context, harnessFile string, config TypecheckConfig, workDir string) (*TypecheckResult, error) {
+	if !config.Enabled {
+		return &TypecheckResult{Success: true}, nil
+	}
+
+	// Only typecheck TypeScript files
+	ext := filepath.Ext(harnessFile)
+	if ext != ".ts" && ext != ".tsx" {
+		return &TypecheckResult{Success: true}, nil
+	}
+
+	// Build command: e.g., "bun run tsc --noEmit --skipLibCheck <file>"
+	// or "npx tsc --noEmit --skipLibCheck <file>"
+	args := append([]string{}, config.RunnerArgs...)
+	args = append(args, "--noEmit", "--skipLibCheck", harnessFile)
+
+	cmd := exec.CommandContext(ctx, config.Runner, args...)
+
+	// Set working directory for dependency resolution
+	if workDir != "" {
+		cmd.Dir = workDir
+	}
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
+
+	// Combine stdout and stderr (tsc outputs errors to stdout, not stderr)
+	output := stdout.String()
+	if stderr.Len() > 0 {
+		if output != "" {
+			output += "\n"
+		}
+		output += stderr.String()
+	}
+
+	if err != nil {
+		// Type error or other tsc error - return result with output
+		return &TypecheckResult{
+			Success: false,
+			Output:  strings.TrimSpace(output),
+		}, nil
+	}
+
+	return &TypecheckResult{Success: true}, nil
 }

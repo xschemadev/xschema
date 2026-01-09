@@ -34,6 +34,7 @@ type RunOptions struct {
 	SuitePath      string                          // path to JSON Schema Test Suite
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
+	Typecheck      TypecheckConfig                 // typecheck configuration
 	Verbose        bool
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
 	ProgressFunc   func(ProgressUpdate)    // for live progress updates
@@ -91,6 +92,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			adapterBin:   adapterBin,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
+			typecheck:    opts.Typecheck,
 			workDir:      opts.AdapterPath,
 			verbose:      opts.Verbose,
 			outputFunc:   opts.OutputFunc,
@@ -126,6 +128,7 @@ type runDraftOptions struct {
 	adapterBin   string
 	runner       string
 	runnerArgs   []string
+	typecheck    TypecheckConfig
 	workDir      string // directory to run harness from (for dependency resolution)
 	verbose      bool
 	outputFunc   func(string)
@@ -238,6 +241,20 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 		return nil
 	}
 	defer os.Remove(tempHarness)
+
+	// Run typecheck on the generated harness file
+	typecheckResult, err := TypecheckHarness(ctx, tempHarness, opts.typecheck, opts.workDir)
+	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return err
+		}
+		markAllFailed(keywordResult, summary, group, fmt.Sprintf("typecheck error: %v", err))
+		return nil
+	}
+	if !typecheckResult.Success {
+		markAllFailed(keywordResult, summary, group, fmt.Sprintf("typecheck failed: %s", typecheckResult.Output))
+		return nil
+	}
 
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
 	if err != nil {
