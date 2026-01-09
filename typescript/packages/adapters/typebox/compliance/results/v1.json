@@ -47,21 +47,14 @@
     },
     {
       "keyword": "const",
-      "passed": 52,
-      "failed": 2,
+      "passed": 53,
+      "failed": 1,
       "skipped": 0,
       "total": 54,
       "failures": [
         {
           "group": "const with array",
           "test": "same array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "const with null",
-          "test": "null is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -116,133 +109,17 @@
     },
     {
       "keyword": "dependentRequired",
-      "passed": 14,
-      "failed": 6,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "single dependency",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependents required",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependents required",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependents required",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "CRLF missing dependent",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quotes missing dependent",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "dependentSchemas",
-      "passed": 10,
-      "failed": 10,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "single dependency",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "single dependency",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "single dependency",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "boolean subschemas",
-          "test": "object with property having schema false is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "boolean subschemas",
-          "test": "object with both properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted tab invalid under dependent schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote invalid under dependent schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "dynamicRef",
@@ -290,19 +167,10 @@
     },
     {
       "keyword": "enum",
-      "passed": 44,
-      "failed": 1,
+      "passed": 45,
+      "failed": 0,
       "skipped": 0,
-      "total": 45,
-      "failures": [
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 45
     },
     {
       "keyword": "exclusiveMaximum",
@@ -334,84 +202,17 @@
     },
     {
       "keyword": "items",
-      "passed": 24,
-      "failed": 5,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "prefixItems with no additional items allowed",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "prefixItems with no additional items allowed",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "prefixItems with no additional items allowed",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "prefixItems validation adjusts the starting index for items",
-          "test": "valid items",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "maxContains",
-      "passed": 8,
-      "failed": 4,
+      "passed": 12,
+      "failed": 0,
       "skipped": 0,
-      "total": 12,
-      "failures": [
-        {
-          "group": "maxContains with contains",
-          "test": "all elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains with contains",
-          "test": "some elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains with contains, value with a decimal",
-          "test": "too many elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains \u003c maxContains",
-          "test": "array with minContains \u003c maxContains \u003c actual",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 12
     },
     {
       "keyword": "maxItems",
@@ -443,96 +244,10 @@
     },
     {
       "keyword": "minContains",
-      "passed": 16,
-      "failed": 12,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "minContains=2 with contains",
-          "test": "all elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains",
-          "test": "some elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains with a decimal value",
-          "test": "one element matches, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains = minContains",
-          "test": "all elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains = minContains",
-          "test": "all elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid maxContains and minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains = 0",
-          "test": "empty data",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minContains = 0",
-          "test": "minContains = 0 makes contains always pass",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minContains = 0 with maxContains",
-          "test": "empty data",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minContains = 0 with maxContains",
-          "test": "too many",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "minItems",
@@ -599,26 +314,10 @@
     },
     {
       "keyword": "prefixItems",
-      "passed": 9,
-      "failed": 2,
+      "passed": 11,
+      "failed": 0,
       "skipped": 0,
-      "total": 11,
-      "failures": [
-        {
-          "group": "a schema given for prefixItems",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "prefixItems with boolean schemas",
-          "test": "array with two items is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 11
     },
     {
       "keyword": "properties",
@@ -645,18 +344,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 34,
-      "failed": 4,
+      "passed": 35,
+      "failed": 3,
       "skipped": 0,
       "total": 38,
       "failures": [
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "remote ref, containing refs itself",
           "test": "remote ref valid",
@@ -766,10 +458,10 @@
     }
   ],
   "summary": {
-    "passed": 819,
-    "failed": 60,
+    "passed": 861,
+    "failed": 18,
     "skipped": 0,
     "total": 879,
-    "percentage": 93.1740614334471
+    "percentage": 97.95221843003414
   }
 }

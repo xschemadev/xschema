@@ -1,10 +1,11 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import Ajv from "ajv";
+// Use Ajv2020 for draft-2020-12 keyword support (dependentRequired, dependentSchemas, minContains, maxContains, etc.)
+import Ajv2020 from "ajv/dist/2020";
 import addFormats from "ajv-formats";
 
 // Use Ajv for validation - supports all JSON Schema keywords including if/then/else, oneOf
-const ajv = new Ajv({ strict: false, allErrors: true });
+const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
 
 const schema = {{GENERATED_CODE}};

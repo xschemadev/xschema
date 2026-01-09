@@ -305,17 +305,8 @@ function renderTuple(node: TupleNode): string {
 	// Collect array constraints
 	const arrayOpts = collectArrayOptions(node.constraints);
 
-	if (node.restItems === false) {
-		// Strict tuple - no additional items allowed
-		// TypeBox's Type.Tuple already sets additionalItems: false
-		if (arrayOpts.length > 0) {
-			return `Type.Tuple([${tupleSchemas.join(", ")}], { ${arrayOpts.join(", ")} })`;
-		}
-		return `Type.Tuple([${tupleSchemas.join(", ")}])`;
-	}
-
-	// Has rest items - use Type.Unsafe for JSON Schema prefixItems + items combo
-	const restSchema = render(node.restItems);
+	// Always use Type.Unsafe with prefixItems for draft-2020-12 compatibility
+	// TypeBox's Type.Tuple generates draft-07 style items:[] which Ajv2020 rejects
 	const opts: string[] = [];
 
 	// prefixItems for positional schemas
@@ -323,8 +314,14 @@ function renderTuple(node: TupleNode): string {
 		opts.push(`prefixItems: [${tupleSchemas.join(", ")}]`);
 	}
 
-	// items for rest schema
-	opts.push(`items: ${restSchema}`);
+	if (node.restItems === false) {
+		// No additional items allowed
+		opts.push(`items: false`);
+	} else {
+		// Rest items schema
+		const restSchema = render(node.restItems);
+		opts.push(`items: ${restSchema}`);
+	}
 
 	// Add array constraints
 	opts.push(...arrayOpts);
@@ -384,7 +381,12 @@ function renderNot(node: NotNode): string {
 }
 
 function renderLiteral(node: LiteralNode): string {
-	// TypeBox Type.Literal only supports primitives
+	// null needs special handling - Type.Literal(null) incorrectly adds type:"object"
+	if (node.value === null) {
+		return `Type.Unsafe<null>({ const: null })`;
+	}
+
+	// TypeBox Type.Literal only supports primitives (string, number, boolean)
 	if (isPrimitive(node.value)) {
 		return `Type.Literal(${JSON.stringify(node.value)})`;
 	}
@@ -400,23 +402,25 @@ function renderEnum(node: EnumNode): string {
 		return renderLiteral({ kind: "literal", value: node.values[0] });
 	}
 
-	// Check if all values are primitives
-	const allPrimitives = node.values.every((v) => isPrimitive(v));
+	// Check if any value is null or complex (non-primitive)
+	// Type.Literal(null) has a bug (adds type:"object"), so use Type.Unsafe for enums with null
+	const hasNull = node.values.some((v) => v === null);
+	const hasComplex = node.values.some((v) => !isPrimitive(v));
 
-	if (allPrimitives) {
-		// All primitives - use union of literals
-		const literals = node.values.map((v) => `Type.Literal(${JSON.stringify(v)})`);
-		return `Type.Union([${literals.join(", ")}])`;
+	if (hasNull || hasComplex) {
+		// Use Type.Unsafe with enum keyword for null or complex values
+		const enumValues = node.values.map((v) => {
+			if (isPrimitive(v)) {
+				return JSON.stringify(v);
+			}
+			return sortedStringify(v);
+		});
+		return `Type.Unsafe<unknown>({ enum: [${enumValues.join(", ")}] })`;
 	}
 
-	// Has complex values - use Type.Unsafe with enum keyword
-	const enumValues = node.values.map((v) => {
-		if (isPrimitive(v)) {
-			return JSON.stringify(v);
-		}
-		return sortedStringify(v);
-	});
-	return `Type.Unsafe<unknown>({ enum: [${enumValues.join(", ")}] })`;
+	// All primitives without null - use union of literals
+	const literals = node.values.map((v) => `Type.Literal(${JSON.stringify(v)})`);
+	return `Type.Union([${literals.join(", ")}])`;
 }
 
 function renderRef(node: RefNode): string {

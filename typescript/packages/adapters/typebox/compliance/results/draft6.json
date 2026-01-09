@@ -3,47 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 14,
-      "failed": 5,
+      "passed": 19,
+      "failed": 0,
       "skipped": 0,
-      "total": 19,
-      "failures": [
-        {
-          "group": "additionalItems as schema",
-          "test": "additional items match schema",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items validation adjusts the starting index for additionalItems",
-          "test": "valid items",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 19
     },
     {
       "keyword": "additionalProperties",
@@ -84,21 +47,14 @@
     },
     {
       "keyword": "const",
-      "passed": 52,
-      "failed": 2,
+      "passed": 53,
+      "failed": 1,
       "skipped": 0,
       "total": 54,
       "failures": [
         {
           "group": "const with array",
           "test": "same array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "const with null",
-          "test": "null is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -137,133 +93,17 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 21,
-      "failed": 15,
+      "passed": 36,
+      "failed": 0,
       "skipped": 0,
-      "total": 36,
-      "failures": [
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with boolean subschemas",
-          "test": "object with property having schema false is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with boolean subschemas",
-          "test": "object with both properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 1",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 3",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 4",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 36
     },
     {
       "keyword": "enum",
-      "passed": 44,
-      "failed": 1,
+      "passed": 45,
+      "failed": 0,
       "skipped": 0,
-      "total": 45,
-      "failures": [
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 45
     },
     {
       "keyword": "exclusiveMaximum",
@@ -295,33 +135,10 @@
     },
     {
       "keyword": "items",
-      "passed": 25,
-      "failed": 3,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items with boolean schemas",
-          "test": "array with two items is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "maxItems",
@@ -439,18 +256,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 34,
-      "failed": 2,
+      "passed": 35,
+      "failed": 1,
       "skipped": 0,
       "total": 36,
       "failures": [
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "ref overrides any sibling keywords",
           "test": "ref valid, maxItems ignored",
@@ -520,10 +330,10 @@
     }
   ],
   "summary": {
-    "passed": 757,
-    "failed": 35,
+    "passed": 783,
+    "failed": 9,
     "skipped": 0,
     "total": 792,
-    "percentage": 95.58080808080808
+    "percentage": 98.86363636363636
   }
 }

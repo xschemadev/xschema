@@ -3,33 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 11,
-      "failed": 3,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "additionalProperties",
@@ -56,56 +33,14 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 11,
-      "failed": 7,
+      "passed": 17,
+      "failed": 1,
       "skipped": 0,
       "total": 18,
       "failures": [
         {
           "group": "dependencies",
           "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -128,19 +63,10 @@
     },
     {
       "keyword": "enum",
-      "passed": 15,
-      "failed": 1,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "extends",
@@ -165,19 +91,10 @@
     },
     {
       "keyword": "items",
-      "passed": 6,
-      "failed": 1,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "maxItems",
@@ -262,18 +179,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 16,
-      "failed": 5,
+      "passed": 17,
+      "failed": 4,
       "skipped": 0,
       "total": 21,
       "failures": [
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "ref overrides any sibling keywords",
           "test": "remote ref valid, maxItems ignored",
@@ -405,10 +315,10 @@
     }
   ],
   "summary": {
-    "passed": 399,
-    "failed": 29,
+    "passed": 411,
+    "failed": 17,
     "skipped": 0,
     "total": 428,
-    "percentage": 93.22429906542055
+    "percentage": 96.02803738317756
   }
 }

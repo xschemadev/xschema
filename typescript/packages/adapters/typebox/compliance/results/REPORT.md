@@ -1,28 +1,28 @@
 # @xschemadev/typebox Compliance Report
 
-Generated: 2026-01-09T11:28:56Z
+Generated: 2026-01-09T15:44:37Z
 
 ## Summary
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2020-12 | 971 | 59 | 0 | 94.3% |
-| draft2019-09 | 966 | 61 | 0 | 94.1% |
-| draft7 | 837 | 35 | 0 | 96.0% |
-| draft6 | 757 | 35 | 0 | 95.6% |
-| draft4 | 550 | 49 | 0 | 91.8% |
-| draft3 | 399 | 29 | 0 | 93.2% |
-| v1 | 819 | 60 | 0 | 93.2% |
+| draft2020-12 | 1013 | 17 | 0 | 98.3% |
+| draft2019-09 | 1009 | 18 | 0 | 98.2% |
+| draft7 | 863 | 9 | 0 | 99.0% |
+| draft6 | 783 | 9 | 0 | 98.9% |
+| draft4 | 572 | 27 | 0 | 95.5% |
+| draft3 | 411 | 17 | 0 | 96.0% |
+| v1 | 861 | 18 | 0 | 98.0% |
 
 ## Badges
 
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-94.3%25-yellow)
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-94.1%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-96.0%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-95.6%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-91.8%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-93.2%25-yellow)
-![v1](https://img.shields.io/badge/v1%20compliance-93.2%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.3%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.2%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-99.0%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.9%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-95.5%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-96.0%25-brightgreen)
+![v1](https://img.shields.io/badge/v1%20compliance-98.0%25-brightgreen)
 
 ## draft2020-12
 
@@ -33,27 +33,27 @@ Generated: 2026-01-09T11:28:56Z
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
-| const | ⚠️ | 52/54 |
+| const | ⚠️ | 53/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 14/20 |
-| dependentSchemas | ⚠️ | 10/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ⚠️ | 11/19 |
-| enum | ⚠️ | 44/45 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 30/30 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 24/29 |
-| maxContains | ⚠️ | 8/12 |
+| items | ✅ | 29/29 |
+| maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
-| minContains | ⚠️ | 16/28 |
+| minContains | ✅ | 28/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
 | minProperties | ✅ | 8/8 |
@@ -63,10 +63,10 @@ Generated: 2026-01-09T11:28:56Z
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 9/11 |
+| prefixItems | ✅ | 11/11 |
 | properties | ⚠️ | 27/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 34/35 |
+| ref | ✅ | 35/35 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 12/16 |
 | type | ✅ | 80/80 |
@@ -87,74 +87,11 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>const - 2 failures</summary>
+<summary>const - 1 failure</summary>
 
 - **const with array**
   - Test: same array is valid
   - Expected: `valid`, Got: `false`
-- **const with null**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependentRequired - 6 failures</summary>
-
-- **single dependency**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: CRLF missing dependent
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quotes missing dependent
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 10 failures</summary>
-
-- **single dependency**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted tab invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -189,122 +126,11 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 5 failures</summary>
-
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **prefixItems validation adjusts the starting index for items**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxContains - 4 failures</summary>
-
-- **maxContains with contains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: some elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains, value with a decimal**
-  - Test: too many elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: minContains < maxContains < actual
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minContains - 12 failures</summary>
-
-- **minContains=2 with contains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: some elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains with a decimal value**
-  - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains and minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains = 0**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0**
-  - Test: minContains = 0 makes contains always pass
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: too many
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>prefixItems - 2 failures</summary>
-
-- **a schema given for prefixItems**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **prefixItems with boolean schemas**
-  - Test: array with two items is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>properties - 1 failure</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>ref - 1 failure</summary>
-
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -348,32 +174,32 @@ Generated: 2026-01-09T11:28:56Z
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 20/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
-| const | ⚠️ | 52/54 |
+| const | ⚠️ | 53/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 14/20 |
-| dependentSchemas | ⚠️ | 10/20 |
-| enum | ⚠️ | 44/45 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 30/30 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 25/28 |
-| maxContains | ⚠️ | 8/12 |
+| items | ✅ | 28/28 |
+| maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
-| minContains | ⚠️ | 16/28 |
+| minContains | ✅ | 28/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
 | minProperties | ✅ | 8/8 |
@@ -386,7 +212,7 @@ Generated: 2026-01-09T11:28:56Z
 | properties | ⚠️ | 27/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ⚠️ | 21/30 |
-| ref | ⚠️ | 34/35 |
+| ref | ✅ | 35/35 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 12/16 |
 | type | ✅ | 80/80 |
@@ -398,27 +224,6 @@ Generated: 2026-01-09T11:28:56Z
 ### Failures
 
 <details>
-<summary>additionalItems - 5 failures</summary>
-
-- **additionalItems as schema**
-  - Test: additional items match schema
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **items validation adjusts the starting index for additionalItems**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>additionalProperties - 1 failure</summary>
 
 - **additionalProperties does not look in applicators**
@@ -428,158 +233,11 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>const - 2 failures</summary>
+<summary>const - 1 failure</summary>
 
 - **const with array**
   - Test: same array is valid
   - Expected: `valid`, Got: `false`
-- **const with null**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependentRequired - 6 failures</summary>
-
-- **single dependency**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: CRLF missing dependent
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quotes missing dependent
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 10 failures</summary>
-
-- **single dependency**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted tab invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 3 failures</summary>
-
-- **an array of schemas for items**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with two items is invalid
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxContains - 4 failures</summary>
-
-- **maxContains with contains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: some elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains, value with a decimal**
-  - Test: too many elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: minContains < maxContains < actual
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minContains - 12 failures</summary>
-
-- **minContains=2 with contains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: some elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains with a decimal value**
-  - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains and minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains = 0 with no maxContains**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with no maxContains**
-  - Test: minContains = 0 makes contains always pass
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: too many
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -626,15 +284,6 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 1 failure</summary>
-
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>required - 4 failures</summary>
 
 - **required properties whose names are Javascript object property names**
@@ -674,23 +323,23 @@ Generated: 2026-01-09T11:28:56Z
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 15/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
-| const | ⚠️ | 52/54 |
+| const | ⚠️ | 53/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 21/36 |
-| enum | ⚠️ | 44/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 30/30 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 25/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -706,34 +355,13 @@ Generated: 2026-01-09T11:28:56Z
 | patternProperties | ✅ | 23/23 |
 | properties | ⚠️ | 27/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 34/36 |
+| ref | ⚠️ | 35/36 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 12/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 5 failures</summary>
-
-- **additionalItems as schema**
-  - Test: additional items match schema
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **items validation adjusts the starting index for additionalItems**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>additionalProperties - 1 failure</summary>
@@ -745,13 +373,10 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>const - 2 failures</summary>
+<summary>const - 1 failure</summary>
 
 - **const with array**
   - Test: same array is valid
-  - Expected: `valid`, Got: `false`
-- **const with null**
-  - Test: null is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -766,81 +391,6 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>dependencies - 15 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 3 failures</summary>
-
-- **an array of schemas for items**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with two items is invalid
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>properties - 1 failure</summary>
 
 - **properties whose names are Javascript object property names**
@@ -850,11 +400,8 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 2 failures</summary>
+<summary>ref - 1 failure</summary>
 
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 - **ref overrides any sibling keywords**
   - Test: ref valid, maxItems ignored
   - Expected: `valid`, Got: `false`
@@ -883,22 +430,22 @@ Generated: 2026-01-09T11:28:56Z
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 15/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
-| const | ⚠️ | 52/54 |
+| const | ⚠️ | 53/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 21/36 |
-| enum | ⚠️ | 44/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 25/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -914,34 +461,13 @@ Generated: 2026-01-09T11:28:56Z
 | patternProperties | ✅ | 23/23 |
 | properties | ⚠️ | 27/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 34/36 |
+| ref | ⚠️ | 35/36 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 12/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 5 failures</summary>
-
-- **additionalItems as schema**
-  - Test: additional items match schema
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **items validation adjusts the starting index for additionalItems**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>additionalProperties - 1 failure</summary>
@@ -953,13 +479,10 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>const - 2 failures</summary>
+<summary>const - 1 failure</summary>
 
 - **const with array**
   - Test: same array is valid
-  - Expected: `valid`, Got: `false`
-- **const with null**
-  - Test: null is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -974,81 +497,6 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>dependencies - 15 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 3 failures</summary>
-
-- **an array of schemas for items**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with two items is invalid
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>properties - 1 failure</summary>
 
 - **properties whose names are Javascript object property names**
@@ -1058,11 +506,8 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 2 failures</summary>
+<summary>ref - 1 failure</summary>
 
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 - **ref overrides any sibling keywords**
   - Test: ref valid, maxItems ignored
   - Expected: `valid`, Got: `false`
@@ -1091,17 +536,17 @@ Generated: 2026-01-09T11:28:56Z
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 12/17 |
+| additionalItems | ✅ | 17/17 |
 | additionalProperties | ⚠️ | 15/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 16/29 |
-| enum | ⚠️ | 48/49 |
+| dependencies | ✅ | 29/29 |
+| enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 19/21 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -1116,34 +561,13 @@ Generated: 2026-01-09T11:28:56Z
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ⚠️ | 23/24 |
-| ref | ⚠️ | 23/33 |
+| ref | ⚠️ | 24/33 |
 | refRemote | ⚠️ | 6/15 |
 | required | ⚠️ | 11/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 5 failures</summary>
-
-- **additionalItems as schema**
-  - Test: additional items match schema
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **items validation adjusts the starting index for additionalItems**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>additionalProperties - 1 failure</summary>
@@ -1160,72 +584,6 @@ Generated: 2026-01-09T11:28:56Z
 - **validate definition against metaschema**
   - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 13 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 2 failures</summary>
-
-- **an array of schemas for items**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1257,11 +615,8 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 9 failures</summary>
 
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 - **ref overrides any sibling keywords**
   - Test: ref valid, maxItems ignored
   - Expected: `valid`, Got: `false`
@@ -1347,17 +702,17 @@ Generated: 2026-01-09T11:28:56Z
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 11/14 |
+| additionalItems | ✅ | 14/14 |
 | additionalProperties | ⚠️ | 15/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 11/18 |
+| dependencies | ⚠️ | 17/18 |
 | disallow | ✅ | 9/9 |
 | divisibleBy | ✅ | 8/8 |
-| enum | ⚠️ | 15/16 |
+| enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 6/7 |
+| items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maximum | ⚠️ | 13/14 |
@@ -1367,28 +722,13 @@ Generated: 2026-01-09T11:28:56Z
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 16/21 |
+| ref | ⚠️ | 17/21 |
 | refRemote | ⚠️ | 6/8 |
 | required | ✅ | 4/4 |
 | type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 3 failures</summary>
-
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>additionalProperties - 1 failure</summary>
@@ -1400,46 +740,10 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>dependencies - 7 failures</summary>
+<summary>dependencies - 1 failure</summary>
 
 - **dependencies**
   - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **an array of schemas for items**
-  - Test: wrong types
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1463,11 +767,8 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 5 failures</summary>
+<summary>ref - 4 failures</summary>
 
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 - **ref overrides any sibling keywords**
   - Test: remote ref valid, maxItems ignored
   - Expected: `valid`, Got: `false`
@@ -1531,26 +832,26 @@ Generated: 2026-01-09T11:28:56Z
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
-| const | ⚠️ | 52/54 |
+| const | ⚠️ | 53/54 |
 | contains | ✅ | 25/25 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ❌ | 0/2 |
-| dependentRequired | ⚠️ | 14/20 |
-| dependentSchemas | ⚠️ | 10/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ⚠️ | 8/13 |
-| enum | ⚠️ | 44/45 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 24/29 |
-| maxContains | ⚠️ | 8/12 |
+| items | ✅ | 29/29 |
+| maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
-| minContains | ⚠️ | 16/28 |
+| minContains | ✅ | 28/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
 | minProperties | ✅ | 8/8 |
@@ -1560,10 +861,10 @@ Generated: 2026-01-09T11:28:56Z
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 9/11 |
+| prefixItems | ✅ | 11/11 |
 | properties | ⚠️ | 27/28 |
 | propertyNames | ✅ | 10/10 |
-| ref | ⚠️ | 34/38 |
+| ref | ⚠️ | 35/38 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 12/16 |
 | type | ✅ | 80/80 |
@@ -1583,13 +884,10 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>const - 2 failures</summary>
+<summary>const - 1 failure</summary>
 
 - **const with array**
   - Test: same array is valid
-  - Expected: `valid`, Got: `false`
-- **const with null**
-  - Test: null is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -1603,66 +901,6 @@ Generated: 2026-01-09T11:28:56Z
 - **validate definition against metaschema**
   - Test: invalid definition schema
   - Expected: `invalid`, Got: `error: bundling error: failed to fetch "https://json-schema.org/v1": failed to fetch https://json-schema.org/v1: status 404`
-
-</details>
-
-<details>
-<summary>dependentRequired - 6 failures</summary>
-
-- **single dependency**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: CRLF missing dependent
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quotes missing dependent
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 10 failures</summary>
-
-- **single dependency**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted tab invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1688,108 +926,6 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum-with-null validation**
-  - Test: null is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 5 failures</summary>
-
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
-- **prefixItems validation adjusts the starting index for items**
-  - Test: valid items
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxContains - 4 failures</summary>
-
-- **maxContains with contains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: some elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains, value with a decimal**
-  - Test: too many elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: array with minContains < maxContains < actual
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minContains - 12 failures</summary>
-
-- **minContains=2 with contains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: some elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains with a decimal value**
-  - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains and minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains = 0**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0**
-  - Test: minContains = 0 makes contains always pass
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: empty data
-  - Expected: `valid`, Got: `false`
-- **minContains = 0 with maxContains**
-  - Test: too many
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>prefixItems - 2 failures</summary>
-
-- **a schema given for prefixItems**
-  - Test: wrong types
-  - Expected: `invalid`, Got: `true`
-- **prefixItems with boolean schemas**
-  - Test: array with two items is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>properties - 1 failure</summary>
 
 - **properties whose names are Javascript object property names**
@@ -1799,11 +935,8 @@ Generated: 2026-01-09T11:28:56Z
 </details>
 
 <details>
-<summary>ref - 4 failures</summary>
+<summary>ref - 3 failures</summary>
 
-- **relative pointer ref to array**
-  - Test: mismatch array
-  - Expected: `invalid`, Got: `true`
 - **remote ref, containing refs itself**
   - Test: remote ref valid
   - Expected: `valid`, Got: `error: bundling error: failed to fetch "https://json-schema.org/v1": failed to fetch https://json-schema.org/v1: status 404`

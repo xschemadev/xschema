@@ -302,7 +302,8 @@
 				"review REPORT.md - expect very high pass rate",
 				"verify any failures are documented in README"
 			],
-			"passes": false
+			"passes": true,
+			"notes": "98.3% draft2020-12 compliance. Fixed harness to use Ajv2020 for draft-2020-12 keyword support. Fixed Type.Literal(null) bug, tuple rendering for prefixItems. Remaining failures are known limitations: dynamicRef (8), additionalProperties doesn't look in applicators (1), JS object property names edge cases (5), unevaluatedProperties (1), vocabulary (1)."
 		},
 		{
 			"id": "typebox-readme",

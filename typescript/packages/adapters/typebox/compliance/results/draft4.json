@@ -3,47 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 12,
-      "failed": 5,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "additionalItems as schema",
-          "test": "additional items match schema",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items validation adjusts the starting index for additionalItems",
-          "test": "valid items",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "additionalProperties",
@@ -100,119 +63,17 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 16,
-      "failed": 13,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 1",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 3",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 4",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "enum",
-      "passed": 48,
-      "failed": 1,
+      "passed": 49,
+      "failed": 0,
       "skipped": 0,
-      "total": 49,
-      "failures": [
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 49
     },
     {
       "keyword": "format",
@@ -230,26 +91,10 @@
     },
     {
       "keyword": "items",
-      "passed": 19,
-      "failed": 2,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "maxItems",
@@ -378,18 +223,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 23,
-      "failed": 10,
+      "passed": 24,
+      "failed": 9,
       "skipped": 0,
       "total": 33,
       "failures": [
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "ref overrides any sibling keywords",
           "test": "ref valid, maxItems ignored",
@@ -597,10 +435,10 @@
     }
   ],
   "summary": {
-    "passed": 550,
-    "failed": 49,
+    "passed": 572,
+    "failed": 27,
     "skipped": 0,
     "total": 599,
-    "percentage": 91.81969949916528
+    "percentage": 95.49248747913188
   }
 }
