@@ -318,3 +318,42 @@ Key decisions:
 - All documentation files from previous tasks verified present
 - Valibot adapter ready for production use
 
+### effect-scaffold (COMPLETED)
+- Created Effect/Schema adapter package following zod adapter structure
+- Created package.json with effect as peer dependency (version ^3.0.0)
+  - devDependency on effect@^3.12.5 for testing
+  - Binary: xschema-effect at dist/cli.js
+- Created tsconfig.json extending base config
+- Created src/index.ts with convert function:
+  - Uses Schema as S from "effect" (Effect/Schema namespace convention)
+  - Returns imports: ['import { Schema as S } from "effect"']
+  - Type inference: `typeof ${varName}.Type` (Effect/Schema's type extraction API)
+- Created src/cli.ts with stdin/stdout protocol using createAdapterCLI
+- Created src/renderer.ts skeleton with all SchemaNode kind handlers:
+  - Primitives: S.String, S.Number, S.Boolean, S.Null
+  - Containers: S.Struct, S.Array, S.Tuple
+  - Combinators: S.Union, S.Struct (for intersection)
+  - Special: S.Literal, S.Unknown, S.Never, S.NullOr
+  - TypeGuardedNode: renders as union of guarded schemas
+  - All complex logic marked with TODO comments for next tasks
+- Created compliance/harness.ts template:
+  - Uses S.decodeUnknownEither(schema)(data) for validation (Effect/Schema API)
+  - Returns Either type: result._tag === "Right" for success
+- Created compliance/results directory structure
+- Ran bun install to get effect@3.19.14
+- Fixed TypeGuardedNode implementation:
+  - Discovered it has `guards` array property, not `inner`
+  - Implemented as union of all guard schemas (same pattern as valibot)
+- Build succeeded with `bun run build` from typescript/
+- Typecheck passed with `bun run typecheck` from typescript/
+- Verified dist/ directory contains all compiled output (.js, .d.ts, .map files)
+
+Key decisions:
+- Used Effect's Schema namespace convention: `import { Schema as S } from "effect"`
+- Type extraction uses `.Type` property (Effect/Schema's compile-time type inference)
+- Validation uses S.decodeUnknownEither for Either-based result (functional error handling)
+- Followed valibot and zod adapter patterns exactly for consistency
+- Used S.NullOr for nullable (Effect/Schema's nullable wrapper)
+- All renderer implementations deferred to subsequent tasks (primitives, containers, combinators, special)
+- Effect/Schema adapter foundation now ready for implementation tasks
+

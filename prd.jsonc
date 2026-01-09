@@ -128,7 +128,7 @@
 				"run: bun run build (from typescript/)",
 				"verify build succeeds without errors"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "effect-harness",
