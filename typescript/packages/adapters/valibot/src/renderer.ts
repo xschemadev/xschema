@@ -22,7 +22,7 @@ import type {
 	NullableNode,
 	PropertyDef,
 } from "@xschemadev/core";
-import { escapeString } from "@xschemadev/core";
+import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
 
 /**
  * Render a SchemaNode to Valibot code
@@ -502,28 +502,117 @@ function renderArrayConstraints(
 	return `, ${actions.join(", ")}`;
 }
 
-function renderUnion(_node: UnionNode): string {
-	return "v.union([v.any()])";
+function renderUnion(node: UnionNode): string {
+	if (node.variants.length === 0) return "v.never()";
+
+	// Filter out "never" variants since they can't match anything
+	const filtered = node.variants.filter((v) => v.kind !== "never");
+	if (filtered.length === 0) return "v.never()";
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	const schemas = filtered.map((v) => render(v));
+	return `v.union([${schemas.join(", ")}])`;
 }
 
-function renderIntersection(_node: IntersectionNode): string {
-	return "v.intersect([v.any()])";
+function renderIntersection(node: IntersectionNode): string {
+	if (node.schemas.length === 0) return "v.any()";
+
+	// Short-circuit: if ANY schema is never, intersection is never
+	if (node.schemas.some((s) => s.kind === "never")) {
+		return "v.never()";
+	}
+
+	// Filter out "any" schemas since they don't constrain the intersection
+	const filtered = node.schemas.filter((s) => s.kind !== "any");
+	if (filtered.length === 0) return "v.any()";
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	const schemas = filtered.map((s) => render(s));
+	return `v.intersect([${schemas.join(", ")}])`;
 }
 
-function renderOneOf(_node: OneOfNode): string {
-	return "v.union([v.any()])";
+function renderOneOf(node: OneOfNode): string {
+	if (node.schemas.length === 0) return "v.never()";
+	if (node.schemas.length === 1) return render(node.schemas[0]!);
+
+	// Filter out "never" schemas since they can never match
+	const filtered = node.schemas.filter((s) => s.kind !== "never");
+
+	// If all schemas are never, nothing can match exactly one
+	if (filtered.length === 0) return "v.never()";
+
+	// If exactly one schema remains after filtering never, it must match
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Count how many "any" schemas there are - if > 1, always matches multiple
+	const anyCount = filtered.filter((s) => s.kind === "any").length;
+	if (anyCount > 1) {
+		// Multiple "any" schemas means any value matches multiple
+		return `v.pipe(v.any(), v.check(() => false, "oneOf has multiple 'true' schemas - impossible to match exactly one"))`;
+	}
+
+	const schemas = filtered.map((s) => render(s));
+	return `v.pipe(v.any(), v.check((val) => {
+    const schemas = [${schemas.join(", ")}];
+    const results = schemas.map(s => v.safeParse(s, val));
+    const validCount = results.filter(r => r.success).length;
+    return validCount === 1;
+  }, "Value must match exactly one schema in oneOf"))`;
 }
 
-function renderNot(_node: NotNode): string {
-	return "v.never()";
+function renderNot(node: NotNode): string {
+	const schema = render(node.schema);
+	return `v.pipe(v.any(), v.check((val) => !v.safeParse(${schema}, val).success, "Value must not match schema"))`;
 }
 
-function renderLiteral(_node: LiteralNode): string {
-	return "v.literal(null)";
+function renderLiteral(node: LiteralNode): string {
+	if (isPrimitive(node.value)) {
+		return `v.literal(${JSON.stringify(node.value)})`;
+	}
+
+	// Objects/arrays need deep equality check
+	const isArray = Array.isArray(node.value);
+	const baseType = isArray ? "v.array(v.any())" : "v.looseObject({})";
+	const sorted = sortedStringify(node.value);
+
+	return `v.pipe(${baseType}, v.check((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, "Value must equal the const value"))`;
 }
 
-function renderEnum(_node: EnumNode): string {
-	return "v.union([v.literal(null)])";
+function renderEnum(node: EnumNode): string {
+	const values = node.values;
+
+	if (values.length === 0) return "v.never()";
+
+	if (values.length === 1) {
+		return renderLiteral({ kind: "literal", value: values[0] });
+	}
+
+	// All strings - use v.picklist
+	if (values.every((v) => typeof v === "string")) {
+		return `v.picklist([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
+	}
+
+	// Check for complex values
+	const hasComplexValues = values.some((v) => !isPrimitive(v));
+
+	if (hasComplexValues) {
+		const sortedValues = values.map((v) =>
+			JSON.stringify(
+				v,
+				v != null && typeof v === "object"
+					? Object.keys(v as object).sort()
+					: undefined,
+			),
+		);
+		return `v.pipe(v.any(), v.check((val) => {
+      const sorted = JSON.stringify(val, val != null && typeof val === "object" ? Object.keys(val as object).sort() : undefined);
+      return [${sortedValues.join(", ")}].includes(sorted);
+    }, "Value must match one of the enum values"))`;
+	}
+
+	// Mixed primitives - use union of literals
+	const literals = values.map((v) => `v.literal(${JSON.stringify(v)})`);
+	return `v.union([${literals.join(", ")}])`;
 }
 
 function renderRef(node: RefNode): string {

@@ -131,6 +131,61 @@ Key decisions:
 - uniqueItems uses JSON.stringify for deep equality comparison (same as zod adapter)
 - contains validation counts matches with v.safeParse success checks
 
+### valibot-renderer-combinators (COMPLETED)
+- Implemented combinator type rendering in src/renderer.ts
+- Union types (anyOf):
+  - Filter out "never" variants (can't match anything)
+  - v.union([schema1, schema2, ...]) for multiple variants
+  - Return v.never() for empty unions
+  - Return single schema if only one variant remains after filtering
+- Intersection types (allOf):
+  - v.intersect([schema1, schema2, ...]) for multiple schemas
+  - Short-circuit: if ANY schema is "never", return v.never() (impossible intersection)
+  - Filter out "any" schemas (don't constrain intersection)
+  - Return v.any() for empty intersections or all-any schemas
+- OneOf types (exactly one match):
+  - Use v.pipe(v.any(), v.check(...)) to validate exactly one schema matches
+  - Count matches with v.safeParse and reject if count !== 1
+  - Handle edge cases: multiple "any" schemas (always fail), empty schemas (return v.never())
+  - Error message indicates whether no schemas matched or multiple matched
+- Not types (negation):
+  - v.pipe(v.any(), v.check((val) => !v.safeParse(schema, val).success, ...))
+  - Negate the result of v.safeParse to reject values matching the schema
+- Literal types (const):
+  - Primitive values: v.literal(value) for strings, numbers, booleans, null
+  - Complex values (objects/arrays): use deep equality with JSON.stringify
+  - Sort object keys for consistent comparison (same approach as zod)
+  - Base type: v.array(v.any()) for arrays, v.looseObject({}) for objects
+- Enum types:
+  - All strings: v.picklist([...]) (valibot's native string enum)
+  - Mixed primitives: v.union([v.literal(val1), v.literal(val2), ...])
+  - Complex values: use v.check with JSON.stringify deep equality (same as literal)
+  - Empty enum: v.never()
+  - Single value: delegate to renderLiteral
+- Added helper imports from @xschemadev/core:
+  - isPrimitive: check if value is string/number/boolean/null
+  - sortedStringify: JSON.stringify with sorted keys for consistent comparison
+- Compliance test results:
+  - anyOf: 18/18 (100.0%) ✓
+  - allOf: 27/27 (100.0%) ✓
+  - oneOf: 33/33 (100.0%) ✓
+  - not: 38/38 (100.0%) ✓
+  - const: 54/54 (100.0%) ✓
+  - enum: 43/45 (95.6%) - excellent (2 edge case failures)
+- Typecheck passed with no errors
+- Build succeeded across all packages
+
+Key decisions:
+- Used v.union() for anyOf (valibot's native discriminated union support)
+- Used v.intersect() for allOf (valibot's intersection type)
+- Implemented oneOf with custom validation logic (count matches via v.safeParse)
+- Implemented not with negation check (valibot has no native "not" schema)
+- Used v.picklist() for all-string enums (cleaner than union of literals)
+- Used JSON.stringify with sorted keys for deep equality on complex values
+- Filtered out "never" from unions/oneOf (optimization)
+- Filtered out "any" from intersections (doesn't constrain)
+- Short-circuit intersections containing "never" (impossible to satisfy)
+
 ## 2026-01-08
 
 
