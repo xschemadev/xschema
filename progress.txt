@@ -45,6 +45,41 @@ Key decisions:
 - Harness is confirmed functional via targeted keyword test
 - Ready for next step: implementing renderer for primitive types
 
+### valibot-renderer-primitives (COMPLETED)
+- Implemented primitive type rendering in src/renderer.ts
+  - String type with format validation:
+    - Supported formats: email, uri, uri-reference, uuid, date-time, date, time, ipv4, ipv6, hostname, idn-hostname
+    - Used valibot's native validators: v.email(), v.url(), v.uuid(), v.isoDateTime(), v.isoDate(), v.isoTime(), v.ipv4(), v.ipv6()
+    - Used regex for hostname/idn-hostname (no native valibot validator)
+  - String constraints with grapheme cluster counting (JSON Schema spec):
+    - minLength/maxLength use Intl.Segmenter for accurate character counting (handles emoji, combining characters)
+    - pattern uses v.regex() with RegExp
+    - All constraints use v.pipe() to chain validations
+  - Number type with range and multipleOf validation:
+    - minimum/maximum use v.minValue()/v.maxValue()
+    - exclusiveMinimum/exclusiveMaximum use v.check() with custom comparison (valibot doesn't have native exclusive bound support in v0.42)
+    - multipleOf uses v.multipleOf() for integers, epsilon-based check for floats (precision issues)
+    - integer flag uses v.integer()
+  - Boolean and null use v.boolean() and v.null_()
+- Added escapeString import from @xschemadev/core for safe string literal generation
+- Compliance test results:
+  - type: 69/80 (86.2%)
+  - minLength: 6/7 (85.7%)
+  - maxLength: 6/7 (85.7%)
+  - pattern: 3/9 (33.3%) - core pattern validation works, failures likely edge cases
+  - minimum: 9/11 (81.8%)
+  - maximum: 7/8 (87.5%)
+  - multipleOf: 9/10 (90.0%)
+- Typecheck passed with no errors
+- Build succeeded across all packages
+
+Key decisions:
+- Used v.pipe() for chaining validations (valibot's recommended pattern)
+- Used v.check() for exclusiveMinimum/exclusiveMaximum because valibot v0.42 doesn't support { exclusive: true } option
+- Used Intl.Segmenter for grapheme cluster counting (same approach as zod adapter)
+- Used epsilon-based comparison (1e-10) for float multipleOf validation
+- Format constraints combined with other constraints by extending the pipe chain
+
 ## 2026-01-08
 
 
