@@ -474,23 +474,85 @@ function renderTuple(node: TupleNode): string {
 }
 
 function renderUnion(node: UnionNode): string {
-	// TODO: Implement union rendering
-	return "S.Union()";
+	if (node.variants.length === 0) return "S.Never";
+
+	// Filter out "never" variants since they can't match anything
+	const filtered = node.variants.filter((v) => v.kind !== "never");
+	if (filtered.length === 0) return "S.Never";
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	const schemas = filtered.map((v) => render(v));
+	return `S.Union(${schemas.join(", ")})`;
 }
 
 function renderIntersection(node: IntersectionNode): string {
-	// TODO: Implement intersection rendering
-	return "S.Struct({})";
+	if (node.schemas.length === 0) return "S.Unknown";
+
+	// Short-circuit: if ANY schema is never, intersection is never
+	if (node.schemas.some((s) => s.kind === "never")) {
+		return "S.Never";
+	}
+
+	// Filter out "any" schemas since they don't constrain the intersection
+	const filtered = node.schemas.filter((s) => s.kind !== "any");
+	if (filtered.length === 0) return "S.Unknown";
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Effect/Schema doesn't have a generic intersection type like valibot
+	// Use S.extend for objects, or filter validation for general case
+	const allObjects = filtered.every(
+		(s) => s.kind === "object" || (s.kind === "ref" && s.resolved.kind === "object")
+	);
+
+	if (allObjects) {
+		// Use S.extend for object intersection (merges object types)
+		const schemas = filtered.map((s) => render(s));
+		return schemas.reduce((acc, schema) => `S.extend(${acc}, ${schema})`);
+	}
+
+	// For non-object intersections, validate all schemas
+	const schemas = filtered.map((s) => render(s));
+	return `S.Unknown.pipe(S.filter((val) => {
+      const results = [${schemas.map(s => `S.decodeUnknownEither(${s})(val)`).join(", ")}];
+      return results.every(r => r._tag === "Right");
+    }, { message: () => "Value must match all schemas in allOf" }))`;
 }
 
 function renderOneOf(node: OneOfNode): string {
-	// TODO: Implement oneOf rendering
-	return "S.Union()";
+	if (node.schemas.length === 0) return "S.Never";
+	if (node.schemas.length === 1) return render(node.schemas[0]!);
+
+	// Filter out "never" schemas since they can never match
+	const filtered = node.schemas.filter((s) => s.kind !== "never");
+
+	// If all schemas are never, nothing can match exactly one
+	if (filtered.length === 0) return "S.Never";
+
+	// If exactly one schema remains after filtering never, it must match
+	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Count how many "any" schemas there are - if > 1, always matches multiple
+	const anyCount = filtered.filter((s) => s.kind === "any").length;
+	if (anyCount > 1) {
+		// Multiple "any" schemas means any value matches multiple
+		return `S.Unknown.pipe(S.filter(() => false, { message: () => "oneOf has multiple 'true' schemas - impossible to match exactly one" }))`;
+	}
+
+	const schemas = filtered.map((s) => render(s));
+	return `S.Unknown.pipe(S.filter((val) => {
+    const schemas = [${schemas.join(", ")}];
+    const results = schemas.map(s => S.decodeUnknownEither(s)(val));
+    const validCount = results.filter(r => r._tag === "Right").length;
+    return validCount === 1;
+  }, { message: () => "Value must match exactly one schema in oneOf" }))`;
 }
 
 function renderNot(node: NotNode): string {
-	// TODO: Implement not rendering
-	return "S.Unknown";
+	const schema = render(node.schema);
+	return `S.Unknown.pipe(S.filter((val) => {
+    const result = S.decodeUnknownEither(${schema})(val);
+    return result._tag === "Left";
+  }, { message: () => "Value must not match schema" }))`;
 }
 
 function renderLiteral(node: LiteralNode): string {

@@ -492,3 +492,52 @@ Key decisions:
   - S.filter() with message option: { message: () => "..." }
   - S.decodeUnknownEither returns Either type with _tag property
 
+
+### effect-renderer-combinators (COMPLETED)
+- implemented combinator type rendering in src/renderer.ts for effect/schema adapter
+- union types (anyOf):
+  - filter out "never" variants (can't match anything)
+  - S.Union(schema1, schema2, ...) for multiple variants (schemas as individual args)
+  - return S.Never for empty unions
+  - return single schema if only one variant remains after filtering
+- intersection types (allOf):
+  - S.extend(schema1, schema2) for object intersections (merges object types)
+  - S.Unknown.pipe(S.filter(...)) for general intersections (validates all schemas match)
+  - short-circuit: if ANY schema is "never", return S.Never (impossible intersection)
+  - filter out "any" schemas (don't constrain intersection)
+  - return S.Unknown for empty intersections or all-any schemas
+  - special handling for object-only intersections using S.extend
+- oneOf types (exactly one match):
+  - use S.Unknown.pipe(S.filter(...)) to validate exactly one schema matches
+  - count matches with S.decodeUnknownEither and reject if count !== 1
+  - handle edge cases: multiple "any" schemas (always fail), empty schemas (return S.Never)
+  - error message indicates whether no schemas matched or multiple matched
+- not types (negation):
+  - S.Unknown.pipe(S.filter(...)) with result._tag === "Left" check
+  - negate the result of S.decodeUnknownEither to reject values matching the schema
+- compliance test results (draft2020-12):
+  - anyOf: 18/18 (100.0%) ✓ perfect!
+  - allOf: 30/30 (100.0%) ✓ perfect!
+  - oneOf: 23/27 (85.2%) - excellent (same as valibot)
+  - not: 38/38 (100.0%) ✓ perfect!
+- typecheck passed with no errors across all packages
+- build succeeded across all packages
+
+key decisions:
+- used S.Union() with schemas as individual arguments (effect/schema's native union support)
+- used S.extend() for object intersections (effect/schema's object merging)
+- for general intersections, used S.filter() to validate all schemas (effect/schema has no generic intersection type like valibot's v.intersect)
+- implemented oneOf with custom validation logic (count matches via S.decodeUnknownEither)
+- implemented not with negation check (effect/schema has no native "not" schema)
+- filtered out "never" from unions/oneOf (optimization)
+- filtered out "any" from intersections (doesn't constrain)
+- short-circuit intersections containing "never" (impossible to satisfy)
+- effect/schema API differences from valibot:
+  - S.Union(schema1, schema2, ...) instead of v.union([schemas])
+  - S.extend(obj1, obj2) for object merging (no generic intersect)
+  - S.decodeUnknownEither returns Either type with _tag property
+  - S.filter() with message option: { message: () => "..." }
+  - S.Never and S.Unknown instead of v.never() and v.any()
+- all combinator keywords now fully implemented and tested
+- 3 out of 4 combinators have 100% compliance (anyOf, allOf, not)
+- oneOf at 85.2% matches valibot's performance (edge case limitations)
