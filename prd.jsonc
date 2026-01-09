@@ -338,7 +338,7 @@
 				"run: bun run build (from typescript/)",
 				"verify build succeeds without errors"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "Type-only: result.schema should be empty, result.type contains the TS type expression"
 		},
 		{

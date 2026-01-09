@@ -1021,3 +1021,39 @@ key decisions:
 - followed valibot/effect CHANGELOG structure exactly (minimal for initial release)
 - used draft2020-12 compliance rate (98.3%) as headline metric
 - typebox adapter is now ready for production use
+
+### typescript-scaffold (COMPLETED)
+- created TypeScript type-only adapter package at packages/adapters/typescript/
+- key difference from other adapters: NO peer dependency (no runtime library)
+- created package.json:
+  - name: @xschemadev/typescript
+  - version: 0.1.0
+  - binary: xschema-typescript at dist/cli.js
+  - only devDependency: typescript@^5.7.3 (for compilation only)
+  - workspace dependency on @xschemadev/core
+- created tsconfig.json extending base config
+- created src/index.ts with convert function:
+  - returns empty `schema` field (no runtime code)
+  - returns type expression in `type` field
+  - returns empty `imports` array (pure TS types need no imports)
+- created src/cli.ts with standard adapter CLI pattern
+- created src/renderer.ts skeleton with all SchemaNode handlers:
+  - primitives: string, number, boolean, null → return TS primitive type names
+  - containers: object, array, tuple → TODO placeholders returning generic types
+  - combinators: union, intersection, oneOf, not → TODO placeholders
+  - special: literal, enum, ref, conditional, typeGuarded, nullable
+  - exhaustive switch with never check ensures all cases handled
+- created compliance/results/.gitkeep for directory structure
+- verified bun run build succeeds (all packages built successfully)
+- verified bun run typecheck passes (all packages type-checked)
+- dist/ directory contains: cli.js, index.js, renderer.js with .d.ts and .map files
+
+key decisions:
+- used "unknown" as placeholder return for unimplemented types (safer than "any")
+- renderNot returns "unknown" because negation types can't be expressed in TS
+- renderConditional returns "unknown" because if/then/else is runtime validation
+- renderRef delegates to render(node.resolved) - refs are pre-resolved in IR
+- renderNullable properly implemented: `${inner} | null`
+- primitives fully implemented (string/number/boolean/null → TS primitive names)
+- runtime constraints (minLength, pattern, minimum, etc.) deliberately ignored - documented in comments
+- followed exact same file structure as zod/valibot/effect/typebox adapters
