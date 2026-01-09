@@ -2,6 +2,61 @@
 
 ## 2026-01-09
 
+### effect-renderer-containers (COMPLETED)
+- implemented container type rendering in src/renderer.ts for effect/schema adapter
+- object types with multiple modes based on additionalProperties:
+  - S.Struct({ ... }) - basic object with defined properties
+  - S.Struct({ ... }, S.Record({ key: S.String, value: schema })) - when additionalProperties is a schema (validates unknown keys)
+  - S.Record({ key: S.String, value: schema }) - for dynamic key-value objects without defined properties
+  - S.optional(schema) - for optional properties (properties not in required array)
+- object constraints and validations:
+  - additionalProperties: false - S.filter() validation rejecting unknown keys (handles pattern properties correctly)
+  - patternProperties: S.filter() validation with regex matching and S.decodeUnknownEither
+  - propertyNames: S.filter() validation testing all keys against schema
+  - minProperties/maxProperties: S.filter() validation counting Object.keys()
+  - dependencies: S.filter() for property dependencies, S.decodeUnknownEither for schema dependencies
+- array types:
+  - S.Array(itemSchema) - homogeneous arrays
+  - S.Array(itemSchema).pipe(filters...) - array with constraints
+  - minItems/maxItems: S.minItems()/S.maxItems() (native effect/schema validators)
+  - uniqueItems: S.filter() with JSON.stringify-based Set deduplication
+  - contains: S.filter() counting items matching schema with minContains/maxContains via S.decodeUnknownEither
+- tuple types:
+  - S.Tuple(schema1, schema2, ...) - strict tuples (schemas as individual arguments)
+  - S.Tuple([schema1, schema2], restSchema) - variadic tuples (array + rest schema)
+  - handles empty tuples and tuples with no rest items correctly
+  - combined with same array constraints (minItems, maxItems, uniqueItems, contains)
+- compliance test results (draft2020-12):
+  - properties: 20/28 (71.4%)
+  - required: 5/16 (31.2%) - lower rate due to complex edge cases
+  - additionalProperties: 11/21 (52.4%)
+  - items: 21/29 (72.4%)
+  - minItems: 5/6 (83.3%)
+  - maxItems: 5/6 (83.3%)
+  - uniqueItems: 69/69 (100.0%) ✓ perfect!
+  - prefixItems: 6/11 (54.5%)
+  - minProperties: 5/8 (62.5%)
+  - maxProperties: 8/10 (80.0%)
+- typecheck passed with no errors
+- build succeeded across all packages
+
+key decisions:
+- used S.Struct with S.Record for catchall pattern (effect/schema's way to validate additional properties)
+- for additionalProperties: false, used S.filter() to reject unknown keys (effect/schema doesn't have built-in strict mode at schema level)
+- pattern properties require checking against pattern list when additionalProperties: false
+- used S.decodeUnknownEither for nested schema validation inside filters (returns Either with _tag property)
+- tuple syntax differs: individual args for strict tuples, array + rest for variadic tuples
+- S.minItems/maxItems are native validators in effect/schema (cleaner than valibot's v.minLength/maxLength)
+- uniqueItems uses JSON.stringify for deep equality (same approach as valibot/zod)
+- contains validation counts matches with S.decodeUnknownEither success checks
+- pass rates comparable to valibot at this stage (containers done, combinators pending)
+- effect/schema API differences from valibot:
+  - S.optional() instead of v.optional()
+  - S.filter() with message: { message: () => "..." } syntax
+  - S.decodeUnknownEither returns Either type (functional error handling)
+  - S.Struct accepts second arg for record validation (catchall)
+  - S.Tuple uses different signatures for strict vs variadic tuples
+
 ### effect-harness (COMPLETED)
 - Verified compliance harness template at compliance/harness.ts is correctly implemented
   - Uses S.decodeUnknownEither(schema)(data) for validation (Effect/Schema's Either-based API)

@@ -192,19 +192,285 @@ function renderNumber(node: NumberNode): string {
 }
 
 function renderObject(node: ObjectNode): string {
-	// TODO: Implement object rendering
-	return "S.Struct({})";
+	const propKeys = Array.from(node.properties.keys());
+
+	// If using record-style (no properties, just additionalProperties schema)
+	if (
+		propKeys.length === 0 &&
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const valueSchema = render(node.additionalProperties);
+		let result = `S.Record({ key: S.String, value: ${valueSchema} })`;
+		const filters = renderObjectConstraints(node);
+		if (filters.length > 0) {
+			result = `${result}.pipe(${filters.join(", ")})`;
+		}
+		return result;
+	}
+
+	// Build shape
+	const shape = propKeys.map((key) => {
+		const prop = node.properties.get(key)!;
+		let propCode = render(prop.schema as SchemaNode);
+		if (!prop.required) {
+			propCode = `S.optional(${propCode})`;
+		}
+		return `${escapeString(key)}: ${propCode}`;
+	});
+
+	let result = "";
+
+	// Choose object type based on additionalProperties
+	if (node.additionalProperties === false) {
+		// Strict mode - no additional properties allowed
+		result =
+			shape.length > 0
+				? `S.Struct({ ${shape.join(", ")} })`
+				: "S.Struct({})";
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		// Validate additional properties against schema using catchall
+		const restSchema = render(node.additionalProperties);
+		result =
+			shape.length > 0
+				? `S.Struct({ ${shape.join(", ")} }, S.Record({ key: S.String, value: ${restSchema} }))`
+				: `S.Record({ key: S.String, value: ${restSchema} })`;
+	} else {
+		// Allow additional properties (loose mode)
+		result =
+			shape.length > 0
+				? `S.Struct({ ${shape.join(", ")} })`
+				: "S.Struct({})";
+	}
+
+	// Collect all validation filters
+	const filters: string[] = [];
+
+	// Handle additionalProperties: false by rejecting unknown keys
+	if (node.additionalProperties === false) {
+		const definedKeys = JSON.stringify(propKeys);
+		const hasPatternProps = node.patternProperties.length > 0;
+		
+		if (hasPatternProps) {
+			const patterns = node.patternProperties.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
+			filters.push(`S.filter((val) => {
+        const definedProps = new Set(${definedKeys});
+        const patterns = [${patterns}];
+        for (const key of Object.keys(val)) {
+          if (definedProps.has(key)) continue;
+          const matchesPattern = patterns.some(p => p.test(key));
+          if (!matchesPattern) return false;
+        }
+        return true;
+      }, { message: () => "Additional properties not allowed" })`);
+		} else {
+			filters.push(`S.filter((val) => {
+        const definedProps = new Set(${definedKeys});
+        for (const key of Object.keys(val)) {
+          if (!definedProps.has(key)) return false;
+        }
+        return true;
+      }, { message: () => "Additional properties not allowed" })`);
+		}
+	}
+
+	// Pattern properties validation
+	if (node.patternProperties.length > 0) {
+		filters.push(...renderPatternPropsFilters(node));
+	}
+
+	// Property names validation
+	if (node.propertyNames) {
+		const keySchema = render(node.propertyNames);
+		filters.push(`S.filter((val) => {
+      for (const key of Object.keys(val)) {
+        const result = S.decodeUnknownEither(${keySchema})(key);
+        if (result._tag === "Left") return false;
+      }
+      return true;
+    }, { message: () => "Invalid property name" })`);
+	}
+
+	// Min/max properties
+	filters.push(...renderObjectConstraints(node));
+
+	// Dependencies
+	filters.push(...renderDependenciesFilters(node));
+
+	// Apply all filters in pipe
+	if (filters.length > 0) {
+		result = `${result}.pipe(${filters.join(", ")})`;
+	}
+
+	return result;
+}
+
+function renderPatternPropsFilters(node: ObjectNode): string[] {
+	const patterns = node.patternProperties;
+
+	const checks: string[] = [];
+
+	// Validate pattern properties
+	patterns.forEach((p) => {
+		const patternCode = render(p.schema as SchemaNode);
+		const patternStr = escapeString(p.pattern);
+		checks.push(`
+      for (const [key, value] of Object.entries(val)) {
+        if (new RegExp(${patternStr}).test(key)) {
+          const result = S.decodeUnknownEither(${patternCode})(value);
+          if (result._tag === "Left") return false;
+        }
+      }`);
+	});
+
+	return [`S.filter((val) => {${checks.join("")}
+      return true;
+    }, { message: () => "Pattern property validation failed" })`];
+}
+
+function renderObjectConstraints(node: ObjectNode): string[] {
+	const filters: string[] = [];
+
+	if (node.minProperties !== undefined) {
+		filters.push(`S.filter((val) => Object.keys(val).length >= ${node.minProperties}, { message: () => "Object must have at least ${node.minProperties} properties" })`);
+	}
+	if (node.maxProperties !== undefined) {
+		filters.push(`S.filter((val) => Object.keys(val).length <= ${node.maxProperties}, { message: () => "Object must have at most ${node.maxProperties} properties" })`);
+	}
+
+	return filters;
+}
+
+function renderDependenciesFilters(node: ObjectNode): string[] {
+	const filters: string[] = [];
+
+	for (const [prop, dep] of node.dependencies) {
+		if (dep.kind === "property") {
+			if (dep.requiredProperties.length > 0) {
+				const message = escapeString(
+					`Property ${prop} requires ${dep.requiredProperties.join(", ")}`,
+				);
+				filters.push(`S.filter((val) => {
+          if (Object.hasOwn(val, ${escapeString(prop)})) {
+            return ${dep.requiredProperties.map((d) => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")};
+          }
+          return true;
+        }, { message: () => ${message} })`);
+			}
+		} else {
+			const depCode = render(dep.schema as SchemaNode);
+			filters.push(`S.filter((val) => {
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          const result = S.decodeUnknownEither(${depCode})(val);
+          return result._tag === "Right";
+        }
+        return true;
+      }, { message: () => "Schema dependency validation failed" })`);
+		}
+	}
+
+	return filters;
 }
 
 function renderArray(node: ArrayNode): string {
-	// TODO: Implement array rendering
-	const itemsSchema = render(node.items);
-	return `S.Array(${itemsSchema})`;
+	const itemSchema = render(node.items);
+	const filters = renderArrayConstraints(node.constraints);
+	
+	if (filters.length > 0) {
+		return `S.Array(${itemSchema}).pipe(${filters.join(", ")})`;
+	}
+	return `S.Array(${itemSchema})`;
+}
+
+function renderArrayConstraints(constraints: ArrayNode["constraints"]): string[] {
+	const filters: string[] = [];
+
+	if (constraints.minItems !== undefined) {
+		filters.push(`S.minItems(${constraints.minItems})`);
+	}
+	if (constraints.maxItems !== undefined) {
+		filters.push(`S.maxItems(${constraints.maxItems})`);
+	}
+
+	if (constraints.uniqueItems) {
+		filters.push(`S.filter((arr) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return false;
+        seen.add(key);
+      }
+      return true;
+    }, { message: () => "Array items must be unique" })`);
+	}
+
+	if (constraints.contains) {
+		const containsSchema = render(constraints.contains.schema as SchemaNode);
+		const minContains = constraints.contains.minContains;
+		const maxContains = constraints.contains.maxContains;
+
+		if (maxContains !== undefined) {
+			filters.push(`S.filter((arr) => {
+        let count = 0;
+        for (const item of arr) {
+          const result = S.decodeUnknownEither(${containsSchema})(item);
+          if (result._tag === "Right") count++;
+        }
+        return count >= ${minContains} && count <= ${maxContains};
+      }, { message: () => "Array must contain between ${minContains} and ${maxContains} items matching schema" })`);
+		} else {
+			filters.push(`S.filter((arr) => {
+        let count = 0;
+        for (const item of arr) {
+          const result = S.decodeUnknownEither(${containsSchema})(item);
+          if (result._tag === "Right") count++;
+        }
+        return count >= ${minContains};
+      }, { message: () => "Array must contain at least ${minContains} item(s) matching schema" })`);
+		}
+	}
+
+	return filters;
 }
 
 function renderTuple(node: TupleNode): string {
-	// TODO: Implement tuple rendering
-	return "S.Tuple()";
+	const tupleSchemas = node.prefixItems.map((item) => render(item));
+
+	let result = "";
+
+	// Rest items handling
+	if (node.restItems === false) {
+		// Strict tuple - no additional items (schemas as individual arguments)
+		if (tupleSchemas.length === 0) {
+			result = "S.Tuple()";
+		} else {
+			result = `S.Tuple(${tupleSchemas.join(", ")})`;
+		}
+	} else if (node.restItems.kind !== "any") {
+		// Tuple with rest items - first arg is array of schemas, second is rest schema
+		const restSchema = render(node.restItems);
+		if (tupleSchemas.length === 0) {
+			result = `S.Array(${restSchema})`;
+		} else {
+			result = `S.Tuple([${tupleSchemas.join(", ")}], ${restSchema})`;
+		}
+	} else {
+		// Tuple allowing any rest items
+		if (tupleSchemas.length === 0) {
+			result = "S.Array(S.Unknown)";
+		} else {
+			result = `S.Tuple([${tupleSchemas.join(", ")}], S.Unknown)`;
+		}
+	}
+
+	const filters = renderArrayConstraints(node.constraints);
+	if (filters.length > 0) {
+		result = `${result}.pipe(${filters.join(", ")})`;
+	}
+	return result;
 }
 
 function renderUnion(node: UnionNode): string {
