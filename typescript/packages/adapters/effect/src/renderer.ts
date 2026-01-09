@@ -556,16 +556,55 @@ function renderNot(node: NotNode): string {
 }
 
 function renderLiteral(node: LiteralNode): string {
-	// TODO: Implement literal rendering
-	if (typeof node.value === "string") {
-		return `S.Literal(${escapeString(node.value)})`;
+	// Primitive values use S.Literal
+	if (isPrimitive(node.value)) {
+		return `S.Literal(${JSON.stringify(node.value)})`;
 	}
-	return `S.Literal(${JSON.stringify(node.value)})`;
+
+	// Objects/arrays need deep equality check
+	const isArray = Array.isArray(node.value);
+	const baseType = isArray ? "S.Array(S.Unknown)" : "S.Struct({})";
+	const sorted = sortedStringify(node.value);
+
+	return `${baseType}.pipe(S.filter((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, { message: () => "Value must equal the const value" }))`;
 }
 
 function renderEnum(node: EnumNode): string {
-	// TODO: Implement enum rendering
-	return "S.Union()";
+	const values = node.values;
+
+	if (values.length === 0) return "S.Never";
+
+	if (values.length === 1) {
+		return renderLiteral({ kind: "literal", value: values[0] });
+	}
+
+	// All strings - use S.Literal union
+	if (values.every((v) => typeof v === "string")) {
+		const literals = values.map((v) => `S.Literal(${JSON.stringify(v)})`);
+		return `S.Union(${literals.join(", ")})`;
+	}
+
+	// Check for complex values
+	const hasComplexValues = values.some((v) => !isPrimitive(v));
+
+	if (hasComplexValues) {
+		const sortedValues = values.map((v) =>
+			JSON.stringify(
+				v,
+				v != null && typeof v === "object"
+					? Object.keys(v as object).sort()
+					: undefined,
+			),
+		);
+		return `S.Unknown.pipe(S.filter((val) => {
+      const sorted = JSON.stringify(val, val != null && typeof val === "object" ? Object.keys(val as object).sort() : undefined);
+      return [${sortedValues.join(", ")}].includes(sorted);
+    }, { message: () => "Value must match one of the enum values" }))`;
+	}
+
+	// Mixed primitives - use union of literals
+	const literals = values.map((v) => `S.Literal(${JSON.stringify(v)})`);
+	return `S.Union(${literals.join(", ")})`;
 }
 
 function renderRef(node: RefNode): string {
@@ -573,7 +612,45 @@ function renderRef(node: RefNode): string {
 }
 
 function renderConditional(node: ConditionalNode): string {
-	// TODO: Implement conditional rendering
+	const ifSchema = render(node.if);
+	const thenSchema = node.then ? render(node.then) : null;
+	const elseSchema = node.else ? render(node.else) : null;
+
+	if (thenSchema && elseSchema) {
+		// Both then and else present: validate with then if condition matches, else otherwise
+		return `S.Unknown.pipe(S.filter((val) => {
+      const ifResult = S.decodeUnknownEither(${ifSchema})(val);
+      if (ifResult._tag === "Right") {
+        const thenResult = S.decodeUnknownEither(${thenSchema})(val);
+        return thenResult._tag === "Right";
+      } else {
+        const elseResult = S.decodeUnknownEither(${elseSchema})(val);
+        return elseResult._tag === "Right";
+      }
+    }, { message: () => "Conditional validation failed" }))`;
+	} else if (thenSchema) {
+		// Only then present: validate with then if condition matches
+		return `S.Unknown.pipe(S.filter((val) => {
+      const ifResult = S.decodeUnknownEither(${ifSchema})(val);
+      if (ifResult._tag === "Right") {
+        const thenResult = S.decodeUnknownEither(${thenSchema})(val);
+        return thenResult._tag === "Right";
+      }
+      return true;
+    }, { message: () => "Conditional 'then' validation failed" }))`;
+	} else if (elseSchema) {
+		// Only else present: validate with else if condition doesn't match
+		return `S.Unknown.pipe(S.filter((val) => {
+      const ifResult = S.decodeUnknownEither(${ifSchema})(val);
+      if (ifResult._tag === "Left") {
+        const elseResult = S.decodeUnknownEither(${elseSchema})(val);
+        return elseResult._tag === "Right";
+      }
+      return true;
+    }, { message: () => "Conditional 'else' validation failed" }))`;
+	}
+
+	// if without then/else has no effect
 	return "S.Unknown";
 }
 

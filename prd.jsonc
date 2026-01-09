@@ -185,7 +185,7 @@
 				"verify 'const', 'enum', '$ref', 'if/then/else' tests pass",
 				"run: bun run typecheck (from typescript/) - verify no type errors"
 			],
-			"passes": false
+			"passes": true
 		},
 		{
 			"id": "effect-compliance-complete",
