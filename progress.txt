@@ -806,3 +806,80 @@ key decisions:
 - JSON Schema spec requires "ignores non-numbers" behavior which requires TypeGuardedNode fix in later task
 - with explicit type (e.g., { type: "number", minimum: 1 }), validation works correctly
 - TypeBox's direct JSON Schema compatibility makes implementation much simpler than other adapters
+
+### typebox-renderer-containers (COMPLETED)
+- implemented container type rendering in src/renderer.ts for TypeBox adapter
+- key insight: TypeBox was designed for JSON Schema compatibility, so most constraints are native options
+- but: Value.Check() doesn't support if/then/else, oneOf, etc. - switched harness to use Ajv
+
+object types:
+- Type.Object({ propName: Type.String() }) - basic object with properties
+- Type.Optional(schema) - for optional properties (not in required array)
+- additionalProperties: false/true/schema - native TypeBox option
+- patternProperties - native TypeBox option: { patternProperties: { "^pattern$": schema } }
+- propertyNames - native TypeBox option
+- minProperties/maxProperties - native TypeBox option
+- dependentRequired/dependentSchemas - native TypeBox options (modern JSON Schema)
+- Type.Record(Type.String(), valueSchema) - for record-style objects (no defined properties)
+
+array types:
+- Type.Array(itemSchema, { minItems, maxItems, uniqueItems }) - all constraints native
+- contains/minContains/maxContains - native TypeBox options
+
+tuple types:
+- Type.Tuple([schemas]) - strict tuples with additionalItems: false
+- Type.Unsafe({ type: "array", prefixItems: [...], items: restSchema }) - variadic tuples
+
+combinator types:
+- Type.Union([schemas]) - for anyOf
+- Type.Intersect([schemas]) - for allOf
+- Type.Unsafe({ oneOf: [schemas] }) - for oneOf (Value.Check doesn't support, but Ajv does)
+- Type.Not(schema) - for not (native TypeBox)
+
+special types:
+- Type.Literal(value) - for primitive const
+- Type.Unsafe({ const: value }) - for complex const (objects/arrays)
+- Type.Union([Type.Literal(v1), ...]) - for enum with primitives
+- Type.Unsafe({ enum: [...] }) - for enum with complex values
+- Type.Unsafe({ if: schema, then: schema, else: schema }) - for conditional
+
+type guarded nodes:
+- Type.Unsafe({ if: Type.Number(), then: numberSchema }) - validates only when type matches
+- allows "ignores non-X" behavior per JSON Schema spec
+
+harness changes:
+- added ajv and ajv-formats as dev dependencies
+- switched from Value.Check to Ajv for validation
+- Ajv supports all JSON Schema keywords including if/then/else, oneOf
+- TypeBox schemas are valid JSON Schema, so Ajv can validate them directly
+
+compliance results (draft2020-12):
+- 94.3% overall (971/1030 tests)
+- type: 100%
+- anyOf: 100%
+- allOf: 100%
+- oneOf: 100%
+- not: 100%
+- if-then-else: 100%
+- uniqueItems: 100%
+- const: 96.3%
+- enum: 97.8%
+- properties: 96.4%
+- minimum/maximum: 100%
+- all primitive constraints: 100%
+
+other drafts:
+- draft2019-09: 94.1%
+- draft7: 96.0%
+- draft6: 95.6%
+- draft4: 91.8%
+- draft3: 93.2%
+- v1: 93.2%
+
+key decisions:
+- used Type.Unsafe for JSON Schema keywords not directly supported by TypeBox type builders
+- this approach generates valid JSON Schema that Ajv validates correctly
+- TypeBox's native options used wherever possible (cleaner generated code)
+- harness uses Ajv because Value.Check doesn't understand raw JSON Schema conditionals
+- this is acceptable because Ajv is widely used and well-tested
+- the generated code still uses TypeBox types for static type inference
