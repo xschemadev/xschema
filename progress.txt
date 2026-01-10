@@ -51,3 +51,13 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Validate function receives `data` param and can reference `schema` variable
   - Compliance tests pass at 96-100% across all drafts
 ---
+
+## 2026-01-10 - US-005
+- Updated arktype adapter to return validate function
+- Fixed imports format (same as zod)
+- Files changed: typescript/packages/adapters/arktype/src/index.ts
+- **Learnings:**
+  - Arktype validation uses `!(schema(data) instanceof type.errors)` pattern
+  - No validateImports needed since type.errors is available from existing import
+  - draft2020-12 compliance: 98.9%
+---
