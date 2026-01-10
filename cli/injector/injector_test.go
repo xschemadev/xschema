@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/xschemadev/xschema/generator"
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
 )
 
@@ -16,7 +16,7 @@ func TestInject_TypeScript(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "User",
@@ -85,7 +85,7 @@ func TestInject_Python(t *testing.T) {
 	input := InjectInput{
 		Language: "py",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "User",
@@ -156,7 +156,7 @@ func TestInject_UnsupportedLanguage(t *testing.T) {
 	err := Inject(InjectInput{
 		Language: "rust",
 		OutDir:   t.TempDir(),
-		Outputs:  []generator.GenerateOutput{},
+		Outputs:  []adapter.ConvertResult{},
 	})
 
 	if err == nil {
@@ -173,7 +173,7 @@ func TestInject_TypeOnly(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "User",
@@ -233,7 +233,7 @@ func TestInject_SchemaOnly(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "User",
@@ -294,7 +294,7 @@ func TestInject_CreatesDirectory(t *testing.T) {
 	err := Inject(InjectInput{
 		Language: "typescript",
 		OutDir:   outDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{Namespace: "test", ID: "Test", Schema: "z.string()", Imports: []string{}},
 		},
 	})
@@ -474,7 +474,7 @@ func TestInject_EmptyOutputs(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs:  []generator.GenerateOutput{},
+		Outputs:  []adapter.ConvertResult{},
 	}
 
 	err := Inject(input)
@@ -500,7 +500,7 @@ func TestInject_MixedSchemaAndType(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "WithBoth",
@@ -555,7 +555,7 @@ func TestInject_MultipleNamespaces(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{Namespace: "user", ID: "User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
 			{Namespace: "post", ID: "Post", Schema: "z.number()", Imports: []string{`import { z } from "zod"`}},
 			{Namespace: "comment", ID: "Comment", Schema: "z.boolean()", Imports: []string{`import { z } from "zod"`}},
@@ -592,7 +592,7 @@ func TestInject_DifferentImports(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{
 				Namespace: "user",
 				ID:        "User",
@@ -641,7 +641,7 @@ func TestInject_OverwriteExisting(t *testing.T) {
 	input := InjectInput{
 		Language: "typescript",
 		OutDir:   tmpDir,
-		Outputs: []generator.GenerateOutput{
+		Outputs: []adapter.ConvertResult{
 			{Namespace: "user", ID: "New", Schema: "z.string()", Imports: []string{}},
 		},
 	}
@@ -722,7 +722,7 @@ func TestInject_NilLanguage(t *testing.T) {
 	err := Inject(InjectInput{
 		Language: "",
 		OutDir:   t.TempDir(),
-		Outputs:  []generator.GenerateOutput{},
+		Outputs:  []adapter.ConvertResult{},
 	})
 
 	if err == nil {

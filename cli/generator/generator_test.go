@@ -6,11 +6,12 @@ import (
 	"os"
 	"testing"
 
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/retriever"
 )
 
-func TestGenerateOutputKey(t *testing.T) {
-	o := GenerateOutput{
+func TestConvertResultKey(t *testing.T) {
+	o := adapter.ConvertResult{
 		Namespace: "user",
 		ID:        "TestUrl",
 	}
@@ -87,8 +88,8 @@ func TestGenerateAllEmptySchemas(t *testing.T) {
 	}
 }
 
-func TestGenerateInputJSON(t *testing.T) {
-	input := GenerateInput{
+func TestConvertInputJSON(t *testing.T) {
+	input := adapter.ConvertInput{
 		Namespace: "user",
 		ID:        "Test",
 		Schema:    json.RawMessage(`{"type": "string"}`),
@@ -99,7 +100,7 @@ func TestGenerateInputJSON(t *testing.T) {
 		t.Fatalf("failed to marshal: %v", err)
 	}
 
-	var decoded GenerateInput
+	var decoded adapter.ConvertInput
 	if err := json.Unmarshal(data, &decoded); err != nil {
 		t.Fatalf("failed to unmarshal: %v", err)
 	}
@@ -112,38 +113,38 @@ func TestGenerateInputJSON(t *testing.T) {
 func TestValidateOutputs(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs []GenerateOutput
+		outputs []adapter.ConvertResult
 		wantErr bool
 	}{
 		{
 			name:    "empty outputs",
-			outputs: []GenerateOutput{},
+			outputs: []adapter.ConvertResult{},
 			wantErr: false,
 		},
 		{
 			name: "valid with schema only",
-			outputs: []GenerateOutput{
+			outputs: []adapter.ConvertResult{
 				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: ""},
 			},
 			wantErr: false,
 		},
 		{
 			name: "valid with type only",
-			outputs: []GenerateOutput{
+			outputs: []adapter.ConvertResult{
 				{Namespace: "test", ID: "Test", Schema: "", Type: "string"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "valid with both",
-			outputs: []GenerateOutput{
+			outputs: []adapter.ConvertResult{
 				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: "string"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid with neither",
-			outputs: []GenerateOutput{
+			outputs: []adapter.ConvertResult{
 				{Namespace: "test", ID: "Test", Schema: "", Type: ""},
 			},
 			wantErr: true,

@@ -37,6 +37,12 @@ func (s RawSchema) Value() any {
 	return s.value
 }
 
+// Raw returns the schema as json.RawMessage for use with adapter.ConvertInput
+func (s RawSchema) Raw() json.RawMessage {
+	data, _ := json.Marshal(s.value)
+	return data
+}
+
 // TestResult represents the result of running a single test case
 type TestResult struct {
 	Group    string `json:"group"`
@@ -129,28 +135,4 @@ type HarnessResult struct {
 	Expected bool   `json:"expected"`
 	Actual   string `json:"actual"` // "true", "false", or "error"
 	Error    string `json:"error,omitempty"`
-}
-
-// BatchHarnessResult is the JSON output from executing a batch harness file
-type BatchHarnessResult struct {
-	GroupID  string `json:"groupId"`
-	Index    int    `json:"index"`
-	Expected bool   `json:"expected"`
-	Actual   string `json:"actual"` // "true", "false", or "error"
-	Error    string `json:"error,omitempty"`
-}
-
-// BatchTestData is used for batch harness execution
-type BatchTestData struct {
-	GroupID string     `json:"groupId"`
-	Tests   []TestCase `json:"tests"`
-}
-
-// AdapterOutput is the response from calling an adapter's convert function
-type AdapterOutput struct {
-	Namespace string   `json:"namespace"`
-	ID        string   `json:"id"`
-	Schema    string   `json:"schema"`
-	Type      string   `json:"type"`
-	Imports   []string `json:"imports"`
 }

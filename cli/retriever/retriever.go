@@ -85,10 +85,7 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
-	maxAttempts := opts.Retries
-	if maxAttempts < 1 {
-		maxAttempts = 1
-	}
+	maxAttempts := max(opts.Retries, 1)
 
 	ui.Verbosef("fetching from URL: %s (max_attempts: %d)", url, maxAttempts)
 

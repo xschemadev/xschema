@@ -1,0 +1,34 @@
+{
+	"name": "@xschemadev/typebox",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "XSchema TypeBox Adapter",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"bin": {
+		"xschema-typebox": "./dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"compliance": "ADAPTER=$PWD && cd ../../../../cli && go run . compliance --dev-report --adapter-path $ADAPTER"
+	},
+	"dependencies": {
+		"@xschemadev/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@sinclair/typebox": "^0.34.0",
+		"ajv": "^8.17.1",
+		"ajv-formats": "^3.0.1"
+	},
+	"peerDependencies": {
+		"@sinclair/typebox": "^0.34.0"
+	}
+}

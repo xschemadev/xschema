@@ -1,0 +1,2555 @@
+{
+  "draft": "draft2020-12",
+  "keywords": [
+    {
+      "keyword": "additionalProperties",
+      "passed": 12,
+      "failed": 9,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "an additional property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-ASCII pattern with additionalProperties",
+          "test": "not matching the pattern is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties with schema",
+          "test": "an additional invalid property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "additionalProperties does not look in applicators",
+          "test": "properties defined in allOf are not examined",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties doesn't consider dependentSchemas",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties can't see bar",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependentSchemas with additionalProperties",
+          "test": "additionalProperties can't see bar even when foo2 is present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "allOf",
+      "passed": 11,
+      "failed": 19,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "allOf",
+          "test": "mismatch second",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf",
+          "test": "mismatch first",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch base schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch first allOf",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch second allOf",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with base schema",
+          "test": "mismatch both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf simple types",
+          "test": "mismatch one",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with boolean schemas, some false",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with boolean schemas, all false",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with the first empty schema",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf with the last empty schema",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: false, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: false, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: true, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: false, anyOf: true, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: false, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: false, oneOf: true",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "allOf combined with anyOf, oneOf",
+          "test": "allOf: true, anyOf: true, oneOf: false",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "anchor",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 13,
+      "failed": 5,
+      "skipped": 0,
+      "total": 18,
+      "failures": [
+        {
+          "group": "anyOf",
+          "test": "neither anyOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf with base schema",
+          "test": "mismatch base schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf with base schema",
+          "test": "both anyOf invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf with boolean schemas, all false",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "anyOf complex types",
+          "test": "neither anyOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 33,
+      "failed": 21,
+      "skipped": 0,
+      "total": 54,
+      "failures": [
+        {
+          "group": "const validation",
+          "test": "same value is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with object",
+          "test": "same object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with object",
+          "test": "same object with different property order is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with array",
+          "test": "same array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with false does not match 0",
+          "test": "false is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with true does not match 1",
+          "test": "true is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with [false] does not match [0]",
+          "test": "[false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with [true] does not match [1]",
+          "test": "[true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with {\"a\": false} does not match {\"a\": 0}",
+          "test": "{\"a\": false} is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with {\"a\": true} does not match {\"a\": 1}",
+          "test": "{\"a\": true} is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with 0 does not match other zero-like types",
+          "test": "integer zero is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with 0 does not match other zero-like types",
+          "test": "float zero is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with 1 does not match true",
+          "test": "integer one is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with 1 does not match true",
+          "test": "float one is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with -2.0 matches integer and float types",
+          "test": "integer -2 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "const with -2.0 matches integer and float types",
+          "test": "float -2.0 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "float and integers are equal up to 64-bit representation limits",
+          "test": "integer is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "float and integers are equal up to 64-bit representation limits",
+          "test": "float is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "nul characters in strings",
+          "test": "match string with nul",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "characters with the same visual representation but different codepoint",
+          "test": "character uses the same codepoint",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "characters with the same visual representation, but different number of codepoints",
+          "test": "character uses the same codepoint",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "contains",
+      "passed": 17,
+      "failed": 4,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "contains keyword validation",
+          "test": "not array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with const keyword",
+          "test": "array with item 5 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with const keyword",
+          "test": "array with two items 5 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "contains keyword with boolean schema false",
+          "test": "non-arrays are valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "content",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "defs",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependentRequired",
+      "passed": 2,
+      "failed": 18,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "single dependency",
+          "test": "neither",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "nondependant",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "with dependency",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                   ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:32\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                      ^\nerror: Expected \")\" but found \"\"\"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:35\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                        ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:37\n\n8 | \t\t\t\t}, \"Property bar requires \"foo\"\"));\n                                         ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2945116195.ts:8:38\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "empty dependents",
+          "test": "non-object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "neither",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "nondependants",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "with dependencies",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing other dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "multiple dependents required",
+          "test": "missing both dependencies",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                    ^\nerror: Expected \")\" but found \"foo\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:33\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                       ^\nerror: Expected \")\" but found \"\", \"\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:36\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                           ^\nerror: Expected \";\" but found \"bar\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:40\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                ^\nerror: Expected \";\" but found \")\"\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:45\n\n8 | \t\t\t\t}, \"Property quux requires \"foo\", \"bar\"\"));\n                                                 ^\nerror: Unexpected )\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3128185357.ts:8:46\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "CRLF",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property foo\n           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1219795437.ts:8:8\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quotes",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property foo\n           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1219795437.ts:8:8\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "CRLF missing dependent",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property foo\n           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1219795437.ts:8:8\n\nBun v1.3.5 (Linux x64)\n"
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quotes missing dependent",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 8 | \t\t\t\t}, \"Property foo\n           ^\nerror: Unterminated string literal\n    at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1219795437.ts:8:8\n\nBun v1.3.5 (Linux x64)\n"
+        }
+      ]
+    },
+    {
+      "keyword": "dependentSchemas",
+      "passed": 8,
+      "failed": 12,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "single dependency",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "wrong type other",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "wrong type both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "single dependency",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "boolean subschemas",
+          "test": "object with property having schema false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "boolean subschemas",
+          "test": "object with both properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quote",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted tab invalid under dependent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependencies with escaped characters",
+          "test": "quoted quote invalid under dependent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependent subschema incompatible with root",
+          "test": "matches root",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "dependent subschema incompatible with root",
+          "test": "matches both",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "dynamicRef",
+      "passed": 9,
+      "failed": 10,
+      "skipped": 0,
+      "total": 19,
+      "failures": [
+        {
+          "group": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "tests for implementation dynamic anchor and reference link",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
+          "test": "incorrect parent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
+          "test": "incorrect parent schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref to $dynamicRef finds detached $dynamicAnchor",
+          "test": "non-number is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$dynamicRef points to a boolean schema",
+          "test": "follow $dynamicRef to a false schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "enum",
+      "passed": 23,
+      "failed": 22,
+      "skipped": 0,
+      "total": 45,
+      "failures": [
+        {
+          "group": "simple enum validation",
+          "test": "one of the enum is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "one of the enum is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "something else is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "valid object matches",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "heterogeneous enum-with-null validation",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "both properties are valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enums in properties",
+          "test": "missing optional property is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with escaped characters",
+          "test": "member 1 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with escaped characters",
+          "test": "member 2 is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with false does not match 0",
+          "test": "false is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [false] does not match [0]",
+          "test": "[false] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with true does not match 1",
+          "test": "true is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [true] does not match [1]",
+          "test": "[true] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with 0 does not match false",
+          "test": "integer zero is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with 0 does not match false",
+          "test": "float zero is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [0] does not match [false]",
+          "test": "[0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [0] does not match [false]",
+          "test": "[0.0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with 1 does not match true",
+          "test": "integer one is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with 1 does not match true",
+          "test": "float one is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [1] does not match [true]",
+          "test": "[1] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "enum with [1] does not match [true]",
+          "test": "[1.0] is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "nul characters in strings",
+          "test": "match string with nul",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 3,
+      "failed": 1,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 3,
+      "failed": 1,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "format",
+      "passed": 133,
+      "failed": 0,
+      "skipped": 0,
+      "total": 133
+    },
+    {
+      "keyword": "if-then-else",
+      "passed": 20,
+      "failed": 10,
+      "skipped": 0,
+      "total": 30,
+      "failures": [
+        {
+          "group": "if and then without else",
+          "test": "invalid through then",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if and else without then",
+          "test": "invalid through else",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "validate against correct branch, then vs else",
+          "test": "invalid through then",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "validate against correct branch, then vs else",
+          "test": "invalid through else",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if with boolean schema true",
+          "test": "boolean schema true in if always chooses the then path (invalid)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if with boolean schema false",
+          "test": "boolean schema false in if always chooses the else path (invalid)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if appears at the end when serialized (keyword processing sequence)",
+          "test": "no redirects to then and fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "if appears at the end when serialized (keyword processing sequence)",
+          "test": "invalid redirects to else and fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "then: false fails when condition matches",
+          "test": "matches if → then=false → invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "else: false fails when condition does not match",
+          "test": "does not match if → else executes → invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "total": 2,
+      "failures": [
+        {
+          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
+          "test": "failing case",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "items",
+      "passed": 18,
+      "failed": 11,
+      "skipped": 0,
+      "total": 29,
+      "failures": [
+        {
+          "group": "a schema given for items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "a schema given for items",
+          "test": "JavaScript pseudo-array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items with boolean schema (false)",
+          "test": "any non-empty array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "too many items",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "too many sub-items",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "wrong sub-item",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "fewer items is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with no additional items allowed",
+          "test": "additional items are not permitted",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items does not look in applicators, valid case",
+          "test": "prefixItems in allOf does not constrain items, invalid case",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "prefixItems validation adjusts the starting index for items",
+          "test": "wrong type of second item",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "items with heterogeneous array",
+          "test": "heterogeneous invalid instance",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxContains",
+      "passed": 8,
+      "failed": 4,
+      "skipped": 0,
+      "total": 12,
+      "failures": [
+        {
+          "group": "maxContains with contains",
+          "test": "all elements match, valid maxContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxContains with contains",
+          "test": "some elements match, valid maxContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxContains with contains, value with a decimal",
+          "test": "one element matches, valid maxContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains \u003c maxContains",
+          "test": "minContains \u003c actual \u003c maxContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "total": 6,
+      "failures": [
+        {
+          "group": "maxItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "maxLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 5,
+      "failed": 5,
+      "skipped": 0,
+      "total": 10,
+      "failures": [
+        {
+          "group": "maxProperties validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxProperties validation with a decimal",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "maxProperties = 0 means the object is empty",
+          "test": "one property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "maximum",
+      "passed": 7,
+      "failed": 1,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "maximum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minContains",
+      "passed": 19,
+      "failed": 9,
+      "skipped": 0,
+      "total": 28,
+      "failures": [
+        {
+          "group": "minContains=1 with contains",
+          "test": "single element matches, valid minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=1 with contains",
+          "test": "some elements match, valid minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=1 with contains",
+          "test": "all elements match, valid minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "all elements match, valid minContains (exactly as needed)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "all elements match, valid minContains (more than needed)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains",
+          "test": "some elements match, valid minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains=2 with contains with a decimal value",
+          "test": "both elements match, valid minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "maxContains = minContains",
+          "test": "all elements match, valid maxContains and minContains",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minContains = 0 with maxContains",
+          "test": "too many",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minItems",
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "total": 6,
+      "failures": [
+        {
+          "group": "minItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minLength",
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "minLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 2,
+      "failed": 6,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "minProperties validation",
+          "test": "longer is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "exact length is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation with a decimal",
+          "test": "longer is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "minimum",
+      "passed": 9,
+      "failed": 2,
+      "skipped": 0,
+      "total": 11,
+      "failures": [
+        {
+          "group": "minimum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "total": 10,
+      "failures": [
+        {
+          "group": "by int",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "not",
+      "passed": 24,
+      "failed": 14,
+      "skipped": 0,
+      "total": 38,
+      "failures": [
+        {
+          "group": "not",
+          "test": "allowed",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "not multiple types",
+          "test": "valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "not more complex schema",
+          "test": "match",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "not more complex schema",
+          "test": "other match",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "boolean true is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "boolean false is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "null is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "empty object is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "allow everything with boolean schema false",
+          "test": "empty array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "double negation",
+          "test": "any value is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 13,
+      "failed": 14,
+      "skipped": 0,
+      "total": 27,
+      "failures": [
+        {
+          "group": "oneOf",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf",
+          "test": "neither oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with base schema",
+          "test": "mismatch base schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with base schema",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with boolean schemas, all true",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with boolean schemas, more than one true",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with boolean schemas, all false",
+          "test": "any value is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf complex types",
+          "test": "both oneOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf complex types",
+          "test": "neither oneOf valid (complex)",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with empty schema",
+          "test": "both valid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with required",
+          "test": "both invalid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with required",
+          "test": "both valid - invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with missing optional property",
+          "test": "both oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "oneOf with missing optional property",
+          "test": "neither oneOf valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "pattern",
+      "passed": 3,
+      "failed": 6,
+      "skipped": 0,
+      "total": 9,
+      "failures": [
+        {
+          "group": "pattern validation",
+          "test": "ignores booleans",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores integers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores floats",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores null",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 11,
+      "failed": 12,
+      "skipped": 0,
+      "total": 23,
+      "failures": [
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "a single invalid match is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "multiple invalid matches is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to one is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to the other is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to both is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "recognized members are accounted for",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "regexes are case sensitive, 2",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with property matching schema false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with both properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "patternProperties with boolean schemas",
+          "test": "object with a property matching both true and false is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "prefixItems",
+      "passed": 6,
+      "failed": 5,
+      "skipped": 0,
+      "total": 11,
+      "failures": [
+        {
+          "group": "a schema given for prefixItems",
+          "test": "incomplete array of items",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "a schema given for prefixItems",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "a schema given for prefixItems",
+          "test": "JavaScript pseudo-array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with boolean schemas",
+          "test": "array with one item is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with boolean schemas",
+          "test": "empty array is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "properties",
+      "passed": 17,
+      "failed": 11,
+      "skipped": 0,
+      "total": 28,
+      "failures": [
+        {
+          "group": "object properties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates property",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates nonproperty",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "additionalProperty invalidates others",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "__proto__ not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "constructor not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "all present and valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 13,
+      "failed": 7,
+      "skipped": 0,
+      "total": 20,
+      "failures": [
+        {
+          "group": "propertyNames validation",
+          "test": "some property names invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "propertyNames validation with pattern",
+          "test": "non-matching property name is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with boolean schema false",
+          "test": "object with any properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with const",
+          "test": "object with any other property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "propertyNames with enum",
+          "test": "object with any other property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "ref",
+      "passed": 28,
+      "failed": 7,
+      "skipped": 0,
+      "total": 35,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "match",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "root pointer ref",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref applies alongside sibling keywords",
+          "test": "ref valid, maxItems invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref applies alongside sibling keywords",
+          "test": "ref invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "ref creates new scope when adjacent to keywords",
+          "test": "referenced subschema doesn't see annotations from properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "naive replacement of $ref with its destination is not correct",
+          "test": "match the enum exactly",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 16,
+      "failed": 1,
+      "skipped": 0,
+      "total": 17,
+      "failures": [
+        {
+          "group": "root ref in remote ref",
+          "test": "object is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "required",
+      "passed": 5,
+      "failed": 11,
+      "skipped": 0,
+      "total": 16,
+      "failures": [
+        {
+          "group": "required validation",
+          "test": "non-present required property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required with escaped characters",
+          "test": "object with some properties missing is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "toString present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "all present",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
+    },
+    {
+      "keyword": "type",
+      "passed": 69,
+      "failed": 11,
+      "skipped": 0,
+      "total": 80,
+      "failures": [
+        {
+          "group": "object type matches objects",
+          "test": "an array is not an object",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "a float is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "an object is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "an array is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "a boolean is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple types can be specified in an array",
+          "test": "null is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "type: array or object",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "type: array or object",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "type: array or object",
+          "test": "null is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "type: array, object or null",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "type: array, object or null",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "unevaluatedItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "unevaluatedProperties",
+      "passed": 24,
+      "failed": 22,
+      "skipped": 0,
+      "total": 46,
+      "failures": [
+        {
+          "group": "unevaluatedProperties false",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties with adjacent properties",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties with adjacent patternProperties",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties can't see inside cousins",
+          "test": "always fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties can't see inside cousins (reverse order)",
+          "test": "always fails",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, true with properties",
+          "test": "with no nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, true with properties",
+          "test": "with nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "cousin unevaluatedProperties, true and false, false with properties",
+          "test": "with nested unevaluated properties",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
+          "test": "uncle keyword evaluation is not significant",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, allOf has unevaluated",
+          "test": "base case: both properties present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, allOf has unevaluated",
+          "test": "in place applicator siblings, foo is missing",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, anyOf has unevaluated",
+          "test": "base case: both properties present",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "in-place applicator siblings, anyOf has unevaluated",
+          "test": "in place applicator siblings, bar is missing",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 1st level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 2nd level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "unevaluatedProperties + single cyclic ref",
+          "test": "Unevaluated on 3rd level is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores booleans",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores integers",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores floats",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "non-object instances are valid",
+          "test": "ignores null",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "Evaluated properties collection needs to consider instance location",
+          "test": "with an unevaluated property that exists at another location",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 65,
+      "failed": 4,
+      "skipped": 0,
+      "total": 69,
+      "failures": [
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "non-unique array extended from [false, true] is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "non-unique array extended from [true, false] is not valid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "extra items are invalid even if unique",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "extra items are invalid even if unique",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "vocabulary",
+      "passed": 4,
+      "failed": 1,
+      "skipped": 0,
+      "total": 5,
+      "failures": [
+        {
+          "group": "schema that uses custom metaschema with with no validation vocabulary",
+          "test": "no validation: invalid number, but it still validates",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 728,
+    "failed": 302,
+    "skipped": 0,
+    "total": 1030,
+    "percentage": 70.67961165048544
+  }
+}

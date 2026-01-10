@@ -138,7 +138,7 @@ func TestRetrieveConcurrency(t *testing.T) {
 	// Create 15 declarations to test concurrency (limit is 10)
 	var decls []parser.Declaration
 	files := []string{"user.json", "post.json", "config.json"}
-	for i := 0; i < 15; i++ {
+	for i := range 15 {
 		file := files[i%len(files)]
 		adapter := "zod"
 		if i%2 == 0 {

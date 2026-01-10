@@ -94,8 +94,12 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 func (b *bundleContext) collectIDs(node any, baseURI string) {
 	switch v := node.(type) {
 	case map[string]any:
-		// Check for $id and resolve it against current base
-		if id, ok := v["$id"].(string); ok {
+		// Check for $id (draft6+) or id (draft4/draft3) and resolve it against current base
+		id, ok := v["$id"].(string)
+		if !ok {
+			id, ok = v["id"].(string)
+		}
+		if ok {
 			// Resolve relative $id against base URI
 			resolved, err := resolveURI(id, baseURI)
 			if err == nil && resolved != "" {
@@ -135,8 +139,12 @@ func (b *bundleContext) processNode(node any, baseURI string) (any, error) {
 
 // processObject handles object nodes, looking for $ref
 func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, error) {
-	// Check for $id and update baseURI for this scope
-	if id, ok := obj["$id"].(string); ok {
+	// Check for $id (draft6+) or id (draft4/draft3) and update baseURI for this scope
+	id, ok := obj["$id"].(string)
+	if !ok {
+		id, ok = obj["id"].(string)
+	}
+	if ok {
 		newBase, err := resolveURI(id, baseURI)
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)

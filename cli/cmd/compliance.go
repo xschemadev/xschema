@@ -16,13 +16,14 @@ import (
 )
 
 var (
-	complianceDraft     string
-	complianceKeyword   string
-	complianceLang      string
-	complianceDevReport bool
-	complianceVerbose   bool
-	complianceProfile   bool
-	complianceJobs      int
+	complianceDraft       string
+	complianceKeyword     string
+	complianceLang        string
+	complianceDevReport   bool
+	complianceVerbose     bool
+	complianceAdapterPath string
+	complianceProfile     bool
+	complianceJobs        int
 )
 
 var complianceCmd = &cobra.Command{
@@ -30,8 +31,7 @@ var complianceCmd = &cobra.Command{
 	Short: "Run JSON Schema Test Suite compliance tests for adapters",
 	Long: `Run compliance tests against the official JSON Schema Test Suite.
 
-This command must be run from within an adapter package directory
-(a directory containing compliance/harness.*).
+This command must be run from within an adapter package directory.
 
 Examples:
   # Run from within an adapter package (prints results)
@@ -62,6 +62,7 @@ func init() {
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
 	complianceCmd.Flags().BoolVar(&complianceProfile, "profile", false, "print timing breakdown summary")
 	complianceCmd.Flags().IntVarP(&complianceJobs, "jobs", "j", 1, "number of parallel jobs (keywords processed concurrently)")
+	complianceCmd.Flags().StringVarP(&complianceAdapterPath, "adapter-path", "p", "", "path to adapter directory (defaults to current directory)")
 }
 
 func runCompliance(cmd *cobra.Command, args []string) error {
@@ -84,25 +85,27 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unknown language: %s", complianceLang)
 	}
 
-	// Must be run from within an adapter package (has compliance/harness.*)
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get current directory: %w", err)
+	// Determine adapter path (from flag or current directory)
+	var adapterPath string
+	if complianceAdapterPath != "" {
+		absPath, err := filepath.Abs(complianceAdapterPath)
+		if err != nil {
+			return fmt.Errorf("failed to resolve adapter path: %w", err)
+		}
+		adapterPath = absPath
+	} else {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("failed to get current directory: %w", err)
+		}
+		adapterPath = cwd
 	}
-
-	harnessFile, err := compliance.FindHarness(cwd)
-	if err != nil {
-		return fmt.Errorf("not in an adapter package (no compliance/harness.* found)\n\nRun this command from within an adapter package directory")
-	}
-
-	adapterPath := cwd
 	var adapterName string
 	if lang.GetPackageName != nil {
-		adapterName = lang.GetPackageName(cwd)
+		adapterName = lang.GetPackageName(adapterPath)
 	} else {
-		adapterName = filepath.Base(cwd)
+		adapterName = filepath.Base(adapterPath)
 	}
-	ui.Verbosef("found harness at %s", harnessFile)
 
 	// Fetch test suite (downloads from GitHub if not cached)
 	var suitePath string
@@ -160,6 +163,7 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		SuitePath:      suitePath,
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
+		Language:       lang,
 		Verbose:        complianceVerbose,
 		Timing:         timing,
 		Jobs:           complianceJobs,
@@ -168,20 +172,8 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 			spinner.Update(msg)
 		},
 		DraftDoneFunc: func(draft compliance.DraftResult) {
-			// Print completion line above spinner
-			status := ui.Success.Render("✓")
-			if draft.Summary.Percentage < 80 {
-				status = ui.Error.Render("✗")
-			} else if draft.Summary.Percentage < 95 {
-				status = ui.Warning.Render("!")
-			}
-			msg := fmt.Sprintf("%s %s: %d/%d (%.1f%%)",
-				status,
-				ui.Bold.Render(draft.Draft),
-				draft.Summary.Passed,
-				draft.Summary.Total,
-				draft.Summary.Percentage,
-			)
+			status, coverage := formatDraftResult(draft.Summary)
+			msg := fmt.Sprintf("%s %s: %s", status, ui.Bold.Render(draft.Draft), coverage)
 			spinner.PrintAboveSpinner(msg)
 		},
 	}
@@ -220,25 +212,19 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func printComplianceSummary(report *compliance.ComplianceReport) {
-	ui.Println()
-	ui.Println("Summary:")
-	for _, draft := range report.Drafts {
-		status := ui.Success.Render("✓")
-		if draft.Summary.Percentage < 80 {
-			status = ui.Error.Render("✗")
-		} else if draft.Summary.Percentage < 95 {
-			status = ui.Warning.Render("!")
-		}
-
-		ui.Printf("  %s %s: %d/%d (%.1f%%)\n",
-			status,
-			draft.Draft,
-			draft.Summary.Passed,
-			draft.Summary.Total,
-			draft.Summary.Percentage,
-		)
+func formatDraftResult(summary compliance.DraftSummary) (status, coverage string) {
+	isTypeOnly := summary.Skipped == summary.Total && summary.Total > 0
+	if isTypeOnly {
+		return ui.Bold.Render("○"), "type-only (skipped)"
 	}
+	status = ui.Success.Render("✓")
+	if summary.Percentage < 80 {
+		status = ui.Error.Render("✗")
+	} else if summary.Percentage < 95 {
+		status = ui.Warning.Render("!")
+	}
+	coverage = fmt.Sprintf("%d/%d (%.1f%%)", summary.Passed, summary.Total, summary.Percentage)
+	return status, coverage
 }
 
 func printTimingSummary(timing *compliance.TimingSummary) {
