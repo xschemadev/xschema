@@ -14,5 +14,6 @@ export function convert(input: ConvertInput): ConvertResult {
 		imports: ['import { Schema as S } from "effect"'],
 		schema: schemaCode,
 		type: `typeof ${varName}.Type`,
+		validate: '(data: unknown) => S.decodeUnknownEither(schema)(data)._tag === "Right"',
 	};
 }

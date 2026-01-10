@@ -10,6 +10,7 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
 - Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
 - Avoid full compliance runs unless requested
+- `xschema compliance --dev-report` cannot be combined with `--draft`/`--keyword`
 - Commit format: `feat(scope): lowercase message`
 
 ---
@@ -86,3 +87,13 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Type-only harness path currently uses `.Schema`, but the typescript type-only adapter returns its output in `.Type`
   - `MergeTSImports` still needs to handle namespace imports (`import * as v from "x"`) + type-only forms for stable merging
 ---
+
+## 2026-01-10 16:55:39 CET - US-008
+- Added effect adapter validate function using Schema.decodeUnknownEither
+- Files changed: typescript/packages/adapters/effect/src/index.ts, prd.jsonc, progress.txt
+- **Learnings for future iterations:**
+  - `xschema compliance --dev-report` cannot be combined with `--draft`/`--keyword`
+  - Full compliance run exceeded 10 minutes in sandbox; used scoped run for draft2020-12/type
+  - Effect validation checks `S.decodeUnknownEither(schema)(data)._tag === "Right"`
+---
+

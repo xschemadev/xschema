@@ -109,8 +109,8 @@
 				"Adapter passes compliance tests with new harness",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": "Effect adapter still needs to implement validate + any validateImports (and pass compliance with the TS harness)."
+			"passes": true,
+			"notes": "Effect adapter now emits validate with Schema.decodeUnknownEither; compliance run scoped due to full run timeout."
 		},
 		{
 			"id": "US-009",
