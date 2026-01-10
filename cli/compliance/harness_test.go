@@ -111,34 +111,24 @@ func TestFindHarness(t *testing.T) {
 func TestGenerateTempHarness(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create template file
-	templateContent := `// Generated harness
-const schema = {{GENERATED_CODE}};
-const testCases = {{TEST_CASES}};
-// Run tests
-`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	if err := os.WriteFile(templatePath, []byte(templateContent), 0644); err != nil {
-		t.Fatalf("failed to write template: %v", err)
+	adapterOutput := &AdapterOutput{
+		Schema:   `z.object({ name: z.string() })`,
+		Imports:  []string{`{ z } from "zod"`},
+		Validate: `(data) => schema.safeParse(data).success`,
 	}
-
-	generatedCode := `z.object({ name: z.string() })`
 	testCases := []TestCase{
 		{Description: "valid object", Data: map[string]interface{}{"name": "test"}, Valid: true},
 		{Description: "invalid object", Data: "not an object", Valid: false},
 	}
 
-	targetDir := filepath.Join(tmpDir, "target")
-	os.MkdirAll(targetDir, 0755)
-
-	harnessPath, err := GenerateTempHarness(templatePath, generatedCode, testCases, targetDir)
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
 	// Verify file exists in target directory
-	if !strings.HasPrefix(harnessPath, targetDir) {
+	if !strings.HasPrefix(harnessPath, tmpDir) {
 		t.Errorf("harness created in wrong directory: %s", harnessPath)
 	}
 
@@ -153,9 +143,19 @@ const testCases = {{TEST_CASES}};
 		t.Fatalf("failed to read harness: %v", err)
 	}
 
-	// Check code was inserted
-	if !strings.Contains(string(content), generatedCode) {
-		t.Error("harness missing generated code")
+	// Check schema was inserted
+	if !strings.Contains(string(content), adapterOutput.Schema) {
+		t.Error("harness missing schema")
+	}
+
+	// Check import was inserted
+	if !strings.Contains(string(content), `import { z } from "zod";`) {
+		t.Error("harness missing import")
+	}
+
+	// Check validate function was inserted
+	if !strings.Contains(string(content), adapterOutput.Validate) {
+		t.Error("harness missing validate function")
 	}
 
 	// Check test cases were inserted
@@ -164,100 +164,20 @@ const testCases = {{TEST_CASES}};
 	}
 }
 
-func TestGenerateTempHarness_JSONTestCases(t *testing.T) {
+func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	templateContent := `const cases = {{TEST_CASES}};`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	os.WriteFile(templatePath, []byte(templateContent), 0644)
-
+	// Type-only adapter has empty Validate
+	adapterOutput := &AdapterOutput{
+		Schema:   `{ name: string }`,
+		Imports:  nil,
+		Validate: "",
+	}
 	testCases := []TestCase{
-		{Description: "test 1", Data: 42, Valid: true},
-		{Description: "test 2", Data: nil, Valid: false},
+		{Description: "test 1", Data: map[string]interface{}{"name": "test"}, Valid: true},
 	}
 
-	harnessPath, err := GenerateTempHarness(templatePath, "", testCases, tmpDir)
-	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
-	}
-	defer os.Remove(harnessPath)
-
-	content, _ := os.ReadFile(harnessPath)
-
-	// Verify JSON is valid
-	start := strings.Index(string(content), "[")
-	end := strings.LastIndex(string(content), "]") + 1
-	jsonPart := string(content)[start:end]
-
-	var parsed []TestCase
-	if err := json.Unmarshal([]byte(jsonPart), &parsed); err != nil {
-		t.Errorf("test cases JSON is invalid: %v", err)
-	}
-
-	if len(parsed) != 2 {
-		t.Errorf("parsed %d test cases, want 2", len(parsed))
-	}
-}
-
-func TestGenerateTempHarness_TemplateNotFound(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	_, err := GenerateTempHarness(
-		filepath.Join(tmpDir, "nonexistent.ts"),
-		"code",
-		[]TestCase{},
-		tmpDir,
-	)
-
-	if err == nil {
-		t.Error("GenerateTempHarness() expected error for missing template")
-	}
-}
-
-func TestGenerateTempHarness_PreservesExtension(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	tests := []struct {
-		templateName string
-		wantExt      string
-	}{
-		{"harness.ts", ".ts"},
-		{"harness.js", ".js"},
-		{"harness.py", ".py"},
-		{"harness.mjs", ".mjs"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.templateName, func(t *testing.T) {
-			templatePath := filepath.Join(tmpDir, tt.templateName)
-			os.WriteFile(templatePath, []byte("template"), 0644)
-
-			harnessPath, err := GenerateTempHarness(templatePath, "", []TestCase{}, tmpDir)
-			if err != nil {
-				t.Fatalf("GenerateTempHarness() error = %v", err)
-			}
-			defer os.Remove(harnessPath)
-
-			if !strings.HasSuffix(harnessPath, tt.wantExt) {
-				t.Errorf("harness extension = %s, want %s", filepath.Ext(harnessPath), tt.wantExt)
-			}
-		})
-	}
-}
-
-func TestGenerateTempHarness_MultiplePlaceholders(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	templateContent := `
-const code1 = {{GENERATED_CODE}};
-const code2 = {{GENERATED_CODE}};
-const tests1 = {{TEST_CASES}};
-const tests2 = {{TEST_CASES}};
-`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	os.WriteFile(templatePath, []byte(templateContent), 0644)
-
-	harnessPath, err := GenerateTempHarness(templatePath, "REPLACED", []TestCase{}, tmpDir)
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -266,27 +186,44 @@ const tests2 = {{TEST_CASES}};
 	content, _ := os.ReadFile(harnessPath)
 	contentStr := string(content)
 
-	// Count occurrences of replaced code
-	codeCount := strings.Count(contentStr, "REPLACED")
-	if codeCount != 2 {
-		t.Errorf("GENERATED_CODE replaced %d times, want 2", codeCount)
+	// Should have type declaration (type-only mode)
+	if !strings.Contains(contentStr, "type GeneratedType") {
+		t.Error("type-only harness should have type declaration")
 	}
 
-	// Should not contain original placeholders
-	if strings.Contains(contentStr, "{{GENERATED_CODE}}") {
-		t.Error("harness still contains {{GENERATED_CODE}} placeholder")
+	// Should mark results as skipped
+	if !strings.Contains(contentStr, `actual: "skipped"`) {
+		t.Error("type-only harness should mark results as skipped")
 	}
-	if strings.Contains(contentStr, "{{TEST_CASES}}") {
-		t.Error("harness still contains {{TEST_CASES}} placeholder")
+
+	// Should NOT have const schema = (runtime mode)
+	if strings.Contains(contentStr, "const schema =") {
+		t.Error("type-only harness should not have const schema")
+	}
+}
+
+func TestGenerateTempHarness_UnsupportedLanguage(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	adapterOutput := &AdapterOutput{
+		Schema:   "some_schema",
+		Validate: "validate_fn",
+	}
+
+	_, err := GenerateTempHarness(Language("unsupported"), adapterOutput, []TestCase{}, tmpDir)
+	if err == nil {
+		t.Error("GenerateTempHarness() expected error for unsupported language")
 	}
 }
 
 func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	templateContent := `const cases = {{TEST_CASES}};`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	os.WriteFile(templatePath, []byte(templateContent), 0644)
+	adapterOutput := &AdapterOutput{
+		Schema:   `z.any()`,
+		Imports:  []string{`{ z } from "zod"`},
+		Validate: `(data) => true`,
+	}
 
 	// Test with complex nested data
 	testCases := []TestCase{
@@ -308,33 +245,31 @@ func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 		},
 	}
 
-	harnessPath, err := GenerateTempHarness(templatePath, "", testCases, tmpDir)
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
 	content, _ := os.ReadFile(harnessPath)
+	contentStr := string(content)
 
-	// Extract JSON and verify it's valid
-	start := strings.Index(string(content), "[")
-	end := strings.LastIndex(string(content), "]") + 1
-	jsonPart := string(content)[start:end]
-
-	var parsed []TestCase
-	if err := json.Unmarshal([]byte(jsonPart), &parsed); err != nil {
-		t.Errorf("test cases JSON is invalid: %v\nJSON: %s", err, jsonPart)
+	// Should contain JSON.parse for test cases
+	if !strings.Contains(contentStr, "JSON.parse(") {
+		t.Error("harness should use JSON.parse for test cases")
 	}
 }
 
 func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	templateContent := `const cases = {{TEST_CASES}};`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	os.WriteFile(templatePath, []byte(templateContent), 0644)
+	adapterOutput := &AdapterOutput{
+		Schema:   `z.string()`,
+		Imports:  []string{`{ z } from "zod"`},
+		Validate: `(data) => schema.safeParse(data).success`,
+	}
 
-	harnessPath, err := GenerateTempHarness(templatePath, "", []TestCase{}, tmpDir)
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, []TestCase{}, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -342,8 +277,9 @@ func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 
 	content, _ := os.ReadFile(harnessPath)
 
-	if !strings.Contains(string(content), "[]") {
-		t.Error("empty test cases should produce []")
+	// Should still have empty JSON array
+	if !strings.Contains(string(content), `"[]"`) {
+		t.Error("empty test cases should produce escaped empty array")
 	}
 }
 
@@ -368,11 +304,13 @@ func TestFindHarness_ReturnsFullPath(t *testing.T) {
 func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	templateContent := `template`
-	templatePath := filepath.Join(tmpDir, "harness.ts")
-	os.WriteFile(templatePath, []byte(templateContent), 0644)
+	adapterOutput := &AdapterOutput{
+		Schema:   `z.string()`,
+		Imports:  []string{`{ z } from "zod"`},
+		Validate: `(data) => schema.safeParse(data).success`,
+	}
 
-	harnessPath, err := GenerateTempHarness(templatePath, "", []TestCase{}, tmpDir)
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, []TestCase{}, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}

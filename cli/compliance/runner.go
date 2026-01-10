@@ -42,12 +42,6 @@ type RunOptions struct {
 
 // Run executes compliance tests for an adapter
 func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
-	// Find harness template
-	harnessFile, err := FindHarness(opts.AdapterPath)
-	if err != nil {
-		return nil, err
-	}
-
 	// Determine which drafts to test
 	drafts := opts.Drafts
 	if len(drafts) == 0 {
@@ -87,7 +81,6 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			draftTotal:   len(drafts),
 			keyword:      opts.Keyword,
 			suitePath:    opts.SuitePath,
-			harnessFile:  harnessFile,
 			adapterBin:   adapterBin,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
@@ -122,7 +115,6 @@ type runDraftOptions struct {
 	draftTotal   int
 	keyword      string // filter to specific keyword (empty = all)
 	suitePath    string
-	harnessFile  string
 	adapterBin   string
 	runner       string
 	runnerArgs   []string
@@ -232,7 +224,7 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)
+	tempHarness, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, group.Tests, opts.workDir)
 	if err != nil {
 		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
 		return nil

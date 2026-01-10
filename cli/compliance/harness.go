@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 // FindHarness locates the harness file in an adapter's compliance directory
@@ -32,15 +33,49 @@ func FindHarness(adapterPath string) (string, error) {
 	return "", fmt.Errorf("no harness file found in %s (expected harness.*)", complianceDir)
 }
 
-// GenerateTempHarness creates a temporary harness file with injected code and test cases
-// The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []TestCase, targetDir string) (string, error) {
-	// Read template
-	templateBytes, err := os.ReadFile(harnessTemplate)
-	if err != nil {
-		return "", fmt.Errorf("failed to read harness template: %w", err)
+// Language represents a target language for harness generation
+type Language string
+
+const (
+	LanguageTypeScript Language = "typescript"
+	LanguagePython     Language = "python"
+)
+
+// GetHarnessTemplate returns the harness template for the given language
+func GetHarnessTemplate(lang Language) (string, error) {
+	switch lang {
+	case LanguageTypeScript:
+		return TSHarnessTemplate, nil
+	default:
+		return "", fmt.Errorf("unsupported language: %s", lang)
 	}
-	template := string(templateBytes)
+}
+
+// GetHarnessExtension returns the file extension for the given language
+func GetHarnessExtension(lang Language) string {
+	switch lang {
+	case LanguageTypeScript:
+		return ".ts"
+	case LanguagePython:
+		return ".py"
+	default:
+		return ".txt"
+	}
+}
+
+// GenerateTempHarness creates a temporary harness file using Go templates
+// The file is created in targetDir so that package resolution works correctly
+func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string) (string, error) {
+	// Get template for language
+	templateStr, err := GetHarnessTemplate(lang)
+	if err != nil {
+		return "", err
+	}
+
+	tmpl, err := template.New("harness").Parse(templateStr)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse harness template: %w", err)
+	}
 
 	// Serialize test cases to JSON
 	testCasesJSON, err := json.Marshal(testCases)
@@ -50,29 +85,35 @@ func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []Test
 
 	// Create a JS string literal containing the JSON
 	// This ensures __proto__ and other special property names are preserved
-	// (directly embedding as JS object literals would interpret __proto__ as prototype setter)
 	testCasesString, err := json.Marshal(string(testCasesJSON))
 	if err != nil {
 		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
 	}
 
-	// Replace placeholders
-	content := template
-	content = strings.ReplaceAll(content, "{{GENERATED_CODE}}", generatedCode)
-	content = strings.ReplaceAll(content, "{{TEST_CASES_STRING}}", string(testCasesString))
-	// Keep legacy support for {{TEST_CASES}} in case other adapters use it
-	content = strings.ReplaceAll(content, "{{TEST_CASES}}", string(testCasesJSON))
+	// Build template data
+	data := HarnessTemplateData{
+		Schema:          adapterOutput.Schema,
+		Imports:         adapterOutput.Imports,
+		Validate:        adapterOutput.Validate,
+		ValidateImports: adapterOutput.ValidateImports,
+		TestCasesString: string(testCasesString),
+		IsTypeOnly:      adapterOutput.Validate == "",
+	}
 
-	// Get extension from template
-	ext := filepath.Ext(harnessTemplate)
+	// Execute template
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute harness template: %w", err)
+	}
 
 	// Create temp file in target directory (so package resolution works)
+	ext := GetHarnessExtension(lang)
 	tmpFile, err := os.CreateTemp(targetDir, "xschema-harness-*"+ext)
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %w", err)
 	}
 
-	if _, err := tmpFile.WriteString(content); err != nil {
+	if _, err := tmpFile.Write(buf.Bytes()); err != nil {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name())
 		return "", fmt.Errorf("failed to write temp file: %w", err)
