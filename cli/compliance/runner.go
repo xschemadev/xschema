@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/xschemadev/xschema/bundler"
+	"github.com/xschemadev/xschema/language"
 )
 
 // ProgressUpdate contains info about current test progress
@@ -35,6 +36,7 @@ type RunOptions struct {
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
 	Typecheck      TypecheckConfig                 // typecheck configuration
+	Language       *language.Language              // language configuration
 	Verbose        bool
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
 	ProgressFunc   func(ProgressUpdate)    // for live progress updates
@@ -47,6 +49,14 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	drafts := opts.Drafts
 	if len(drafts) == 0 {
 		drafts = Drafts
+	}
+
+	// Validate language config
+	if opts.Language == nil {
+		return nil, fmt.Errorf("Language not configured")
+	}
+	if opts.Language.HarnessTemplate == "" {
+		return nil, fmt.Errorf("harness template not configured for language %s", opts.Language.Name)
 	}
 
 	// Determine adapter CLI path
@@ -86,6 +96,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
 			typecheck:    opts.Typecheck,
+			language:     opts.Language,
 			workDir:      opts.AdapterPath,
 			verbose:      opts.Verbose,
 			outputFunc:   opts.OutputFunc,
@@ -121,6 +132,7 @@ type runDraftOptions struct {
 	runner       string
 	runnerArgs   []string
 	typecheck    TypecheckConfig
+	language     *language.Language
 	workDir      string // directory to run harness from (for dependency resolution)
 	verbose      bool
 	outputFunc   func(string)
@@ -227,7 +239,7 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	tempHarness, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, group.Tests, opts.workDir)
+	tempHarness, err := GenerateTempHarness(opts.language, adapterOutput, group.Tests, opts.workDir)
 	if err != nil {
 		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
 		return nil

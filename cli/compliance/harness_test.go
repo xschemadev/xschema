@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 	"text/template"
+
+	"github.com/xschemadev/xschema/language"
 )
 
 func TestGenerateTempHarness(t *testing.T) {
@@ -22,7 +24,7 @@ func TestGenerateTempHarness(t *testing.T) {
 		{Description: "invalid object", Data: "not an object", Valid: false},
 	}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -76,7 +78,7 @@ func TestGenerateTempHarness_MergedImports(t *testing.T) {
 	}
 	testCases := []TestCase{{Description: "valid", Data: map[string]interface{}{"name": "test"}, Valid: true}}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -107,7 +109,7 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 		{Description: "test 1", Data: map[string]interface{}{"name": "test"}, Valid: true},
 	}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -136,7 +138,7 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 	}
 }
 
-func TestGenerateTempHarness_UnsupportedLanguage(t *testing.T) {
+func TestGenerateTempHarness_MissingTemplate(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	adapterOutput := &AdapterOutput{
@@ -144,9 +146,11 @@ func TestGenerateTempHarness_UnsupportedLanguage(t *testing.T) {
 		Validate: "validate_fn",
 	}
 
-	_, err := GenerateTempHarness(Language("unsupported"), adapterOutput, []TestCase{}, tmpDir)
+	// Language with no HarnessTemplate should fail to parse
+	lang := &language.Language{Name: "nolang", HarnessExtension: ".txt"}
+	_, err := GenerateTempHarness(lang, adapterOutput, []TestCase{}, tmpDir)
 	if err == nil {
-		t.Error("GenerateTempHarness() expected error for unsupported language")
+		t.Error("GenerateTempHarness() expected error for language without template")
 	}
 }
 
@@ -179,7 +183,7 @@ func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 		},
 	}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -203,7 +207,7 @@ func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, []TestCase{}, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, []TestCase{}, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -226,7 +230,7 @@ func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 
-	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, []TestCase{}, tmpDir)
+	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, []TestCase{}, tmpDir)
 	if err != nil {
 		t.Fatalf("GenerateTempHarness() error = %v", err)
 	}
@@ -240,7 +244,7 @@ func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -292,7 +296,7 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -341,7 +345,7 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -375,7 +379,7 @@ func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -404,7 +408,7 @@ func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -434,7 +438,7 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}

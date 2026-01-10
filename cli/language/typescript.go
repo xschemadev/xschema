@@ -27,6 +27,8 @@ var typescript = Language{
 	DetectTypecheckRunner: detectTSTypecheckRunner,
 	GetPackageName:        getTSPackageName,
 	AdapterCLIPath:        getTSAdapterCLIPath,
+	HarnessExtension:      ".ts",
+	HarnessTemplate:       TSHarnessTemplate,
 }
 
 func detectTSRunner() (string, []string, error) {

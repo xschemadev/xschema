@@ -23,9 +23,10 @@ var python = Language{
 	BuildFooter:          BuildPythonFooter,
 	BuildVarName:         buildVarNameUnderscore,
 	IgnoreDirs:           []string{"__pycache__", ".venv", "venv"},
-	DetectHarnessRunner:  detectPyHarnessRunner,
-	GetPackageName:       getPyPackageName,
-	AdapterCLIPath:       getPyAdapterCLIPath,
+	DetectHarnessRunner: detectPyHarnessRunner,
+	GetPackageName:      getPyPackageName,
+	AdapterCLIPath:      getPyAdapterCLIPath,
+	HarnessExtension:    ".py",
 }
 
 func detectPythonRunner() (string, []string, error) {

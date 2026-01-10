@@ -5,12 +5,14 @@ on:
     paths:
       - "*/packages/adapters/**"
       - "*/packages/core/**"
+      - "*/.ci/**"
       - "cli/compliance/**"
   push:
     branches: [master]
     paths:
       - "*/packages/adapters/**"
       - "*/packages/core/**"
+      - "*/.ci/**"
       - "cli/compliance/**"
   workflow_dispatch:
 
@@ -47,7 +49,7 @@ jobs:
             RUN_ALL="true"
             echo "Manual trigger - running all adapters"
           else
-            CORE_CHANGES=$(git diff --name-only "$BASE" "$HEAD" -- cli/compliance/ */packages/core/ 2>/dev/null || echo "")
+            CORE_CHANGES=$(git diff --name-only "$BASE" "$HEAD" -- cli/compliance/ */packages/core/ */.ci/ 2>/dev/null || echo "")
             if [ -n "$CORE_CHANGES" ]; then
               RUN_ALL="true"
               echo "Core or CLI compliance changed - running all adapters"
@@ -55,30 +57,40 @@ jobs:
           fi
 
           # Build list of adapters to test
-          # Format: [{adapter, lang}, ...]
+          # Format: [{adapter, lang, runtime}, ...]
           MATRIX="[]"
 
           # Find all adapters across all languages
           # Convention: {lang}/packages/adapters/{adapter}
           for adapter_dir in */packages/adapters/*; do
             [ -d "$adapter_dir" ] || continue
-            if [ ! -f "$adapter_dir/package.json" ] && [ ! -f "$adapter_dir/pyproject.toml" ] && [ ! -f "$adapter_dir/Cargo.toml" ]; then
-              continue
-            fi
 
             # Extract lang and adapter from path
             lang=$(echo "$adapter_dir" | cut -d'/' -f1)
             adapter=$(echo "$adapter_dir" | cut -d'/' -f4)
 
+            # Require setup script for each lang
+            if [ ! -f "$lang/.ci/setup.sh" ]; then
+              echo "::error::Missing setup script: $lang/.ci/setup.sh"
+              exit 1
+            fi
+
+            # Read runtime from lang's .ci/runtime.txt
+            runtime=$(cat "$lang/.ci/runtime.txt" 2>/dev/null | tr -d '[:space:]' || echo "")
+            if [ -z "$runtime" ]; then
+              echo "::error::Missing or empty runtime file: $lang/.ci/runtime.txt"
+              exit 1
+            fi
+
             if [ "$RUN_ALL" = "true" ]; then
               # Add all adapters
-              MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\"}]")
+              MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\", \"runtime\": \"$runtime\"}]")
             else
               # Check if any files in this adapter changed
               ADAPTER_PATH="$lang/packages/adapters/$adapter/"
               CHANGED_FILES=$(git diff --name-only "$BASE" "$HEAD" -- "$ADAPTER_PATH" 2>/dev/null || echo "")
               if [ -n "$CHANGED_FILES" ]; then
-                MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\"}]")
+                MATRIX=$(echo "$MATRIX" | jq -c ". + [{\"adapter\": \"$adapter\", \"lang\": \"$lang\", \"runtime\": \"$runtime\"}]")
               fi
             fi
           done
@@ -110,30 +122,18 @@ jobs:
           go-version: "1.24"
 
       - uses: oven-sh/setup-bun@v2
-        if: matrix.lang == 'typescript'
-
-      - name: Install TS dependencies
-        if: matrix.lang == 'typescript'
-        run: bun install
-        working-directory: typescript
-
-      - name: Build TS packages
-        if: matrix.lang == 'typescript'
-        run: bun run build
-        working-directory: typescript
+        if: matrix.runtime == 'bun'
 
       - uses: actions/setup-python@v5
-        if: matrix.lang == 'py'
+        if: matrix.runtime == 'python'
         with:
           python-version: "3.12"
 
       - uses: astral-sh/setup-uv@v4
-        if: matrix.lang == 'py'
+        if: matrix.runtime == 'python'
 
-      - name: Install Python dependencies
-        if: matrix.lang == 'py'
-        run: uv sync
-        working-directory: py
+      - name: Setup ${{ matrix.lang }}
+        run: source "${{ matrix.lang }}/.ci/setup.sh"
 
       - name: Build CLI
         run: go build -o xschema .

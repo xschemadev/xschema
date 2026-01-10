@@ -454,24 +454,44 @@ If using release-please, add to `release-please-config.json`:
 
 #### 8. Update compliance workflow
 
-Add setup and build steps for the new language in `.github/workflows/compliance.yml`:
+The CI workflow automatically discovers adapters by scanning `*/packages/adapters/*` directories. To add support for a new language:
+
+**a) Create setup script at `{lang}/.ci/setup.sh`:**
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+cd rust
+cargo fetch
+cargo build --release
+```
+
+This script is sourced by CI after runtime setup. It should install dependencies and build packages.
+
+**b) Add runtime mapping in `.github/workflows/compliance.yml`:**
+
+Update the `get_runtime()` function in the detect-adapters job:
+
+```bash
+get_runtime() {
+  case "$1" in
+    typescript) echo "bun" ;;
+    py) echo "python" ;;
+    rust) echo "rust" ;;  # Add new language
+    *) echo "" ;;
+  esac
+}
+```
+
+**c) Add GH action setup step (if needed):**
 
 ```yaml
 - uses: actions-rust-lang/setup-rust-toolchain@v1
-  if: matrix.lang == 'rust'
-
-- name: Install Rust dependencies
-  if: matrix.lang == 'rust'
-  run: cargo fetch
-  working-directory: rust
-
-- name: Build Rust packages
-  if: matrix.lang == 'rust'
-  run: cargo build --release
-  working-directory: rust
+  if: matrix.runtime == 'rust'
 ```
 
-The CI workflow automatically discovers adapters by scanning adapter directories under `*/packages/adapters/*` and checking for a language-specific package manifest (for example `package.json`, `pyproject.toml`, or `Cargo.toml`). The path triggers use `*/packages/adapters/**` which covers all languages.
+The workflow discovers adapters by checking for `{lang}/.ci/setup.sh` existence. No manifest file checks are performed.
 
 ### Example: Full Rust Support
 
@@ -573,19 +593,21 @@ mkdir -p rust/packages/adapters/serde/compliance
 
 Define a Go text/template in `cli/compliance/harness_template.go` and wire it in `GetHarnessTemplate`/`GetHarnessExtension`. The CLI now generates harness files on the fly, so no per-adapter `compliance/harness.{ext}` file is required.
 
-**Step 7: Add CI setup steps**
+**Step 7: Add CI setup**
 
-Add to `.github/workflows/compliance.yml`:
+Create `rust/.ci/setup.sh`:
 
-```yaml
-- uses: actions-rust-lang/setup-rust-toolchain@v1
-  if: matrix.lang == 'rust'
+```bash
+#!/bin/bash
+set -euo pipefail
 
-- name: Build Rust packages
-  if: matrix.lang == 'rust'
-  run: cargo build --release
-  working-directory: rust
+cd rust
+cargo build --release
 ```
+
+Then update `.github/workflows/compliance.yml`:
+- Add `rust) echo "rust" ;;` to `get_runtime()`
+- Add conditional GH action: `uses: actions-rust-lang/setup-rust-toolchain@v1` with `if: matrix.runtime == 'rust'`
 
 ## Configuration File Examples
 

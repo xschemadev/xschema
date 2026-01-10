@@ -21,46 +21,14 @@ type TypecheckConfig struct {
 	RunnerArgs []string // args to pass before tsc (e.g., ["run"] for bun, ["tsc"] for npx)
 }
 
-// Language represents a target language for harness generation
-type Language string
-
-const (
-	LanguageTypeScript Language = "typescript"
-	LanguagePython     Language = "python"
-)
-
-// GetHarnessTemplate returns the harness template for the given language
-func GetHarnessTemplate(lang Language) (string, error) {
-	switch lang {
-	case LanguageTypeScript:
-		return TSHarnessTemplate, nil
-	default:
-		return "", fmt.Errorf("unsupported language: %s", lang)
-	}
-}
-
-// GetHarnessExtension returns the file extension for the given language
-func GetHarnessExtension(lang Language) string {
-	switch lang {
-	case LanguageTypeScript:
-		return ".ts"
-	case LanguagePython:
-		return ".py"
-	default:
-		return ".txt"
-	}
-}
-
 // GenerateTempHarness creates a temporary harness file using Go templates
 // The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string) (string, error) {
-	// Get template for language
-	templateStr, err := GetHarnessTemplate(lang)
-	if err != nil {
-		return "", err
+func GenerateTempHarness(lang *language.Language, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string) (string, error) {
+	if lang.HarnessTemplate == "" {
+		return "", fmt.Errorf("no harness template configured for language %s", lang.Name)
 	}
 
-	tmpl, err := template.New("harness").Parse(templateStr)
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse harness template: %w", err)
 	}
@@ -82,13 +50,10 @@ func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases 
 	mergedImports = append(mergedImports, adapterOutput.ValidateImports...)
 
 	formattedImports := ""
-	if len(mergedImports) > 0 {
-		switch lang {
-		case LanguageTypeScript:
-			formattedImports = language.MergeTSImports(mergedImports)
-		default:
-			formattedImports = strings.Join(mergedImports, "\n")
-		}
+	if len(mergedImports) > 0 && lang.MergeImports != nil {
+		formattedImports = lang.MergeImports(mergedImports)
+	} else if len(mergedImports) > 0 {
+		formattedImports = strings.Join(mergedImports, "\n")
 	}
 
 	// Build template data
@@ -108,8 +73,7 @@ func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases 
 	}
 
 	// Create temp file in target directory (so package resolution works)
-	ext := GetHarnessExtension(lang)
-	tmpFile, err := os.CreateTemp(targetDir, "xschema-harness-*"+ext)
+	tmpFile, err := os.CreateTemp(targetDir, "xschema-harness-*"+lang.HarnessExtension)
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %w", err)
 	}
