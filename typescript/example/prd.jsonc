@@ -1,0 +1,167 @@
+{
+  "project": "xschema",
+  "branchName": "ralph/universal-harness",
+  "description": "Universal Compliance Harness - Replace per-adapter harness files with one template per language",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add Validate field to AdapterOutput",
+      "description": "As the compliance runner, I need adapters to provide a validate function so the harness knows how to validate data.",
+      "acceptanceCriteria": [
+        "Add Validate string field to AdapterOutput struct in cli/compliance/types.go",
+        "Add ValidateImports []string field for imports needed by validate function (optional)",
+        "Validate contains function in target language syntax",
+        "Function signature: takes data, returns bool, can reference schema variable",
+        "Empty Validate = type-only adapter (skip runtime validation)",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Create TypeScript harness template",
+      "description": "As the compliance system, I need a single TS harness template that works for all TypeScript adapters.",
+      "acceptanceCriteria": [
+        "Uses Go text/template (same pattern as existing language templates in cli/language/)",
+        "Outputs JSON array to stdout (same format as current harness)",
+        "Handles type-only adapters (empty Validate results in all skipped)",
+        "Write Go tests for template rendering",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Update GenerateTempHarness to use templates",
+      "description": "As the compliance runner, I need GenerateTempHarness to use Go text/template instead of string replacement.",
+      "acceptanceCriteria": [
+        "Use template.Execute instead of strings.ReplaceAll",
+        "Select template based on language",
+        "Existing compliance tests pass",
+        "Write thoughtful Go tests for new template generation logic",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Update zod adapter to return validate",
+      "description": "As the harness generator, I need the zod adapter to provide its validate function.",
+      "acceptanceCriteria": [
+        "Adapter returns validate function: (data) => schema.safeParse(data).success",
+        "No validateImports needed (safeParse is method on schema)",
+        "Adapter passes compliance tests with new harness",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Update arktype adapter to return validate",
+      "description": "As the harness generator, I need the arktype adapter to provide its validate function.",
+      "acceptanceCriteria": [
+        "Adapter returns validate function with appropriate arktype validation logic",
+        "Adapter returns validateImports if needed",
+        "Adapter passes compliance tests with new harness",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Update valibot adapter to return validate",
+      "description": "As the harness generator, I need the valibot adapter to provide its validate function.",
+      "acceptanceCriteria": [
+        "Adapter returns validate function using safeParse",
+        "Adapter returns validateImports for safeParse import",
+        "Adapter passes compliance tests with new harness",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Update typebox adapter to return validate",
+      "description": "As the harness generator, I need the typebox adapter to provide its validate function.",
+      "acceptanceCriteria": [
+        "Adapter returns validate function using Value.Check",
+        "Adapter returns validateImports for Value import",
+        "Adapter passes compliance tests with new harness",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Update effect adapter to return validate",
+      "description": "As the harness generator, I need the effect adapter to provide its validate function.",
+      "acceptanceCriteria": [
+        "Adapter returns validate function with appropriate effect validation logic",
+        "Adapter returns validateImports if needed",
+        "Adapter passes compliance tests with new harness",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Update typescript adapter for type-only mode",
+      "description": "As the harness generator, I need the typescript type-only adapter to return empty validate.",
+      "acceptanceCriteria": [
+        "Adapter returns empty validate string",
+        "No validateImports needed",
+        "Adapter passes compliance tests (all results should be skipped)",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Remove per-adapter harness files",
+      "description": "As a maintainer, I want to remove duplicate harness files now that we have a universal template.",
+      "acceptanceCriteria": [
+        "Delete all packages/adapters/*/compliance/harness.ts files",
+        "Update FindHarness logic (no longer needs per-adapter file)",
+        "Verify no other code references deleted files (web app, shared functions, imports)",
+        "All compliance tests pass",
+        "Full test suite passes (no regressions)",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Add Python harness template (future-ready)",
+      "description": "As a future Python adapter developer, I need a harness template ready for Python adapters.",
+      "acceptanceCriteria": [
+        "Python harness template created (same pattern as TypeScript)",
+        "Expects validate as full def block (Python lambdas cannot have try/except)",
+        "Same output format as TypeScript harness",
+        "Typecheck passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

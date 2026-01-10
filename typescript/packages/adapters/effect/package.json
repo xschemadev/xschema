@@ -1,0 +1,32 @@
+{
+	"name": "@xschemadev/effect",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "XSchema Effect/Schema Adapter",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"bin": {
+		"xschema-effect": "./dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"compliance": "../../../../cli/xschema compliance --dev-report"
+	},
+	"dependencies": {
+		"@xschemadev/core": "workspace:*"
+	},
+	"devDependencies": {
+		"effect": "^3.12.5"
+	},
+	"peerDependencies": {
+		"effect": "^3.0.0"
+	}
+}

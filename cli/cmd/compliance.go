@@ -115,6 +115,19 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to detect harness runner: %w", err)
 	}
 
+	// Detect typecheck runner if available
+	var typecheckConfig compliance.TypecheckConfig
+	if lang.DetectTypecheckRunner != nil {
+		tscRunner, tscArgs, tscErr := lang.DetectTypecheckRunner(adapterPath)
+		if tscErr == nil {
+			typecheckConfig = compliance.TypecheckConfig{
+				Enabled:    true,
+				Runner:     tscRunner,
+				RunnerArgs: tscArgs,
+			}
+		}
+	}
+
 	// Determine drafts to test
 	var drafts []string
 	if complianceDraft != "" {
@@ -147,6 +160,7 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		SuitePath:      suitePath,
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
+		Typecheck:      typecheckConfig,
 		Verbose:        complianceVerbose,
 		ProgressFunc: func(p compliance.ProgressUpdate) {
 			msg := ui.FormatDraftProgress(p.Draft, p.KeywordNum, p.KeywordTotal, p.Keyword)
@@ -154,18 +168,24 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		},
 		DraftDoneFunc: func(draft compliance.DraftResult) {
 			// Print completion line above spinner
-			status := ui.Success.Render("✓")
-			if draft.Summary.Percentage < 80 {
-				status = ui.Error.Render("✗")
-			} else if draft.Summary.Percentage < 95 {
-				status = ui.Warning.Render("!")
+			isTypeOnly := draft.Summary.Skipped == draft.Summary.Total && draft.Summary.Total > 0
+			var status, coverage string
+			if isTypeOnly {
+				status = ui.Bold.Render("○")
+				coverage = "type-only (skipped)"
+			} else {
+				status = ui.Success.Render("✓")
+				if draft.Summary.Percentage < 80 {
+					status = ui.Error.Render("✗")
+				} else if draft.Summary.Percentage < 95 {
+					status = ui.Warning.Render("!")
+				}
+				coverage = fmt.Sprintf("%d/%d (%.1f%%)", draft.Summary.Passed, draft.Summary.Total, draft.Summary.Percentage)
 			}
-			msg := fmt.Sprintf("%s %s: %d/%d (%.1f%%)",
+			msg := fmt.Sprintf("%s %s: %s",
 				status,
 				ui.Bold.Render(draft.Draft),
-				draft.Summary.Passed,
-				draft.Summary.Total,
-				draft.Summary.Percentage,
+				coverage,
 			)
 			spinner.PrintAboveSpinner(msg)
 		},
@@ -205,20 +225,22 @@ func printComplianceSummary(report *compliance.ComplianceReport) {
 	ui.Println()
 	ui.Println("Summary:")
 	for _, draft := range report.Drafts {
-		status := ui.Success.Render("✓")
-		if draft.Summary.Percentage < 80 {
-			status = ui.Error.Render("✗")
-		} else if draft.Summary.Percentage < 95 {
-			status = ui.Warning.Render("!")
+		isTypeOnly := draft.Summary.Skipped == draft.Summary.Total && draft.Summary.Total > 0
+		var status, coverage string
+		if isTypeOnly {
+			status = ui.Bold.Render("○")
+			coverage = "type-only (skipped)"
+		} else {
+			status = ui.Success.Render("✓")
+			if draft.Summary.Percentage < 80 {
+				status = ui.Error.Render("✗")
+			} else if draft.Summary.Percentage < 95 {
+				status = ui.Warning.Render("!")
+			}
+			coverage = fmt.Sprintf("%d/%d (%.1f%%)", draft.Summary.Passed, draft.Summary.Total, draft.Summary.Percentage)
 		}
 
-		ui.Printf("  %s %s: %d/%d (%.1f%%)\n",
-			status,
-			draft.Draft,
-			draft.Summary.Passed,
-			draft.Summary.Total,
-			draft.Summary.Percentage,
-		)
+		ui.Printf("  %s %s: %s\n", status, draft.Draft, coverage)
 	}
 }
 
