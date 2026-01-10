@@ -11,8 +11,10 @@ export function convert(input: ConvertInput): ConvertResult {
 	return {
 		namespace,
 		id,
-		imports: ['import * as v from "valibot"'],
+		imports: ['* as v from "valibot"'],
 		schema: schemaCode,
 		type: `v.InferOutput<typeof ${varName}>`,
+		validate: "(data: unknown) => safeParse(schema, data).success",
+		validateImports: ['{ safeParse } from "valibot"'],
 	};
 }

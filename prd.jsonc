@@ -82,8 +82,8 @@
 				"Adapter passes compliance tests with new harness",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "Scoped compliance: draft2020-12/type 79/80 (98.8%)."
 		},
 		{
 			"id": "US-007",

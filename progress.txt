@@ -5,6 +5,9 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 
 - Go code in cli/ directory
 - AdapterOutput struct in cli/compliance/types.go receives adapter responses
+- Adapter imports omit `import` keyword (template adds it)
+- Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
+- Avoid full compliance runs unless requested
 - Commit format: `feat(scope): lowercase message`
 
 ---
@@ -60,4 +63,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Arktype validation uses `!(schema(data) instanceof type.errors)` pattern
   - No validateImports needed since type.errors is available from existing import
   - draft2020-12 compliance: 98.9%
+---
+
+## 2026-01-10 15:30:43 CET - US-006
+- Added valibot validate function using safeParse
+- Scoped compliance: draft2020-12/type 79/80 (98.8%)
+- Files changed: typescript/packages/adapters/valibot/src/index.ts, prd.jsonc
+- **Learnings for future iterations:**
+  - Validate needs `validateImports` when using named exports
+  - Valibot schemas still use `* as v` namespace import
+  - Compliance run can exceed 5 minutes
 ---
