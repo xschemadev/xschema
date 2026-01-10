@@ -75,3 +75,16 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Results include `groupId` for mapping back to test groups.
 ---
 
+## 2026-01-10 20:00 - US-008
+- Added `--jobs <n>` flag for bounded concurrency with default 1 (sequential).
+- Files changed: `cli/cmd/compliance.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- Timing (zod adapter, draft6, jobs=4 vs jobs=1):
+  - jobs=1: 4.4s
+  - jobs=4: 1.2s (~3.6x faster)
+- Full dev-report with jobs=4: 7.9s (down from 31.0s baseline with jobs=1)
+- **Learnings for future iterations:**
+  - `runDraftParallel` uses semaphore channel for bounded concurrency.
+  - Results stored at pre-allocated indices for deterministic ordering.
+  - Progress counter with mutex prevents interleaved output.
+---
+

@@ -111,7 +111,7 @@
         "Progress output remains readable (no interleaved garbage)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
