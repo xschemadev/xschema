@@ -4,6 +4,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 ## Codebase Patterns
 - Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
 - Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
+- Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
 
 ---
 
@@ -30,5 +31,12 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - Use `sortComplianceReport`/`sortDraftResult` to keep report order deterministic.
   - Keep `REPORT.md` free of generated timestamps for clean diffs.
+---
+
+## 2026-01-10 17:52 - US-004
+- Switched bun harness execution to run files directly without `bun run`.
+- Files changed: `cli/compliance/harness.go`, `cli/language/typescript.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Use `detectTSHarnessRunner` to configure harness execution per runtime.
 ---
 

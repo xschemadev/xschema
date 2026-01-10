@@ -55,7 +55,7 @@
         "Profile shows improved harness execution time compared to baseline in `progress.txt`",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

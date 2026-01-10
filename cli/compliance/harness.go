@@ -88,7 +88,7 @@ func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []Test
 
 // ExecuteHarness runs the harness file and returns the results
 func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runnerArgs []string, workDir string) ([]HarnessResult, error) {
-	// Build command: e.g., "bun run harness.ts"
+	// Build command: e.g., "bun harness.ts"
 	args := append(runnerArgs, harnessFile)
 	cmd := exec.CommandContext(ctx, runner, args...)
 

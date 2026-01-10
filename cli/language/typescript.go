@@ -118,11 +118,11 @@ func detectTSHarnessRunner(dir string) (string, []string, error) {
 	}
 
 	// Transform package runner to file runner:
-	// bunx/bun → bun run (bun can run .ts directly)
+	// bunx/bun → bun (bun can run .ts directly)
 	// npx/pnpm/yarn → use tsx (tsx runs .ts files)
 	switch cmd {
 	case "bunx", "bun":
-		return "bun", []string{"run"}, nil
+		return "bun", nil, nil
 	case "npx":
 		return "npx", []string{"tsx"}, nil
 	case "pnpm":
