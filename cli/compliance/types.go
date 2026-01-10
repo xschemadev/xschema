@@ -131,8 +131,15 @@ func (t *TimingSummary) addHarnessExecution(duration time.Duration) {
 
 // HarnessResult is the JSON output from executing a harness file
 type HarnessResult struct {
+	GroupID  string `json:"groupId"`
 	Index    int    `json:"index"`
 	Expected bool   `json:"expected"`
-	Actual   string `json:"actual"` // "true", "false", or "error"
+	Actual   string `json:"actual"` // "true", "false", "skipped", or "error"
 	Error    string `json:"error,omitempty"`
+}
+
+// BatchTestData is the test data structure passed to harness templates
+type BatchTestData struct {
+	GroupID string     `json:"groupId"`
+	Tests   []TestCase `json:"tests"`
 }

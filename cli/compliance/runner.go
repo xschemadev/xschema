@@ -394,15 +394,15 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 	}
 
-	var adapterOutputs []adapter.ConvertResult
-	if len(adapterInputs) > 0 {
-		adapterStart := time.Now()
-		outputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
-		opts.timing.addAdapterInvocation(time.Since(adapterStart))
-		if err != nil {
-			return fmt.Errorf("adapter call failed: %w", err)
-		}
-		adapterOutputs = outputs
+	if len(adapterInputs) == 0 {
+		return nil // all groups failed bundling
+	}
+
+	adapterStart := time.Now()
+	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
+	opts.timing.addAdapterInvocation(time.Since(adapterStart))
+	if err != nil {
+		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
 	// Build map of group index -> adapter output
@@ -411,19 +411,11 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		adapterOutputByGroup[outIdx] = &adapterOutputs[i]
 	}
 
-	// Phase 3: Execute harness per group using template-based generation
-	return processKeywordPerGroup(ctx, opts, bundled, adapterOutputByGroup, keywordResult, summary)
-}
+	// Phase 3: Build harness items and execute single batch harness
+	var harnessItems []HarnessItem
+	groupByID := make(map[string]*TestGroup) // for result processing
 
-// processKeywordPerGroup executes each group in a separate harness process
-func processKeywordPerGroup(ctx context.Context, opts runDraftOptions, bundled []bundledGroup, adapterOutputByGroup map[int]*adapter.ConvertResult, keywordResult *KeywordResult, summary *DraftSummary) error {
 	for i, bg := range bundled {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-
 		if bg.bundleErr != nil {
 			continue // already marked as failed
 		}
@@ -434,30 +426,54 @@ func processKeywordPerGroup(ctx context.Context, opts runDraftOptions, bundled [
 			continue
 		}
 
-		harnessStart := time.Now()
-		tempHarness, err := GenerateTempHarness(opts.language, adapterOutput, bg.group.Tests, opts.workDir)
-		opts.timing.addHarnessGeneration(time.Since(harnessStart))
-		if err != nil {
-			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("harness generation error: %v", err))
-			continue
-		}
-
-		execStart := time.Now()
-		harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
-		opts.timing.addHarnessExecution(time.Since(execStart))
-		os.Remove(tempHarness)
-
-		if err != nil {
-			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-				return err
-			}
-			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("harness execution error: %v", err))
-			continue
-		}
-
-		processResults(harnessResults, bg.group, keywordResult, summary)
+		groupID := fmt.Sprintf("group_%d", i)
+		harnessItems = append(harnessItems, HarnessItem{
+			GroupID:       groupID,
+			AdapterOutput: adapterOutput,
+			Tests:         bg.group.Tests,
+		})
+		groupByID[groupID] = &bg.group
 	}
 
+	if len(harnessItems) == 0 {
+		return nil // all groups failed
+	}
+
+	// Generate single batch harness
+	harnessStart := time.Now()
+	tempHarness, err := GenerateHarness(opts.language, harnessItems, opts.workDir)
+	opts.timing.addHarnessGeneration(time.Since(harnessStart))
+	if err != nil {
+		// Mark all groups as failed
+		for _, item := range harnessItems {
+			if group := groupByID[item.GroupID]; group != nil {
+				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness generation error: %v", err))
+			}
+		}
+		return nil
+	}
+	defer os.Remove(tempHarness)
+
+	// Execute batch harness
+	execStart := time.Now()
+	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
+	opts.timing.addHarnessExecution(time.Since(execStart))
+
+	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return err
+		}
+		// Mark all groups as failed
+		for _, item := range harnessItems {
+			if group := groupByID[item.GroupID]; group != nil {
+				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness execution error: %v", err))
+			}
+		}
+		return nil
+	}
+
+	// Process results by groupId
+	processHarnessResults(harnessResults, groupByID, keywordResult, summary)
 	return nil
 }
 
@@ -492,12 +508,17 @@ func normalizeErrorPath(errorMsg string) string {
 	return errorMsg
 }
 
-func processResults(harnessResults []HarnessResult, group TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
-	for i, hr := range harnessResults {
-		if i >= len(group.Tests) {
-			break
+func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
+	for _, hr := range harnessResults {
+		group := groupByID[hr.GroupID]
+		if group == nil {
+			continue // unknown group, skip
 		}
-		tc := group.Tests[i]
+
+		if hr.Index >= len(group.Tests) {
+			continue // invalid index, skip
+		}
+		tc := group.Tests[hr.Index]
 
 		keywordResult.Total++
 		summary.Total++

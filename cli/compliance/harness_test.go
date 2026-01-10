@@ -12,22 +12,27 @@ import (
 	"github.com/xschemadev/xschema/language"
 )
 
-func TestGenerateTempHarness(t *testing.T) {
+func TestGenerateHarness(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   `z.object({ name: z.string() })`,
-		Imports:  []string{`import { z } from "zod"`},
-		Validate: `(data) => schema.safeParse(data).success`,
-	}
-	testCases := []TestCase{
-		{Description: "valid object", Data: map[string]any{"name": "test"}, Valid: true},
-		{Description: "invalid object", Data: "not an object", Valid: false},
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   `z.object({ name: z.string() })`,
+				Imports:  []string{`import { z } from "zod"`},
+				Validate: `(data) => schema.safeParse(data).success`,
+			},
+			Tests: []TestCase{
+				{Description: "valid object", Data: map[string]any{"name": "test"}, Valid: true},
+				{Description: "invalid object", Data: "not an object", Valid: false},
+			},
+		},
 	}
 
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
 	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
+		t.Fatalf("GenerateHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
@@ -48,7 +53,7 @@ func TestGenerateTempHarness(t *testing.T) {
 	}
 
 	// Check schema was inserted
-	if !strings.Contains(string(content), adapterOutput.Schema) {
+	if !strings.Contains(string(content), items[0].AdapterOutput.Schema) {
 		t.Error("harness missing schema")
 	}
 
@@ -58,7 +63,7 @@ func TestGenerateTempHarness(t *testing.T) {
 	}
 
 	// Check validate function was inserted
-	if !strings.Contains(string(content), adapterOutput.Validate) {
+	if !strings.Contains(string(content), items[0].AdapterOutput.Validate) {
 		t.Error("harness missing validate function")
 	}
 
@@ -68,20 +73,75 @@ func TestGenerateTempHarness(t *testing.T) {
 	}
 }
 
-func TestGenerateTempHarness_MergedImports(t *testing.T) {
+func TestGenerateHarness_MultipleGroups(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &adapter.ConvertResult{
-		Schema:          `z.object({ name: z.string() })`,
-		Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
-		Validate:        `(data) => schema.safeParse(data).success`,
-		ValidateImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   `z.string()`,
+				Imports:  []string{`import { z } from "zod"`},
+				Validate: `(data) => schema.safeParse(data).success`,
+			},
+			Tests: []TestCase{{Description: "test 1", Data: "hello", Valid: true}},
+		},
+		{
+			GroupID: "group_1",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   `z.number()`,
+				Imports:  []string{`import { z } from "zod"`},
+				Validate: `(data) => schema.safeParse(data).success`,
+			},
+			Tests: []TestCase{{Description: "test 2", Data: 42, Valid: true}},
+		},
 	}
-	testCases := []TestCase{{Description: "valid", Data: map[string]any{"name": "test"}, Valid: true}}
 
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
 	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
+		t.Fatalf("GenerateHarness() error = %v", err)
+	}
+	defer os.Remove(harnessPath)
+
+	content, _ := os.ReadFile(harnessPath)
+	contentStr := string(content)
+
+	// Should have both schemas
+	if !strings.Contains(contentStr, `z.string()`) {
+		t.Error("harness missing first schema")
+	}
+	if !strings.Contains(contentStr, `z.number()`) {
+		t.Error("harness missing second schema")
+	}
+
+	// Should have both group IDs
+	if !strings.Contains(contentStr, `"group_0"`) {
+		t.Error("harness missing group_0")
+	}
+	if !strings.Contains(contentStr, `"group_1"`) {
+		t.Error("harness missing group_1")
+	}
+}
+
+func TestGenerateHarness_MergedImports(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:          `z.object({ name: z.string() })`,
+				Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
+				Validate:        `(data) => schema.safeParse(data).success`,
+				ValidateImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
+			},
+			Tests: []TestCase{{Description: "valid", Data: map[string]any{"name": "test"}, Valid: true}},
+		},
+	}
+
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
+	if err != nil {
+		t.Fatalf("GenerateHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
@@ -96,23 +156,27 @@ func TestGenerateTempHarness_MergedImports(t *testing.T) {
 	}
 }
 
-func TestGenerateTempHarness_TypeOnly(t *testing.T) {
+func TestGenerateHarness_TypeOnly(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Type-only adapter has empty Validate
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   "",
-		Type:     `{ name: string }`,
-		Imports:  nil,
-		Validate: "",
-	}
-	testCases := []TestCase{
-		{Description: "test 1", Data: map[string]any{"name": "test"}, Valid: true},
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   "",
+				Type:     `{ name: string }`,
+				Imports:  nil,
+				Validate: "",
+			},
+			Tests: []TestCase{
+				{Description: "test 1", Data: map[string]any{"name": "test"}, Valid: true},
+			},
+		},
 	}
 
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
 	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
+		t.Fatalf("GenerateHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
@@ -124,116 +188,112 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 		t.Error("type-only harness should have type declaration")
 	}
 
-	if !strings.Contains(contentStr, adapterOutput.Type) {
+	if !strings.Contains(contentStr, items[0].AdapterOutput.Type) {
 		t.Error("type-only harness should include type expression")
 	}
 
-	// Should mark results as skipped
-	if !strings.Contains(contentStr, `actual: "skipped"`) {
-		t.Error("type-only harness should mark results as skipped")
-	}
-
-	// Should NOT have const schema = (runtime mode)
-	if strings.Contains(contentStr, "const schema =") {
-		t.Error("type-only harness should not have const schema")
+	// Should mark results as skipped via isTypeOnly check
+	if !strings.Contains(contentStr, `isTypeOnly: true`) {
+		t.Error("type-only harness should have isTypeOnly: true")
 	}
 }
 
-func TestGenerateTempHarness_MissingTemplate(t *testing.T) {
+func TestGenerateHarness_MissingTemplate(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   "some_schema",
-		Validate: "validate_fn",
-	}
-
-	// Language with no HarnessTemplate should fail to parse
-	lang := &language.Language{Name: "nolang", HarnessExtension: ".txt"}
-	_, err := GenerateTempHarness(lang, adapterOutput, []TestCase{}, tmpDir)
-	if err == nil {
-		t.Error("GenerateTempHarness() expected error for language without template")
-	}
-}
-
-func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   `z.any()`,
-		Imports:  []string{`import { z } from "zod"`},
-		Validate: `(data) => true`,
-	}
-
-	// Test with complex nested data
-	testCases := []TestCase{
+	items := []HarnessItem{
 		{
-			Description: "nested object",
-			Data: map[string]any{
-				"nested": map[string]any{
-					"array": []any{1, 2, 3},
-					"null":  nil,
-					"bool":  true,
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   "some_schema",
+				Validate: "validate_fn",
+			},
+			Tests: []TestCase{},
+		},
+	}
+
+	// Language with no HarnessTemplate should fail
+	lang := &language.Language{Name: "nolang", HarnessExtension: ".txt"}
+	_, err := GenerateHarness(lang, items, tmpDir)
+	if err == nil {
+		t.Error("GenerateHarness() expected error for language without template")
+	}
+}
+
+func TestGenerateHarness_EmptyItems(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	_, err := GenerateHarness(language.ByName("typescript"), []HarnessItem{}, tmpDir)
+	if err == nil {
+		t.Error("GenerateHarness() expected error for empty items")
+	}
+}
+
+func TestGenerateHarness_ComplexTestData(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   `z.any()`,
+				Imports:  []string{`import { z } from "zod"`},
+				Validate: `(data) => true`,
+			},
+			Tests: []TestCase{
+				{
+					Description: "nested object",
+					Data: map[string]any{
+						"nested": map[string]any{
+							"array": []any{1, 2, 3},
+							"null":  nil,
+							"bool":  true,
+						},
+					},
+					Valid: true,
+				},
+				{
+					Description: "special chars",
+					Data:        "hello\nworld\t\"quoted\"",
+					Valid:       false,
 				},
 			},
-			Valid: true,
-		},
-		{
-			Description: "special chars",
-			Data:        "hello\nworld\t\"quoted\"",
-			Valid:       false,
 		},
 	}
 
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
 	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
+		t.Fatalf("GenerateHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
 	content, _ := os.ReadFile(harnessPath)
 	contentStr := string(content)
 
-	// Should contain JSON.parse for test cases
+	// Should contain JSON.parse for test data
 	if !strings.Contains(contentStr, "JSON.parse(") {
-		t.Error("harness should use JSON.parse for test cases")
+		t.Error("harness should use JSON.parse for test data")
 	}
 }
 
-func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
+func TestGenerateHarness_FilenamePattern(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   `z.string()`,
-		Imports:  []string{`import { z } from "zod"`},
-		Validate: `(data) => schema.safeParse(data).success`,
+	items := []HarnessItem{
+		{
+			GroupID: "group_0",
+			AdapterOutput: &adapter.ConvertResult{
+				Schema:   `z.string()`,
+				Imports:  []string{`import { z } from "zod"`},
+				Validate: `(data) => schema.safeParse(data).success`,
+			},
+			Tests: []TestCase{},
+		},
 	}
 
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, []TestCase{}, tmpDir)
+	harnessPath, err := GenerateHarness(language.ByName("typescript"), items, tmpDir)
 	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
-	}
-	defer os.Remove(harnessPath)
-
-	content, _ := os.ReadFile(harnessPath)
-
-	// Should still have empty JSON array
-	if !strings.Contains(string(content), `"[]"`) {
-		t.Error("empty test cases should produce escaped empty array")
-	}
-}
-
-func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	adapterOutput := &adapter.ConvertResult{
-		Schema:   `z.string()`,
-		Imports:  []string{`import { z } from "zod"`},
-		Validate: `(data) => schema.safeParse(data).success`,
-	}
-
-	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, []TestCase{}, tmpDir)
-	if err != nil {
-		t.Fatalf("GenerateTempHarness() error = %v", err)
+		t.Fatalf("GenerateHarness() error = %v", err)
 	}
 	defer os.Remove(harnessPath)
 
@@ -250,12 +310,23 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 		t.Fatalf("failed to parse template: %v", err)
 	}
 
+	testData := []BatchTestData{
+		{GroupID: "group_0", Tests: []TestCase{{Data: map[string]any{"name": "test"}, Valid: true}}},
+	}
+	testDataJSON, _ := json.Marshal(testData)
+	testDataString, _ := json.Marshal(string(testDataJSON))
+
 	data := HarnessTemplateData{
-		Schema:          `z.object({ name: z.string() })`,
-		Imports:         `import { z } from "zod"`,
-		Validate:        `(data) => schema.safeParse(data).success`,
-		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
-		IsTypeOnly:      false,
+		Imports: `import { z } from "zod"`,
+		Schemas: []HarnessSchemaEntry{
+			{
+				GroupID:    "group_0",
+				Schema:     `z.object({ name: z.string() })`,
+				Validate:   `(data) => schema.safeParse(data).success`,
+				IsTypeOnly: false,
+			},
+		},
+		TestDataString: string(testDataString),
 	}
 
 	var buf strings.Builder
@@ -270,13 +341,13 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 		t.Error("missing zod import")
 	}
 
-	// Should have schema
+	// Should have schema in IIFE
 	if !strings.Contains(result, `const schema = z.object({ name: z.string() });`) {
 		t.Error("missing schema declaration")
 	}
 
 	// Should have validate function
-	if !strings.Contains(result, `const validate = (data) => schema.safeParse(data).success;`) {
+	if !strings.Contains(result, `validate: (data) => schema.safeParse(data).success`) {
 		t.Error("missing validate function")
 	}
 
@@ -289,11 +360,6 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 	if !strings.Contains(result, "console.log(JSON.stringify(results));") {
 		t.Error("missing JSON output")
 	}
-
-	// Should NOT have type-only code
-	if strings.Contains(result, "type GeneratedType") {
-		t.Error("should not have type-only code for runtime adapter")
-	}
 }
 
 func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
@@ -302,13 +368,24 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 		t.Fatalf("failed to parse template: %v", err)
 	}
 
+	testData := []BatchTestData{
+		{GroupID: "group_0", Tests: []TestCase{{Data: map[string]any{"name": "test"}, Valid: true}}},
+	}
+	testDataJSON, _ := json.Marshal(testData)
+	testDataString, _ := json.Marshal(string(testDataJSON))
+
 	data := HarnessTemplateData{
-		Schema:          "",
-		Type:            `{ name: string }`,
-		Imports:         "",
-		Validate:        "",
-		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
-		IsTypeOnly:      true,
+		Imports: "",
+		Schemas: []HarnessSchemaEntry{
+			{
+				GroupID:    "group_0",
+				Schema:     "",
+				Type:       `{ name: string }`,
+				Validate:   "",
+				IsTypeOnly: true,
+			},
+		},
+		TestDataString: string(testDataString),
 	}
 
 	var buf strings.Builder
@@ -323,88 +400,14 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 		t.Error("missing type declaration")
 	}
 
-	// Should mark results as skipped
-	if !strings.Contains(result, `actual: "skipped"`) {
-		t.Error("missing skipped actual value")
-	}
-
-	// Should NOT have runtime validation code
-	if strings.Contains(result, "const schema =") {
-		t.Error("should not have schema const for type-only adapter")
-	}
-	if strings.Contains(result, "const validate =") {
-		t.Error("should not have validate function for type-only adapter")
-	}
-	if strings.Contains(result, "try {") {
-		t.Error("should not have try-catch for type-only adapter")
+	// Should have isTypeOnly: true
+	if !strings.Contains(result, `isTypeOnly: true`) {
+		t.Error("missing isTypeOnly: true")
 	}
 
 	// Should output JSON
 	if !strings.Contains(result, "console.log(JSON.stringify(results));") {
 		t.Error("missing JSON output")
-	}
-}
-
-func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
-	if err != nil {
-		t.Fatalf("failed to parse template: %v", err)
-	}
-
-	data := HarnessTemplateData{
-		Schema:          `v.object({ name: v.string() })`,
-		Imports:         "import * as v from \"valibot\"\nimport { safeParse } from \"valibot\"",
-		Validate:        `(data) => safeParse(schema, data).success`,
-		TestCasesString: `"[]"`,
-		IsTypeOnly:      false,
-	}
-
-	var buf strings.Builder
-	if err := tmpl.Execute(&buf, data); err != nil {
-		t.Fatalf("failed to execute template: %v", err)
-	}
-
-	result := buf.String()
-
-	// Should have both imports
-	if !strings.Contains(result, `import * as v from "valibot"`) {
-		t.Error("missing schema import")
-	}
-	if !strings.Contains(result, `import { safeParse } from "valibot"`) {
-		t.Error("missing validateImports")
-	}
-
-	if strings.Contains(result, "import import ") {
-		t.Error("should not prefix import statements")
-	}
-}
-
-func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
-	if err != nil {
-		t.Fatalf("failed to parse template: %v", err)
-	}
-
-	data := HarnessTemplateData{
-		Schema:          `v.object({ name: v.string() })`,
-		Imports:         "import * as v from \"valibot\"\nimport { safeParse } from \"valibot\"",
-		Validate:        `(data) => safeParse(schema, data).success`,
-		TestCasesString: `"[]"`,
-		IsTypeOnly:      false,
-	}
-
-	var buf strings.Builder
-	if err := tmpl.Execute(&buf, data); err != nil {
-		t.Fatalf("failed to execute template: %v", err)
-	}
-
-	result := buf.String()
-
-	if !strings.Contains(result, `import { safeParse } from "valibot"`) {
-		t.Error("missing validateImports safeParse")
-	}
-	if !strings.Contains(result, `import * as v from "valibot"`) {
-		t.Error("missing validateImports namespace import")
 	}
 }
 
@@ -414,12 +417,23 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 		t.Fatalf("failed to parse template: %v", err)
 	}
 
+	testData := []BatchTestData{
+		{GroupID: "group_0", Tests: []TestCase{}},
+	}
+	testDataJSON, _ := json.Marshal(testData)
+	testDataString, _ := json.Marshal(string(testDataJSON))
+
 	data := HarnessTemplateData{
-		Schema:          `Schema.Struct({ name: Schema.String })`,
-		Imports:         "import { Schema } from \"effect\"\nimport { pipe } from \"effect/Function\"",
-		Validate:        `(data) => Schema.decodeUnknownSync(schema)(data) !== undefined`,
-		TestCasesString: `"[]"`,
-		IsTypeOnly:      false,
+		Imports: "import { Schema } from \"effect\"\nimport { pipe } from \"effect/Function\"",
+		Schemas: []HarnessSchemaEntry{
+			{
+				GroupID:    "group_0",
+				Schema:     `Schema.Struct({ name: Schema.String })`,
+				Validate:   `(data) => Schema.decodeUnknownSync(schema)(data) !== undefined`,
+				IsTypeOnly: false,
+			},
+		},
+		TestDataString: string(testDataString),
 	}
 
 	var buf strings.Builder
@@ -438,25 +452,32 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 	}
 }
 
-func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
+func TestTSHarnessTemplate_EscapedTestData(t *testing.T) {
 	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
 
 	// Test with properly escaped JSON string (as it would come from json.Marshal)
-	testCases := []TestCase{
-		{Description: "test with \"quotes\"", Data: "hello\nworld", Valid: true},
+	testData := []BatchTestData{
+		{GroupID: "group_0", Tests: []TestCase{
+			{Description: "test with \"quotes\"", Data: "hello\nworld", Valid: true},
+		}},
 	}
-	testCasesJSON, _ := json.Marshal(testCases)
-	testCasesString, _ := json.Marshal(string(testCasesJSON))
+	testDataJSON, _ := json.Marshal(testData)
+	testDataString, _ := json.Marshal(string(testDataJSON))
 
 	data := HarnessTemplateData{
-		Schema:          `z.string()`,
-		Imports:         `import { z } from "zod"`,
-		Validate:        `(data) => schema.safeParse(data).success`,
-		TestCasesString: string(testCasesString),
-		IsTypeOnly:      false,
+		Imports: `import { z } from "zod"`,
+		Schemas: []HarnessSchemaEntry{
+			{
+				GroupID:    "group_0",
+				Schema:     `z.string()`,
+				Validate:   `(data) => schema.safeParse(data).success`,
+				IsTypeOnly: false,
+			},
+		},
+		TestDataString: string(testDataString),
 	}
 
 	var buf strings.Builder
@@ -473,6 +494,6 @@ func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
 
 	// The escaped string should be present (double-escaped in the JS string literal)
 	if !strings.Contains(result, `\\\"quotes\\\"`) {
-		t.Error("missing escaped quotes in test cases")
+		t.Error("missing escaped quotes in test data")
 	}
 }

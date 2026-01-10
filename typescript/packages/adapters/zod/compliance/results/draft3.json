@@ -180,52 +180,16 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data does not validate",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
-      "passed": 6,
-      "failed": 2,
+      "passed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "change resolution scope",
-          "test": "changed scope ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "change resolution scope",
-          "test": "changed scope ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        }
-      ]
+      "total": 8
     },
     {
       "keyword": "required",
@@ -301,10 +265,10 @@
     }
   ],
   "summary": {
-    "passed": 394,
-    "failed": 15,
+    "passed": 396,
+    "failed": 11,
     "skipped": 0,
-    "total": 409,
-    "percentage": 96.33251833740832
+    "total": 407,
+    "percentage": 97.2972972972973
   }
 }

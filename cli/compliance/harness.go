@@ -13,11 +13,22 @@ import (
 	"github.com/xschemadev/xschema/language"
 )
 
-// GenerateTempHarness creates a temporary harness file using Go templates
+// HarnessItem represents a single group's data for harness generation
+type HarnessItem struct {
+	GroupID       string
+	AdapterOutput *adapter.ConvertResult
+	Tests         []TestCase
+}
+
+// GenerateHarness creates a temporary harness file using Go templates
 // The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(lang *language.Language, adapterOutput *adapter.ConvertResult, testCases []TestCase, targetDir string) (string, error) {
+func GenerateHarness(lang *language.Language, items []HarnessItem, targetDir string) (string, error) {
 	if lang.HarnessTemplate == "" {
 		return "", fmt.Errorf("no harness template configured for language %s", lang.Name)
+	}
+
+	if len(items) == 0 {
+		return "", fmt.Errorf("no items to generate harness for")
 	}
 
 	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
@@ -25,31 +36,50 @@ func GenerateTempHarness(lang *language.Language, adapterOutput *adapter.Convert
 		return "", fmt.Errorf("failed to parse harness template: %w", err)
 	}
 
-	// Serialize test cases to JSON
-	testCasesJSON, err := json.Marshal(testCases)
-	if err != nil {
-		return "", fmt.Errorf("failed to serialize test cases: %w", err)
+	// Collect all imports and build schema entries
+	var allImports []string
+	schemas := make([]HarnessSchemaEntry, len(items))
+	testData := make([]BatchTestData, len(items))
+
+	for i, item := range items {
+		// Collect imports
+		allImports = append(allImports, item.AdapterOutput.Imports...)
+		allImports = append(allImports, item.AdapterOutput.ValidateImports...)
+
+		// Build schema entry
+		schemas[i] = HarnessSchemaEntry{
+			GroupID:    item.GroupID,
+			Schema:     item.AdapterOutput.Schema,
+			Type:       item.AdapterOutput.Type,
+			Validate:   item.AdapterOutput.Validate,
+			IsTypeOnly: item.AdapterOutput.Validate == "",
+		}
+
+		// Build test data entry
+		testData[i] = BatchTestData{
+			GroupID: item.GroupID,
+			Tests:   item.Tests,
+		}
 	}
 
-	// Create a JS string literal containing the JSON
-	// This ensures __proto__ and other special property names are preserved
-	testCasesString, err := json.Marshal(string(testCasesJSON))
+	// Merge and format imports
+	formattedImports := lang.MergeImports(allImports)
+
+	// Serialize test data to JSON string
+	testDataJSON, err := json.Marshal(testData)
 	if err != nil {
-		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
+		return "", fmt.Errorf("failed to serialize test data: %w", err)
 	}
-
-	mergedImports := append(adapterOutput.Imports, adapterOutput.ValidateImports...)
-
-	formattedImports := lang.MergeImports(mergedImports)
+	testDataString, err := json.Marshal(string(testDataJSON))
+	if err != nil {
+		return "", fmt.Errorf("failed to serialize test data string: %w", err)
+	}
 
 	// Build template data
 	data := HarnessTemplateData{
-		Schema:          adapterOutput.Schema,
-		Type:            adapterOutput.Type,
-		Imports:         formattedImports,
-		Validate:        adapterOutput.Validate,
-		TestCasesString: string(testCasesString),
-		IsTypeOnly:      adapterOutput.Validate == "",
+		Imports:        formattedImports,
+		Schemas:        schemas,
+		TestDataString: string(testDataString),
 	}
 
 	// Execute template
@@ -80,11 +110,9 @@ func GenerateTempHarness(lang *language.Language, adapterOutput *adapter.Convert
 
 // ExecuteHarness runs the harness file and returns the results
 func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runnerArgs []string, workDir string) ([]HarnessResult, error) {
-	// Build command: e.g., "bun harness.ts"
 	args := append(runnerArgs, harnessFile)
 	cmd := exec.CommandContext(ctx, runner, args...)
 
-	// Set working directory so bun can find dependencies
 	if workDir != "" {
 		cmd.Dir = workDir
 	}
@@ -97,7 +125,6 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 		return nil, fmt.Errorf("harness execution failed: %w\nstderr: %s", err, stderr.String())
 	}
 
-	// Parse JSON output
 	var results []HarnessResult
 	if err := json.Unmarshal(stdout.Bytes(), &results); err != nil {
 		return nil, fmt.Errorf("failed to parse harness output: %w\nstdout: %s", err, stdout.String())

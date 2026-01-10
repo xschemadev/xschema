@@ -180,15 +180,15 @@
       "keyword": "ref",
       "passed": 0,
       "failed": 0,
-      "skipped": 25,
-      "total": 25
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "refRemote",
       "passed": 0,
       "failed": 0,
-      "skipped": 15,
-      "total": 15
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "required",
@@ -215,8 +215,8 @@
   "summary": {
     "passed": 0,
     "failed": 0,
-    "skipped": 591,
-    "total": 591,
+    "skipped": 551,
+    "total": 551,
     "percentage": 0
   }
 }

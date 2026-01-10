@@ -3,14 +3,21 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 11,
-      "failed": 6,
+      "passed": 14,
+      "failed": 3,
       "skipped": 0,
       "total": 17,
       "failures": [
         {
-          "group": "additionalItems as schema",
-          "test": "additional items do not match schema",
+          "group": "additionalItems as false without items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "additionalItems with heterogeneous array",
+          "test": "heterogeneous invalid instance",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -21,54 +28,19 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "additionalItems as false without items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalItems does not look in applicators, invalid case",
-          "test": "items defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items validation adjusts the starting index for additionalItems",
-          "test": "wrong type of second item",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "heterogeneous invalid instance",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "additionalProperties",
-      "passed": 10,
-      "failed": 6,
+      "passed": 11,
+      "failed": 5,
       "skipped": 0,
       "total": 16,
       "failures": [
         {
           "group": "additionalProperties being false does not allow other properties",
-          "test": "an additional property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores strings",
+          "test": "ignores arrays",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -81,17 +53,17 @@
           "passed": false
         },
         {
-          "group": "non-ASCII pattern with additionalProperties",
-          "test": "not matching the pattern is invalid",
-          "expected": false,
-          "actual": "true",
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
           "passed": false
         },
         {
-          "group": "additionalProperties with schema",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "patternProperties are not additional properties",
+          "expected": true,
+          "actual": "false",
           "passed": false
         },
         {
@@ -105,168 +77,17 @@
     },
     {
       "keyword": "allOf",
-      "passed": 10,
-      "failed": 17,
+      "passed": 27,
+      "failed": 0,
       "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "allOf",
-          "test": "mismatch second",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf",
-          "test": "mismatch first",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with base schema",
-          "test": "mismatch base schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with base schema",
-          "test": "mismatch first allOf",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with base schema",
-          "test": "mismatch second allOf",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with base schema",
-          "test": "mismatch both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf simple types",
-          "test": "mismatch one",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with the first empty schema",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf with the last empty schema",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: false, anyOf: false, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: false, anyOf: false, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: false, anyOf: true, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: false, anyOf: true, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: true, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 27
     },
     {
       "keyword": "anyOf",
-      "passed": 11,
-      "failed": 4,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "anyOf",
-          "test": "neither anyOf valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "anyOf with base schema",
-          "test": "mismatch base schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "anyOf with base schema",
-          "test": "both anyOf invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "anyOf complex types",
-          "test": "neither anyOf valid (complex)",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "default",
@@ -277,441 +98,67 @@
     },
     {
       "keyword": "definitions",
-      "passed": 0,
-      "failed": 2,
+      "passed": 1,
+      "failed": 1,
       "skipped": 0,
       "total": 2,
       "failures": [
         {
           "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"$schema\": v.optional(v.string()), \"additionalItems\": v.optional(v.union([v.any()])), \"additionalProperties\": v.optional(v.union([v.any()])), \"allOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"anyOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"default\": v.optional(v.any()), \"definitions\": v.optional(v.record(v.string(), v.any())), \"dependencies\": v.optional(v.record(v.string(), v.union([v.any()]))), \"description\": v.optional(v.string()), \"enum\": v.optional(v.array(v.any()).pipe(v.minLength(1), v.check((arr) =\u003e {\n\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3330576141.ts:3:211\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "validate definition against metaschema",
           "test": "invalid definition schema",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"$schema\": v.optional(v.string()), \"additionalItems\": v.optional(v.union([v.any()])), \"additionalProperties\": v.optional(v.union([v.any()])), \"allOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"anyOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"default\": v.optional(v.any()), \"definitions\": v.optional(v.record(v.string(), v.any())), \"dependencies\": v.optional(v.record(v.string(), v.union([v.any()]))), \"description\": v.optional(v.string()), \"enum\": v.optional(v.array(v.any()).pipe(v.minLength(1), v.check((arr) =\u003e {\n\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3330576141.ts:3:211\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "dependencies",
-      "passed": 0,
-      "failed": 29,
+      "passed": 26,
+      "failed": 3,
       "skipped": 0,
       "total": 29,
       "failures": [
         {
           "group": "dependencies",
-          "test": "neither",
+          "test": "ignores other non-objects",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies",
-          "test": "nondependant",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies",
-          "test": "with dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "dependencies",
           "test": "ignores strings",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return Object.hasOwn(val, \"foo\");\n  return !0;\n}, \"Property bar requires foo\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3734815486.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "neither",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "nondependants",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "with dependencies",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"quux\"))\n    return Object.hasOwn(val, \"foo\") \u0026\u0026 Object.hasOwn(val, \"bar\");\n  return !0;\n}, \"Property quux requires foo, bar\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-1817642068.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return v.safeParse(v.looseObject({ bar: v.optional(v.pipe(v.number(), v.integer())), foo: v.optional(v.pipe(v.number(), v.integer())) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2765475523.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "no dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return v.safeParse(v.looseObject({ bar: v.optional(v.pipe(v.number(), v.integer())), foo: v.optional(v.pipe(v.number(), v.integer())) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2765475523.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return v.safeParse(v.looseObject({ bar: v.optional(v.pipe(v.number(), v.integer())), foo: v.optional(v.pipe(v.number(), v.integer())) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2765475523.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return v.safeParse(v.looseObject({ bar: v.optional(v.pipe(v.number(), v.integer())), foo: v.optional(v.pipe(v.number(), v.integer())) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2765475523.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"bar\"))\n    return v.safeParse(v.looseObject({ bar: v.optional(v.pipe(v.number(), v.integer())), foo: v.optional(v.pipe(v.number(), v.integer())) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2765475523.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "valid object 1",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "valid object 2",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "valid object 3",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 1",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 2",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "dependencies with escaped characters",
           "test": "invalid object 3",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 4",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e {\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\\tbar\"))\n    return v.safeParse(v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 4, \"Object must have at least 4 properties\")), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2762743360.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"foo\": v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n                                                                 ^\nTypeError: v.looseObject({ foo: v.optional(v.any()) }).pipe is not a function. (In 'v.looseObject({ foo: v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\"))\n    return v.safeParse(v.strictObject({ bar: v.optional(v.any()) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({ foo: v.optional(v.any()) }).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2298278053.ts:3:62\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"foo\": v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n                                                                 ^\nTypeError: v.looseObject({ foo: v.optional(v.any()) }).pipe is not a function. (In 'v.looseObject({ foo: v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\"))\n    return v.safeParse(v.strictObject({ bar: v.optional(v.any()) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({ foo: v.optional(v.any()) }).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2298278053.ts:3:62\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"foo\": v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n                                                                 ^\nTypeError: v.looseObject({ foo: v.optional(v.any()) }).pipe is not a function. (In 'v.looseObject({ foo: v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\"))\n    return v.safeParse(v.strictObject({ bar: v.optional(v.any()) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({ foo: v.optional(v.any()) }).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2298278053.ts:3:62\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "no dependency",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"foo\": v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n                                                                 ^\nTypeError: v.looseObject({ foo: v.optional(v.any()) }).pipe is not a function. (In 'v.looseObject({ foo: v.optional(v.any()) }).pipe(v.check((val) =\u003e {\n  if (Object.hasOwn(val, \"foo\"))\n    return v.safeParse(v.strictObject({ bar: v.optional(v.any()) }), val).success;\n  return !0;\n}, \"Schema dependency validation failed\"))', 'v.looseObject({ foo: v.optional(v.any()) }).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2298278053.ts:3:62\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "enum",
-      "passed": 25,
-      "failed": 24,
+      "passed": 47,
+      "failed": 2,
       "skipped": 0,
       "total": 49,
       "failures": [
         {
-          "group": "simple enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
           "group": "heterogeneous enum validation",
           "test": "one of the enum is valid",
           "expected": true,
           "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "heterogeneous enum validation",
-          "test": "something else is invalid",
-          "expected": false,
-          "actual": "true",
           "passed": false
         },
         {
           "group": "heterogeneous enum validation",
           "test": "valid object matches",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "heterogeneous enum-with-null validation",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enums in properties",
-          "test": "both properties are valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enums in properties",
-          "test": "missing optional property is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with escaped characters",
-          "test": "member 1 is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with escaped characters",
-          "test": "member 2 is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with false does not match 0",
-          "test": "false is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [false] does not match [0]",
-          "test": "[false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with true does not match 1",
-          "test": "true is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [true] does not match [1]",
-          "test": "[true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with 0 does not match false",
-          "test": "integer zero is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with 0 does not match false",
-          "test": "float zero is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [0] does not match [false]",
-          "test": "[0] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [0] does not match [false]",
-          "test": "[0.0] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with 1 does not match true",
-          "test": "integer one is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with 1 does not match true",
-          "test": "float one is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [1] does not match [true]",
-          "test": "[1] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "enum with [1] does not match [true]",
-          "test": "[1.0] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "nul characters in strings",
-          "test": "match string with nul",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "characters with the same visual representation but different codepoint",
-          "test": "character uses the same codepoint",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "characters with the same visual representation, but different number of codepoints",
-          "test": "character uses the same codepoint",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -727,19 +174,10 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 1,
-      "failed": 1,
+      "passed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
-          "test": "failing case",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 2
     },
     {
       "keyword": "items",
@@ -750,21 +188,21 @@
       "failures": [
         {
           "group": "a schema given for items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "a schema given for items",
           "test": "JavaScript pseudo-array is valid",
           "expected": true,
           "actual": "false",
           "passed": false
         },
         {
+          "group": "a schema given for items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
           "group": "an array of schemas for items",
-          "test": "incomplete array of items",
+          "test": "JavaScript pseudo-array is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -778,7 +216,14 @@
         },
         {
           "group": "an array of schemas for items",
-          "test": "JavaScript pseudo-array is valid",
+          "test": "incomplete array of items",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "items and subitems",
+          "test": "fewer items is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -803,54 +248,22 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "maxItems",
-      "passed": 0,
-      "failed": 4,
+      "passed": 3,
+      "failed": 1,
       "skipped": 0,
       "total": 4,
       "failures": [
         {
           "group": "maxItems validation",
-          "test": "shorter is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.maxLength(2));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(2))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2393486046.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxItems validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.maxLength(2));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(2))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2393486046.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxItems validation",
-          "test": "too long is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.maxLength(2));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(2))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2393486046.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxItems validation",
           "test": "ignores non-arrays",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.maxLength(2));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(2))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2393486046.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         }
       ]
     },
@@ -872,74 +285,31 @@
     },
     {
       "keyword": "maxProperties",
-      "passed": 0,
-      "failed": 8,
+      "passed": 5,
+      "failed": 3,
       "skipped": 0,
       "total": 8,
       "failures": [
         {
           "group": "maxProperties validation",
-          "test": "shorter is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "too long is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxProperties validation",
           "test": "ignores arrays",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "maxProperties validation",
           "test": "ignores other non-objects",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 2, \"Object must have at most 2 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2790540017.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         },
         {
-          "group": "maxProperties = 0 means the object is empty",
-          "test": "no properties is valid",
+          "group": "maxProperties validation",
+          "test": "ignores strings",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 0, \"Object must have at most 0 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 0, \"Object must have at most 0 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2439808663.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "maxProperties = 0 means the object is empty",
-          "test": "one property is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 0, \"Object must have at most 0 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003c= 0, \"Object must have at most 0 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2439808663.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         }
       ]
     },
@@ -950,6 +320,13 @@
       "skipped": 0,
       "total": 14,
       "failures": [
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
         {
           "group": "maximum validation",
           "test": "ignores non-numbers",
@@ -963,54 +340,22 @@
           "expected": true,
           "actual": "false",
           "passed": false
-        },
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "minItems",
-      "passed": 0,
-      "failed": 4,
+      "passed": 3,
+      "failed": 1,
       "skipped": 0,
       "total": 4,
       "failures": [
         {
           "group": "minItems validation",
-          "test": "longer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.minLength(1));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3425990279.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minItems validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.minLength(1));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3425990279.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minItems validation",
-          "test": "too short is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.minLength(1));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3425990279.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minItems validation",
           "test": "ignores non-arrays",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.minLength(1));\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3425990279.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         }
       ]
     },
@@ -1032,58 +377,31 @@
     },
     {
       "keyword": "minProperties",
-      "passed": 0,
-      "failed": 6,
+      "passed": 3,
+      "failed": 3,
       "skipped": 0,
       "total": 6,
       "failures": [
         {
           "group": "minProperties validation",
-          "test": "longer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minProperties validation",
-          "test": "exact length is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minProperties validation",
-          "test": "too short is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minProperties validation",
           "test": "ignores arrays",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "minProperties validation",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "minProperties validation",
           "test": "ignores other non-objects",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"));\n                                     ^\nTypeError: v.looseObject({}).pipe is not a function. (In 'v.looseObject({}).pipe(v.check((val) =\u003e Object.keys(val).length \u003e= 1, \"Object must have at least 1 properties\"))', 'v.looseObject({}).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4007304194.ts:3:34\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "minProperties validation",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "false",
+          "passed": false
         }
       ]
     },
@@ -1094,6 +412,13 @@
       "skipped": 0,
       "total": 17,
       "failures": [
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
         {
           "group": "minimum validation",
           "test": "ignores non-numbers",
@@ -1106,13 +431,6 @@
           "test": "ignores non-numbers",
           "expected": true,
           "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
           "passed": false
         },
         {
@@ -1142,130 +460,44 @@
     },
     {
       "keyword": "not",
-      "passed": 15,
-      "failed": 5,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "not",
-          "test": "allowed",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "not multiple types",
-          "test": "valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "not more complex schema",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "not more complex schema",
-          "test": "other match",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "double negation",
-          "test": "any value is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "oneOf",
-      "passed": 12,
-      "failed": 11,
+      "passed": 19,
+      "failed": 4,
       "skipped": 0,
       "total": 23,
       "failures": [
         {
-          "group": "oneOf",
-          "test": "both oneOf valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf",
-          "test": "neither oneOf valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf with base schema",
-          "test": "mismatch base schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf with base schema",
-          "test": "both oneOf valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf complex types",
-          "test": "both oneOf valid (complex)",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf complex types",
-          "test": "neither oneOf valid (complex)",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf with empty schema",
-          "test": "both valid - invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "both invalid - invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "both valid - invalid",
-          "expected": false,
-          "actual": "true",
+          "group": "oneOf with missing optional property",
+          "test": "first oneOf valid",
+          "expected": true,
+          "actual": "false",
           "passed": false
         },
         {
           "group": "oneOf with missing optional property",
-          "test": "both oneOf valid",
-          "expected": false,
-          "actual": "true",
+          "test": "second oneOf valid",
+          "expected": true,
+          "actual": "false",
           "passed": false
         },
         {
-          "group": "oneOf with missing optional property",
-          "test": "neither oneOf valid",
-          "expected": false,
-          "actual": "true",
+          "group": "oneOf with required",
+          "test": "first valid - valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "oneOf with required",
+          "test": "second valid - valid",
+          "expected": true,
+          "actual": "false",
           "passed": false
         }
       ]
@@ -1279,14 +511,14 @@
       "failures": [
         {
           "group": "pattern validation",
-          "test": "ignores booleans",
+          "test": "ignores arrays",
           "expected": true,
           "actual": "false",
           "passed": false
         },
         {
           "group": "pattern validation",
-          "test": "ignores integers",
+          "test": "ignores booleans",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -1300,14 +532,7 @@
         },
         {
           "group": "pattern validation",
-          "test": "ignores objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores arrays",
+          "test": "ignores integers",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -1315,6 +540,13 @@
         {
           "group": "pattern validation",
           "test": "ignores null",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores objects",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -1330,14 +562,14 @@
       "failures": [
         {
           "group": "patternProperties validates properties matching a regex",
-          "test": "ignores strings",
+          "test": "ignores other non-objects",
           "expected": true,
           "actual": "false",
           "passed": false
         },
         {
           "group": "patternProperties validates properties matching a regex",
-          "test": "ignores other non-objects",
+          "test": "ignores strings",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -1346,8 +578,8 @@
     },
     {
       "keyword": "properties",
-      "passed": 8,
-      "failed": 16,
+      "passed": 15,
+      "failed": 9,
       "skipped": 0,
       "total": 24,
       "failures": [
@@ -1359,93 +591,6 @@
           "passed": false
         },
         {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property validates property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property invalidates property",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates property",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates nonproperty",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty ignores property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty validates others",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty invalidates others",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.objectWithRest({ \"bar\": v.optional(v.array(v.any())), \"foo\": v.optional(v.array(v.any()).pipe(v.maxLength(3))) }, v.pipe(v.number(), v.integer())).pipe(v.check((val) =\u003e {\n                                                                                                              ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.maxLength(3))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3885738694.ts:3:107\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
           "group": "properties whose names are Javascript object property names",
           "test": "__proto__ not valid",
           "expected": false,
@@ -1455,8 +600,8 @@
         },
         {
           "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
+          "test": "all present and valid",
+          "expected": true,
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
@@ -1471,204 +616,57 @@
         },
         {
           "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
+          "test": "ignores arrays",
           "expected": true,
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty validates nonproperty",
+          "expected": true,
+          "actual": "false",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "ref",
-      "passed": 20,
-      "failed": 13,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 33,
-      "failures": [
-        {
-          "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data does not validate",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"$schema\": v.optional(v.string()), \"additionalItems\": v.optional(v.union([v.any()])), \"additionalProperties\": v.optional(v.union([v.any()])), \"allOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"anyOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"default\": v.optional(v.any()), \"definitions\": v.optional(v.record(v.string(), v.any())), \"dependencies\": v.optional(v.record(v.string(), v.union([v.any()]))), \"description\": v.optional(v.string()), \"enum\": v.optional(v.array(v.any()).pipe(v.minLength(1), v.check((arr) =\u003e {\n\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2387805056.ts:3:211\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.looseObject({ \"$schema\": v.optional(v.string()), \"additionalItems\": v.optional(v.union([v.any()])), \"additionalProperties\": v.optional(v.union([v.any()])), \"allOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"anyOf\": v.optional(v.array(v.any()).pipe(v.minLength(1))), \"default\": v.optional(v.any()), \"definitions\": v.optional(v.record(v.string(), v.any())), \"dependencies\": v.optional(v.record(v.string(), v.union([v.any()]))), \"description\": v.optional(v.string()), \"enum\": v.optional(v.array(v.any()).pipe(v.minLength(1), v.check((arr) =\u003e {\n\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.minLength(1))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-2387805056.ts:3:211\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
-        },
-        {
-          "group": "Recursive references between schemas",
-          "test": "invalid tree",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
-        },
-        {
-          "group": "Location-independent identifier with base URI change in subschema",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
-        },
-        {
-          "group": "Location-independent identifier with base URI change in subschema",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "match the enum exactly",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "id must be resolved against nearest parent, not just immediate parent",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://example.com/b/d.json\": failed to fetch http://example.com/b/d.json: status 404"
-        },
-        {
-          "group": "id must be resolved against nearest parent, not just immediate parent",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://example.com/b/d.json\": failed to fetch http://example.com/b/d.json: status 404"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
-      "passed": 6,
-      "failed": 9,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "base URI change",
-          "test": "base URI change ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "base URI change",
-          "test": "base URI change ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "base URI change - change folder",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "base URI change - change folder",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "base URI change - change folder in subschema",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "base URI change - change folder in subschema",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "root ref in remote ref",
-          "test": "string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
-        },
-        {
-          "group": "root ref in remote ref",
-          "test": "null is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
-        },
-        {
-          "group": "root ref in remote ref",
-          "test": "object is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "required",
@@ -1678,32 +676,28 @@
       "total": 15,
       "failures": [
         {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
         },
         {
-          "group": "required validation",
-          "test": "ignores strings",
+          "group": "required properties whose names are Javascript object property names",
+          "test": "all present",
           "expected": true,
-          "actual": "false",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
         },
         {
-          "group": "required validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
         },
         {
           "group": "required properties whose names are Javascript object property names",
@@ -1730,14 +724,6 @@
         },
         {
           "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
           "test": "toString present",
           "expected": false,
           "actual": "error",
@@ -1745,27 +731,39 @@
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
         },
         {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+          "group": "required validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "false",
+          "passed": false
         },
         {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "all present",
+          "group": "required validation",
+          "test": "ignores strings",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "required validation",
+          "test": "non-present required property is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "required with escaped characters",
+          "test": "object with some properties missing is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
         }
       ]
     },
     {
       "keyword": "type",
-      "passed": 68,
-      "failed": 11,
+      "passed": 78,
+      "failed": 1,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -1775,413 +773,22 @@
           "expected": false,
           "actual": "true",
           "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a float is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "an object is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "an array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a boolean is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "null is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array or object",
-          "test": "number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array or object",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array or object",
-          "test": "null is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array, object or null",
-          "test": "number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array, object or null",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
     {
       "keyword": "uniqueItems",
-      "passed": 27,
-      "failed": 42,
+      "passed": 67,
+      "failed": 2,
       "skipped": 0,
       "total": 69,
       "failures": [
         {
-          "group": "uniqueItems validation",
-          "test": "unique array of integers is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of integers is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of more than two integers is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "numbers are unique if mathematically unequal",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "false is not equal to zero",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "true is not equal to one",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of strings is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of strings is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of objects is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "property order of array of objects is ignored",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of nested objects is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of nested objects is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique array of arrays is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of arrays is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of more than two arrays is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "1 and true are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "0 and false are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "[1] and [true] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "[0] and [false] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "nested [1] and [true] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "nested [0] and [false] are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique heterogeneous types are valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique heterogeneous types are invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "different objects are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "objects are non-unique despite key order",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "{\"a\": false} and {\"a\": 0} are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "{\"a\": true} and {\"a\": 1} are unique",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.array(v.any()).pipe(v.check((arr) =\u003e {\n                                    ^\nTypeError: v.array(v.any()).pipe is not a function. (In 'v.array(v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.array(v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-402407004.ts:3:33\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [false, true] is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [true, false] is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n                                                                        ^\nTypeError: v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe is not a function. (In 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tupleWithRest([v.boolean(), v.boolean()], v.any()).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-4154162493.ts:3:69\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n                                                       ^\nTypeError: v.tuple([v.boolean(), v.boolean()]).pipe is not a function. (In 'v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tuple([v.boolean(), v.boolean()]).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3632223244.ts:3:52\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n                                                       ^\nTypeError: v.tuple([v.boolean(), v.boolean()]).pipe is not a function. (In 'v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tuple([v.boolean(), v.boolean()]).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3632223244.ts:3:52\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n                                                       ^\nTypeError: v.tuple([v.boolean(), v.boolean()]).pipe is not a function. (In 'v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tuple([v.boolean(), v.boolean()]).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3632223244.ts:3:52\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n                                                       ^\nTypeError: v.tuple([v.boolean(), v.boolean()]).pipe is not a function. (In 'v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tuple([v.boolean(), v.boolean()]).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3632223244.ts:3:52\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
-        },
-        {
           "group": "uniqueItems with an array of items and additionalItems=false",
           "test": "extra items are invalid even if unique",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: 1 | import * as v from \"valibot\";\n2 | \n3 | const schema = v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n                                                       ^\nTypeError: v.tuple([v.boolean(), v.boolean()]).pipe is not a function. (In 'v.tuple([v.boolean(), v.boolean()]).pipe(v.check((arr) =\u003e {\n  const seen = new Set;\n  for (const item of arr) {\n    const key = JSON.stringify(item);\n    if (seen.has(key))\n      return !1;\n    seen.add(key);\n  }\n  return !0;\n}, \"Array items must be unique\"))', 'v.tuple([v.boolean(), v.boolean()]).pipe' is undefined)\n      at /home/trapani/dev/xschema-adapters-ts/typescript/packages/adapters/valibot/xschema-harness-3632223244.ts:3:52\n      at loadAndEvaluateModule (2:1)\n\nBun v1.3.5 (Linux x64)\n"
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "uniqueItems=false with an array of items and additionalItems=false",
@@ -2194,10 +801,10 @@
     }
   ],
   "summary": {
-    "passed": 343,
-    "failed": 256,
+    "passed": 475,
+    "failed": 76,
     "skipped": 0,
-    "total": 599,
-    "percentage": 57.26210350584308
+    "total": 551,
+    "percentage": 86.20689655172413
   }
 }

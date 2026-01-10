@@ -124,8 +124,8 @@
       "keyword": "if-then-else",
       "passed": 0,
       "failed": 0,
-      "skipped": 30,
-      "total": 30
+      "skipped": 26,
+      "total": 26
     },
     {
       "keyword": "infinite-loop-detection",
@@ -222,8 +222,8 @@
       "keyword": "not",
       "passed": 0,
       "failed": 0,
-      "skipped": 38,
-      "total": 38
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "oneOf",
@@ -264,22 +264,22 @@
       "keyword": "recursiveRef",
       "passed": 0,
       "failed": 0,
-      "skipped": 30,
-      "total": 30
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "ref",
       "passed": 0,
       "failed": 0,
-      "skipped": 35,
-      "total": 35
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "refRemote",
       "passed": 0,
       "failed": 0,
-      "skipped": 17,
-      "total": 17
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "required",
@@ -306,8 +306,8 @@
       "keyword": "unevaluatedProperties",
       "passed": 0,
       "failed": 0,
-      "skipped": 44,
-      "total": 44
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "uniqueItems",
@@ -327,8 +327,8 @@
   "summary": {
     "passed": 0,
     "failed": 0,
-    "skipped": 1027,
-    "total": 1027,
+    "skipped": 859,
+    "total": 859,
     "percentage": 0
   }
 }

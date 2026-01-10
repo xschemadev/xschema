@@ -103,8 +103,8 @@
       "keyword": "if-then-else",
       "passed": 0,
       "failed": 0,
-      "skipped": 30,
-      "total": 30
+      "skipped": 26,
+      "total": 26
     },
     {
       "keyword": "infinite-loop-detection",
@@ -229,15 +229,15 @@
       "keyword": "ref",
       "passed": 0,
       "failed": 0,
-      "skipped": 36,
-      "total": 36
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "refRemote",
       "passed": 0,
       "failed": 0,
-      "skipped": 17,
-      "total": 17
+      "skipped": 0,
+      "total": 0
     },
     {
       "keyword": "required",
@@ -264,8 +264,8 @@
   "summary": {
     "passed": 0,
     "failed": 0,
-    "skipped": 872,
-    "total": 872,
+    "skipped": 815,
+    "total": 815,
     "percentage": 0
   }
 }

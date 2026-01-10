@@ -4,45 +4,69 @@ package language
 const TSHarnessTemplate = `{{- if .Imports}}
 {{.Imports}}
 {{- end}}
-{{- if .IsTypeOnly}}
-// Type-only adapter harness
-// Validates that generated TypeScript types are syntactically valid
-// but cannot run runtime validation tests since types are compile-time only
 
-type GeneratedType = {{.Type}};
-
-const testCases: Array<{ data: unknown; valid: boolean }> = JSON.parse({{.TestCasesString}});
-
-const results = testCases.map((tc, index) => ({
-  index,
-  expected: tc.valid,
-  actual: "skipped",
-}));
+const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) => boolean }> = {
+{{- range $i, $s := .Schemas}}
+{{- if $s.IsTypeOnly}}
+  "{{$s.GroupID}}": (() => {
+    type GeneratedType = {{$s.Type}};
+    return { isTypeOnly: true, validate: () => true };
+  })(),
 {{- else}}
-const schema = {{.Schema}};
-
-const testCases: Array<{ data: unknown; valid: boolean }> = JSON.parse({{.TestCasesString}});
-
-const validate = {{.Validate}};
-
-const results = testCases.map((tc, index) => {
-  try {
-    const isValid = validate(tc.data);
-    return {
-      index,
-      expected: tc.valid,
-      actual: isValid ? "true" : "false",
-    };
-  } catch (e) {
-    return {
-      index,
-      expected: tc.valid,
-      actual: "error",
-      error: e instanceof Error ? e.message : String(e),
-    };
-  }
-});
+  "{{$s.GroupID}}": (() => {
+    const schema = {{$s.Schema}};
+    return { isTypeOnly: false, validate: {{$s.Validate}} };
+  })(),
 {{- end}}
+{{- end}}
+};
+
+const testData: Array<{
+  groupId: string;
+  tests: Array<{ data: unknown; valid: boolean }>;
+}> = JSON.parse({{.TestDataString}});
+
+const results = testData.flatMap(({ groupId, tests }) => {
+  const entry = schemas[groupId];
+  if (!entry) {
+    return tests.map((tc, index) => ({
+      groupId,
+      index,
+      expected: tc.valid,
+      actual: "error" as const,
+      error: "schema not found for group " + groupId,
+    }));
+  }
+
+  if (entry.isTypeOnly) {
+    return tests.map((tc, index) => ({
+      groupId,
+      index,
+      expected: tc.valid,
+      actual: "skipped" as const,
+    }));
+  }
+
+  return tests.map((tc, index) => {
+    try {
+      const isValid = entry.validate(tc.data);
+      return {
+        groupId,
+        index,
+        expected: tc.valid,
+        actual: isValid ? ("true" as const) : ("false" as const),
+      };
+    } catch (e) {
+      return {
+        groupId,
+        index,
+        expected: tc.valid,
+        actual: "error" as const,
+        error: e instanceof Error ? e.message : String(e),
+      };
+    }
+  });
+});
 
 console.log(JSON.stringify(results));
 `
