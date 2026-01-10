@@ -17,4 +17,6 @@ export interface ConvertResult {
   imports: string[];
   schema?: string;
   type?: string;
+  validate?: string;
+  validateImports?: string[];
 }
