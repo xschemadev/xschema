@@ -1,6 +1,7 @@
 package injector
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -361,6 +362,74 @@ func TestWriteGeneratedFiles_RejectsCollidingPaths(t *testing.T) {
 	})
 	if err == nil {
 		t.Fatalf("expected error for colliding paths")
+	}
+}
+
+func TestWriteGeneratedFiles_WritesManifestAndDeletesStaleFiles(t *testing.T) {
+	outDir := t.TempDir()
+
+	if err := os.WriteFile(filepath.Join(outDir, "keep.txt"), []byte("keep"), 0644); err != nil {
+		t.Fatalf("failed to write keep file: %v", err)
+	}
+
+	err := WriteGeneratedFiles(outDir, []language.GeneratedFile{
+		{Path: "a.ts", Contents: "a"},
+		{Path: "nested/b.ts", Contents: "b"},
+	})
+	if err != nil {
+		t.Fatalf("WriteGeneratedFiles failed: %v", err)
+	}
+
+	manifestBytes, err := os.ReadFile(filepath.Join(outDir, manifestFileName))
+	if err != nil {
+		t.Fatalf("failed reading manifest: %v", err)
+	}
+	var m manifest
+	if err := json.Unmarshal(manifestBytes, &m); err != nil {
+		t.Fatalf("failed parsing manifest: %v", err)
+	}
+	if strings.Join(m.Files, ",") != "a.ts,nested/b.ts" {
+		t.Fatalf("unexpected manifest files: %v", m.Files)
+	}
+
+	err = WriteGeneratedFiles(outDir, []language.GeneratedFile{{Path: "c.ts", Contents: "c"}})
+	if err != nil {
+		t.Fatalf("WriteGeneratedFiles second run failed: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(outDir, "a.ts")); !os.IsNotExist(err) {
+		t.Fatalf("expected stale file a.ts to be deleted")
+	}
+	if _, err := os.Stat(filepath.Join(outDir, "nested", "b.ts")); !os.IsNotExist(err) {
+		t.Fatalf("expected stale file nested/b.ts to be deleted")
+	}
+	if _, err := os.Stat(filepath.Join(outDir, "keep.txt")); err != nil {
+		t.Fatalf("expected keep.txt to remain: %v", err)
+	}
+
+	manifestBytes, err = os.ReadFile(filepath.Join(outDir, manifestFileName))
+	if err != nil {
+		t.Fatalf("failed reading manifest after second run: %v", err)
+	}
+	m = manifest{}
+	if err := json.Unmarshal(manifestBytes, &m); err != nil {
+		t.Fatalf("failed parsing manifest after second run: %v", err)
+	}
+	if strings.Join(m.Files, ",") != "c.ts" {
+		t.Fatalf("unexpected manifest files after second run: %v", m.Files)
+	}
+}
+
+func TestWriteGeneratedFiles_RejectsInvalidManifestPaths(t *testing.T) {
+	outDir := t.TempDir()
+
+	if err := os.WriteFile(filepath.Join(outDir, manifestFileName), []byte(`{"files":["../evil.ts"]}`), 0644); err != nil {
+		t.Fatalf("failed to write manifest: %v", err)
+	}
+
+	err := WriteGeneratedFiles(outDir, []language.GeneratedFile{{Path: "safe.ts", Contents: "x"}})
+	if err == nil {
+		t.Fatalf("expected error when manifest contains invalid paths")
 	}
 }
 

@@ -14,6 +14,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
 - Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
 - Use `injector.WriteGeneratedFiles(outDir, files)` to safely write multi-file outputs under the output root.
+- Stale output cleanup uses `xschema.manifest.json` in the output root; `WriteGeneratedFiles` deletes stale files from the previous manifest and writes the new manifest atomically (temp + rename).
 - Avoid writing `*/` inside block comments (e.g. `adapters/` + wildcard), it terminates the comment and breaks parsing.
 - Generator invokes adapters via `language.AdapterInvoker` returning a validated `CommandSpec` (pass `projectRoot` so runner detection happens in the right directory).
 
