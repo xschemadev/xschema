@@ -69,7 +69,7 @@
         "Profile shows improved suite load time compared to baseline in `progress.txt`",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -5,6 +5,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
 - Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
 - Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
+- `LoadTestSuite` can take a keyword to load only `tests/<draft>/<keyword>.json`; missing keywords should list available names.
 
 ---
 
@@ -38,5 +39,13 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Files changed: `cli/compliance/harness.go`, `cli/language/typescript.go`, `prd.jsonc`, `progress.txt`.
 - **Learnings for future iterations:**
   - Use `detectTSHarnessRunner` to configure harness execution per runtime.
+---
+
+## 2026-01-10 17:56 - US-005
+- Loaded keyword-only test files when `--keyword` is set and report missing keyword names.
+- Files changed: `cli/compliance/loader.go`, `cli/compliance/loader_test.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Use `LoadTestSuite` keyword parameter to avoid loading all keyword files.
+  - Missing keyword errors should list available keyword names.
 ---
 

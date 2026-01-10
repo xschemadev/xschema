@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -21,37 +22,82 @@ var Drafts = []string{
 
 // LoadTestSuite loads the JSON Schema Test Suite for a specific draft
 // Returns a map of keyword name to test groups
-func LoadTestSuite(suitePath, draft string) (map[string][]TestGroup, error) {
+func LoadTestSuite(suitePath, draft, keyword string) (map[string][]TestGroup, error) {
 	testsDir := filepath.Join(suitePath, "tests", draft)
 
 	if _, err := os.Stat(testsDir); os.IsNotExist(err) {
 		return nil, fmt.Errorf("test suite not found at %s", testsDir)
 	}
 
-	result := make(map[string][]TestGroup)
-
-	entries, err := os.ReadDir(testsDir)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read test directory: %w", err)
+	if keyword != "" {
+		return loadKeywordSuite(testsDir, keyword)
 	}
 
-	for _, entry := range entries {
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
-			continue
-		}
+	return loadAllTestFiles(testsDir)
+}
 
-		keyword := strings.TrimSuffix(entry.Name(), ".json")
-		filePath := filepath.Join(testsDir, entry.Name())
+func loadAllTestFiles(testsDir string) (map[string][]TestGroup, error) {
+	keywords, err := listKeywords(testsDir)
+	if err != nil {
+		return nil, err
+	}
 
+	result := make(map[string][]TestGroup)
+	for _, keyword := range keywords {
+		filePath := filepath.Join(testsDir, keyword+".json")
 		groups, err := loadTestFile(filePath)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load %s: %w", entry.Name(), err)
+			return nil, fmt.Errorf("failed to load %s.json: %w", keyword, err)
 		}
 
 		result[keyword] = groups
 	}
 
 	return result, nil
+}
+
+func loadKeywordSuite(testsDir, keyword string) (map[string][]TestGroup, error) {
+	filePath := filepath.Join(testsDir, keyword+".json")
+	if _, err := os.Stat(filePath); err != nil {
+		if os.IsNotExist(err) {
+			available, listErr := listKeywords(testsDir)
+			if listErr != nil {
+				return nil, fmt.Errorf("keyword %q not found in %s", keyword, testsDir)
+			}
+			if len(available) == 0 {
+				return nil, fmt.Errorf("keyword %q not found in %s (available: 0 keywords)", keyword, testsDir)
+			}
+			return nil, fmt.Errorf("keyword %q not found in %s (available: %s)", keyword, testsDir, strings.Join(available, ", "))
+		}
+		return nil, err
+	}
+
+	groups, err := loadTestFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load %s.json: %w", keyword, err)
+	}
+
+	return map[string][]TestGroup{keyword: groups}, nil
+}
+
+func listKeywords(testsDir string) ([]string, error) {
+	entries, err := os.ReadDir(testsDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read test directory: %w", err)
+	}
+
+	keywords := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
+			continue
+		}
+
+		keywords = append(keywords, strings.TrimSuffix(entry.Name(), ".json"))
+	}
+
+	sort.Strings(keywords)
+
+	return keywords, nil
 }
 
 func loadTestFile(path string) ([]TestGroup, error) {

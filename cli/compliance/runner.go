@@ -137,7 +137,7 @@ type runDraftOptions struct {
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	// Load test suite for this draft
 	loadStart := time.Now()
-	suite, err := LoadTestSuite(opts.suitePath, opts.draft)
+	suite, err := LoadTestSuite(opts.suitePath, opts.draft, opts.keyword)
 	if opts.timing != nil {
 		opts.timing.addSuiteLoad(time.Since(loadStart))
 	}
