@@ -9,6 +9,8 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - `LoadTestSuite` can take a keyword to load only `tests/<draft>/<keyword>.json`; missing keywords should list available names.
 - Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
 - Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
+- Web `tsconfig.json` uses explicit `compilerOptions.types`: include `bun` and `node` for `bun:test` and `node:*` imports.
+- Avoid writing `*/` inside block comments (e.g. `adapters/*/`), it terminates the comment and breaks parsing.
 
 ---
 
@@ -94,5 +96,14 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Files changed: `typescript/packages/adapters/arktype/xschema.adapter.json`, `typescript/packages/adapters/effect/xschema.adapter.json`, `typescript/packages/adapters/typebox/xschema.adapter.json`, `typescript/packages/adapters/typescript/xschema.adapter.json`, `typescript/packages/adapters/valibot/xschema.adapter.json`, `typescript/packages/adapters/zod/xschema.adapter.json`, `prd.jsonc`, `progress.txt`.
 - **Learnings for future iterations:**
   - Adapters should never be discovered by directory name; rely on `xschema.adapter.json`.
+---
+
+## 2026-01-11 00:15 - US-002
+- Updated web schema generator to read adapter refs from `xschema.adapter.json` (with strict validation + clear errors).
+- Generated `web/public/schemas/typescript.jsonc` and `web/public/schemas/v1/typescript.jsonc` with adapter enums like `@xschemadev/zod`.
+- Files changed: `web/scripts/generate-schemas.ts`, `web/scripts/generate-schemas.test.ts`, `web/tsconfig.json`, `web/public/schemas/typescript.jsonc`, `web/public/schemas/v1/typescript.jsonc`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Keep web typecheck happy by including `bun` + `node` in `web/tsconfig.json` `compilerOptions.types`.
+  - Don’t put `*/` (e.g. `adapters/*/`) inside block comments; it ends the comment and breaks parsing.
 ---
 
