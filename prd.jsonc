@@ -1,117 +1,145 @@
 {
   "project": "xschema",
-  "branchName": "ralph/compliance-suite-performance",
-  "description": "Compliance Suite Performance - reduce compliance runtime by batching work and making outputs deterministic.",
+  "description": "go cli language system refactor: typescript-only, multi-file outputs, adapter refs, and synced web json schemas",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Pin JSON Schema Test Suite version for CI stability",
-      "description": "As a maintainer, I want the JSON Schema Test Suite pinned to a tag/commit so that CI results stay stable and aren’t affected by upstream changes.",
+      "title": "add xschema.adapter.json metadata to adapters",
+      "description": "As a maintainer, I want each adapter directory to declare its canonical adapter ref so that tooling can discover adapters without guessing from path names.",
       "acceptanceCriteria": [
-        "Replace main-tracking suite download with pinned tag or commit SHA",
-        "Cache directory includes pinned version to avoid collisions",
-        "CI uses pinned suite by default (no workflow complexity added)",
-        "Document a single-constant bump process (change constant + regen results)",
+        "Add `xschema.adapter.json` to each existing adapter directory under `typescript/packages/adapters/*`",
+        "Each `xschema.adapter.json` contains at least `{ \"ref\": \"@xschemadev/<adapter>\" }`",
+        "No duplicate `ref` values across adapters",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-002",
-      "title": "Add --profile timing breakdown to compliance runs",
-      "description": "As a developer, I want a timing breakdown for compliance runs so that I can see where time is spent and validate performance improvements.",
+      "title": "update web schema generator to use xschema.adapter.json refs",
+      "description": "As a user, I want IDE json schema validation to autocomplete adapter refs in the same format the cli expects, so configs don’t validate in the editor but fail at runtime.",
       "acceptanceCriteria": [
-        "Add `--profile` boolean flag to `xschema compliance`",
-        "When enabled, print a clearly labeled timing summary with: suite load, schema bundling, adapter invocation, harness generation, harness execution",
-        "Timing output is stable (consistent labels and units) and does not alter pass/fail results",
-        "Persist current timing snapshot to `progress.txt`",
+        "Update `web/scripts/generate-schemas.ts` to read adapter refs from `xschema.adapter.json` (not directory names or package.json)",
+        "If any adapter is missing `xschema.adapter.json`, has invalid json, lacks `ref`, or duplicates a `ref`, the script exits with a clear error",
+        "Generated `web/public/schemas/typescript.jsonc` uses adapter enums like `@xschemadev/zod` (not `zod`)",
+        "Run `bun run types:check` from `web/` successfully",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Make --dev-report outputs deterministic and diff-friendly",
-      "description": "As an adapter developer, I want `--dev-report` outputs to be byte-for-byte identical across runs so that diffs reflect real changes, not noise.",
+      "title": "introduce language spec types for invokers and emitters",
+      "description": "As a maintainer, I want a small language spec layer so the cli can support many languages without a single giant struct full of optional fields.",
       "acceptanceCriteria": [
-        "Running `xschema compliance --dev-report` twice with identical inputs produces identical file contents in `compliance/results/`",
-        "Drafts, keywords, and failures are written in a deterministic order",
-        "Remove non-deterministic timestamps: no `generatedAt` in JSON reports and no `Generated:` line in `compliance/results/REPORT.md`",
-        "CI can validate freshness with a plain diff check (no regex filtering for timestamps)",
+        "Add language core types for multi-file outputs (e.g. `GeneratedFile{Path, Contents}`)",
+        "Add capability interfaces for adapter invocation (command spec) and file emission",
+        "Add shared validators/helpers for safe relative paths and deterministic ordering",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Reduce bun harness overhead by avoiding bun run",
-      "description": "As a developer, I want TypeScript harness execution under bun to avoid unnecessary overhead so that compliance runs faster without semantic changes.",
+      "title": "add language registry with validation and test reset",
+      "description": "As a maintainer, I want a validated language registry so languages can be registered once and looked up consistently by name and schema url.",
       "acceptanceCriteria": [
-        "For bun runtime execution, prefer `bun <file>` over `bun run <file>`",
-        "Harness behavior remains unchanged (stdout JSON format, cwd resolution, error handling)",
-        "Profile shows improved harness execution time compared to baseline in `progress.txt`",
+        "Implement registry api: Register, ByName, BySchemaURL, AllIgnoreDirs, SupportedLanguages",
+        "Registry rejects duplicate names and duplicate schema url mappings with clear errors",
+        "Add `ResetForTests()` (or equivalent) to prevent global state leakage between tests",
+        "Add contract tests covering registration validation and lookups",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Speed up --keyword runs by loading only the requested test file",
-      "description": "As a developer iterating on one keyword, I want `--keyword` runs to load only that keyword’s test JSON so that iteration is faster.",
+      "title": "move typescript language into per-language folder and register it",
+      "description": "As a contributor, I want typescript language support isolated in one folder so adding another language is a copyable pattern.",
       "acceptanceCriteria": [
-        "When `--keyword <k>` is set, load only `tests/<draft>/<k>.json` for each draft",
-        "If `tests/<draft>/<k>.json` does not exist, return a clear error (include available keyword list or count)",
-        "Results for `--keyword` match the subset of a full run for the same draft",
-        "Profile shows improved suite load time compared to baseline in `progress.txt`",
+        "Move TypeScript language implementation into `cli/language/langs/typescript/` and register it via the registry",
+        "Keep the stable import path `github.com/xschemadev/xschema/language` for other cli packages",
+        "Ensure language lookup works for `$schema: https://xschema.dev/schemas/typescript.jsonc`",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Batch adapter conversion per draft+keyword",
-      "description": "As a developer, I want adapter conversion batched per (draft, keyword) so that the runner spawns far fewer adapter processes.",
+      "title": "remove python language support and keep multi-language tests via fake language",
+      "description": "As a maintainer, I want to remove unfinished python support so the repo doesn’t claim features that don’t work, while keeping test coverage for multi-language detection.",
       "acceptanceCriteria": [
-        "For each (draft, keyword), invoke the adapter once with a batch of schema inputs (one per group)",
-        "Each input includes a stable unique id so outputs map back to the originating group deterministically",
-        "Adapter output mapping is deterministic and does not change which groups/tests pass/fail/skipped",
-        "Profile shows reduced adapter invocation time vs baseline in `progress.txt`",
+        "Remove python language implementation and registration",
+        "Update docs/strings in cli commands so `--lang python` errors as unknown language",
+        "Update parser tests that used python to instead register a test-only fake language and assert multi-language conflict behavior",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Batch harness execution per draft+keyword",
-      "description": "As a developer, I want harness execution batched per (draft, keyword) so that the runner spawns far fewer runtime processes while preserving semantics.",
+      "title": "refactor generator to use language adapter invoker and adapter refs",
+      "description": "As a user, I want adapter invocation to be language-defined so the cli doesn’t hardcode node-specific runner assumptions and can support other languages.",
       "acceptanceCriteria": [
-        "For each (draft, keyword), execute exactly one harness runtime process that evaluates all groups+testcases for that keyword",
-        "Compliance totals (passed/failed/skipped/total) match the current implementation for the same adapter + suite inputs",
-        "Failure records include group + test descriptions and remain deterministic across runs",
-        "Profile shows reduced harness execution time vs baseline in `progress.txt`",
+        "Replace generator’s hardcoded runner/bin logic with a call to the language’s AdapterInvoker returning a full command spec",
+        "TypeScript invoker validates adapter refs are scoped npm package refs (e.g. `@xschemadev/zod`) and errors with migration guidance for legacy `\"zod\"`",
+        "TypeScript invoker derives adapter cli as `xschema-<package-basename>` and runs it from project root (runner detection relative to project root)",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-008",
-      "title": "Add --jobs for bounded concurrency (default 1) with deterministic output",
-      "description": "As a developer, I want optional bounded concurrency so that I can speed up compliance runs on strong machines while keeping default behavior deterministic.",
+      "title": "refactor injector for multi-file outputs with safe paths",
+      "description": "As a maintainer, I want injector to support multi-file outputs so future languages can generate idiomatic layouts instead of being forced into one file.",
       "acceptanceCriteria": [
-        "Add `--jobs <n>` flag where `n >= 1`, default `--jobs 1`",
-        "When `--jobs > 1`, parallelize at a safe unit of work (per keyword within a draft)",
-        "Final report ordering is deterministic regardless of execution scheduling",
-        "Progress output remains readable (no interleaved garbage)",
+        "Update injector to accept `[]GeneratedFile` and write all files under `--output` root",
+        "Reject emitted paths that are absolute, contain `..`, or collide with another emitted path",
+        "Writes are deterministic (stable ordering by path)",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": true,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "add fixed-name manifest and stale file cleanup",
+      "description": "As a user, I want stale generated files removed automatically so multi-file outputs don’t accumulate garbage and break builds.",
+      "acceptanceCriteria": [
+        "Write a manifest at `--output/xschema.manifest.json` listing generated file paths",
+        "On subsequent runs, delete only files present in the old manifest but not in the new manifest (and only within `--output`)",
+        "Manifest write is atomic (temp + rename)",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "docs cleanup for language system and adapter refs",
+      "description": "As a contributor, I want documentation to match the actual language system so adding a language doesn’t require reading outdated notes.",
+      "acceptanceCriteria": [
+        "Fix broken references in `docs/INDEX.md` (remove or add missing language docs pages; correct release doc link)",
+        "Rewrite or replace `cli/language/README.md` to describe the new registry + per-language folder model (no tree-sitter drift)",
+        "Update `docs/cli-pipeline.md` to reflect: typescript-only, adapter refs, multi-file outputs, and manifest cleanup",
+        "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
+        "Typecheck passes"
+      ],
+      "passes": false,
       "notes": ""
     }
   ]
