@@ -27,3 +27,16 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - TestCasesString must be pre-escaped JSON string for JS string literal
   - Tests verify both runtime and type-only paths
 ---
+
+## 2026-01-10 - US-003
+- Replaced strings.ReplaceAll with text/template in GenerateTempHarness
+- New signature: GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string)
+- Added Language type with LanguageTypeScript, LanguagePython constants
+- Added GetHarnessTemplate and GetHarnessExtension helpers
+- Removed harnessFile from runDraftOptions, no longer reading per-adapter harness files
+- Files changed: cli/compliance/harness.go, cli/compliance/harness_test.go, cli/compliance/runner.go
+- **Learnings:**
+  - Runner no longer calls FindHarness - templates are built into the binary
+  - Tests updated to use AdapterOutput instead of raw code strings
+  - Full compliance tests require adapters to return validate field (US-004+)
+---
