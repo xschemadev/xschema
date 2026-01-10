@@ -1,10 +1,4 @@
 // Core types for xschema adapters
-export interface XSchemaAdapter {
-  readonly __brand: "xschema-adapter";
-  readonly name: string;
-  readonly language: string;
-}
-
 export interface ConvertInput {
   namespace: string;
   id: string;
@@ -17,4 +11,6 @@ export interface ConvertResult {
   imports: string[];
   schema?: string;
   type?: string;
+  validate?: string;
+  validateImports?: string[];
 }

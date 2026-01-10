@@ -1,0 +1,32 @@
+{
+	"name": "@xschemadev/valibot",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "XSchema Valibot Adapter",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"bin": {
+		"xschema-valibot": "./dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"compliance": "ADAPTER=$PWD && cd ../../../../cli && go run . compliance --dev-report --adapter-path $ADAPTER"
+	},
+	"dependencies": {
+		"@xschemadev/core": "workspace:*"
+	},
+	"devDependencies": {
+		"valibot": "^0.42.0"
+	},
+	"peerDependencies": {
+		"valibot": "^0.42.0"
+	}
+}

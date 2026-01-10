@@ -7,72 +7,106 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"strings"
+	"regexp"
+	"text/template"
+
+	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/language"
 )
 
-// FindHarness locates the harness file in an adapter's compliance directory
-func FindHarness(adapterPath string) (string, error) {
-	complianceDir := filepath.Join(adapterPath, "compliance")
+// harnessPathRegex matches temp harness filenames like "xschema-harness-1312556427.ts"
+// These filenames contain random numbers from os.CreateTemp() and appear in stack traces
+// when harness execution fails. Without sanitization, compliance results would differ
+// between runs purely due to these random numbers, making it impossible to track
+// actual compliance changes in version control.
+var harnessPathRegex = regexp.MustCompile(`xschema-harness-\d+\.(\w+)`)
 
-	entries, err := os.ReadDir(complianceDir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return "", fmt.Errorf("compliance directory not found at %s", complianceDir)
-		}
-		return "", fmt.Errorf("failed to read compliance directory: %w", err)
-	}
-
-	for _, entry := range entries {
-		if strings.HasPrefix(entry.Name(), "harness.") && !entry.IsDir() {
-			return filepath.Join(complianceDir, entry.Name()), nil
-		}
-	}
-
-	return "", fmt.Errorf("no harness file found in %s (expected harness.*)", complianceDir)
+func sanitizeHarnessPath(s string) string {
+	return harnessPathRegex.ReplaceAllString(s, "xschema-harness.$1")
 }
 
-// GenerateTempHarness creates a temporary harness file with injected code and test cases
+// HarnessItem represents a single group's data for harness generation
+type HarnessItem struct {
+	GroupID       string
+	AdapterOutput *adapter.ConvertResult
+	Tests         []TestCase
+}
+
+// GenerateHarness creates a temporary harness file using Go templates
 // The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []TestCase, targetDir string) (string, error) {
-	// Read template
-	templateBytes, err := os.ReadFile(harnessTemplate)
-	if err != nil {
-		return "", fmt.Errorf("failed to read harness template: %w", err)
-	}
-	template := string(templateBytes)
-
-	// Serialize test cases to JSON
-	testCasesJSON, err := json.Marshal(testCases)
-	if err != nil {
-		return "", fmt.Errorf("failed to serialize test cases: %w", err)
+func GenerateHarness(lang *language.Language, items []HarnessItem, targetDir string) (string, error) {
+	if lang.HarnessTemplate == "" {
+		return "", fmt.Errorf("no harness template configured for language %s", lang.Name)
 	}
 
-	// Create a JS string literal containing the JSON
-	// This ensures __proto__ and other special property names are preserved
-	// (directly embedding as JS object literals would interpret __proto__ as prototype setter)
-	testCasesString, err := json.Marshal(string(testCasesJSON))
-	if err != nil {
-		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
+	if len(items) == 0 {
+		return "", fmt.Errorf("no items to generate harness for")
 	}
 
-	// Replace placeholders
-	content := template
-	content = strings.ReplaceAll(content, "{{GENERATED_CODE}}", generatedCode)
-	content = strings.ReplaceAll(content, "{{TEST_CASES_STRING}}", string(testCasesString))
-	// Keep legacy support for {{TEST_CASES}} in case other adapters use it
-	content = strings.ReplaceAll(content, "{{TEST_CASES}}", string(testCasesJSON))
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse harness template: %w", err)
+	}
 
-	// Get extension from template
-	ext := filepath.Ext(harnessTemplate)
+	// Collect all imports and build schema entries
+	var allImports []string
+	schemas := make([]HarnessSchemaEntry, len(items))
+	testData := make([]BatchTestData, len(items))
+
+	for i, item := range items {
+		// Collect imports
+		allImports = append(allImports, item.AdapterOutput.Imports...)
+		allImports = append(allImports, item.AdapterOutput.ValidateImports...)
+
+		// Build schema entry
+		schemas[i] = HarnessSchemaEntry{
+			GroupID:    item.GroupID,
+			Schema:     item.AdapterOutput.Schema,
+			Type:       item.AdapterOutput.Type,
+			Validate:   item.AdapterOutput.Validate,
+			IsTypeOnly: item.AdapterOutput.Validate == "",
+		}
+
+		// Build test data entry
+		testData[i] = BatchTestData{
+			GroupID: item.GroupID,
+			Tests:   item.Tests,
+		}
+	}
+
+	// Merge and format imports
+	formattedImports := lang.MergeImports(allImports)
+
+	// Serialize test data to JSON string
+	testDataJSON, err := json.Marshal(testData)
+	if err != nil {
+		return "", fmt.Errorf("failed to serialize test data: %w", err)
+	}
+	testDataString, err := json.Marshal(string(testDataJSON))
+	if err != nil {
+		return "", fmt.Errorf("failed to serialize test data string: %w", err)
+	}
+
+	// Build template data
+	data := HarnessTemplateData{
+		Imports:        formattedImports,
+		Schemas:        schemas,
+		TestDataString: string(testDataString),
+	}
+
+	// Execute template
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute harness template: %w", err)
+	}
 
 	// Create temp file in target directory (so package resolution works)
-	tmpFile, err := os.CreateTemp(targetDir, "xschema-harness-*"+ext)
+	tmpFile, err := os.CreateTemp(targetDir, "xschema-harness-*"+lang.HarnessExtension)
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %w", err)
 	}
 
-	if _, err := tmpFile.WriteString(content); err != nil {
+	if _, err := tmpFile.Write(buf.Bytes()); err != nil {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name())
 		return "", fmt.Errorf("failed to write temp file: %w", err)
@@ -88,11 +122,9 @@ func GenerateTempHarness(harnessTemplate, generatedCode string, testCases []Test
 
 // ExecuteHarness runs the harness file and returns the results
 func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runnerArgs []string, workDir string) ([]HarnessResult, error) {
-	// Build command: e.g., "bun run harness.ts"
 	args := append(runnerArgs, harnessFile)
 	cmd := exec.CommandContext(ctx, runner, args...)
 
-	// Set working directory so bun can find dependencies
 	if workDir != "" {
 		cmd.Dir = workDir
 	}
@@ -102,10 +134,9 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("harness execution failed: %w\nstderr: %s", err, stderr.String())
+		return nil, fmt.Errorf("harness execution failed: %w\nstderr: %s", err, sanitizeHarnessPath(stderr.String()))
 	}
 
-	// Parse JSON output
 	var results []HarnessResult
 	if err := json.Unmarshal(stdout.Bytes(), &results); err != nil {
 		return nil, fmt.Errorf("failed to parse harness output: %w\nstdout: %s", err, stdout.String())
@@ -115,22 +146,31 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 }
 
 // CallAdapter calls the adapter to convert a schema to code
-func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*AdapterOutput, error) {
-	// Build input
-	input := []map[string]interface{}{
-		{
-			"namespace": "compliance",
-			"id":        "Test",
-			"schema":    schema,
-		},
+func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*adapter.ConvertResult, error) {
+	outputs, err := CallAdapterBatch(ctx, adapterBin, runner, runnerArgs, []adapter.ConvertInput{
+		{Namespace: "compliance", ID: "Test", Schema: schema.Raw()},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(outputs) == 0 {
+		return nil, fmt.Errorf("adapter returned no output")
+	}
+	return &outputs[0], nil
+}
+
+// CallAdapterBatch calls the adapter to convert multiple schemas in a single process invocation.
+// Each input must have a unique ID; outputs are returned in the same order as inputs.
+func CallAdapterBatch(ctx context.Context, adapterBin string, runner string, runnerArgs []string, inputs []adapter.ConvertInput) ([]adapter.ConvertResult, error) {
+	if len(inputs) == 0 {
+		return nil, nil
 	}
 
-	inputJSON, err := json.Marshal(input)
+	inputJSON, err := json.Marshal(inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to serialize input: %w", err)
 	}
 
-	// Build command: e.g., "bunx @xschemadev/zod"
 	args := append(runnerArgs, adapterBin)
 	cmd := exec.CommandContext(ctx, runner, args...)
 	cmd.Stdin = bytes.NewReader(inputJSON)
@@ -143,15 +183,26 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 		return nil, fmt.Errorf("adapter call failed: %w\nstderr: %s", err, stderr.String())
 	}
 
-	// Parse output
-	var outputs []AdapterOutput
+	var outputs []adapter.ConvertResult
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
 		return nil, fmt.Errorf("failed to parse adapter output: %w\nstdout: %s", err, stdout.String())
 	}
 
-	if len(outputs) == 0 {
-		return nil, fmt.Errorf("adapter returned no output")
+	// Build map by ID for lookup
+	outputByID := make(map[string]*adapter.ConvertResult, len(outputs))
+	for i := range outputs {
+		outputByID[outputs[i].ID] = &outputs[i]
 	}
 
-	return &outputs[0], nil
+	// Return outputs in same order as inputs
+	result := make([]adapter.ConvertResult, len(inputs))
+	for i, inp := range inputs {
+		out, ok := outputByID[inp.ID]
+		if !ok {
+			return nil, fmt.Errorf("adapter did not return output for id %q", inp.ID)
+		}
+		result[i] = *out
+	}
+
+	return result, nil
 }

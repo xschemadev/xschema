@@ -7,11 +7,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/bundler"
+	"github.com/xschemadev/xschema/language"
 )
 
 // ProgressUpdate contains info about current test progress
@@ -34,7 +38,10 @@ type RunOptions struct {
 	SuitePath      string                          // path to JSON Schema Test Suite
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
+	Language       *language.Language              // language configuration
 	Verbose        bool
+	Timing         *TimingSummary
+	Jobs           int                     // number of parallel jobs (default 1)
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
 	ProgressFunc   func(ProgressUpdate)    // for live progress updates
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
@@ -42,16 +49,18 @@ type RunOptions struct {
 
 // Run executes compliance tests for an adapter
 func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
-	// Find harness template
-	harnessFile, err := FindHarness(opts.AdapterPath)
-	if err != nil {
-		return nil, err
-	}
-
 	// Determine which drafts to test
 	drafts := opts.Drafts
 	if len(drafts) == 0 {
 		drafts = Drafts
+	}
+
+	// Validate language config
+	if opts.Language == nil {
+		return nil, fmt.Errorf("Language not configured")
+	}
+	if opts.Language.HarnessTemplate == "" {
+		return nil, fmt.Errorf("harness template not configured for language %s", opts.Language.Name)
 	}
 
 	// Determine adapter CLI path
@@ -64,9 +73,8 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	}
 
 	report := ComplianceReport{
-		Adapter:     opts.AdapterName,
-		GeneratedAt: time.Now().UTC().Format(time.RFC3339),
-		Drafts:      []DraftResult{},
+		Adapter: opts.AdapterName,
+		Drafts:  []DraftResult{},
 	}
 
 	for i, draft := range drafts {
@@ -81,20 +89,27 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			opts.OutputFunc(fmt.Sprintf("Testing %s...", draft))
 		}
 
+		jobs := opts.Jobs
+		if jobs < 1 {
+			jobs = 1
+		}
+
 		draftResult, err := runDraft(ctx, runDraftOptions{
 			draft:        draft,
 			draftNum:     i + 1,
 			draftTotal:   len(drafts),
 			keyword:      opts.Keyword,
 			suitePath:    opts.SuitePath,
-			harnessFile:  harnessFile,
 			adapterBin:   adapterBin,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
+			language:     opts.Language,
 			workDir:      opts.AdapterPath,
 			verbose:      opts.Verbose,
+			jobs:         jobs,
 			outputFunc:   opts.OutputFunc,
 			progressFunc: opts.ProgressFunc,
+			timing:       opts.Timing,
 		})
 
 		if draftResult != nil {
@@ -122,27 +137,27 @@ type runDraftOptions struct {
 	draftTotal   int
 	keyword      string // filter to specific keyword (empty = all)
 	suitePath    string
-	harnessFile  string
 	adapterBin   string
 	runner       string
 	runnerArgs   []string
+	language     *language.Language
 	workDir      string // directory to run harness from (for dependency resolution)
 	verbose      bool
+	jobs         int // parallel keyword processing (default 1)
 	outputFunc   func(string)
 	progressFunc func(ProgressUpdate)
+	timing       *TimingSummary
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	// Load test suite for this draft
-	suite, err := LoadTestSuite(opts.suitePath, opts.draft)
+	loadStart := time.Now()
+	suite, err := LoadTestSuite(opts.suitePath, opts.draft, opts.keyword)
+	if opts.timing != nil {
+		opts.timing.addSuiteLoad(time.Since(loadStart))
+	}
 	if err != nil {
 		return nil, err
-	}
-
-	result := DraftResult{
-		Draft:    opts.draft,
-		Keywords: []KeywordResult{},
-		Summary:  DraftSummary{},
 	}
 
 	// Sort keywords for consistent output
@@ -154,13 +169,7 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 
 	// Filter to specific keyword if requested
 	if opts.keyword != "" {
-		found := false
-		for _, k := range keywords {
-			if k == opts.keyword {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(keywords, opts.keyword)
 		if !found {
 			return nil, fmt.Errorf("keyword %q not found in %s (available: %d keywords)", opts.keyword, opts.draft, len(keywords))
 		}
@@ -168,6 +177,23 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	}
 
 	totalKeywords := len(keywords)
+
+	// Sequential execution (jobs == 1) - original behavior
+	if opts.jobs <= 1 {
+		return runDraftSequential(ctx, opts, suite, keywords, totalKeywords)
+	}
+
+	// Parallel execution (jobs > 1)
+	return runDraftParallel(ctx, opts, suite, keywords, totalKeywords)
+}
+
+// runDraftSequential processes keywords one at a time
+func runDraftSequential(ctx context.Context, opts runDraftOptions, suite map[string][]TestGroup, keywords []string, totalKeywords int) (*DraftResult, error) {
+	result := DraftResult{
+		Draft:    opts.draft,
+		Keywords: []KeywordResult{},
+		Summary:  DraftSummary{},
+	}
 
 	for i, keyword := range keywords {
 		select {
@@ -195,11 +221,9 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 			Failures: []TestResult{},
 		}
 
-		for _, group := range groups {
-			if err := processGroup(ctx, opts, group, &keywordResult, &result.Summary); err != nil {
-				if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-					return &result, err
-				}
+		if err := processKeyword(ctx, opts, groups, &keywordResult, &result.Summary); err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return &result, err
 			}
 		}
 
@@ -214,41 +238,242 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	return &result, nil
 }
 
-func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
+// runDraftParallel processes keywords concurrently with bounded parallelism
+func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[string][]TestGroup, keywords []string, totalKeywords int) (*DraftResult, error) {
+	result := DraftResult{
+		Draft:    opts.draft,
+		Keywords: make([]KeywordResult, totalKeywords),
+		Summary:  DraftSummary{},
 	}
 
-	bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
-	if err != nil {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("bundling error: %v", err))
+	// Use a semaphore channel for bounded concurrency
+	sem := make(chan struct{}, opts.jobs)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var firstErr error
+
+	// Use a separate mutex for progress reporting to avoid interleaving
+	var progressMu sync.Mutex
+	progressCounter := 0
+
+	for i, keyword := range keywords {
+		select {
+		case <-ctx.Done():
+			result.Keywords = result.Keywords[:i]
+			return &result, ctx.Err()
+		default:
+		}
+
+		i, keyword := i, keyword // capture loop variables
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			// Acquire semaphore
+			select {
+			case sem <- struct{}{}:
+				defer func() { <-sem }()
+			case <-ctx.Done():
+				return
+			}
+
+			// Report progress (with lock to prevent interleaving)
+			if opts.progressFunc != nil {
+				progressMu.Lock()
+				progressCounter++
+				opts.progressFunc(ProgressUpdate{
+					Draft:        opts.draft,
+					DraftNum:     opts.draftNum,
+					DraftTotal:   opts.draftTotal,
+					Keyword:      keyword,
+					KeywordNum:   progressCounter,
+					KeywordTotal: totalKeywords,
+				})
+				progressMu.Unlock()
+			}
+
+			groups := suite[keyword]
+
+			keywordResult := KeywordResult{
+				Keyword:  keyword,
+				Failures: []TestResult{},
+			}
+
+			// Create a local summary to avoid concurrent writes
+			var localSummary DraftSummary
+
+			if err := processKeyword(ctx, opts, groups, &keywordResult, &localSummary); err != nil {
+				if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+					mu.Lock()
+					if firstErr == nil {
+						firstErr = err
+					}
+					mu.Unlock()
+					return
+				}
+			}
+
+			// Store result at the correct index for deterministic order
+			mu.Lock()
+			result.Keywords[i] = keywordResult
+			result.Summary.Passed += localSummary.Passed
+			result.Summary.Failed += localSummary.Failed
+			result.Summary.Skipped += localSummary.Skipped
+			result.Summary.Total += localSummary.Total
+			mu.Unlock()
+		}()
+	}
+
+	wg.Wait()
+
+	if firstErr != nil {
+		return &result, firstErr
+	}
+
+	// Calculate percentage
+	if result.Summary.Total > 0 {
+		result.Summary.Percentage = float64(result.Summary.Passed) / float64(result.Summary.Total) * 100
+	}
+
+	return &result, nil
+}
+
+// bundledGroup holds a test group with its pre-bundled schema
+type bundledGroup struct {
+	group         TestGroup
+	bundledSchema RawSchema
+	bundleErr     error
+}
+
+// processKeyword batches adapter invocation and harness execution for all groups in a keyword
+func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
+	if len(groups) == 0 {
 		return nil
 	}
 
-	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, bundledSchema)
+	// Phase 1: Bundle all schemas
+	bundled := make([]bundledGroup, len(groups))
+	for i, group := range groups {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		bundleStart := time.Now()
+		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+		opts.timing.addSchemaBundling(time.Since(bundleStart))
+
+		bundled[i] = bundledGroup{
+			group:         group,
+			bundledSchema: bundledSchema,
+			bundleErr:     err,
+		}
+	}
+
+	// Mark bundle errors as failed first
+	for i, bg := range bundled {
+		if bg.bundleErr != nil {
+			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
+			bundled[i].bundleErr = bg.bundleErr // keep marked
+		}
+	}
+
+	// Phase 2: Batch adapter call for groups that bundled successfully
+	var adapterInputs []adapter.ConvertInput
+	var inputIndexes []int // maps adapter input index to bundled group index
+	for i, bg := range bundled {
+		if bg.bundleErr == nil {
+			adapterInputs = append(adapterInputs, adapter.ConvertInput{
+				Namespace: "compliance",
+				ID:        fmt.Sprintf("group_%d", i),
+				Schema:    bg.bundledSchema.Raw(),
+			})
+			inputIndexes = append(inputIndexes, i)
+		}
+	}
+
+	if len(adapterInputs) == 0 {
+		return nil // all groups failed bundling
+	}
+
+	adapterStart := time.Now()
+	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
+	opts.timing.addAdapterInvocation(time.Since(adapterStart))
 	if err != nil {
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)
+	// Build map of group index -> adapter output
+	adapterOutputByGroup := make(map[int]*adapter.ConvertResult)
+	for i, outIdx := range inputIndexes {
+		adapterOutputByGroup[outIdx] = &adapterOutputs[i]
+	}
+
+	// Phase 3: Build harness items and execute single batch harness
+	var harnessItems []HarnessItem
+	groupByID := make(map[string]*TestGroup) // for result processing
+
+	for i, bg := range bundled {
+		if bg.bundleErr != nil {
+			continue // already marked as failed
+		}
+
+		adapterOutput := adapterOutputByGroup[i]
+		if adapterOutput == nil {
+			markAllFailed(keywordResult, summary, bg.group, "adapter did not return output for this group")
+			continue
+		}
+
+		groupID := fmt.Sprintf("group_%d", i)
+		harnessItems = append(harnessItems, HarnessItem{
+			GroupID:       groupID,
+			AdapterOutput: adapterOutput,
+			Tests:         bg.group.Tests,
+		})
+		groupByID[groupID] = &bg.group
+	}
+
+	if len(harnessItems) == 0 {
+		return nil // all groups failed
+	}
+
+	// Generate single batch harness
+	harnessStart := time.Now()
+	tempHarness, err := GenerateHarness(opts.language, harnessItems, opts.workDir)
+	opts.timing.addHarnessGeneration(time.Since(harnessStart))
 	if err != nil {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
+		// Mark all groups as failed
+		for _, item := range harnessItems {
+			if group := groupByID[item.GroupID]; group != nil {
+				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness generation error: %v", err))
+			}
+		}
 		return nil
 	}
 	defer os.Remove(tempHarness)
 
+	// Execute batch harness
+	execStart := time.Now()
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
+	opts.timing.addHarnessExecution(time.Since(execStart))
+
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			return err
 		}
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness execution error: %v", err))
+		// Mark all groups as failed
+		for _, item := range harnessItems {
+			if group := groupByID[item.GroupID]; group != nil {
+				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness execution error: %v", err))
+			}
+		}
 		return nil
 	}
 
-	processResults(harnessResults, group, keywordResult, summary)
+	// Process results by groupId
+	processHarnessResults(harnessResults, groupByID, keywordResult, summary)
 	return nil
 }
 
@@ -283,17 +508,29 @@ func normalizeErrorPath(errorMsg string) string {
 	return errorMsg
 }
 
-func processResults(harnessResults []HarnessResult, group TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
-	for i, hr := range harnessResults {
-		if i >= len(group.Tests) {
-			break
+func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
+	for _, hr := range harnessResults {
+		group := groupByID[hr.GroupID]
+		if group == nil {
+			continue // unknown group, skip
 		}
-		tc := group.Tests[i]
 
-		passed := (hr.Actual == "true" && tc.Valid) || (hr.Actual == "false" && !tc.Valid)
+		if hr.Index >= len(group.Tests) {
+			continue // invalid index, skip
+		}
+		tc := group.Tests[hr.Index]
 
 		keywordResult.Total++
 		summary.Total++
+
+		// Handle skipped results (from type-only adapters)
+		if hr.Actual == "skipped" {
+			keywordResult.Skipped++
+			summary.Skipped++
+			continue
+		}
+
+		passed := (hr.Actual == "true" && tc.Valid) || (hr.Actual == "false" && !tc.Valid)
 
 		if passed {
 			keywordResult.Passed++

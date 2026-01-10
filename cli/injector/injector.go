@@ -9,15 +9,15 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/xschemadev/xschema/generator"
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
 	"github.com/xschemadev/xschema/ui"
 )
 
 type InjectInput struct {
-	Language string                     `json:"language"` // typescript, python, go
-	Outputs  []generator.GenerateOutput `json:"outputs"`
-	OutDir   string                     `json:"outDir"` // default .xschema
+	Language string                 `json:"language"` // typescript, python, go
+	Outputs  []adapter.ConvertResult `json:"outputs"`
+	OutDir   string                 `json:"outDir"` // default .xschema
 }
 
 // TemplateData is passed to the language template
@@ -87,11 +87,7 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 		allImports = append(allImports, out.Imports...)
 	}
 
-	// Merge imports using language-specific function
-	var mergedImports string
-	if lang.MergeImports != nil {
-		mergedImports = lang.MergeImports(allImports)
-	}
+	mergedImports := lang.MergeImports(allImports)
 
 	// Build schema entries
 	schemas := make([]language.SchemaEntry, len(input.Outputs))

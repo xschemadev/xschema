@@ -238,26 +238,17 @@
     },
     {
       "keyword": "ref",
-      "passed": 35,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 36,
-      "failures": [
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "ref valid, maxItems ignored",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
@@ -282,10 +273,10 @@
     }
   ],
   "summary": {
-    "passed": 789,
-    "failed": 3,
+    "passed": 737,
+    "failed": 2,
     "skipped": 0,
-    "total": 792,
-    "percentage": 99.62121212121212
+    "total": 739,
+    "percentage": 99.72936400541272
   }
 }

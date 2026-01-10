@@ -96,68 +96,10 @@
     },
     {
       "keyword": "dynamicRef",
-      "passed": 11,
-      "failed": 8,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 19,
-      "failures": [
-        {
-          "group": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
-          "test": "An array containing non-strings is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor",
-          "test": "An array containing non-strings is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
-          "test": "An array containing non-strings is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "tests for implementation dynamic anchor and reference link",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref to $dynamicRef finds detached $dynamicAnchor",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$dynamicRef points to a boolean schema",
-          "test": "follow $dynamicRef to a false schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "enum",
@@ -189,10 +131,10 @@
     },
     {
       "keyword": "if-then-else",
-      "passed": 30,
+      "passed": 26,
       "failed": 0,
       "skipped": 0,
-      "total": 30
+      "total": 26
     },
     {
       "keyword": "infinite-loop-detection",
@@ -287,10 +229,10 @@
     },
     {
       "keyword": "not",
-      "passed": 38,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 38
+      "total": 0
     },
     {
       "keyword": "oneOf",
@@ -336,17 +278,17 @@
     },
     {
       "keyword": "ref",
-      "passed": 35,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 35
+      "total": 0
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
@@ -371,19 +313,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 45,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 46,
-      "failures": [
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 3rd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "uniqueItems",
@@ -410,10 +343,10 @@
     }
   ],
   "summary": {
-    "passed": 1019,
-    "failed": 11,
+    "passed": 869,
+    "failed": 2,
     "skipped": 0,
-    "total": 1030,
-    "percentage": 98.93203883495146
+    "total": 871,
+    "percentage": 99.77037887485649
   }
 }

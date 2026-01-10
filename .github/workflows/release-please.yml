@@ -22,6 +22,11 @@ jobs:
       core--release_created: ${{ steps.release.outputs['typescript/packages/core--release_created'] }}
       client--release_created: ${{ steps.release.outputs['typescript/packages/client--release_created'] }}
       zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
+      arktype--release_created: ${{ steps.release.outputs['typescript/packages/adapters/arktype--release_created'] }}
+      effect--release_created: ${{ steps.release.outputs['typescript/packages/adapters/effect--release_created'] }}
+      typebox--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typebox--release_created'] }}
+      valibot--release_created: ${{ steps.release.outputs['typescript/packages/adapters/valibot--release_created'] }}
+      typescript--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typescript--release_created'] }}
     steps:
       # Using PAT instead of GITHUB_TOKEN so PRs trigger workflow runs
       - uses: googleapis/release-please-action@v4
@@ -146,7 +151,12 @@ jobs:
     if: |
       needs.release-please.outputs.core--release_created == 'true' ||
       needs.release-please.outputs.client--release_created == 'true' ||
-      needs.release-please.outputs.zod--release_created == 'true'
+      needs.release-please.outputs.zod--release_created == 'true' ||
+      needs.release-please.outputs.arktype--release_created == 'true' ||
+      needs.release-please.outputs.effect--release_created == 'true' ||
+      needs.release-please.outputs.typebox--release_created == 'true' ||
+      needs.release-please.outputs.valibot--release_created == 'true' ||
+      needs.release-please.outputs.typescript--release_created == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -179,5 +189,40 @@ jobs:
         if: needs.release-please.outputs.zod--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/zod
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @xschemadev/arktype
+        if: needs.release-please.outputs.arktype--release_created == 'true'
+        run: bun publish --access public
+        working-directory: typescript/packages/adapters/arktype
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @xschemadev/effect
+        if: needs.release-please.outputs.effect--release_created == 'true'
+        run: bun publish --access public
+        working-directory: typescript/packages/adapters/effect
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @xschemadev/typebox
+        if: needs.release-please.outputs.typebox--release_created == 'true'
+        run: bun publish --access public
+        working-directory: typescript/packages/adapters/typebox
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @xschemadev/valibot
+        if: needs.release-please.outputs.valibot--release_created == 'true'
+        run: bun publish --access public
+        working-directory: typescript/packages/adapters/valibot
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @xschemadev/typescript
+        if: needs.release-please.outputs.typescript--release_created == 'true'
+        run: bun publish --access public
+        working-directory: typescript/packages/adapters/typescript
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

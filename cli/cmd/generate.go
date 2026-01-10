@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
@@ -15,11 +17,12 @@ import (
 )
 
 var (
-	projectDir string
-	outputDir  string
-	langFilter string
-	verbose    bool
-	dryRun     bool
+	projectDir  string
+	outputDir   string
+	langFilter  string
+	verbose     bool
+	dryRun      bool
+	concurrency int
 	// TODO: implement watch mode
 	watch bool
 )
@@ -38,6 +41,7 @@ func init() {
 	generateCmd.Flags().StringVar(&langFilter, "lang", "", "filter to specific language if multiple detected")
 	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show verbose output")
 	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
+	generateCmd.Flags().IntVarP(&concurrency, "concurrency", "c", min(runtime.NumCPU(), 8), "number of parallel schema fetches")
 	generateCmd.Flags().BoolVarP(&watch, "watch", "w", false, "watch for changes and regenerate")
 }
 
@@ -83,6 +87,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	// Step 2: Fetch schemas (with spinner)
 	ui.Step(2, 4, "Fetching schemas")
 	retrieverOpts := retriever.DefaultOptions()
+	retrieverOpts.Concurrency = concurrency
 
 	var schemas []retriever.RetrievedSchema
 	err = ui.RunWithSpinner("Fetching schemas...", func() error {
@@ -112,7 +117,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Step 3: Generate (with spinner per adapter)
 	ui.Step(3, 4, "Generating validators")
-	var outputs []generator.GenerateOutput
+	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
 		var genErr error
 		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name)

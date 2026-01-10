@@ -1,0 +1,90 @@
+# Ralph Progress Log
+Started: Sat Jan 10 03:42:30 PM CET 2026
+
+## Codebase Patterns
+- Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
+- Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
+- Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
+- `LoadTestSuite` can take a keyword to load only `tests/<draft>/<keyword>.json`; missing keywords should list available names.
+- Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
+- Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
+
+---
+
+## 2026-01-10 17:37 - US-001
+- Pinned JSON Schema Test Suite to Test-JSON-Schema-Acceptance-1.035 and versioned cache directory.
+- Files changed: `cli/compliance/fetcher.go`, `cli/compliance/fetcher_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Pin the suite by updating `testSuiteVersion` and `testSuiteCacheDir`.
+  - GitHub tarballs for tags use `archive/refs/tags/<tag>.tar.gz`.
+  - Cache path updates require tests to follow the versioned directory.
+---
+
+## 2026-01-10 18:05 - US-002
+- Added `--profile` timing summary for compliance runs (suite load, schema bundling, adapter invocation, harness generation, harness execution).
+- Files changed: `cli/cmd/compliance.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `prd.jsonc`, `progress.txt`.
+- Timing snapshot (not run locally): suite load n/a, schema bundling n/a, adapter invocation n/a, harness generation n/a, harness execution n/a.
+- **Learnings for future iterations:**
+  - Aggregate timing is tracked in `compliance.TimingSummary`.
+---
+
+## 2026-01-10 17:49 - US-003
+- Removed generated timestamps from dev-report outputs and sorted drafts/keywords/failures for deterministic output.
+- Files changed: `cli/compliance/report.go`, `cli/compliance/report_test.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `progress.txt`, `prd.jsonc`.
+- **Learnings for future iterations:**
+  - Use `sortComplianceReport`/`sortDraftResult` to keep report order deterministic.
+  - Keep `REPORT.md` free of generated timestamps for clean diffs.
+---
+
+## 2026-01-10 17:52 - US-004
+- Switched bun harness execution to run files directly without `bun run`.
+- Files changed: `cli/compliance/harness.go`, `cli/language/typescript.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Use `detectTSHarnessRunner` to configure harness execution per runtime.
+---
+
+## 2026-01-10 17:56 - US-005
+- Loaded keyword-only test files when `--keyword` is set and report missing keyword names.
+- Files changed: `cli/compliance/loader.go`, `cli/compliance/loader_test.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Use `LoadTestSuite` keyword parameter to avoid loading all keyword files.
+  - Missing keyword errors should list available keyword names.
+---
+
+## 2026-01-10 18:30 - US-006
+- Batched adapter conversion per (draft, keyword) - one adapter process call per keyword instead of per group.
+- Files changed: `cli/compliance/harness.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- Timing (zod adapter, full dev-report):
+  - Adapter invocation: 18.9s (batched, ~265 keywords)
+  - Total compliance run: 73.7s
+- **Learnings for future iterations:**
+  - `CallAdapterBatch` sends multiple schemas with unique IDs, returns outputs in input order.
+  - `processKeyword` bundles all schemas first, batches adapter call, then processes harness per group.
+---
+
+## 2026-01-10 19:15 - US-007
+- Batched harness execution per (draft, keyword) - one harness process per keyword instead of per group.
+- Files changed: `cli/compliance/harness.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `typescript/packages/adapters/*/compliance/harness.batch.ts`, compliance results.
+- Timing (zod adapter, full dev-report):
+  - Harness execution: 11.0s (batched, ~265 keywords across 7 drafts)
+  - Total compliance run: 31.0s (down from 73.7s baseline)
+- **Learnings for future iterations:**
+  - Each adapter needs a `harness.batch.ts` template in addition to `harness.ts`.
+  - Batch harness receives `{{BATCH_SCHEMAS}}` object and `{{BATCH_TEST_DATA}}` JSON string.
+  - `GenerateBatchHarness` and `ExecuteBatchHarness` handle batch mode.
+  - Results include `groupId` for mapping back to test groups.
+---
+
+## 2026-01-10 20:00 - US-008
+- Added `--jobs <n>` flag for bounded concurrency with default 1 (sequential).
+- Files changed: `cli/cmd/compliance.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- Timing (zod adapter, draft6, jobs=4 vs jobs=1):
+  - jobs=1: 4.4s
+  - jobs=4: 1.2s (~3.6x faster)
+- Full dev-report with jobs=4: 7.9s (down from 31.0s baseline with jobs=1)
+- **Learnings for future iterations:**
+  - `runDraftParallel` uses semaphore channel for bounded concurrency.
+  - Results stored at pre-allocated indices for deterministic ordering.
+  - Progress counter with mutex prevents interleaved output.
+---
+

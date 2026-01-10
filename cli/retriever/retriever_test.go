@@ -138,7 +138,7 @@ func TestRetrieveConcurrency(t *testing.T) {
 	// Create 15 declarations to test concurrency (limit is 10)
 	var decls []parser.Declaration
 	files := []string{"user.json", "post.json", "config.json"}
-	for i := 0; i < 15; i++ {
+	for i := range 15 {
 		file := files[i%len(files)]
 		adapter := "zod"
 		if i%2 == 0 {
@@ -535,8 +535,9 @@ func TestRetrievePreservesMetadata(t *testing.T) {
 func TestDefaultOptions(t *testing.T) {
 	opts := DefaultOptions()
 
-	if opts.Concurrency != 10 {
-		t.Errorf("expected concurrency 10, got %d", opts.Concurrency)
+	expectedConcurrency := min(runtime.NumCPU(), 8)
+	if opts.Concurrency != expectedConcurrency {
+		t.Errorf("expected concurrency %d, got %d", expectedConcurrency, opts.Concurrency)
 	}
 	if opts.HTTPTimeout != 30*time.Second {
 		t.Errorf("expected timeout 30s, got %v", opts.HTTPTimeout)

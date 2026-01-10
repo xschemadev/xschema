@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -44,7 +45,7 @@ func TestLoadTestSuite(t *testing.T) {
 	}
 
 	// Load suite
-	suite, err := LoadTestSuite(tmpDir, "draft2020-12")
+	suite, err := LoadTestSuite(tmpDir, "draft2020-12", "")
 	if err != nil {
 		t.Fatalf("LoadTestSuite() error = %v", err)
 	}
@@ -66,10 +67,58 @@ func TestLoadTestSuite(t *testing.T) {
 	}
 }
 
+func TestLoadTestSuite_WithKeyword(t *testing.T) {
+	tmpDir := t.TempDir()
+	testsDir := filepath.Join(tmpDir, "tests", "draft2020-12")
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatalf("failed to create tests dir: %v", err)
+	}
+
+	validJSON := `[{"description": "test", "schema": {}, "tests": []}]`
+	if err := os.WriteFile(filepath.Join(testsDir, "type.json"), []byte(validJSON), 0644); err != nil {
+		t.Fatalf("failed to write type.json: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(testsDir, "const.json"), []byte("not json"), 0644); err != nil {
+		t.Fatalf("failed to write const.json: %v", err)
+	}
+
+	suite, err := LoadTestSuite(tmpDir, "draft2020-12", "type")
+	if err != nil {
+		t.Fatalf("LoadTestSuite() error = %v", err)
+	}
+	if len(suite) != 1 {
+		t.Errorf("suite has %d keywords, want 1", len(suite))
+	}
+	if _, ok := suite["type"]; !ok {
+		t.Error("suite missing 'type' keyword")
+	}
+}
+
+func TestLoadTestSuite_MissingKeyword(t *testing.T) {
+	tmpDir := t.TempDir()
+	testsDir := filepath.Join(tmpDir, "tests", "draft2020-12")
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatalf("failed to create tests dir: %v", err)
+	}
+
+	validJSON := `[{"description": "test", "schema": {}, "tests": []}]`
+	if err := os.WriteFile(filepath.Join(testsDir, "type.json"), []byte(validJSON), 0644); err != nil {
+		t.Fatalf("failed to write type.json: %v", err)
+	}
+
+	_, err := LoadTestSuite(tmpDir, "draft2020-12", "missing")
+	if err == nil {
+		t.Fatal("LoadTestSuite() expected error for missing keyword, got nil")
+	}
+	if !strings.Contains(err.Error(), "available") || !strings.Contains(err.Error(), "type") {
+		t.Errorf("LoadTestSuite() error = %v, want available keywords", err)
+	}
+}
+
 func TestLoadTestSuite_NotFound(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	_, err := LoadTestSuite(tmpDir, "draft2020-12")
+	_, err := LoadTestSuite(tmpDir, "draft2020-12", "")
 	if err == nil {
 		t.Error("LoadTestSuite() expected error for missing dir, got nil")
 	}
@@ -87,7 +136,7 @@ func TestLoadTestSuite_InvalidJSON(t *testing.T) {
 		t.Fatalf("failed to write invalid.json: %v", err)
 	}
 
-	_, err := LoadTestSuite(tmpDir, "draft2020-12")
+	_, err := LoadTestSuite(tmpDir, "draft2020-12", "")
 	if err == nil {
 		t.Error("LoadTestSuite() expected error for invalid JSON, got nil")
 	}
@@ -111,7 +160,7 @@ func TestLoadTestSuite_SkipsDirectories(t *testing.T) {
 		t.Fatalf("failed to write type.json: %v", err)
 	}
 
-	suite, err := LoadTestSuite(tmpDir, "draft2020-12")
+	suite, err := LoadTestSuite(tmpDir, "draft2020-12", "")
 	if err != nil {
 		t.Fatalf("LoadTestSuite() error = %v", err)
 	}
@@ -143,7 +192,7 @@ func TestLoadTestSuite_SkipsNonJSON(t *testing.T) {
 		t.Fatalf("failed to write type.json: %v", err)
 	}
 
-	suite, err := LoadTestSuite(tmpDir, "draft2020-12")
+	suite, err := LoadTestSuite(tmpDir, "draft2020-12", "")
 	if err != nil {
 		t.Fatalf("LoadTestSuite() error = %v", err)
 	}
@@ -259,8 +308,8 @@ func TestLoadTestFile_BooleanSchema(t *testing.T) {
 }
 
 func TestDrafts(t *testing.T) {
-	// Ensure Drafts contains expected versions
-	expected := []string{"draft2020-12", "draft2019-09", "draft7", "draft6", "draft4", "draft3", "v1"}
+	// Ensure Drafts contains expected versions (v1 excluded until spec released)
+	expected := []string{"draft2020-12", "draft2019-09", "draft7", "draft6", "draft4", "draft3"}
 
 	if len(Drafts) != len(expected) {
 		t.Errorf("Drafts has %d entries, want %d", len(Drafts), len(expected))

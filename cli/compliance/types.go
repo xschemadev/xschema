@@ -1,6 +1,9 @@
 package compliance
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // TestCase represents a single test case from the JSON Schema Test Suite
 type TestCase struct {
@@ -32,6 +35,12 @@ func (s RawSchema) MarshalJSON() ([]byte, error) {
 
 func (s RawSchema) Value() any {
 	return s.value
+}
+
+// Raw returns the schema as json.RawMessage for use with adapter.ConvertInput
+func (s RawSchema) Raw() json.RawMessage {
+	data, _ := json.Marshal(s.value)
+	return data
 }
 
 // TestResult represents the result of running a single test case
@@ -72,24 +81,65 @@ type DraftSummary struct {
 
 // ComplianceReport is the complete report for an adapter
 type ComplianceReport struct {
-	Adapter     string        `json:"adapter"`
-	GeneratedAt string        `json:"generatedAt"`
-	Drafts      []DraftResult `json:"drafts"`
+	Adapter string        `json:"adapter"`
+	Drafts  []DraftResult `json:"drafts"`
+}
+
+// TimingSummary holds aggregate timings for a compliance run.
+type TimingSummary struct {
+	SuiteLoad         time.Duration
+	SchemaBundling    time.Duration
+	AdapterInvocation time.Duration
+	HarnessGeneration time.Duration
+	HarnessExecution  time.Duration
+}
+
+func (t *TimingSummary) addSuiteLoad(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.SuiteLoad += duration
+}
+
+func (t *TimingSummary) addSchemaBundling(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.SchemaBundling += duration
+}
+
+func (t *TimingSummary) addAdapterInvocation(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.AdapterInvocation += duration
+}
+
+func (t *TimingSummary) addHarnessGeneration(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.HarnessGeneration += duration
+}
+
+func (t *TimingSummary) addHarnessExecution(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.HarnessExecution += duration
 }
 
 // HarnessResult is the JSON output from executing a harness file
 type HarnessResult struct {
+	GroupID  string `json:"groupId"`
 	Index    int    `json:"index"`
 	Expected bool   `json:"expected"`
-	Actual   string `json:"actual"` // "true", "false", or "error"
+	Actual   string `json:"actual"` // "true", "false", "skipped", or "error"
 	Error    string `json:"error,omitempty"`
 }
 
-// AdapterOutput is the response from calling an adapter's convert function
-type AdapterOutput struct {
-	Namespace string   `json:"namespace"`
-	ID        string   `json:"id"`
-	Schema    string   `json:"schema"`
-	Type      string   `json:"type"`
-	Imports   []string `json:"imports"`
+// BatchTestData is the test data structure passed to harness templates
+type BatchTestData struct {
+	GroupID string     `json:"groupId"`
+	Tests   []TestCase `json:"tests"`
 }

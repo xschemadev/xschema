@@ -47,6 +47,106 @@ func TestMergeTSImports(t *testing.T) {
 			},
 			expected: `import React from "react"`,
 		},
+		{
+			name: "namespace import",
+			imports: []string{
+				`import * as v from "valibot"`,
+			},
+			expected: `import * as v from "valibot"`,
+		},
+		{
+			name: "namespace import with named from same source",
+			imports: []string{
+				`import * as v from "valibot"`,
+				`import { safeParse } from "valibot"`,
+			},
+			// namespace and named stay separate
+			expected: "import { safeParse } from \"valibot\"\nimport * as v from \"valibot\"",
+		},
+		{
+			name: "type-only named import",
+			imports: []string{
+				`import type { Static } from "@sinclair/typebox"`,
+			},
+			expected: `import { type Static } from "@sinclair/typebox"`,
+		},
+		{
+			name: "mixed regular and type named imports",
+			imports: []string{
+				`import { Type, type Static } from "@sinclair/typebox"`,
+			},
+			expected: `import { Type, type Static } from "@sinclair/typebox"`,
+		},
+		{
+			name: "merge type-only with regular from same source",
+			imports: []string{
+				`import { Type } from "@sinclair/typebox"`,
+				`import type { Static } from "@sinclair/typebox"`,
+			},
+			expected: `import { Type, type Static } from "@sinclair/typebox"`,
+		},
+		{
+			name: "dedupe type imports",
+			imports: []string{
+				`import type { Static } from "@sinclair/typebox"`,
+				`import type { Static } from "@sinclair/typebox"`,
+			},
+			expected: `import { type Static } from "@sinclair/typebox"`,
+		},
+		{
+			name: "side-effect import",
+			imports: []string{
+				`import "reflect-metadata"`,
+			},
+			expected: `import "reflect-metadata"`,
+		},
+		{
+			name: "side-effect with named",
+			imports: []string{
+				`import "reflect-metadata"`,
+				`import { z } from "zod"`,
+			},
+			expected: "import \"reflect-metadata\"\nimport { z } from \"zod\"",
+		},
+		{
+			name: "real-world valibot case",
+			imports: []string{
+				`import * as v from "valibot"`,
+				`import { safeParse } from "valibot"`,
+				`import * as v from "valibot"`, // duplicate
+			},
+			expected: "import { safeParse } from \"valibot\"\nimport * as v from \"valibot\"",
+		},
+		{
+			name: "real-world typebox case",
+			imports: []string{
+				`import { Type, type Static } from "@sinclair/typebox"`,
+				`import { Value } from "@sinclair/typebox/value"`,
+			},
+			expected: "import { Type, type Static } from \"@sinclair/typebox\"\nimport { Value } from \"@sinclair/typebox/value\"",
+		},
+		{
+			name: "arktype type named export",
+			imports: []string{
+				`import { type } from "arktype"`,
+			},
+			expected: `import { type } from "arktype"`,
+		},
+		{
+			name: "effect schema alias",
+			imports: []string{
+				`import { Schema as S } from "effect"`,
+			},
+			expected: `import { Schema as S } from "effect"`,
+		},
+		{
+			name: "multiple namespace imports from different sources",
+			imports: []string{
+				`import * as v from "valibot"`,
+				`import * as z from "zod"`,
+			},
+			expected: "import * as v from \"valibot\"\nimport * as z from \"zod\"",
+		},
 	}
 
 	for _, tt := range tests {

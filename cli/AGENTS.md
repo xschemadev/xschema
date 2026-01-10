@@ -44,6 +44,10 @@ ui/         # terminal output helpers (colors, verbose logging)
 
 ## Code Style
 
+### Language Specific Code
+
+Language specific code should NEVER be written inside the cli logic, but it should be embedded into the language struct (language.go)
+
 ### Imports
 
 Stdlib first, external second, internal third (blank lines between):

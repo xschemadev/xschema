@@ -14,5 +14,6 @@ export function convert(input: ConvertInput): ConvertResult {
 		imports: ['import { z } from "zod"'],
 		schema: schemaCode,
 		type: `z.infer<typeof ${varName}>`,
+		validate: "(data: unknown) => schema.safeParse(data).success",
 	};
 }

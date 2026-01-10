@@ -52,13 +52,23 @@ Adapters must return a JSON array of `ConvertResult` objects to stdout:
 
 ```typescript
 interface ConvertResult {
-  namespace: string;   // Same as input
-  id: string;          // Same as input
-  imports: string[];   // Array of import statements
-  schema: string;      // Generated validator code
-  type: string;        // Type expression for inference
+  namespace: string;        // Same as input
+  id: string;               // Same as input
+  imports: string[];        // Array of import statements (full statements, no trailing semicolon)
+  schema?: string;          // Generated validator code
+  type?: string;            // Type expression for inference
+  validate?: string;        // Validation function for compliance harness (optional)
+  validateImports?: string[]; // Imports needed by validate function (optional)
 }
 ```
+
+**Field Details:**
+
+- `imports`: Full import statements without trailing semicolons (e.g., `import { z } from "zod"`). The generator merges and deduplicates imports from all schemas.
+- `schema`: The generated validator/schema code expression
+- `type`: Type expression for TypeScript type inference
+- `validate`: Optional validation function used by the compliance harness to test runtime validation. Takes `data` parameter and returns `boolean`. Can reference `schema` variable. Empty string = type-only adapter (skips runtime validation).
+- `validateImports`: Optional imports needed by the `validate` function, same format as `imports`. Merged with `imports` for harness generation.
 
 **Example Output:**
 ```json
@@ -68,14 +78,16 @@ interface ConvertResult {
     "id": "Profile",
     "imports": ["import { z } from \"zod\""],
     "schema": "z.object({ name: z.string(), age: z.number().int() })",
-    "type": "z.infer<typeof user_Profile>"
+    "type": "z.infer<typeof user_Profile>",
+    "validate": "(data) => schema.safeParse(data).success"
   },
   {
     "namespace": "user",
     "id": "Settings",
     "imports": ["import { z } from \"zod\""],
     "schema": "z.object({ theme: z.enum([\"light\", \"dark\"]) })",
-    "type": "z.infer<typeof user_Settings>"
+    "type": "z.infer<typeof user_Settings>",
+    "validate": "(data) => schema.safeParse(data).success"
   }
 ]
 ```
@@ -94,11 +106,13 @@ type GenerateInput struct {
 }
 
 type GenerateOutput struct {
-    Namespace string   `json:"namespace"`
-    ID        string   `json:"id"`
-    Schema    string   `json:"schema"`   // generated code
-    Type      string   `json:"type"`     // type expression
-    Imports   []string `json:"imports"`  // required imports
+    Namespace       string   `json:"namespace"`
+    ID              string   `json:"id"`
+    Schema          string   `json:"schema"`                     // generated code
+    Type            string   `json:"type"`                       // type expression
+    Imports         []string `json:"imports"`                    // required imports
+    Validate        string   `json:"validate,omitempty"`         // validation function (compliance)
+    ValidateImports []string `json:"validateImports,omitempty"`  // imports for validate
 }
 ```
 
@@ -174,6 +188,7 @@ export function convert(input: ConvertInput): ConvertResult {
     imports: ['import { z } from "zod"'],
     schema: schemaCode,
     type: `z.infer<typeof ${varName}>`,
+    validate: "(data) => schema.safeParse(data).success",
   };
 }
 ```
@@ -181,8 +196,9 @@ export function convert(input: ConvertInput): ConvertResult {
 **Key Points:**
 - Simple pure function that converts input to output
 - Uses existing library (`json-schema-to-zod`) for heavy lifting
-- Returns imports array (allows multiple imports if needed)
+- Returns imports array (full import statements, no trailing semicolons)
 - Type expression uses variable name pattern
+- `validate` provides runtime validation for compliance testing
 
 ### CLI Entry Point (cli.ts)
 
@@ -299,11 +315,11 @@ import { convertToMyLib } from "my-lib-converter";
  */
 export function convert(input: ConvertInput): ConvertResult {
   const { namespace, id, schema } = input;
-  
+
   // Your conversion logic
   const validatorCode = convertToMyLib(schema);
   const varName = `${namespace}_${id}`;
-  
+
   return {
     namespace,
     id,
@@ -313,15 +329,17 @@ export function convert(input: ConvertInput): ConvertResult {
     ],
     schema: validatorCode,
     type: `MyType<typeof ${varName}>`,
+    validate: "(data) => MyValidator.check(schema, data)",
   };
 }
 ```
 
 **Best Practices:**
 - Handle errors gracefully (throw descriptive errors)
-- Include all necessary imports in the array
+- Import format: full import statements without trailing semicolons (e.g., `import { z } from "zod"`)
 - Use consistent variable naming
 - Return valid code that will compile in generated files
+- Include `validate` function for runtime compliance testing (optional for type-only adapters)
 
 #### 4. Create CLI Entry (src/cli.ts)
 
@@ -387,7 +405,8 @@ Expected output:
   "id": "User",
   "imports": ["import { MyValidator } from \"my-lib\""],
   "schema": "MyValidator.object({ name: MyValidator.string() })",
-  "type": "MyType<typeof test_User>"
+  "type": "MyType<typeof test_User>",
+  "validate": "(data) => MyValidator.check(schema, data)"
 }]
 ```
 
@@ -511,13 +530,20 @@ export interface ConvertInput {
 export interface ConvertResult {
   namespace: string;
   id: string;
-  imports: string[];
-  schema: string;
-  type: string;
+  imports: string[];           // Full import statements (no trailing semicolons)
+  schema?: string;             // Generated validator code
+  type?: string;               // Type expression
+  validate?: string;           // Validation function (compliance testing)
+  validateImports?: string[];  // Imports for validate function
 }
 ```
 
 These are the authoritative types for the adapter protocol.
+
+**Import Format:**
+- Each entry in `imports` and `validateImports` must be a full import statement
+- No trailing semicolons (generator handles formatting)
+- Examples: `import { z } from "zod"`, `import * as v from "valibot"`, `import type { Schema } from "effect"`
 
 ## Publishing Your Adapter
 
@@ -620,3 +646,11 @@ export function convert(input: ConvertInput): ConvertResult {
 ```
 
 The CLI will catch any thrown errors and display them to the user.
+
+## Release Configuration
+
+After creating your adapter, you must configure it for automated releases. See the [Adding a New Adapter](./RELEASING.md#adding-a-new-adapter) section in RELEASING.md for the 3 files you need to update:
+
+1. `release-please-config.json` - add package entry
+2. `.release-please-manifest.json` - add initial version
+3. `.github/workflows/release-please.yml` - add output, condition, and publish step

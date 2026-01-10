@@ -4,50 +4,68 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"sort"
 	"strings"
 )
 
 // GenerateMarkdownReport creates a markdown report from compliance results
 func GenerateMarkdownReport(report ComplianceReport) string {
+	sortedReport := sortComplianceReport(report)
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("# %s Compliance Report\n\n", report.Adapter))
-	sb.WriteString(fmt.Sprintf("Generated: %s\n\n", report.GeneratedAt))
+	fmt.Fprintf(&sb, "# %s Compliance Report\n\n", sortedReport.Adapter)
+
+	// Detect type-only adapter (all tests skipped)
+	isTypeOnly := isTypeOnlyAdapter(sortedReport)
+	if isTypeOnly {
+		sb.WriteString("## Type-Only Adapter\n\n")
+		sb.WriteString("This adapter generates **type definitions only** - no runtime validation code is produced.\n\n")
+		sb.WriteString("Runtime validation tests are **skipped** because:\n")
+		sb.WriteString("1. Compliance tests require runtime validation (checking if data matches a schema)\n")
+		sb.WriteString("2. Types exist only at compile-time and are erased at runtime\n")
+		sb.WriteString("3. The generated code is validated via **TypeScript type-checking** (`tsc --noEmit`)\n\n")
+		sb.WriteString("**Note:** Any failures shown below indicate TypeScript compilation errors in the generated types, not runtime validation failures.\n\n")
+	}
 
 	// Summary table
 	sb.WriteString("## Summary\n\n")
 	sb.WriteString("| Draft | Passed | Failed | Skipped | Coverage |\n")
 	sb.WriteString("| ----- | ------ | ------ | ------- | -------- |\n")
 
-	for _, draft := range report.Drafts {
-		sb.WriteString(fmt.Sprintf("| %s | %d | %d | %d | %.1f%% |\n",
+	for _, draft := range sortedReport.Drafts {
+		coverage := "N/A (type-only)"
+		if !isTypeOnly {
+			coverage = fmt.Sprintf("%.1f%%", draft.Summary.Percentage)
+		}
+		fmt.Fprintf(&sb, "| %s | %d | %d | %d | %s |\n",
 			draft.Draft,
 			draft.Summary.Passed,
 			draft.Summary.Failed,
 			draft.Summary.Skipped,
-			draft.Summary.Percentage,
-		))
+			coverage)
 	}
 	sb.WriteString("\n")
 
-	// Badges
-	sb.WriteString("## Badges\n\n")
-	for _, draft := range report.Drafts {
-		badgeURL := generateBadgeURL(draft.Draft, draft.Summary.Percentage)
-		sb.WriteString(fmt.Sprintf("![%s](%s)\n", draft.Draft, badgeURL))
+	// Badges (skip for type-only adapters - no meaningful percentage)
+	if !isTypeOnly {
+		sb.WriteString("## Badges\n\n")
+		for _, draft := range sortedReport.Drafts {
+			badgeURL := generateBadgeURL(draft.Draft, draft.Summary.Percentage)
+			fmt.Fprintf(&sb, "![%s](%s)\n", draft.Draft, badgeURL)
+		}
+		sb.WriteString("\n")
 	}
-	sb.WriteString("\n")
 
 	// Per-draft details
-	for _, draft := range report.Drafts {
-		sb.WriteString(fmt.Sprintf("## %s\n\n", draft.Draft))
+	for _, draft := range sortedReport.Drafts {
+		fmt.Fprintf(&sb, "## %s\n\n", draft.Draft)
 		sb.WriteString("| Keyword | Status | Pass/Total |\n")
 		sb.WriteString("| ------- | ------ | ---------- |\n")
 
 		for _, keyword := range draft.Keywords {
 			status := getStatusEmoji(keyword)
-			sb.WriteString(fmt.Sprintf("| %s | %s | %d/%d |\n",
-				keyword.Keyword, status, keyword.Passed, keyword.Total))
+			fmt.Fprintf(&sb, "| %s | %s | %d/%d |\n",
+				keyword.Keyword, status, keyword.Passed, keyword.Total)
 		}
 		sb.WriteString("\n")
 
@@ -56,8 +74,8 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		if len(failedKeywords) > 0 {
 			sb.WriteString("### Failures\n\n")
 			for _, keyword := range failedKeywords {
-				sb.WriteString(fmt.Sprintf("<details>\n<summary>%s - %d failure%s</summary>\n\n",
-					keyword.Keyword, len(keyword.Failures), pluralize(len(keyword.Failures))))
+				fmt.Fprintf(&sb, "<details>\n<summary>%s - %d failure%s</summary>\n\n",
+					keyword.Keyword, len(keyword.Failures), pluralize(len(keyword.Failures)))
 
 				for _, failure := range keyword.Failures {
 					expected := "invalid"
@@ -69,9 +87,9 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 						got = fmt.Sprintf("error: %s", failure.Error)
 					}
 
-					sb.WriteString(fmt.Sprintf("- **%s**\n", failure.Group))
-					sb.WriteString(fmt.Sprintf("  - Test: %s\n", failure.Test))
-					sb.WriteString(fmt.Sprintf("  - Expected: `%s`, Got: `%s`\n", expected, got))
+					fmt.Fprintf(&sb, "- **%s**\n", failure.Group)
+					fmt.Fprintf(&sb, "  - Test: %s\n", failure.Test)
+					fmt.Fprintf(&sb, "  - Expected: `%s`, Got: `%s`\n", expected, got)
 				}
 				sb.WriteString("\n</details>\n\n")
 			}
@@ -83,11 +101,72 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 
 // GenerateJSONReport creates a JSON report for a single draft
 func GenerateJSONReport(draftResult DraftResult) (string, error) {
-	data, err := json.MarshalIndent(draftResult, "", "  ")
+	sortedDraft := sortDraftResult(draftResult)
+	data, err := json.MarshalIndent(sortedDraft, "", "  ")
 	if err != nil {
 		return "", err
 	}
 	return string(data), nil
+}
+
+func sortComplianceReport(report ComplianceReport) ComplianceReport {
+	sorted := ComplianceReport{
+		Adapter: report.Adapter,
+		Drafts:  make([]DraftResult, len(report.Drafts)),
+	}
+
+	for i, draft := range report.Drafts {
+		sorted.Drafts[i] = sortDraftResult(draft)
+	}
+
+	sort.Slice(sorted.Drafts, func(i, j int) bool {
+		return sorted.Drafts[i].Draft < sorted.Drafts[j].Draft
+	})
+
+	return sorted
+}
+
+func sortDraftResult(draft DraftResult) DraftResult {
+	sorted := DraftResult{
+		Draft:    draft.Draft,
+		Summary:  draft.Summary,
+		Keywords: make([]KeywordResult, len(draft.Keywords)),
+	}
+
+	for i, keyword := range draft.Keywords {
+		sortedKeyword := keyword
+		if len(keyword.Failures) > 0 {
+			failures := make([]TestResult, len(keyword.Failures))
+			copy(failures, keyword.Failures)
+			sort.Slice(failures, func(i, j int) bool {
+				return lessTestResult(failures[i], failures[j])
+			})
+			sortedKeyword.Failures = failures
+		}
+		sorted.Keywords[i] = sortedKeyword
+	}
+
+	sort.Slice(sorted.Keywords, func(i, j int) bool {
+		return sorted.Keywords[i].Keyword < sorted.Keywords[j].Keyword
+	})
+
+	return sorted
+}
+
+func lessTestResult(left, right TestResult) bool {
+	if left.Group != right.Group {
+		return left.Group < right.Group
+	}
+	if left.Test != right.Test {
+		return left.Test < right.Test
+	}
+	if left.Expected != right.Expected {
+		return !left.Expected && right.Expected
+	}
+	if left.Actual != right.Actual {
+		return left.Actual < right.Actual
+	}
+	return left.Error < right.Error
 }
 
 func generateBadgeURL(draft string, percentage float64) string {
@@ -129,4 +208,24 @@ func pluralize(n int) string {
 		return ""
 	}
 	return "s"
+}
+
+// isTypeOnlyAdapter returns true if the adapter produced type-only output.
+// Type-only adapters have no passed tests (no runtime validation) and at least some skipped tests.
+// Failures may occur due to typecheck errors in the generated types.
+func isTypeOnlyAdapter(report ComplianceReport) bool {
+	if len(report.Drafts) == 0 {
+		return false
+	}
+
+	totalPassed := 0
+	totalSkipped := 0
+
+	for _, draft := range report.Drafts {
+		totalPassed += draft.Summary.Passed
+		totalSkipped += draft.Summary.Skipped
+	}
+
+	// Type-only: no runtime tests passed, but some were skipped
+	return totalPassed == 0 && totalSkipped > 0
 }

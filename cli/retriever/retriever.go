@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -19,7 +20,6 @@ import (
 
 const (
 	defaultRetries     = 3
-	defaultConcurrency = 10
 	defaultHTTPTimeout = 30 * time.Second
 	retryBaseDelay     = 500 * time.Millisecond
 	userAgent          = "xschema-cli/1.0"
@@ -36,7 +36,7 @@ type Options struct {
 // DefaultOptions returns sensible defaults
 func DefaultOptions() Options {
 	return Options{
-		Concurrency: defaultConcurrency,
+		Concurrency: min(runtime.NumCPU(), 8),
 		HTTPTimeout: defaultHTTPTimeout,
 		Retries:     defaultRetries,
 		NoCache:     false,
@@ -85,10 +85,7 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
-	maxAttempts := opts.Retries
-	if maxAttempts < 1 {
-		maxAttempts = 1
-	}
+	maxAttempts := max(opts.Retries, 1)
 
 	ui.Verbosef("fetching from URL: %s (max_attempts: %d)", url, maxAttempts)
 

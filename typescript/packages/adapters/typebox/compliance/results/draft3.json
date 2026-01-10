@@ -1,0 +1,2192 @@
+{
+  "draft": "draft3",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 0,
+      "failed": 14,
+      "skipped": 0,
+      "total": 14,
+      "failures": [
+        {
+          "group": "additionalItems are allowed by default",
+          "test": "only the first item is validated",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems as false without items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems as false without items",
+          "test": "items defaults to empty schema so everything is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems as schema",
+          "test": "additional items do not match schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems as schema",
+          "test": "additional items match schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems with heterogeneous array",
+          "test": "heterogeneous invalid instance",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems with heterogeneous array",
+          "test": "valid instance",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalItems with null instance elements",
+          "test": "allows null elements",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "additional items are not permitted",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "empty array",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "equal number of items present",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "when items is schema, additionalItems does nothing",
+          "test": "all items match schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 0,
+      "failed": 16,
+      "skipped": 0,
+      "total": 16,
+      "failures": [
+        {
+          "group": "additionalProperties are allowed by default",
+          "test": "additional properties are allowed",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "an additional property is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "no additional properties is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties being false does not allow other properties",
+          "test": "patternProperties are not additional properties",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties can exist by itself",
+          "test": "an additional invalid property is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties can exist by itself",
+          "test": "an additional valid property is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties does not look in applicators",
+          "test": "properties defined in extends are not examined",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties with null valued instance properties",
+          "test": "allows null values",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties with schema",
+          "test": "an additional invalid property is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties with schema",
+          "test": "an additional valid property is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "additionalProperties with schema",
+          "test": "no additional properties is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "non-ASCII pattern with additionalProperties",
+          "test": "matching the pattern is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "non-ASCII pattern with additionalProperties",
+          "test": "not matching the pattern is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "default",
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "invalid string value for default",
+          "test": "still valid when the invalid default is used",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "invalid string value for default",
+          "test": "valid when property is specified",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "invalid type for default",
+          "test": "still valid when the invalid default is used",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "invalid type for default",
+          "test": "valid when property is specified",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "dependencies",
+      "passed": 0,
+      "failed": 18,
+      "skipped": 0,
+      "total": 18,
+      "failures": [
+        {
+          "group": "dependencies",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "ignores strings",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "neither",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "nondependant",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "dependencies",
+          "test": "with dependency",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "missing both dependencies",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "missing dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "missing other dependency",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "neither",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "nondependants",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies",
+          "test": "with dependencies",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies subschema",
+          "test": "no dependency",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies subschema",
+          "test": "valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies subschema",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies subschema",
+          "test": "wrong type both",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple dependencies subschema",
+          "test": "wrong type other",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "disallow",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "divisibleBy",
+      "passed": 0,
+      "failed": 8,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "by int",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by int",
+          "test": "int by int",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by int",
+          "test": "int by int fail",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by number",
+          "test": "35 is not divisible by 1.5",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by number",
+          "test": "4.5 is divisible by 1.5",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by number",
+          "test": "zero is divisible by anything (except 0)",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by small number",
+          "test": "0.0075 is divisible by 0.0001",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "by small number",
+          "test": "0.00751 is not divisible by 0.0001",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "enum",
+      "passed": 10,
+      "failed": 6,
+      "skipped": 0,
+      "total": 16,
+      "failures": [
+        {
+          "group": "heterogeneous enum validation",
+          "test": "objects are deep compared",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "one of the enum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "heterogeneous enum validation",
+          "test": "something else is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "heterogeneous enum-with-null validation",
+          "test": "null is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "heterogeneous enum-with-null validation",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "heterogeneous enum-with-null validation",
+          "test": "something else is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "extends",
+      "passed": 0,
+      "failed": 10,
+      "skipped": 0,
+      "total": 10,
+      "failures": [
+        {
+          "group": "extends",
+          "test": "extends",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "extends",
+          "test": "mismatch extended",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "extends",
+          "test": "mismatch extends",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "extends",
+          "test": "wrong type",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "extends simple types",
+          "test": "mismatch extends",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "extends simple types",
+          "test": "valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple extends",
+          "test": "mismatch both",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple extends",
+          "test": "mismatch first extends",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple extends",
+          "test": "mismatch second extends",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple extends",
+          "test": "valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "format",
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "total": 60
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "total": 2,
+      "failures": [
+        {
+          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
+          "test": "failing case",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
+          "test": "passing case",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "items",
+      "passed": 0,
+      "failed": 7,
+      "skipped": 0,
+      "total": 7,
+      "failures": [
+        {
+          "group": "a schema given for items",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "a schema given for items",
+          "test": "valid items",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "a schema given for items",
+          "test": "wrong type of items",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "correct types",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "an array of schemas for items",
+          "test": "wrong types",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "array-form items with null instance elements",
+          "test": "allows null elements",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "items with null instance elements",
+          "test": "allows null elements",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 0,
+      "failed": 4,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "maxItems validation",
+          "test": "exact length is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxItems validation",
+          "test": "shorter is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxItems validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 0,
+      "failed": 5,
+      "skipped": 0,
+      "total": 5,
+      "failures": [
+        {
+          "group": "maxLength validation",
+          "test": "exact length is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxLength validation",
+          "test": "shorter is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxLength validation",
+          "test": "too long is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maxLength validation",
+          "test": "two graphemes is long enough",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "maximum",
+      "passed": 0,
+      "failed": 14,
+      "skipped": 0,
+      "total": 14,
+      "failures": [
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "below the maximum is still valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "exclusiveMaximum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation",
+          "test": "above the maximum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation",
+          "test": "below the maximum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation",
+          "test": "boundary point is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation (explicit false exclusivity)",
+          "test": "above the maximum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation (explicit false exclusivity)",
+          "test": "below the maximum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation (explicit false exclusivity)",
+          "test": "boundary point is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation (explicit false exclusivity)",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation with unsigned integer",
+          "test": "above the maximum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation with unsigned integer",
+          "test": "below the maximum is invalid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation with unsigned integer",
+          "test": "boundary point float is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "maximum validation with unsigned integer",
+          "test": "boundary point integer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "minItems",
+      "passed": 0,
+      "failed": 4,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "minItems validation",
+          "test": "exact length is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minItems validation",
+          "test": "ignores non-arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minItems validation",
+          "test": "longer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minItems validation",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "minLength",
+      "passed": 0,
+      "failed": 5,
+      "skipped": 0,
+      "total": 5,
+      "failures": [
+        {
+          "group": "minLength validation",
+          "test": "exact length is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minLength validation",
+          "test": "ignores non-strings",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minLength validation",
+          "test": "longer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minLength validation",
+          "test": "one grapheme is not long enough",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minLength validation",
+          "test": "too short is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "minimum",
+      "passed": 0,
+      "failed": 13,
+      "skipped": 0,
+      "total": 13,
+      "failures": [
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "above the minimum is still valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "exclusiveMinimum validation",
+          "test": "boundary point is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation",
+          "test": "above the minimum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation",
+          "test": "below the minimum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation",
+          "test": "boundary point is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "boundary point is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "boundary point with float is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "float below the minimum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "ignores non-numbers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "int below the minimum is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "negative above the minimum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "minimum validation with signed integer",
+          "test": "positive above the minimum is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "pattern",
+      "passed": 0,
+      "failed": 9,
+      "skipped": 0,
+      "total": 9,
+      "failures": [
+        {
+          "group": "pattern is not anchored",
+          "test": "matches a substring",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "a matching pattern is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "a non-matching pattern is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores booleans",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores floats",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores integers",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores null",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "pattern validation",
+          "test": "ignores objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 0,
+      "failed": 17,
+      "skipped": 0,
+      "total": 17,
+      "failures": [
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "a simultaneous match is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "a single valid match is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to both is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to one is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "an invalid due to the other is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "multiple simultaneous patternProperties are validated",
+          "test": "multiple matches is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "a single invalid match is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "a single valid match is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "multiple invalid matches is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties validates properties matching a regex",
+          "test": "multiple valid matches is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "patternProperties with null valued instance properties",
+          "test": "allows null values",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "non recognized members are ignored",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "recognized members are accounted for",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "regexes are case sensitive",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "regexes are not anchored by default and are case sensitive",
+          "test": "regexes are case sensitive, 2",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "properties",
+      "passed": 0,
+      "failed": 15,
+      "skipped": 0,
+      "total": 15,
+      "failures": [
+        {
+          "group": "object properties validation",
+          "test": "both properties invalid is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "object properties validation",
+          "test": "both properties present and valid is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "object properties validation",
+          "test": "doesn't invalidate other properties",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "object properties validation",
+          "test": "ignores arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "object properties validation",
+          "test": "ignores other non-objects",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "object properties validation",
+          "test": "one property invalid is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties with null valued instance properties",
+          "test": "allows null values",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "additionalProperty ignores property",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "additionalProperty invalidates others",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "additionalProperty validates others",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates nonproperty",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty invalidates property",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "patternProperty validates nonproperty",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "property invalidates property",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "properties, patternProperties, additionalProperties interaction",
+          "test": "property validates property",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "ref",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 6,
+      "failed": 2,
+      "skipped": 0,
+      "total": 8,
+      "failures": [
+        {
+          "group": "change resolution scope",
+          "test": "changed scope ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "change resolution scope",
+          "test": "changed scope ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "required",
+      "passed": 0,
+      "failed": 4,
+      "skipped": 0,
+      "total": 4,
+      "failures": [
+        {
+          "group": "required default validation",
+          "test": "not required by default",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "required explicitly false validation",
+          "test": "not required if required is false",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "required validation",
+          "test": "non-present required property is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "required validation",
+          "test": "present required property is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    },
+    {
+      "keyword": "type",
+      "passed": 73,
+      "failed": 7,
+      "skipped": 0,
+      "total": 80,
+      "failures": [
+        {
+          "group": "applies a nested schema",
+          "test": "an object is invalid otherwise",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "a boolean is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "a float is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "a string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "an integer is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "null is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types from separate schemas are merged",
+          "test": "an integer is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 0,
+      "failed": 62,
+      "skipped": 0,
+      "total": 62,
+      "failures": [
+        {
+          "group": "uniqueItems validation",
+          "test": "0 and false are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "1 and true are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "[0] and [false] are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "[1] and [true] are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "nested [0] and [false] are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "nested [1] and [true] are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of arrays is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of integers is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of more than two arrays is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of more than two integers is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of nested objects is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of objects is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique array of strings is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "non-unique heterogeneous types are invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "numbers are unique if mathematically unequal",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique array of arrays is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique array of integers is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique array of nested objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique array of objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique array of strings is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "unique heterogeneous types are valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "{\"a\": false} and {\"a\": 0} are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems validation",
+          "test": "{\"a\": true} and {\"a\": 1} are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[false, false] from items array is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[false, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[true, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "[true, true] from items array is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "non-unique array extended from [false, true] is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "non-unique array extended from [true, false] is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items",
+          "test": "unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[false, false] from items array is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[false, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[true, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "[true, true] from items array is not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems with an array of items and additionalItems=false",
+          "test": "extra items are invalid even if unique",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "0 and false are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "1 and true are unique",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "non-unique array of arrays is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "non-unique array of integers is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "non-unique array of nested objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "non-unique array of objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "non-unique heterogeneous types are valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "numbers are unique if mathematically unequal",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "unique array of arrays is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "unique array of integers is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "unique array of nested objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "unique array of objects is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false validation",
+          "test": "unique heterogeneous types are valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "[false, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "[false, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "[true, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "[true, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "non-unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "non-unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "unique array extended from [false, true] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items",
+          "test": "unique array extended from [true, false] is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "[false, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "[false, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "[true, false] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "[true, true] from items array is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        },
+        {
+          "group": "uniqueItems=false with an array of items and additionalItems=false",
+          "test": "extra items are invalid even if unique",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "Unknown type"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 161,
+    "failed": 246,
+    "skipped": 0,
+    "total": 407,
+    "percentage": 39.55773955773956
+  }
+}

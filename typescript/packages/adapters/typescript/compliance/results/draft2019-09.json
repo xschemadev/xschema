@@ -1,0 +1,334 @@
+{
+  "draft": "draft2019-09",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 19,
+      "total": 19
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 21,
+      "total": 21
+    },
+    {
+      "keyword": "allOf",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 30,
+      "total": 30
+    },
+    {
+      "keyword": "anchor",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 18,
+      "total": 18
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 18,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 54,
+      "total": 54
+    },
+    {
+      "keyword": "contains",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 21,
+      "total": 21
+    },
+    {
+      "keyword": "content",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 18,
+      "total": 18
+    },
+    {
+      "keyword": "default",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7,
+      "total": 7
+    },
+    {
+      "keyword": "defs",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependentRequired",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 20,
+      "total": 20
+    },
+    {
+      "keyword": "dependentSchemas",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 20,
+      "total": 20
+    },
+    {
+      "keyword": "enum",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 45,
+      "total": 45
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4,
+      "total": 4
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4,
+      "total": 4
+    },
+    {
+      "keyword": "format",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 114,
+      "total": 114
+    },
+    {
+      "keyword": "if-then-else",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 26,
+      "total": 26
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 28,
+      "total": 28
+    },
+    {
+      "keyword": "maxContains",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 12,
+      "total": 12
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6,
+      "total": 6
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7,
+      "total": 7
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 10,
+      "total": 10
+    },
+    {
+      "keyword": "maximum",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8,
+      "total": 8
+    },
+    {
+      "keyword": "minContains",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 28,
+      "total": 28
+    },
+    {
+      "keyword": "minItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6,
+      "total": 6
+    },
+    {
+      "keyword": "minLength",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7,
+      "total": 7
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8,
+      "total": 8
+    },
+    {
+      "keyword": "minimum",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 11,
+      "total": 11
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 10,
+      "total": 10
+    },
+    {
+      "keyword": "not",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 27,
+      "total": 27
+    },
+    {
+      "keyword": "pattern",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 9,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 23,
+      "total": 23
+    },
+    {
+      "keyword": "properties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 28,
+      "total": 28
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 20,
+      "total": 20
+    },
+    {
+      "keyword": "recursiveRef",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "ref",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "required",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 16,
+      "total": 16
+    },
+    {
+      "keyword": "type",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 80,
+      "total": 80
+    },
+    {
+      "keyword": "unevaluatedItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "unevaluatedProperties",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 69,
+      "total": 69
+    },
+    {
+      "keyword": "vocabulary",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5,
+      "total": 5
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "skipped": 859,
+    "total": 859,
+    "percentage": 0
+  }
+}

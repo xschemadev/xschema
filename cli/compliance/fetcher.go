@@ -15,9 +15,11 @@ import (
 
 const (
 	// GitHub repo for JSON Schema Test Suite
-	testSuiteRepo    = "json-schema-org/JSON-Schema-Test-Suite"
-	testSuiteVersion = "main" // could pin to specific tag if needed
-	testSuiteURL     = "https://github.com/" + testSuiteRepo + "/archive/refs/heads/" + testSuiteVersion + ".tar.gz"
+	testSuiteRepo = "json-schema-org/JSON-Schema-Test-Suite"
+	// Bump by updating this constant and regenerating compliance results.
+	testSuiteVersion  = "Test-JSON-Schema-Acceptance-1.035"
+	testSuiteURL      = "https://github.com/" + testSuiteRepo + "/archive/refs/tags/" + testSuiteVersion + ".tar.gz"
+	testSuiteCacheDir = "json-schema-test-suite-" + testSuiteVersion
 )
 
 // GetCacheDir returns the cache directory for xschema
@@ -38,7 +40,7 @@ func FetchTestSuite(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("failed to get cache dir: %w", err)
 	}
 
-	suiteDir := filepath.Join(cacheDir, "json-schema-test-suite")
+	suiteDir := filepath.Join(cacheDir, testSuiteCacheDir)
 	testsDir := filepath.Join(suiteDir, "tests")
 
 	// Check if already cached (has tests/draft2020-12 directory)
