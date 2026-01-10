@@ -1,0 +1,17 @@
+# Ralph Progress Log
+Started: Sat Jan 10 03:42:30 PM CET 2026
+
+## Codebase Patterns
+- Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
+
+---
+
+## 2026-01-10 17:37 - US-001
+- Pinned JSON Schema Test Suite to Test-JSON-Schema-Acceptance-1.035 and versioned cache directory.
+- Files changed: `cli/compliance/fetcher.go`, `cli/compliance/fetcher_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Pin the suite by updating `testSuiteVersion` and `testSuiteCacheDir`.
+  - GitHub tarballs for tags use `archive/refs/tags/<tag>.tar.gz`.
+  - Cache path updates require tests to follow the versioned directory.
+---
+

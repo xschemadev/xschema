@@ -130,7 +130,7 @@ func TestFetchTestSuite_UsesCache(t *testing.T) {
 	defer os.Setenv("XDG_CACHE_HOME", oldUserCacheDir)
 
 	// Create fake cached suite
-	suiteDir := filepath.Join(tmpDir, "xschema", "json-schema-test-suite")
+	suiteDir := filepath.Join(tmpDir, "xschema", testSuiteCacheDir)
 	testsDir := filepath.Join(suiteDir, "tests", "draft2020-12")
 	if err := os.MkdirAll(testsDir, 0755); err != nil {
 		t.Fatalf("failed to create test dir: %v", err)

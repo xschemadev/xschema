@@ -1,0 +1,118 @@
+{
+  "project": "xschema",
+  "branchName": "ralph/compliance-suite-performance",
+  "description": "Compliance Suite Performance - reduce compliance runtime by batching work and making outputs deterministic.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Pin JSON Schema Test Suite version for CI stability",
+      "description": "As a maintainer, I want the JSON Schema Test Suite pinned to a tag/commit so that CI results stay stable and aren’t affected by upstream changes.",
+      "acceptanceCriteria": [
+        "Replace main-tracking suite download with pinned tag or commit SHA",
+        "Cache directory includes pinned version to avoid collisions",
+        "CI uses pinned suite by default (no workflow complexity added)",
+        "Document a single-constant bump process (change constant + regen results)",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add --profile timing breakdown to compliance runs",
+      "description": "As a developer, I want a timing breakdown for compliance runs so that I can see where time is spent and validate performance improvements.",
+      "acceptanceCriteria": [
+        "Add `--profile` boolean flag to `xschema compliance`",
+        "When enabled, print a clearly labeled timing summary with: suite load, schema bundling, adapter invocation, harness generation, harness execution",
+        "Timing output is stable (consistent labels and units) and does not alter pass/fail results",
+        "Persist current timing snapshot to `progress.txt`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Make --dev-report outputs deterministic and diff-friendly",
+      "description": "As an adapter developer, I want `--dev-report` outputs to be byte-for-byte identical across runs so that diffs reflect real changes, not noise.",
+      "acceptanceCriteria": [
+        "Running `xschema compliance --dev-report` twice with identical inputs produces identical file contents in `compliance/results/`",
+        "Drafts, keywords, and failures are written in a deterministic order",
+        "Remove non-deterministic timestamps: no `generatedAt` in JSON reports and no `Generated:` line in `compliance/results/REPORT.md`",
+        "CI can validate freshness with a plain diff check (no regex filtering for timestamps)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Reduce bun harness overhead by avoiding bun run",
+      "description": "As a developer, I want TypeScript harness execution under bun to avoid unnecessary overhead so that compliance runs faster without semantic changes.",
+      "acceptanceCriteria": [
+        "For bun runtime execution, prefer `bun <file>` over `bun run <file>`",
+        "Harness behavior remains unchanged (stdout JSON format, cwd resolution, error handling)",
+        "Profile shows improved harness execution time compared to baseline in `progress.txt`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Speed up --keyword runs by loading only the requested test file",
+      "description": "As a developer iterating on one keyword, I want `--keyword` runs to load only that keyword’s test JSON so that iteration is faster.",
+      "acceptanceCriteria": [
+        "When `--keyword <k>` is set, load only `tests/<draft>/<k>.json` for each draft",
+        "If `tests/<draft>/<k>.json` does not exist, return a clear error (include available keyword list or count)",
+        "Results for `--keyword` match the subset of a full run for the same draft",
+        "Profile shows improved suite load time compared to baseline in `progress.txt`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Batch adapter conversion per draft+keyword",
+      "description": "As a developer, I want adapter conversion batched per (draft, keyword) so that the runner spawns far fewer adapter processes.",
+      "acceptanceCriteria": [
+        "For each (draft, keyword), invoke the adapter once with a batch of schema inputs (one per group)",
+        "Each input includes a stable unique id so outputs map back to the originating group deterministically",
+        "Adapter output mapping is deterministic and does not change which groups/tests pass/fail/skipped",
+        "Profile shows reduced adapter invocation time vs baseline in `progress.txt`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Batch harness execution per draft+keyword",
+      "description": "As a developer, I want harness execution batched per (draft, keyword) so that the runner spawns far fewer runtime processes while preserving semantics.",
+      "acceptanceCriteria": [
+        "For each (draft, keyword), execute exactly one harness runtime process that evaluates all groups+testcases for that keyword",
+        "Compliance totals (passed/failed/skipped/total) match the current implementation for the same adapter + suite inputs",
+        "Failure records include group + test descriptions and remain deterministic across runs",
+        "Profile shows reduced harness execution time vs baseline in `progress.txt`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Add --jobs for bounded concurrency (default 1) with deterministic output",
+      "description": "As a developer, I want optional bounded concurrency so that I can speed up compliance runs on strong machines while keeping default behavior deterministic.",
+      "acceptanceCriteria": [
+        "Add `--jobs <n>` flag where `n >= 1`, default `--jobs 1`",
+        "When `--jobs > 1`, parallelize at a safe unit of work (per keyword within a draft)",
+        "Final report ordering is deterministic regardless of execution scheduling",
+        "Progress output remains readable (no interleaved garbage)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
