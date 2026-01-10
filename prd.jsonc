@@ -28,7 +28,7 @@
         "Persist current timing snapshot to `progress.txt`",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

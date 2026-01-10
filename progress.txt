@@ -15,3 +15,11 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Cache path updates require tests to follow the versioned directory.
 ---
 
+## 2026-01-10 18:05 - US-002
+- Added `--profile` timing summary for compliance runs (suite load, schema bundling, adapter invocation, harness generation, harness execution).
+- Files changed: `cli/cmd/compliance.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `prd.jsonc`, `progress.txt`.
+- Timing snapshot (not run locally): suite load n/a, schema bundling n/a, adapter invocation n/a, harness generation n/a, harness execution n/a.
+- **Learnings for future iterations:**
+  - Aggregate timing is tracked in `compliance.TimingSummary`.
+---
+

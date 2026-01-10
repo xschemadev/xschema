@@ -35,6 +35,7 @@ type RunOptions struct {
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
 	Verbose        bool
+	Timing         *TimingSummary
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
 	ProgressFunc   func(ProgressUpdate)    // for live progress updates
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
@@ -95,6 +96,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			verbose:      opts.Verbose,
 			outputFunc:   opts.OutputFunc,
 			progressFunc: opts.ProgressFunc,
+			timing:       opts.Timing,
 		})
 
 		if draftResult != nil {
@@ -130,11 +132,16 @@ type runDraftOptions struct {
 	verbose      bool
 	outputFunc   func(string)
 	progressFunc func(ProgressUpdate)
+	timing       *TimingSummary
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	// Load test suite for this draft
+	loadStart := time.Now()
 	suite, err := LoadTestSuite(opts.suitePath, opts.draft)
+	if opts.timing != nil {
+		opts.timing.addSuiteLoad(time.Since(loadStart))
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -221,25 +228,33 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 	default:
 	}
 
+	bundleStart := time.Now()
 	bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+	opts.timing.addSchemaBundling(time.Since(bundleStart))
 	if err != nil {
 		markAllFailed(keywordResult, summary, group, fmt.Sprintf("bundling error: %v", err))
 		return nil
 	}
 
+	adapterStart := time.Now()
 	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, bundledSchema)
+	opts.timing.addAdapterInvocation(time.Since(adapterStart))
 	if err != nil {
 		return fmt.Errorf("adapter call failed: %w", err)
 	}
 
+	harnessStart := time.Now()
 	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)
+	opts.timing.addHarnessGeneration(time.Since(harnessStart))
 	if err != nil {
 		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
 		return nil
 	}
 	defer os.Remove(tempHarness)
 
+	execStart := time.Now()
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
+	opts.timing.addHarnessExecution(time.Since(execStart))
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			return err

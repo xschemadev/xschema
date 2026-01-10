@@ -21,6 +21,7 @@ var (
 	complianceLang      string
 	complianceDevReport bool
 	complianceVerbose   bool
+	complianceProfile   bool
 )
 
 var complianceCmd = &cobra.Command{
@@ -58,6 +59,7 @@ func init() {
 	complianceCmd.Flags().StringVarP(&complianceLang, "lang", "l", "typescript", "language (typescript, python)")
 	complianceCmd.Flags().BoolVar(&complianceDevReport, "dev-report", false, "write results to compliance/results/ (for adapter developers)")
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
+	complianceCmd.Flags().BoolVar(&complianceProfile, "profile", false, "print timing breakdown summary")
 }
 
 func runCompliance(cmd *cobra.Command, args []string) error {
@@ -138,6 +140,11 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 	// Create progress spinner for live updates
 	spinner := ui.NewProgressSpinner()
 
+	var timing *compliance.TimingSummary
+	if complianceProfile {
+		timing = &compliance.TimingSummary{}
+	}
+
 	opts := compliance.RunOptions{
 		AdapterPath:    adapterPath,
 		AdapterName:    adapterName,
@@ -148,6 +155,7 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
 		Verbose:        complianceVerbose,
+		Timing:         timing,
 		ProgressFunc: func(p compliance.ProgressUpdate) {
 			msg := ui.FormatDraftProgress(p.Draft, p.KeywordNum, p.KeywordTotal, p.Keyword)
 			spinner.Update(msg)
@@ -195,6 +203,10 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		ui.Printf("\nResults written to: %s\n", ui.Primary.Render(resultsPath))
 	}
 
+	if complianceProfile {
+		printTimingSummary(timing)
+	}
+
 	ui.Println()
 	ui.SuccessMsg(fmt.Sprintf("Compliance testing complete (%s)", ui.FormatDuration(time.Since(start))))
 
@@ -220,6 +232,20 @@ func printComplianceSummary(report *compliance.ComplianceReport) {
 			draft.Summary.Percentage,
 		)
 	}
+}
+
+func printTimingSummary(timing *compliance.TimingSummary) {
+	if timing == nil {
+		return
+	}
+
+	ui.Println()
+	ui.Println("Timing summary:")
+	ui.Printf("  Suite load: %s\n", ui.FormatDuration(timing.SuiteLoad))
+	ui.Printf("  Schema bundling: %s\n", ui.FormatDuration(timing.SchemaBundling))
+	ui.Printf("  Adapter invocation: %s\n", ui.FormatDuration(timing.AdapterInvocation))
+	ui.Printf("  Harness generation: %s\n", ui.FormatDuration(timing.HarnessGeneration))
+	ui.Printf("  Harness execution: %s\n", ui.FormatDuration(timing.HarnessExecution))
 }
 
 func formatDraftList(drafts []string) string {

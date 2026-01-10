@@ -1,6 +1,9 @@
 package compliance
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // TestCase represents a single test case from the JSON Schema Test Suite
 type TestCase struct {
@@ -75,6 +78,50 @@ type ComplianceReport struct {
 	Adapter     string        `json:"adapter"`
 	GeneratedAt string        `json:"generatedAt"`
 	Drafts      []DraftResult `json:"drafts"`
+}
+
+// TimingSummary holds aggregate timings for a compliance run.
+type TimingSummary struct {
+	SuiteLoad         time.Duration
+	SchemaBundling    time.Duration
+	AdapterInvocation time.Duration
+	HarnessGeneration time.Duration
+	HarnessExecution  time.Duration
+}
+
+func (t *TimingSummary) addSuiteLoad(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.SuiteLoad += duration
+}
+
+func (t *TimingSummary) addSchemaBundling(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.SchemaBundling += duration
+}
+
+func (t *TimingSummary) addAdapterInvocation(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.AdapterInvocation += duration
+}
+
+func (t *TimingSummary) addHarnessGeneration(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.HarnessGeneration += duration
+}
+
+func (t *TimingSummary) addHarnessExecution(duration time.Duration) {
+	if t == nil {
+		return
+	}
+	t.HarnessExecution += duration
 }
 
 // HarnessResult is the JSON output from executing a harness file
