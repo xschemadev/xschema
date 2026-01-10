@@ -1,3 +1,18 @@
 # Ralph Progress Log
 Started: Sat Jan 10 01:35:45 AM CET 2026
+
+## Codebase Patterns
+
+- Go code in cli/ directory
+- AdapterOutput struct in cli/compliance/types.go receives adapter responses
+- Commit format: `feat(scope): lowercase message`
+
+---
+
+## 2026-01-10 - US-001
+- Added Validate and ValidateImports fields to AdapterOutput struct
+- Files changed: cli/compliance/types.go
+- **Learnings:**
+  - AdapterOutput is used by CallAdapter to parse adapter JSON responses
+  - omitempty used for optional fields to support type-only adapters
 ---
