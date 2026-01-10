@@ -11,8 +11,9 @@ export function convert(input: ConvertInput): ConvertResult {
 	return {
 		namespace,
 		id,
-		imports: ['import { type } from "arktype"'],
+		imports: ['{ type } from "arktype"'],
 		schema: schemaCode,
 		type: `typeof ${varName}.infer`,
+		validate: "(data: unknown) => !(schema(data) instanceof type.errors)",
 	};
 }
