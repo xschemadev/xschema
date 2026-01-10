@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/xschemadev/xschema/bundler"
@@ -36,6 +37,7 @@ type RunOptions struct {
 	RunnerArgs     []string                        // e.g., ["run"]
 	Verbose        bool
 	Timing         *TimingSummary
+	Jobs           int                     // number of parallel jobs (default 1)
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
 	ProgressFunc   func(ProgressUpdate)    // for live progress updates
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
@@ -84,6 +86,11 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			opts.OutputFunc(fmt.Sprintf("Testing %s...", draft))
 		}
 
+		jobs := opts.Jobs
+		if jobs < 1 {
+			jobs = 1
+		}
+
 		draftResult, err := runDraft(ctx, runDraftOptions{
 			draft:            draft,
 			draftNum:         i + 1,
@@ -97,6 +104,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			runnerArgs:       opts.RunnerArgs,
 			workDir:          opts.AdapterPath,
 			verbose:          opts.Verbose,
+			jobs:             jobs,
 			outputFunc:       opts.OutputFunc,
 			progressFunc:     opts.ProgressFunc,
 			timing:           opts.Timing,
@@ -134,6 +142,7 @@ type runDraftOptions struct {
 	runnerArgs       []string
 	workDir          string // directory to run harness from (for dependency resolution)
 	verbose          bool
+	jobs             int // parallel keyword processing (default 1)
 	outputFunc       func(string)
 	progressFunc     func(ProgressUpdate)
 	timing           *TimingSummary
@@ -148,12 +157,6 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	}
 	if err != nil {
 		return nil, err
-	}
-
-	result := DraftResult{
-		Draft:    opts.draft,
-		Keywords: []KeywordResult{},
-		Summary:  DraftSummary{},
 	}
 
 	// Sort keywords for consistent output
@@ -179,6 +182,23 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	}
 
 	totalKeywords := len(keywords)
+
+	// Sequential execution (jobs == 1) - original behavior
+	if opts.jobs <= 1 {
+		return runDraftSequential(ctx, opts, suite, keywords, totalKeywords)
+	}
+
+	// Parallel execution (jobs > 1)
+	return runDraftParallel(ctx, opts, suite, keywords, totalKeywords)
+}
+
+// runDraftSequential processes keywords one at a time
+func runDraftSequential(ctx context.Context, opts runDraftOptions, suite map[string][]TestGroup, keywords []string, totalKeywords int) (*DraftResult, error) {
+	result := DraftResult{
+		Draft:    opts.draft,
+		Keywords: []KeywordResult{},
+		Summary:  DraftSummary{},
+	}
 
 	for i, keyword := range keywords {
 		select {
@@ -213,6 +233,107 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 		}
 
 		result.Keywords = append(result.Keywords, keywordResult)
+	}
+
+	// Calculate percentage
+	if result.Summary.Total > 0 {
+		result.Summary.Percentage = float64(result.Summary.Passed) / float64(result.Summary.Total) * 100
+	}
+
+	return &result, nil
+}
+
+// runDraftParallel processes keywords concurrently with bounded parallelism
+func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[string][]TestGroup, keywords []string, totalKeywords int) (*DraftResult, error) {
+	result := DraftResult{
+		Draft:    opts.draft,
+		Keywords: make([]KeywordResult, totalKeywords),
+		Summary:  DraftSummary{},
+	}
+
+	// Use a semaphore channel for bounded concurrency
+	sem := make(chan struct{}, opts.jobs)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var firstErr error
+
+	// Use a separate mutex for progress reporting to avoid interleaving
+	var progressMu sync.Mutex
+	progressCounter := 0
+
+	for i, keyword := range keywords {
+		select {
+		case <-ctx.Done():
+			result.Keywords = result.Keywords[:i]
+			return &result, ctx.Err()
+		default:
+		}
+
+		i, keyword := i, keyword // capture loop variables
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			// Acquire semaphore
+			select {
+			case sem <- struct{}{}:
+				defer func() { <-sem }()
+			case <-ctx.Done():
+				return
+			}
+
+			// Report progress (with lock to prevent interleaving)
+			if opts.progressFunc != nil {
+				progressMu.Lock()
+				progressCounter++
+				opts.progressFunc(ProgressUpdate{
+					Draft:        opts.draft,
+					DraftNum:     opts.draftNum,
+					DraftTotal:   opts.draftTotal,
+					Keyword:      keyword,
+					KeywordNum:   progressCounter,
+					KeywordTotal: totalKeywords,
+				})
+				progressMu.Unlock()
+			}
+
+			groups := suite[keyword]
+
+			keywordResult := KeywordResult{
+				Keyword:  keyword,
+				Failures: []TestResult{},
+			}
+
+			// Create a local summary to avoid concurrent writes
+			var localSummary DraftSummary
+
+			if err := processKeyword(ctx, opts, groups, &keywordResult, &localSummary); err != nil {
+				if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+					mu.Lock()
+					if firstErr == nil {
+						firstErr = err
+					}
+					mu.Unlock()
+					return
+				}
+			}
+
+			// Store result at the correct index for deterministic order
+			mu.Lock()
+			result.Keywords[i] = keywordResult
+			result.Summary.Passed += localSummary.Passed
+			result.Summary.Failed += localSummary.Failed
+			result.Summary.Skipped += localSummary.Skipped
+			result.Summary.Total += localSummary.Total
+			mu.Unlock()
+		}()
+	}
+
+	wg.Wait()
+
+	if firstErr != nil {
+		return &result, firstErr
 	}
 
 	// Calculate percentage

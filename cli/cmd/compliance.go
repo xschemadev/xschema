@@ -22,6 +22,7 @@ var (
 	complianceDevReport bool
 	complianceVerbose   bool
 	complianceProfile   bool
+	complianceJobs      int
 )
 
 var complianceCmd = &cobra.Command{
@@ -60,6 +61,7 @@ func init() {
 	complianceCmd.Flags().BoolVar(&complianceDevReport, "dev-report", false, "write results to compliance/results/ (for adapter developers)")
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
 	complianceCmd.Flags().BoolVar(&complianceProfile, "profile", false, "print timing breakdown summary")
+	complianceCmd.Flags().IntVarP(&complianceJobs, "jobs", "j", 1, "number of parallel jobs (keywords processed concurrently)")
 }
 
 func runCompliance(cmd *cobra.Command, args []string) error {
@@ -70,6 +72,10 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 
 	if complianceDevReport && (complianceDraft != "" || complianceKeyword != "") {
 		return fmt.Errorf("--dev-report cannot be used with --draft or --keyword")
+	}
+
+	if complianceJobs < 1 {
+		return fmt.Errorf("--jobs must be >= 1")
 	}
 
 	// Get language config
@@ -156,6 +162,7 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		RunnerArgs:     runnerArgs,
 		Verbose:        complianceVerbose,
 		Timing:         timing,
+		Jobs:           complianceJobs,
 		ProgressFunc: func(p compliance.ProgressUpdate) {
 			msg := ui.FormatDraftProgress(p.Draft, p.KeywordNum, p.KeywordTotal, p.Keyword)
 			spinner.Update(msg)
