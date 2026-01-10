@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"text/template"
 )
 
 func TestFindHarness(t *testing.T) {
@@ -381,5 +382,208 @@ func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 	basename := filepath.Base(harnessPath)
 	if !strings.HasPrefix(basename, "xschema-harness-") {
 		t.Errorf("harness filename = %s, want prefix 'xschema-harness-'", basename)
+	}
+}
+
+func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	data := HarnessTemplateData{
+		Schema:          `z.object({ name: z.string() })`,
+		Imports:         []string{`{ z } from "zod"`},
+		Validate:        `(data) => schema.safeParse(data).success`,
+		ValidateImports: nil,
+		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
+		IsTypeOnly:      false,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	// Should have import
+	if !strings.Contains(result, `import { z } from "zod";`) {
+		t.Error("missing zod import")
+	}
+
+	// Should have schema
+	if !strings.Contains(result, `const schema = z.object({ name: z.string() });`) {
+		t.Error("missing schema declaration")
+	}
+
+	// Should have validate function
+	if !strings.Contains(result, `const validate = (data) => schema.safeParse(data).success;`) {
+		t.Error("missing validate function")
+	}
+
+	// Should have try-catch for runtime validation
+	if !strings.Contains(result, "try {") {
+		t.Error("missing try-catch block")
+	}
+
+	// Should output JSON
+	if !strings.Contains(result, "console.log(JSON.stringify(results));") {
+		t.Error("missing JSON output")
+	}
+
+	// Should NOT have type-only code
+	if strings.Contains(result, "type GeneratedType") {
+		t.Error("should not have type-only code for runtime adapter")
+	}
+}
+
+func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	data := HarnessTemplateData{
+		Schema:          `{ name: string }`,
+		Imports:         nil,
+		Validate:        "",
+		ValidateImports: nil,
+		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
+		IsTypeOnly:      true,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	// Should have type declaration
+	if !strings.Contains(result, `type GeneratedType = { name: string };`) {
+		t.Error("missing type declaration")
+	}
+
+	// Should mark results as skipped
+	if !strings.Contains(result, `actual: "skipped"`) {
+		t.Error("missing skipped actual value")
+	}
+
+	// Should NOT have runtime validation code
+	if strings.Contains(result, "const schema =") {
+		t.Error("should not have schema const for type-only adapter")
+	}
+	if strings.Contains(result, "const validate =") {
+		t.Error("should not have validate function for type-only adapter")
+	}
+	if strings.Contains(result, "try {") {
+		t.Error("should not have try-catch for type-only adapter")
+	}
+
+	// Should output JSON
+	if !strings.Contains(result, "console.log(JSON.stringify(results));") {
+		t.Error("missing JSON output")
+	}
+}
+
+func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	data := HarnessTemplateData{
+		Schema:          `v.object({ name: v.string() })`,
+		Imports:         []string{`* as v from "valibot"`},
+		Validate:        `(data) => v.safeParse(schema, data).success`,
+		ValidateImports: []string{`{ safeParse } from "valibot"`},
+		TestCasesString: `"[]"`,
+		IsTypeOnly:      false,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	// Should have both imports
+	if !strings.Contains(result, `import * as v from "valibot";`) {
+		t.Error("missing schema import")
+	}
+	if !strings.Contains(result, `import { safeParse } from "valibot";`) {
+		t.Error("missing validateImports")
+	}
+}
+
+func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	data := HarnessTemplateData{
+		Schema:          `Schema.Struct({ name: Schema.String })`,
+		Imports:         []string{`{ Schema } from "effect"`, `{ pipe } from "effect/Function"`},
+		Validate:        `(data) => Schema.decodeUnknownSync(schema)(data) !== undefined`,
+		ValidateImports: nil,
+		TestCasesString: `"[]"`,
+		IsTypeOnly:      false,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	// Should have both imports
+	if !strings.Contains(result, `import { Schema } from "effect";`) {
+		t.Error("missing first import")
+	}
+	if !strings.Contains(result, `import { pipe } from "effect/Function";`) {
+		t.Error("missing second import")
+	}
+}
+
+func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	// Test with properly escaped JSON string (as it would come from json.Marshal)
+	testCases := []TestCase{
+		{Description: "test with \"quotes\"", Data: "hello\nworld", Valid: true},
+	}
+	testCasesJSON, _ := json.Marshal(testCases)
+	testCasesString, _ := json.Marshal(string(testCasesJSON))
+
+	data := HarnessTemplateData{
+		Schema:          `z.string()`,
+		Imports:         []string{`{ z } from "zod"`},
+		Validate:        `(data) => schema.safeParse(data).success`,
+		TestCasesString: string(testCasesString),
+		IsTypeOnly:      false,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	// Should contain JSON.parse with escaped string
+	if !strings.Contains(result, "JSON.parse(") {
+		t.Error("missing JSON.parse")
+	}
+
+	// The escaped string should be present (double-escaped in the JS string literal)
+	if !strings.Contains(result, `\\\"quotes\\\"`) {
+		t.Error("missing escaped quotes in test cases")
 	}
 }
