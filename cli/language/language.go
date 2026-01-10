@@ -62,46 +62,21 @@ var Languages = []Language{
 	python,
 }
 
-// languageBySchemaExt maps schema extensions to languages
-var languageBySchemaExt map[string]*Language
-
-func init() {
-	languageBySchemaExt = make(map[string]*Language)
-	for i := range Languages {
-		languageBySchemaExt[Languages[i].SchemaExt] = &Languages[i]
-	}
-}
-
 // BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/typescript.jsonc"
 // Returns nil if URL doesn't match xschema.dev pattern
 func BySchemaURL(url string) *Language {
-	if !strings.HasPrefix(url, XSchemaBaseURL) {
-		return nil
-	}
-	ext := strings.TrimPrefix(url, XSchemaBaseURL)
-	return languageBySchemaExt[ext]
+	return defaultRegistry.BySchemaURL(url)
 }
 
 // ByName returns the language config by name
 func ByName(name string) *Language {
-	for i, lang := range Languages {
-		if lang.Name == name {
-			return &Languages[i]
-		}
-	}
-	return nil
+	return defaultRegistry.ByName(name)
 }
 
 // AllIgnoreDirs returns a combined set of all ignore dirs from all languages
 // Used when walking directories before language detection
 func AllIgnoreDirs() map[string]bool {
-	dirs := make(map[string]bool)
-	for _, lang := range Languages {
-		for _, dir := range lang.IgnoreDirs {
-			dirs[dir] = true
-		}
-	}
-	return dirs
+	return defaultRegistry.AllIgnoreDirs()
 }
 
 // IsXSchemaURL checks if a URL is an xschema.dev schema URL

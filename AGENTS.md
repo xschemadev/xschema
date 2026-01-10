@@ -198,6 +198,7 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Language detected from `$schema` URL: `ts.jsonc` -> ts, `py.jsonc` -> py
 - Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec
 - Always run `bun run build` from typescript/ dir before testing adapters
+- Language registry is global; tests that register languages must call `language.ResetForTests()` (and `t.Cleanup(language.ResetForTests)`)
 
 ## Key File Locations
 

@@ -10,6 +10,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
 - Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
 - Web `tsconfig.json` uses explicit `compilerOptions.types`: include `bun` and `node` for `bun:test` and `node:*` imports.
+- Language registry lives in `cli/language/registry.go`; tests should call `language.ResetForTests()` and `t.Cleanup(language.ResetForTests)` to avoid global state leaks.
 - Avoid writing `*/` inside block comments (e.g. `adapters/*/`), it terminates the comment and breaks parsing.
 
 ---
@@ -105,5 +106,13 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - Keep web typecheck happy by including `bun` + `node` in `web/tsconfig.json` `compilerOptions.types`.
   - Don’t put `*/` (e.g. `adapters/*/`) inside block comments; it ends the comment and breaks parsing.
+---
+
+## 2026-01-11 00:22 - US-004
+- Implemented validated language registry with `Register`, `ByName`, `BySchemaURL`, `AllIgnoreDirs`, `SupportedLanguages`, plus `ResetForTests()`.
+- Files changed: `cli/language/language.go`, `cli/language/registry.go`, `cli/language/registry_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Keep `language.go` as thin wrappers; put registry behavior in `registry.go`.
+  - Tests that mutate language state must use `ResetForTests()` + `t.Cleanup(ResetForTests)`.
 ---
 
