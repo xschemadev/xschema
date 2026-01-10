@@ -8,7 +8,7 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - TS adapters emit full `import ...` statements (no trailing semicolon)
 - TS harness template renders merged import block verbatim (no semicolons)
 - Compliance harness merges Imports + ValidateImports via MergeTSImports before templating
-- MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
+- MergeTSImports handles namespace, type-only, and mixed type imports
 - Compliance harnesses are generated from templates; adapter discovery uses adapter directories and manifests
 - Type-only compliance harness uses AdapterOutput.Type
 - Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
@@ -124,5 +124,18 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - **Learnings for future iterations:**
   - Harness templates now expect pre-merged import blocks
   - MergeTSImports ordering affects harness import output
+---
+
+## 2026-01-10 18:10 CET - US-013
+- Extended MergeTSImports to handle all real-world TS import forms
+- Namespace imports (`import * as v from "x"`) kept separate from named imports
+- Type-only imports (`import type { A }`) merged with regular named imports as `type A`
+- Mixed imports (`import { A, type B }`) supported
+- Aliases (`import { X as Y }`) preserved
+- Files changed: cli/language/imports.go, cli/language/imports_test.go
+- **Learnings for future iterations:**
+  - Namespace and named imports from same source cannot be merged (TS syntax)
+  - Type-only named imports can be merged with regular named imports using inline `type` prefix
+  - Test coverage includes real-world patterns from all current adapters
 ---
 

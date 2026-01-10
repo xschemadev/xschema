@@ -184,8 +184,8 @@
 				"Add/extend unit tests in cli/language/imports_test.go",
 				"Go tests pass"
 			],
-			"passes": false,
-			"notes": "Currently MergeTSImports drops namespace imports like `import * as v from \"valibot\"`; fix + test coverage needed for generator and harness merging."
+			"passes": true,
+			"notes": "MergeTSImports now handles namespace imports (kept separate), type-only imports (import type {...}), mixed type imports (import { A, type B }), aliases (import { X as Y }), and side-effect imports."
 		},
 		{
 			"id": "US-014",
