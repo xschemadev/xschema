@@ -900,8 +900,8 @@ stderr: 1 |
 6 |     const schema = S.Union(S.Struct({ "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
 
 TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1115516538.ts:6:73)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1115516538.ts:39:115
+      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1312556427.ts:6:73)
+      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1312556427.ts:39:115
       at loadAndEvaluateModule (2:1)
 
 Bun v1.3.5 (Linux x64)
@@ -917,8 +917,8 @@ stderr: 1 |
 6 |     const schema = S.Union(S.Struct({ "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
 
 TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1115516538.ts:6:73)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1115516538.ts:39:115
+      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1312556427.ts:6:73)
+      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-1312556427.ts:39:115
       at loadAndEvaluateModule (2:1)
 
 Bun v1.3.5 (Linux x64)
@@ -1131,8 +1131,8 @@ stderr: 1 |
 6 |     const schema = S.Union(S.Struct({ "$comment": S.optional(S.String), "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "contentEncoding": S.optional(S.String), "contentMediaType": S.optional(S.String), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
 
 TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-4173276304.ts:6:107)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-4173276304.ts:39:115
+      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-275296035.ts:6:107)
+      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-275296035.ts:39:115
       at loadAndEvaluateModule (2:1)
 
 Bun v1.3.5 (Linux x64)
@@ -1148,8 +1148,8 @@ stderr: 1 |
 6 |     const schema = S.Union(S.Struct({ "$comment": S.optional(S.String), "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "contentEncoding": S.optional(S.String), "contentMediaType": S.optional(S.String), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
 
 TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-4173276304.ts:6:107)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-4173276304.ts:39:115
+      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-275296035.ts:6:107)
+      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness-275296035.ts:39:115
       at loadAndEvaluateModule (2:1)
 
 Bun v1.3.5 (Linux x64)
