@@ -190,15 +190,15 @@
 		{
 			"id": "US-014",
 			"title": "Align docs and developer guidance with canonical imports",
-			"description": "As a contributor, I want docs to accurately describe the adapter protocol for imports and validateImports so new adapters don’t reintroduce mismatches.",
+			"description": "As a contributor, I want docs to accurately describe the adapter protocol for imports and validateImports so new adapters don't reintroduce mismatches.",
 			"acceptanceCriteria": [
 				"Update docs/adapter-system.md to show canonical imports format (full import statements)",
 				"Update typescript/AGENTS.md adapter protocol example if needed",
 				"Update any notes that claim 'template adds import prefix'",
 				"No conflicting guidance between docs and code"
 			],
-			"passes": false,
-			"notes": "Docs still need to describe `validate` + `validateImports` fields and any remaining guidance about harness import handling."
+			"passes": true,
+			"notes": "Documented validate/validateImports fields, canonical import format, and updated all examples in adapter-system.md, AGENTS.md, and INDEX.md."
 		}
 	]
 }
