@@ -259,8 +259,8 @@ func TestLoadTestFile_BooleanSchema(t *testing.T) {
 }
 
 func TestDrafts(t *testing.T) {
-	// Ensure Drafts contains expected versions
-	expected := []string{"draft2020-12", "draft2019-09", "draft7", "draft6", "draft4", "draft3", "v1"}
+	// Ensure Drafts contains expected versions (v1 excluded until spec released)
+	expected := []string{"draft2020-12", "draft2019-09", "draft7", "draft6", "draft4", "draft3"}
 
 	if len(Drafts) != len(expected) {
 		t.Errorf("Drafts has %d entries, want %d", len(Drafts), len(expected))

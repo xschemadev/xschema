@@ -17,7 +17,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "compliance": "ADAPTER=$PWD && cd ../../../../cli && go run . compliance --dev-report --adapter-path $ADAPTER"
   },
   "dependencies": {
     "@xschemadev/core": "workspace:*"

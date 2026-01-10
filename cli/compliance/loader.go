@@ -9,6 +9,7 @@ import (
 )
 
 // Available draft versions in the test suite
+// Note: v1 excluded until spec is released (metaschema URL returns 404)
 var Drafts = []string{
 	"draft2020-12",
 	"draft2019-09",
@@ -16,7 +17,6 @@ var Drafts = []string{
 	"draft6",
 	"draft4",
 	"draft3",
-	"v1",
 }
 
 // LoadTestSuite loads the JSON Schema Test Suite for a specific draft
