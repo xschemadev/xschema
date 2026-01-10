@@ -143,9 +143,14 @@ export function convert(input: ConvertInput): ConvertResult {
     imports: ['import { z } from "zod"'],
     schema: schemaCode,
     type: `z.infer<typeof ${varName}>`,
+    validate: "(data) => schema.safeParse(data).success",
   };
 }
 ```
+
+**Import format:** Full import statements without trailing semicolons. The generator merges and deduplicates imports.
+
+**validate field:** Optional function for compliance testing. Takes `data`, returns `boolean`, can reference `schema` variable. Empty = type-only adapter.
 
 ### CLI Entry Point
 

@@ -109,7 +109,7 @@ xschema/
 
 **Adapter Protocol**
 - Stdin: JSON array of `{namespace, id, schema}`
-- Stdout: JSON array of `{namespace, id, imports[], schema, type}`
+- Stdout: JSON array of `{namespace, id, imports[], schema?, type?, validate?, validateImports?[]}`
 - Binary discovery: `xschema-{adapter-name}` prefix
 - Runner: auto-detected from lockfiles (bunx, npm, pnpm, etc.)
 
