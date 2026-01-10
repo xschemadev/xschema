@@ -270,6 +270,24 @@ function groupIssuesByKeyword(drafts: DraftResult[]): KeywordIssue[] {
 }
 
 /**
+ * Check if adapter is type-only (no runtime validation).
+ * Type-only adapters have no passed tests and at least some skipped tests.
+ */
+function isTypeOnlyAdapter(drafts: DraftResult[]): boolean {
+  if (drafts.length === 0) return false;
+
+  let totalPassed = 0;
+  let totalSkipped = 0;
+
+  for (const draft of drafts) {
+    totalPassed += draft.summary.passed;
+    totalSkipped += draft.summary.skipped;
+  }
+
+  return totalPassed === 0 && totalSkipped > 0;
+}
+
+/**
  * Generate MDX content for an adapter's compliance page
  */
 function generateComplianceMdx(info: AdapterInfo): string {
@@ -294,19 +312,43 @@ function generateComplianceMdx(info: AdapterInfo): string {
   );
   lines.push("");
 
+  // Type-only adapter callout
+  if (isTypeOnlyAdapter(info.drafts)) {
+    lines.push('<Callout type="info" title="Type-Only Adapter">');
+    lines.push(
+      "This adapter generates TypeScript types only — no runtime validation. " +
+        "Compliance tests are skipped since there's no validate function.",
+    );
+    lines.push("</Callout>");
+    lines.push("");
+  }
+
   // Summary section
   lines.push("## Summary");
   lines.push("");
-  lines.push("| Draft | Passed | Failed | Coverage |");
-  lines.push("| ----- | ------ | ------ | -------- |");
+
+  const typeOnly = isTypeOnlyAdapter(info.drafts);
+  if (typeOnly) {
+    lines.push("| Draft | Passed | Failed | Skipped | Coverage |");
+    lines.push("| ----- | ------ | ------ | ------- | -------- |");
+  } else {
+    lines.push("| Draft | Passed | Failed | Coverage |");
+    lines.push("| ----- | ------ | ------ | -------- |");
+  }
 
   for (const draft of info.drafts) {
-    const { passed, failed, percentage } = draft.summary;
+    const { passed, failed, skipped, percentage } = draft.summary;
     const coverageEmoji =
       percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
-    lines.push(
-      `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
-    );
+    if (typeOnly) {
+      lines.push(
+        `| ${draft.draft} | ${passed} | ${failed} | ${skipped} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+      );
+    } else {
+      lines.push(
+        `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+      );
+    }
   }
   lines.push("");
 
