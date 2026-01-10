@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
@@ -112,7 +113,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Step 3: Generate (with spinner per adapter)
 	ui.Step(3, 4, "Generating validators")
-	var outputs []generator.GenerateOutput
+	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
 		var genErr error
 		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name)

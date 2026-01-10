@@ -7,35 +7,15 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 )
 
-// GenerateInput is sent to the adapter CLI
-type GenerateInput struct {
-	Namespace string          `json:"namespace"`
-	ID        string          `json:"id"`
-	Schema    json.RawMessage `json:"schema"`
-}
-
-// GenerateOutput is received from the adapter CLI
-type GenerateOutput struct {
-	Namespace string   `json:"namespace"`
-	ID        string   `json:"id"`
-	Schema    string   `json:"schema"`  // generated code expression
-	Type      string   `json:"type"`    // type expression
-	Imports   []string `json:"imports"` // required imports
-}
-
-// Key returns the full namespaced key like "namespace:id"
-func (o GenerateOutput) Key() string {
-	return o.Namespace + ":" + o.ID
-}
-
 // validateOutputs checks that each output has at least schema or type
-func validateOutputs(outputs []GenerateOutput, adapterName string) error {
+func validateOutputs(outputs []adapter.ConvertResult, adapterName string) error {
 	for _, output := range outputs {
 		if output.Schema == "" && output.Type == "" {
 			return fmt.Errorf("adapter %s returned neither schema nor type for %s", adapterName, output.Key())
@@ -52,7 +32,7 @@ type GenerateBatchInput struct {
 }
 
 // Generate calls the adapter to convert schemas to native code
-func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, error) {
+func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertResult, error) {
 	lang := language.ByName(input.Language)
 	if lang == nil {
 		return nil, fmt.Errorf("unsupported language: %s", input.Language)
@@ -75,7 +55,7 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 	}
 
 	// Bundle schemas to resolve external $refs
-	adapterInput := make([]GenerateInput, len(input.Schemas))
+	adapterInput := make([]adapter.ConvertInput, len(input.Schemas))
 	for i, s := range input.Schemas {
 		schema := s.Schema
 		if s.SourceURI != "" {
@@ -88,7 +68,7 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 			}
 			schema = bundled
 		}
-		adapterInput[i] = GenerateInput{
+		adapterInput[i] = adapter.ConvertInput{
 			Namespace: s.Namespace,
 			ID:        s.ID,
 			Schema:    schema,
@@ -117,7 +97,7 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 		return nil, fmt.Errorf("adapter %s failed: %w\n%s", binName, err, stderr.String())
 	}
 
-	var outputs []GenerateOutput
+	var outputs []adapter.ConvertResult
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
 		ui.Verbosef("invalid adapter output from %s: %s", binName, stdout.String())
 		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", binName, err, stdout.String())
@@ -132,17 +112,17 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, 
 }
 
 // GenerateAll runs generation for all adapter groups and returns all outputs
-func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string) ([]GenerateOutput, error) {
+func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string) ([]adapter.ConvertResult, error) {
 	groups := retriever.GroupByAdapter(schemas)
 	adapters := retriever.SortedAdapters(groups)
 
-	var allOutputs []GenerateOutput
+	var allOutputs []adapter.ConvertResult
 
-	for _, adapter := range adapters {
+	for _, adapterName := range adapters {
 		batch := GenerateBatchInput{
-			Adapter:  adapter,
+			Adapter:  adapterName,
 			Language: langName,
-			Schemas:  groups[adapter],
+			Schemas:  groups[adapterName],
 		}
 
 		outputs, err := Generate(ctx, batch)

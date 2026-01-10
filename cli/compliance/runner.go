@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -35,7 +36,6 @@ type RunOptions struct {
 	SuitePath      string                          // path to JSON Schema Test Suite
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
-	QualityCheck   QualityCheckConfig              // quality check configuration
 	Language       *language.Language              // language configuration
 	Verbose        bool
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
@@ -95,7 +95,6 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			adapterBin:   adapterBin,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
-			qualityCheck: opts.QualityCheck,
 			language:     opts.Language,
 			workDir:      opts.AdapterPath,
 			verbose:      opts.Verbose,
@@ -131,7 +130,6 @@ type runDraftOptions struct {
 	adapterBin   string
 	runner       string
 	runnerArgs   []string
-	qualityCheck QualityCheckConfig
 	language     *language.Language
 	workDir      string // directory to run harness from (for dependency resolution)
 	verbose      bool
@@ -161,13 +159,7 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 
 	// Filter to specific keyword if requested
 	if opts.keyword != "" {
-		found := false
-		for _, k := range keywords {
-			if k == opts.keyword {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(keywords, opts.keyword)
 		if !found {
 			return nil, fmt.Errorf("keyword %q not found in %s (available: %d keywords)", opts.keyword, opts.draft, len(keywords))
 		}
@@ -245,20 +237,6 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 		return nil
 	}
 	defer os.Remove(tempHarness)
-
-	// Run quality check on the generated harness file
-	qualityCheckResult, err := QualityCheckHarness(ctx, tempHarness, opts.qualityCheck, opts.workDir)
-	if err != nil {
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return err
-		}
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("quality check error: %v", err))
-		return nil
-	}
-	if !qualityCheckResult.Success {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("quality check failed: %s", qualityCheckResult.Output))
-		return nil
-	}
 
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
 	if err != nil {

@@ -78,8 +78,8 @@ func MergeTSImports(imports []string) string {
 					continue
 				}
 				// Check for "type X" prefix within named imports
-				if strings.HasPrefix(name, "type ") {
-					typeName := strings.TrimPrefix(name, "type ")
+				if after, ok := strings.CutPrefix(name, "type "); ok {
+					typeName := after
 					typeName = strings.TrimSpace(typeName)
 					if typeName != "" {
 						sourceToTypeNames[source] = append(sourceToTypeNames[source], typeName)

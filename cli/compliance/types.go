@@ -34,6 +34,12 @@ func (s RawSchema) Value() any {
 	return s.value
 }
 
+// Raw returns the schema as json.RawMessage for use with adapter.ConvertInput
+func (s RawSchema) Raw() json.RawMessage {
+	data, _ := json.Marshal(s.value)
+	return data
+}
+
 // TestResult represents the result of running a single test case
 type TestResult struct {
 	Group    string `json:"group"`
@@ -83,15 +89,4 @@ type HarnessResult struct {
 	Expected bool   `json:"expected"`
 	Actual   string `json:"actual"` // "true", "false", or "error"
 	Error    string `json:"error,omitempty"`
-}
-
-// AdapterOutput is the response from calling an adapter's convert function
-type AdapterOutput struct {
-	Namespace       string   `json:"namespace"`
-	ID              string   `json:"id"`
-	Schema          string   `json:"schema"`
-	Type            string   `json:"type"`
-	Imports         []string `json:"imports"`
-	Validate        string   `json:"validate,omitempty"`        // validation function in target language (empty = type-only adapter)
-	ValidateImports []string `json:"validateImports,omitempty"` // imports needed by validate function
 }

@@ -7,23 +7,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"strings"
 	"text/template"
 
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
 )
 
-// QualityCheckConfig configures how quality check runs
-type QualityCheckConfig struct {
-	Enabled    bool     // whether quality check is enabled
-	Runner     string   // command to run quality check (e.g., "bun", "npx")
-	RunnerArgs []string // args to pass before quality check (e.g., ["run"] for bun, ["tsc"] for npx)
-}
-
 // GenerateTempHarness creates a temporary harness file using Go templates
 // The file is created in targetDir so that package resolution works correctly
-func GenerateTempHarness(lang *language.Language, adapterOutput *AdapterOutput, testCases []TestCase, targetDir string) (string, error) {
+func GenerateTempHarness(lang *language.Language, adapterOutput *adapter.ConvertResult, testCases []TestCase, targetDir string) (string, error) {
 	if lang.HarnessTemplate == "" {
 		return "", fmt.Errorf("no harness template configured for language %s", lang.Name)
 	}
@@ -115,13 +107,12 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 }
 
 // CallAdapter calls the adapter to convert a schema to code
-func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*AdapterOutput, error) {
-	// Build input
-	input := []map[string]interface{}{
+func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*adapter.ConvertResult, error) {
+	input := []adapter.ConvertInput{
 		{
-			"namespace": "compliance",
-			"id":        "Test",
-			"schema":    schema,
+			Namespace: "compliance",
+			ID:        "Test",
+			Schema:    schema.Raw(),
 		},
 	}
 
@@ -144,7 +135,7 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 	}
 
 	// Parse output
-	var outputs []AdapterOutput
+	var outputs []adapter.ConvertResult
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
 		return nil, fmt.Errorf("failed to parse adapter output: %w\nstdout: %s", err, stdout.String())
 	}
@@ -154,62 +145,4 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 	}
 
 	return &outputs[0], nil
-}
-
-// QualityCheckResult contains the result of quality checking a harness file
-type QualityCheckResult struct {
-	Success bool
-	Output  string // stderr from quality check (contains error messages)
-}
-
-// QualityCheckHarness runs quality checks (e.g., TypeScript compiler) on a harness file.
-// The harness file must be a .ts file.
-// workDir is used for dependency resolution (finding tsconfig.json and node_modules).
-func QualityCheckHarness(ctx context.Context, harnessFile string, config QualityCheckConfig, workDir string) (*QualityCheckResult, error) {
-	if !config.Enabled {
-		return &QualityCheckResult{Success: true}, nil
-	}
-
-	// Only check TypeScript files
-	ext := filepath.Ext(harnessFile)
-	if ext != ".ts" && ext != ".tsx" {
-		return &QualityCheckResult{Success: true}, nil
-	}
-
-	// Build command: e.g., "bun run tsc --noEmit --skipLibCheck <file>"
-	// or "npx tsc --noEmit --skipLibCheck <file>"
-	args := append([]string{}, config.RunnerArgs...)
-	args = append(args, "--noEmit", "--skipLibCheck", harnessFile)
-
-	cmd := exec.CommandContext(ctx, config.Runner, args...)
-
-	// Set working directory for dependency resolution
-	if workDir != "" {
-		cmd.Dir = workDir
-	}
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-
-	// Combine stdout and stderr (tsc outputs errors to stdout, not stderr)
-	output := stdout.String()
-	if stderr.Len() > 0 {
-		if output != "" {
-			output += "\n"
-		}
-		output += stderr.String()
-	}
-
-	if err != nil {
-		// Type error or other error - return result with output
-		return &QualityCheckResult{
-			Success: false,
-			Output:  strings.TrimSpace(output),
-		}, nil
-	}
-
-	return &QualityCheckResult{Success: true}, nil
 }

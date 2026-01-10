@@ -8,19 +8,20 @@ import (
 	"testing"
 	"text/template"
 
+	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
 )
 
 func TestGenerateTempHarness(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   `z.object({ name: z.string() })`,
 		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 	testCases := []TestCase{
-		{Description: "valid object", Data: map[string]interface{}{"name": "test"}, Valid: true},
+		{Description: "valid object", Data: map[string]any{"name": "test"}, Valid: true},
 		{Description: "invalid object", Data: "not an object", Valid: false},
 	}
 
@@ -70,13 +71,13 @@ func TestGenerateTempHarness(t *testing.T) {
 func TestGenerateTempHarness_MergedImports(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:          `z.object({ name: z.string() })`,
 		Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
 		Validate:        `(data) => schema.safeParse(data).success`,
 		ValidateImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
 	}
-	testCases := []TestCase{{Description: "valid", Data: map[string]interface{}{"name": "test"}, Valid: true}}
+	testCases := []TestCase{{Description: "valid", Data: map[string]any{"name": "test"}, Valid: true}}
 
 	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
 	if err != nil {
@@ -99,14 +100,14 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Type-only adapter has empty Validate
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   "",
 		Type:     `{ name: string }`,
 		Imports:  nil,
 		Validate: "",
 	}
 	testCases := []TestCase{
-		{Description: "test 1", Data: map[string]interface{}{"name": "test"}, Valid: true},
+		{Description: "test 1", Data: map[string]any{"name": "test"}, Valid: true},
 	}
 
 	harnessPath, err := GenerateTempHarness(language.ByName("typescript"), adapterOutput, testCases, tmpDir)
@@ -141,7 +142,7 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 func TestGenerateTempHarness_MissingTemplate(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   "some_schema",
 		Validate: "validate_fn",
 	}
@@ -157,7 +158,7 @@ func TestGenerateTempHarness_MissingTemplate(t *testing.T) {
 func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   `z.any()`,
 		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => true`,
@@ -167,9 +168,9 @@ func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 	testCases := []TestCase{
 		{
 			Description: "nested object",
-			Data: map[string]interface{}{
-				"nested": map[string]interface{}{
-					"array": []interface{}{1, 2, 3},
+			Data: map[string]any{
+				"nested": map[string]any{
+					"array": []any{1, 2, 3},
 					"null":  nil,
 					"bool":  true,
 				},
@@ -201,7 +202,7 @@ func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   `z.string()`,
 		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,
@@ -224,7 +225,7 @@ func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	adapterOutput := &AdapterOutput{
+	adapterOutput := &adapter.ConvertResult{
 		Schema:   `z.string()`,
 		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,

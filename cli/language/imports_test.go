@@ -47,7 +47,6 @@ func TestMergeTSImports(t *testing.T) {
 			},
 			expected: `import React from "react"`,
 		},
-		// New test cases for US-013
 		{
 			name: "namespace import",
 			imports: []string{

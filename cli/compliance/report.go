@@ -11,8 +11,8 @@ import (
 func GenerateMarkdownReport(report ComplianceReport) string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("# %s Compliance Report\n\n", report.Adapter))
-	sb.WriteString(fmt.Sprintf("Generated: %s\n\n", report.GeneratedAt))
+	fmt.Fprintf(&sb, "# %s Compliance Report\n\n", report.Adapter)
+	fmt.Fprintf(&sb, "Generated: %s\n\n", report.GeneratedAt)
 
 	// Detect type-only adapter (all tests skipped)
 	isTypeOnly := isTypeOnlyAdapter(report)
@@ -36,13 +36,12 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		if !isTypeOnly {
 			coverage = fmt.Sprintf("%.1f%%", draft.Summary.Percentage)
 		}
-		sb.WriteString(fmt.Sprintf("| %s | %d | %d | %d | %s |\n",
+		fmt.Fprintf(&sb, "| %s | %d | %d | %d | %s |\n",
 			draft.Draft,
 			draft.Summary.Passed,
 			draft.Summary.Failed,
 			draft.Summary.Skipped,
-			coverage,
-		))
+			coverage)
 	}
 	sb.WriteString("\n")
 
@@ -51,21 +50,21 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		sb.WriteString("## Badges\n\n")
 		for _, draft := range report.Drafts {
 			badgeURL := generateBadgeURL(draft.Draft, draft.Summary.Percentage)
-			sb.WriteString(fmt.Sprintf("![%s](%s)\n", draft.Draft, badgeURL))
+			fmt.Fprintf(&sb, "![%s](%s)\n", draft.Draft, badgeURL)
 		}
 		sb.WriteString("\n")
 	}
 
 	// Per-draft details
 	for _, draft := range report.Drafts {
-		sb.WriteString(fmt.Sprintf("## %s\n\n", draft.Draft))
+		fmt.Fprintf(&sb, "## %s\n\n", draft.Draft)
 		sb.WriteString("| Keyword | Status | Pass/Total |\n")
 		sb.WriteString("| ------- | ------ | ---------- |\n")
 
 		for _, keyword := range draft.Keywords {
 			status := getStatusEmoji(keyword)
-			sb.WriteString(fmt.Sprintf("| %s | %s | %d/%d |\n",
-				keyword.Keyword, status, keyword.Passed, keyword.Total))
+			fmt.Fprintf(&sb, "| %s | %s | %d/%d |\n",
+				keyword.Keyword, status, keyword.Passed, keyword.Total)
 		}
 		sb.WriteString("\n")
 
@@ -74,8 +73,8 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		if len(failedKeywords) > 0 {
 			sb.WriteString("### Failures\n\n")
 			for _, keyword := range failedKeywords {
-				sb.WriteString(fmt.Sprintf("<details>\n<summary>%s - %d failure%s</summary>\n\n",
-					keyword.Keyword, len(keyword.Failures), pluralize(len(keyword.Failures))))
+				fmt.Fprintf(&sb, "<details>\n<summary>%s - %d failure%s</summary>\n\n",
+					keyword.Keyword, len(keyword.Failures), pluralize(len(keyword.Failures)))
 
 				for _, failure := range keyword.Failures {
 					expected := "invalid"
@@ -87,9 +86,9 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 						got = fmt.Sprintf("error: %s", failure.Error)
 					}
 
-					sb.WriteString(fmt.Sprintf("- **%s**\n", failure.Group))
-					sb.WriteString(fmt.Sprintf("  - Test: %s\n", failure.Test))
-					sb.WriteString(fmt.Sprintf("  - Expected: `%s`, Got: `%s`\n", expected, got))
+					fmt.Fprintf(&sb, "- **%s**\n", failure.Group)
+					fmt.Fprintf(&sb, "  - Test: %s\n", failure.Test)
+					fmt.Fprintf(&sb, "  - Expected: `%s`, Got: `%s`\n", expected, got)
 				}
 				sb.WriteString("\n</details>\n\n")
 			}

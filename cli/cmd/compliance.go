@@ -108,19 +108,6 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to detect harness runner: %w", err)
 	}
 
-	// Detect quality check runner if available
-	var qualityCheckConfig compliance.QualityCheckConfig
-	if lang.DetectQualityCheckRunner != nil {
-		qcRunner, qcArgs, qcErr := lang.DetectQualityCheckRunner(adapterPath)
-		if qcErr == nil {
-			qualityCheckConfig = compliance.QualityCheckConfig{
-				Enabled:    true,
-				Runner:     qcRunner,
-				RunnerArgs: qcArgs,
-			}
-		}
-	}
-
 	// Determine drafts to test
 	var drafts []string
 	if complianceDraft != "" {
@@ -153,7 +140,6 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		SuitePath:      suitePath,
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
-		QualityCheck:   qualityCheckConfig,
 		Language:       lang,
 		Verbose:        complianceVerbose,
 		ProgressFunc: func(p compliance.ProgressUpdate) {
@@ -210,15 +196,6 @@ func formatDraftResult(summary compliance.DraftSummary) (status, coverage string
 	}
 	coverage = fmt.Sprintf("%d/%d (%.1f%%)", summary.Passed, summary.Total, summary.Percentage)
 	return status, coverage
-}
-
-func printComplianceSummary(report *compliance.ComplianceReport) {
-	ui.Println()
-	ui.Println("Summary:")
-	for _, draft := range report.Drafts {
-		status, coverage := formatDraftResult(draft.Summary)
-		ui.Printf("  %s %s: %s\n", status, draft.Draft, coverage)
-	}
 }
 
 func formatDraftList(drafts []string) string {

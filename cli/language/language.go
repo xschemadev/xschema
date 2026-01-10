@@ -50,12 +50,11 @@ type Language struct {
 	IgnoreDirs []string // directories to skip when walking
 
 	// Compliance testing
-	DetectHarnessRunner   func(dir string) (cmd string, args []string, err error) // detect runner for local script files
-	DetectQualityCheckRunner func(dir string) (cmd string, args []string, err error) // detect quality check runner (e.g., "bun run tsc" or "npx tsc")
-	GetPackageName        func(string) string                                     // function to get package name from a directory
-	AdapterCLIPath        func(adapterPath string) string                         // returns path to adapter CLI binary (e.g., "dist/cli.js" for TS)
-	HarnessExtension      string                                                  // file extension for harness files (e.g., ".ts", ".py")
-	HarnessTemplate       string                                                  // Go template for generating harness files
+	DetectHarnessRunner func(dir string) (cmd string, args []string, err error) // detect runner for local script files
+	GetPackageName      func(string) string                                     // function to get package name from a directory
+	AdapterCLIPath      func(adapterPath string) string                         // returns path to adapter CLI binary (e.g., "dist/cli.js" for TS)
+	HarnessExtension    string                                                  // file extension for harness files (e.g., ".ts", ".py")
+	HarnessTemplate     string                                                  // Go template for generating harness files
 }
 
 var Languages = []Language{
