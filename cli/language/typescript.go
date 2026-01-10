@@ -24,7 +24,7 @@ var typescript = Language{
 	BuildVarName:          buildVarNameUnderscore,
 	IgnoreDirs:            []string{"node_modules", "dist", "build"},
 	DetectHarnessRunner:   detectTSHarnessRunner,
-	DetectTypecheckRunner: detectTSTypecheckRunner,
+	DetectQualityCheckRunner: detectTSQualityCheckRunner,
 	GetPackageName:        getTSPackageName,
 	AdapterCLIPath:        getTSAdapterCLIPath,
 	HarnessExtension:      ".ts",
@@ -137,7 +137,7 @@ func detectTSHarnessRunner(dir string) (string, []string, error) {
 	}
 }
 
-func detectTSTypecheckRunner(dir string) (string, []string, error) {
+func detectTSQualityCheckRunner(dir string) (string, []string, error) {
 	cmd, _, err := detectTSRunnerInDir(dir)
 	if err != nil {
 		return "", nil, err

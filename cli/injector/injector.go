@@ -87,11 +87,7 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 		allImports = append(allImports, out.Imports...)
 	}
 
-	// Merge imports using language-specific function
-	var mergedImports string
-	if lang.MergeImports != nil {
-		mergedImports = lang.MergeImports(allImports)
-	}
+	mergedImports := lang.MergeImports(allImports)
 
 	// Build schema entries
 	schemas := make([]language.SchemaEntry, len(input.Outputs))

@@ -14,11 +14,11 @@ import (
 	"github.com/xschemadev/xschema/language"
 )
 
-// TypecheckConfig configures how typecheck runs
-type TypecheckConfig struct {
-	Enabled    bool     // whether typecheck is enabled
-	Runner     string   // command to run tsc (e.g., "bun", "npx")
-	RunnerArgs []string // args to pass before tsc (e.g., ["run"] for bun, ["tsc"] for npx)
+// QualityCheckConfig configures how quality check runs
+type QualityCheckConfig struct {
+	Enabled    bool     // whether quality check is enabled
+	Runner     string   // command to run quality check (e.g., "bun", "npx")
+	RunnerArgs []string // args to pass before quality check (e.g., ["run"] for bun, ["tsc"] for npx)
 }
 
 // GenerateTempHarness creates a temporary harness file using Go templates
@@ -46,15 +46,9 @@ func GenerateTempHarness(lang *language.Language, adapterOutput *AdapterOutput, 
 		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
 	}
 
-	mergedImports := append([]string{}, adapterOutput.Imports...)
-	mergedImports = append(mergedImports, adapterOutput.ValidateImports...)
+	mergedImports := append(adapterOutput.Imports, adapterOutput.ValidateImports...)
 
-	formattedImports := ""
-	if len(mergedImports) > 0 && lang.MergeImports != nil {
-		formattedImports = lang.MergeImports(mergedImports)
-	} else if len(mergedImports) > 0 {
-		formattedImports = strings.Join(mergedImports, "\n")
-	}
+	formattedImports := lang.MergeImports(mergedImports)
 
 	// Build template data
 	data := HarnessTemplateData{
@@ -162,24 +156,24 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 	return &outputs[0], nil
 }
 
-// TypecheckResult contains the result of typechecking a harness file
-type TypecheckResult struct {
+// QualityCheckResult contains the result of quality checking a harness file
+type QualityCheckResult struct {
 	Success bool
-	Output  string // stderr from tsc (contains error messages)
+	Output  string // stderr from quality check (contains error messages)
 }
 
-// TypecheckHarness runs the TypeScript compiler on a harness file to catch type errors.
+// QualityCheckHarness runs quality checks (e.g., TypeScript compiler) on a harness file.
 // The harness file must be a .ts file.
 // workDir is used for dependency resolution (finding tsconfig.json and node_modules).
-func TypecheckHarness(ctx context.Context, harnessFile string, config TypecheckConfig, workDir string) (*TypecheckResult, error) {
+func QualityCheckHarness(ctx context.Context, harnessFile string, config QualityCheckConfig, workDir string) (*QualityCheckResult, error) {
 	if !config.Enabled {
-		return &TypecheckResult{Success: true}, nil
+		return &QualityCheckResult{Success: true}, nil
 	}
 
-	// Only typecheck TypeScript files
+	// Only check TypeScript files
 	ext := filepath.Ext(harnessFile)
 	if ext != ".ts" && ext != ".tsx" {
-		return &TypecheckResult{Success: true}, nil
+		return &QualityCheckResult{Success: true}, nil
 	}
 
 	// Build command: e.g., "bun run tsc --noEmit --skipLibCheck <file>"
@@ -210,12 +204,12 @@ func TypecheckHarness(ctx context.Context, harnessFile string, config TypecheckC
 	}
 
 	if err != nil {
-		// Type error or other tsc error - return result with output
-		return &TypecheckResult{
+		// Type error or other error - return result with output
+		return &QualityCheckResult{
 			Success: false,
 			Output:  strings.TrimSpace(output),
 		}, nil
 	}
 
-	return &TypecheckResult{Success: true}, nil
+	return &QualityCheckResult{Success: true}, nil
 }

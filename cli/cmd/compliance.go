@@ -108,15 +108,15 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to detect harness runner: %w", err)
 	}
 
-	// Detect typecheck runner if available
-	var typecheckConfig compliance.TypecheckConfig
-	if lang.DetectTypecheckRunner != nil {
-		tscRunner, tscArgs, tscErr := lang.DetectTypecheckRunner(adapterPath)
-		if tscErr == nil {
-			typecheckConfig = compliance.TypecheckConfig{
+	// Detect quality check runner if available
+	var qualityCheckConfig compliance.QualityCheckConfig
+	if lang.DetectQualityCheckRunner != nil {
+		qcRunner, qcArgs, qcErr := lang.DetectQualityCheckRunner(adapterPath)
+		if qcErr == nil {
+			qualityCheckConfig = compliance.QualityCheckConfig{
 				Enabled:    true,
-				Runner:     tscRunner,
-				RunnerArgs: tscArgs,
+				Runner:     qcRunner,
+				RunnerArgs: qcArgs,
 			}
 		}
 	}
@@ -153,7 +153,7 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		SuitePath:      suitePath,
 		Runner:         runner,
 		RunnerArgs:     runnerArgs,
-		Typecheck:      typecheckConfig,
+		QualityCheck:   qualityCheckConfig,
 		Language:       lang,
 		Verbose:        complianceVerbose,
 		ProgressFunc: func(p compliance.ProgressUpdate) {

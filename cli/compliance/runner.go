@@ -35,7 +35,7 @@ type RunOptions struct {
 	SuitePath      string                          // path to JSON Schema Test Suite
 	Runner         string                          // e.g., "bun", "bunx"
 	RunnerArgs     []string                        // e.g., ["run"]
-	Typecheck      TypecheckConfig                 // typecheck configuration
+	QualityCheck   QualityCheckConfig              // quality check configuration
 	Language       *language.Language              // language configuration
 	Verbose        bool
 	OutputFunc     func(string)            // for simple progress output (deprecated, use ProgressFunc)
@@ -95,7 +95,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			adapterBin:   adapterBin,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
-			typecheck:    opts.Typecheck,
+			qualityCheck: opts.QualityCheck,
 			language:     opts.Language,
 			workDir:      opts.AdapterPath,
 			verbose:      opts.Verbose,
@@ -131,7 +131,7 @@ type runDraftOptions struct {
 	adapterBin   string
 	runner       string
 	runnerArgs   []string
-	typecheck    TypecheckConfig
+	qualityCheck QualityCheckConfig
 	language     *language.Language
 	workDir      string // directory to run harness from (for dependency resolution)
 	verbose      bool
@@ -246,17 +246,17 @@ func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, ke
 	}
 	defer os.Remove(tempHarness)
 
-	// Run typecheck on the generated harness file
-	typecheckResult, err := TypecheckHarness(ctx, tempHarness, opts.typecheck, opts.workDir)
+	// Run quality check on the generated harness file
+	qualityCheckResult, err := QualityCheckHarness(ctx, tempHarness, opts.qualityCheck, opts.workDir)
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			return err
 		}
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("typecheck error: %v", err))
+		markAllFailed(keywordResult, summary, group, fmt.Sprintf("quality check error: %v", err))
 		return nil
 	}
-	if !typecheckResult.Success {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("typecheck failed: %s", typecheckResult.Output))
+	if !qualityCheckResult.Success {
+		markAllFailed(keywordResult, summary, group, fmt.Sprintf("quality check failed: %s", qualityCheckResult.Output))
 		return nil
 	}
 
