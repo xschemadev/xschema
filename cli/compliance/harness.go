@@ -7,11 +7,23 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"text/template"
 
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
 )
+
+// harnessPathRegex matches temp harness filenames like "xschema-harness-1312556427.ts"
+// These filenames contain random numbers from os.CreateTemp() and appear in stack traces
+// when harness execution fails. Without sanitization, compliance results would differ
+// between runs purely due to these random numbers, making it impossible to track
+// actual compliance changes in version control.
+var harnessPathRegex = regexp.MustCompile(`xschema-harness-\d+\.(\w+)`)
+
+func sanitizeHarnessPath(s string) string {
+	return harnessPathRegex.ReplaceAllString(s, "xschema-harness.$1")
+}
 
 // HarnessItem represents a single group's data for harness generation
 type HarnessItem struct {
@@ -122,7 +134,7 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("harness execution failed: %w\nstderr: %s", err, stderr.String())
+		return nil, fmt.Errorf("harness execution failed: %w\nstderr: %s", err, sanitizeHarnessPath(stderr.String()))
 	}
 
 	var results []HarnessResult
