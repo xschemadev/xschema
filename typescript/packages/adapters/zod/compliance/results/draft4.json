@@ -214,18 +214,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 24,
-      "failed": 9,
+      "passed": 0,
+      "failed": 8,
       "skipped": 0,
-      "total": 33,
+      "total": 8,
       "failures": [
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "ref valid, maxItems ignored",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
@@ -243,12 +236,20 @@
           "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
         },
         {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
+          "group": "Location-independent identifier with base URI change in subschema",
+          "test": "match",
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
+          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite-Test-JSON-Schema-Acceptance-1.035/remotes/nested.json: open $CACHE/json-schema-test-suite-Test-JSON-Schema-Acceptance-1.035/remotes/nested.json: no such file or directory"
+        },
+        {
+          "group": "Location-independent identifier with base URI change in subschema",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite-Test-JSON-Schema-Acceptance-1.035/remotes/nested.json: open $CACHE/json-schema-test-suite-Test-JSON-Schema-Acceptance-1.035/remotes/nested.json: no such file or directory"
         },
         {
           "group": "Recursive references between schemas",
@@ -259,28 +260,12 @@
           "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
         },
         {
-          "group": "Location-independent identifier with base URI change in subschema",
-          "test": "match",
+          "group": "Recursive references between schemas",
+          "test": "valid tree",
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
-        },
-        {
-          "group": "Location-independent identifier with base URI change in subschema",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://localhost:1234/nested.json\": failed to read $CACHE/json-schema-test-suite/remotes/nested.json: open $CACHE/json-schema-test-suite/remotes/nested.json: no such file or directory"
-        },
-        {
-          "group": "id must be resolved against nearest parent, not just immediate parent",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"http://example.com/b/d.json\": failed to fetch http://example.com/b/d.json: status 404"
+          "error": "bundling error: failed to fetch \"tree\": failed to read tree: open tree: no such file or directory"
         },
         {
           "group": "id must be resolved against nearest parent, not just immediate parent",
@@ -289,24 +274,24 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"http://example.com/b/d.json\": failed to fetch http://example.com/b/d.json: status 404"
+        },
+        {
+          "group": "id must be resolved against nearest parent, not just immediate parent",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"http://example.com/b/d.json\": failed to fetch http://example.com/b/d.json: status 404"
         }
       ]
     },
     {
       "keyword": "refRemote",
-      "passed": 6,
+      "passed": 0,
       "failed": 9,
       "skipped": 0,
-      "total": 15,
+      "total": 9,
       "failures": [
-        {
-          "group": "base URI change",
-          "test": "base URI change ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
         {
           "group": "base URI change",
           "test": "base URI change ref invalid",
@@ -316,6 +301,14 @@
           "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
         },
         {
+          "group": "base URI change",
+          "test": "base URI change ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
+        },
+        {
           "group": "base URI change - change folder",
           "test": "number is valid",
           "expected": true,
@@ -346,14 +339,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
-        },
-        {
-          "group": "root ref in remote ref",
-          "test": "string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
         },
         {
           "group": "root ref in remote ref",
@@ -367,6 +352,14 @@
           "group": "root ref in remote ref",
           "test": "object is invalid",
           "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
+        },
+        {
+          "group": "root ref in remote ref",
+          "test": "string is valid",
+          "expected": true,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"draft4/name.json\": failed to read draft4/name.json: open draft4/name.json: no such file or directory"
@@ -396,10 +389,10 @@
     }
   ],
   "summary": {
-    "passed": 577,
-    "failed": 22,
+    "passed": 547,
+    "failed": 21,
     "skipped": 0,
-    "total": 599,
-    "percentage": 96.32721202003339
+    "total": 568,
+    "percentage": 96.30281690140845
   }
 }

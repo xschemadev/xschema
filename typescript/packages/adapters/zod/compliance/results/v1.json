@@ -3,10 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalProperties",
-      "passed": 20,
+      "passed": 23,
       "failed": 1,
       "skipped": 0,
-      "total": 21,
+      "total": 24,
       "failures": [
         {
           "group": "additionalProperties does not look in applicators",
@@ -82,16 +82,16 @@
       "failures": [
         {
           "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
+          "test": "invalid definition schema",
+          "expected": false,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"https://json-schema.org/v1\": failed to fetch https://json-schema.org/v1: status 404"
         },
         {
           "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
+          "test": "valid definition schema",
+          "expected": true,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"https://json-schema.org/v1\": failed to fetch https://json-schema.org/v1: status 404"
@@ -114,47 +114,10 @@
     },
     {
       "keyword": "dynamicRef",
-      "passed": 8,
-      "failed": 5,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 13,
-      "failures": [
-        {
-          "group": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
-          "test": "An array containing non-strings is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "tests for implementation dynamic anchor and reference link",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
-          "test": "incorrect extended schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref to $dynamicRef finds detached $dynamicAnchor",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "enum",
@@ -277,10 +240,10 @@
     },
     {
       "keyword": "not",
-      "passed": 38,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 38
+      "total": 0
     },
     {
       "keyword": "oneOf",
@@ -318,6 +281,43 @@
       "total": 28
     },
     {
+      "keyword": "propertyDependencies",
+      "passed": 17,
+      "failed": 4,
+      "skipped": 0,
+      "total": 21,
+      "failures": [
+        {
+          "group": "multiple options selects the right one",
+          "test": "bar with fewer than 2 properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple options selects the right one",
+          "test": "bar with more than 2 properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple options selects the right one",
+          "test": "baz with other properties is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "multiple options selects the right one",
+          "test": "quux is disallowed",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
       "keyword": "propertyNames",
       "passed": 10,
       "failed": 0,
@@ -326,15 +326,15 @@
     },
     {
       "keyword": "ref",
-      "passed": 35,
+      "passed": 0,
       "failed": 3,
       "skipped": 0,
-      "total": 38,
+      "total": 3,
       "failures": [
         {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
+          "group": "URN base URI with f-component",
+          "test": "is invalid",
+          "expected": false,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"https://json-schema.org/v1\": failed to fetch https://json-schema.org/v1: status 404"
@@ -348,9 +348,9 @@
           "error": "bundling error: failed to fetch \"https://json-schema.org/v1\": failed to fetch https://json-schema.org/v1: status 404"
         },
         {
-          "group": "URN base URI with f-component",
-          "test": "is invalid",
-          "expected": false,
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"https://json-schema.org/v1\": failed to fetch https://json-schema.org/v1: status 404"
@@ -359,10 +359,10 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
@@ -387,19 +387,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 43,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 44,
-      "failures": [
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 3rd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "uniqueItems",
@@ -410,10 +401,10 @@
     }
   ],
   "summary": {
-    "passed": 867,
-    "failed": 12,
+    "passed": 746,
+    "failed": 10,
     "skipped": 0,
-    "total": 879,
-    "percentage": 98.63481228668942
+    "total": 756,
+    "percentage": 98.67724867724867
   }
 }

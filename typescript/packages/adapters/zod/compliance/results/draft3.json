@@ -179,18 +179,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 17,
-      "failed": 4,
+      "passed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 21,
+      "total": 2,
       "failures": [
-        {
-          "group": "ref overrides any sibling keywords",
-          "test": "remote ref valid, maxItems ignored",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data does not validate",
@@ -206,13 +199,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"foo.json\": failed to read foo.json: open foo.json: no such file or directory"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
@@ -225,16 +211,16 @@
       "failures": [
         {
           "group": "change resolution scope",
-          "test": "changed scope ref valid",
-          "expected": true,
+          "test": "changed scope ref invalid",
+          "expected": false,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
         },
         {
           "group": "change resolution scope",
-          "test": "changed scope ref invalid",
-          "expected": false,
+          "test": "changed scope ref valid",
+          "expected": true,
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to fetch \"folderInteger.json\": failed to read folderInteger.json: open folderInteger.json: no such file or directory"
@@ -256,22 +242,8 @@
       "total": 80,
       "failures": [
         {
-          "group": "types can include schemas",
-          "test": "an integer is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "a string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "a float is invalid",
+          "group": "applies a nested schema",
+          "test": "an object is invalid otherwise",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -285,14 +257,28 @@
         },
         {
           "group": "types can include schemas",
-          "test": "null is invalid",
+          "test": "a float is invalid",
           "expected": false,
           "actual": "true",
           "passed": false
         },
         {
-          "group": "applies a nested schema",
-          "test": "an object is invalid otherwise",
+          "group": "types can include schemas",
+          "test": "a string is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "an integer is invalid",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "types can include schemas",
+          "test": "null is invalid",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -315,10 +301,10 @@
     }
   ],
   "summary": {
-    "passed": 411,
-    "failed": 17,
+    "passed": 394,
+    "failed": 15,
     "skipped": 0,
-    "total": 428,
-    "percentage": 96.02803738317756
+    "total": 409,
+    "percentage": 96.33251833740832
   }
 }

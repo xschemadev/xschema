@@ -131,6 +131,21 @@ type HarnessResult struct {
 	Error    string `json:"error,omitempty"`
 }
 
+// BatchHarnessResult is the JSON output from executing a batch harness file
+type BatchHarnessResult struct {
+	GroupID  string `json:"groupId"`
+	Index    int    `json:"index"`
+	Expected bool   `json:"expected"`
+	Actual   string `json:"actual"` // "true", "false", or "error"
+	Error    string `json:"error,omitempty"`
+}
+
+// BatchTestData is used for batch harness execution
+type BatchTestData struct {
+	GroupID string     `json:"groupId"`
+	Tests   []TestCase `json:"tests"`
+}
+
 // AdapterOutput is the response from calling an adapter's convert function
 type AdapterOutput struct {
 	Namespace string   `json:"namespace"`
