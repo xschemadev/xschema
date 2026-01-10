@@ -7,6 +7,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
 - `LoadTestSuite` can take a keyword to load only `tests/<draft>/<keyword>.json`; missing keywords should list available names.
 - Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
+- Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
 
 ---
 
@@ -59,5 +60,18 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - `CallAdapterBatch` sends multiple schemas with unique IDs, returns outputs in input order.
   - `processKeyword` bundles all schemas first, batches adapter call, then processes harness per group.
+---
+
+## 2026-01-10 19:15 - US-007
+- Batched harness execution per (draft, keyword) - one harness process per keyword instead of per group.
+- Files changed: `cli/compliance/harness.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `typescript/packages/adapters/*/compliance/harness.batch.ts`, compliance results.
+- Timing (zod adapter, full dev-report):
+  - Harness execution: 11.0s (batched, ~265 keywords across 7 drafts)
+  - Total compliance run: 31.0s (down from 73.7s baseline)
+- **Learnings for future iterations:**
+  - Each adapter needs a `harness.batch.ts` template in addition to `harness.ts`.
+  - Batch harness receives `{{BATCH_SCHEMAS}}` object and `{{BATCH_TEST_DATA}}` JSON string.
+  - `GenerateBatchHarness` and `ExecuteBatchHarness` handle batch mode.
+  - Results include `groupId` for mapping back to test groups.
 ---
 
