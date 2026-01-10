@@ -8,6 +8,7 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - TS adapters emit full `import ...` statements (no trailing semicolon)
 - TS harness template renders import lines verbatim and appends `;`
 - MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
+- Compliance harnesses are generated from templates; adapter discovery uses adapter directories and manifests
 - Type-only compliance harness uses AdapterOutput.Type
 - Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
 - Avoid full compliance runs unless requested
@@ -104,5 +105,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - **Learnings for future iterations:**
   - Type-only harness should source `AdapterOutput.Type` instead of `Schema`
   - Type-only adapters should return empty `validate` with optional empty `validateImports`
+---
+
+## 2026-01-10 17:46:21 CET - US-010
+- Removed per-adapter compliance harness files and harness lookup
+- Updated CLI/CI/docs to discover adapters without harness files
+- Files changed: cli/cmd/compliance.go, cli/compliance/harness.go, cli/compliance/harness_test.go, .github/workflows/compliance.yml, docs/language-support.md, typescript/packages/adapters/*/compliance/harness.ts (removed), prd.jsonc, progress.txt
+- **Learnings for future iterations:**
+  - Compliance harnesses are generated from templates; no per-adapter harness files
+  - CI adapter discovery checks adapter manifests in language packages
 ---
 

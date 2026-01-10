@@ -58,14 +58,17 @@ jobs:
           # Format: [{adapter, lang}, ...]
           MATRIX="[]"
 
-          # Find all adapters with compliance harness across all languages
-          # Convention: {lang}/packages/adapters/{adapter}/compliance/harness.*
-          for harness in */packages/adapters/*/compliance/harness.*; do
-            [ -f "$harness" ] || continue
+          # Find all adapters across all languages
+          # Convention: {lang}/packages/adapters/{adapter}
+          for adapter_dir in */packages/adapters/*; do
+            [ -d "$adapter_dir" ] || continue
+            if [ ! -f "$adapter_dir/package.json" ] && [ ! -f "$adapter_dir/pyproject.toml" ] && [ ! -f "$adapter_dir/Cargo.toml" ]; then
+              continue
+            fi
 
             # Extract lang and adapter from path
-            lang=$(echo "$harness" | cut -d'/' -f1)
-            adapter=$(echo "$harness" | cut -d'/' -f4)
+            lang=$(echo "$adapter_dir" | cut -d'/' -f1)
+            adapter=$(echo "$adapter_dir" | cut -d'/' -f4)
 
             if [ "$RUN_ALL" = "true" ]; then
               # Add all adapters

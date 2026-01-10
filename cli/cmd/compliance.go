@@ -28,8 +28,7 @@ var complianceCmd = &cobra.Command{
 	Short: "Run JSON Schema Test Suite compliance tests for adapters",
 	Long: `Run compliance tests against the official JSON Schema Test Suite.
 
-This command must be run from within an adapter package directory
-(a directory containing compliance/harness.*).
+This command must be run from within an adapter package directory.
 
 Examples:
   # Run from within an adapter package (prints results)
@@ -76,15 +75,10 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unknown language: %s", complianceLang)
 	}
 
-	// Must be run from within an adapter package (has compliance/harness.*)
+	// Must be run from within an adapter package directory
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current directory: %w", err)
-	}
-
-	harnessFile, err := compliance.FindHarness(cwd)
-	if err != nil {
-		return fmt.Errorf("not in an adapter package (no compliance/harness.* found)\n\nRun this command from within an adapter package directory")
 	}
 
 	adapterPath := cwd
@@ -94,7 +88,6 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 	} else {
 		adapterName = filepath.Base(cwd)
 	}
-	ui.Verbosef("found harness at %s", harnessFile)
 
 	// Fetch test suite (downloads from GitHub if not cached)
 	var suitePath string

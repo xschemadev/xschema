@@ -317,13 +317,14 @@ Both TypeScript and Python configs follow the same schema:
 All languages follow the same directory structure:
 
 ```
-{lang}/packages/adapters/{adapter}/compliance/harness.{ext}
+{lang}/packages/adapters/{adapter}/
 ```
 
 Where:
 - `{lang}` = language name (must match `Language.Name` in Go, e.g., `typescript`, `python`, `rust`)
 - `{adapter}` = adapter name (e.g., `zod`, `pydantic`, `serde`)
-- `{ext}` = language file extension (e.g., `ts`, `py`, `rs`)
+
+Compliance harnesses are generated from Go templates in `cli/compliance` at runtime. Each adapter stores compliance output under `compliance/results/`, which is created by the CLI when running `xschema compliance --dev-report`.
 
 This convention enables automatic discovery by both the CLI and CI workflows.
 
@@ -425,10 +426,10 @@ Create an adapter package following the directory convention:
 ```
 rust/packages/adapters/serde/
 ├── src/
-│   └── ...           # Language-specific implementation
+│   └── ...              # Language-specific implementation
 ├── compliance/
-│   └── harness.rs    # Compliance test harness
-└── Cargo.toml        # Or appropriate manifest
+│   └── results/         # Compliance reports (generated)
+└── Cargo.toml           # Or appropriate manifest
 ```
 
 The adapter must:
@@ -470,7 +471,7 @@ Add setup and build steps for the new language in `.github/workflows/compliance.
   working-directory: rust
 ```
 
-The CI workflow automatically discovers adapters by scanning for `*/packages/adapters/*/compliance/harness.*` files. The path triggers use `*/packages/adapters/**` which covers all languages.
+The CI workflow automatically discovers adapters by scanning adapter directories under `*/packages/adapters/*` and checking for a language-specific package manifest (for example `package.json`, `pyproject.toml`, or `Cargo.toml`). The path triggers use `*/packages/adapters/**` which covers all languages.
 
 ### Example: Full Rust Support
 
@@ -568,20 +569,9 @@ mkdir -p rust/packages/adapters/serde/src
 mkdir -p rust/packages/adapters/serde/compliance
 ```
 
-**Step 6: Create compliance harness**
+**Step 6: Add compliance harness template**
 
-Create `rust/packages/adapters/serde/compliance/harness.rs`:
-
-```rust
-use serde_json::Value;
-
-const SCHEMA: &str = r#"{{GENERATED_CODE}}"#;
-const TEST_CASES: &str = r#"{{TEST_CASES}}"#;
-
-fn main() {
-    // Parse and run test cases, output JSON results
-}
-```
+Define a Go text/template in `cli/compliance/harness_template.go` and wire it in `GetHarnessTemplate`/`GetHarnessExtension`. The CLI now generates harness files on the fly, so no per-adapter `compliance/harness.{ext}` file is required.
 
 **Step 7: Add CI setup steps**
 

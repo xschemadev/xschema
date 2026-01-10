@@ -9,105 +9,6 @@ import (
 	"text/template"
 )
 
-func TestFindHarness(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	tests := []struct {
-		name      string
-		setup     func(string)
-		wantFile  string
-		wantErr   bool
-		errSubstr string
-	}{
-		{
-			name: "finds harness.ts",
-			setup: func(dir string) {
-				compDir := filepath.Join(dir, "compliance")
-				os.MkdirAll(compDir, 0755)
-				os.WriteFile(filepath.Join(compDir, "harness.ts"), []byte("// ts harness"), 0644)
-			},
-			wantFile: "harness.ts",
-			wantErr:  false,
-		},
-		{
-			name: "finds harness.js",
-			setup: func(dir string) {
-				compDir := filepath.Join(dir, "compliance")
-				os.MkdirAll(compDir, 0755)
-				os.WriteFile(filepath.Join(compDir, "harness.js"), []byte("// js harness"), 0644)
-			},
-			wantFile: "harness.js",
-			wantErr:  false,
-		},
-		{
-			name: "finds harness.py",
-			setup: func(dir string) {
-				compDir := filepath.Join(dir, "compliance")
-				os.MkdirAll(compDir, 0755)
-				os.WriteFile(filepath.Join(compDir, "harness.py"), []byte("# py harness"), 0644)
-			},
-			wantFile: "harness.py",
-			wantErr:  false,
-		},
-		{
-			name: "compliance directory not found",
-			setup: func(dir string) {
-				// Don't create compliance dir
-			},
-			wantErr:   true,
-			errSubstr: "compliance directory not found",
-		},
-		{
-			name: "no harness file",
-			setup: func(dir string) {
-				compDir := filepath.Join(dir, "compliance")
-				os.MkdirAll(compDir, 0755)
-				os.WriteFile(filepath.Join(compDir, "other.ts"), []byte("// not harness"), 0644)
-			},
-			wantErr:   true,
-			errSubstr: "no harness file found",
-		},
-		{
-			name: "ignores harness directory",
-			setup: func(dir string) {
-				compDir := filepath.Join(dir, "compliance")
-				os.MkdirAll(compDir, 0755)
-				os.MkdirAll(filepath.Join(compDir, "harness.d"), 0755) // directory, not file
-			},
-			wantErr:   true,
-			errSubstr: "no harness file found",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			adapterDir := filepath.Join(tmpDir, tt.name)
-			os.MkdirAll(adapterDir, 0755)
-			tt.setup(adapterDir)
-
-			harnessPath, err := FindHarness(adapterDir)
-
-			if tt.wantErr {
-				if err == nil {
-					t.Error("FindHarness() expected error, got nil")
-				} else if tt.errSubstr != "" && !strings.Contains(err.Error(), tt.errSubstr) {
-					t.Errorf("FindHarness() error = %v, want error containing %q", err, tt.errSubstr)
-				}
-				return
-			}
-
-			if err != nil {
-				t.Errorf("FindHarness() error = %v", err)
-				return
-			}
-
-			if !strings.HasSuffix(harnessPath, tt.wantFile) {
-				t.Errorf("FindHarness() = %s, want path ending with %s", harnessPath, tt.wantFile)
-			}
-		})
-	}
-}
-
 func TestGenerateTempHarness(t *testing.T) {
 	tmpDir := t.TempDir()
 
@@ -285,24 +186,6 @@ func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 	// Should still have empty JSON array
 	if !strings.Contains(string(content), `"[]"`) {
 		t.Error("empty test cases should produce escaped empty array")
-	}
-}
-
-func TestFindHarness_ReturnsFullPath(t *testing.T) {
-	tmpDir := t.TempDir()
-	compDir := filepath.Join(tmpDir, "compliance")
-	os.MkdirAll(compDir, 0755)
-	os.WriteFile(filepath.Join(compDir, "harness.ts"), []byte(""), 0644)
-
-	harnessPath, err := FindHarness(tmpDir)
-	if err != nil {
-		t.Fatalf("FindHarness() error = %v", err)
-	}
-
-	// Should be absolute path including compliance directory
-	expected := filepath.Join(tmpDir, "compliance", "harness.ts")
-	if harnessPath != expected {
-		t.Errorf("FindHarness() = %s, want %s", harnessPath, expected)
 	}
 }
 

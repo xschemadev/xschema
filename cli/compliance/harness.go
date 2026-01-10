@@ -19,27 +19,6 @@ type TypecheckConfig struct {
 	RunnerArgs []string // args to pass before tsc (e.g., ["run"] for bun, ["tsc"] for npx)
 }
 
-// FindHarness locates the harness file in an adapter's compliance directory
-func FindHarness(adapterPath string) (string, error) {
-	complianceDir := filepath.Join(adapterPath, "compliance")
-
-	entries, err := os.ReadDir(complianceDir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return "", fmt.Errorf("compliance directory not found at %s", complianceDir)
-		}
-		return "", fmt.Errorf("failed to read compliance directory: %w", err)
-	}
-
-	for _, entry := range entries {
-		if strings.HasPrefix(entry.Name(), "harness.") && !entry.IsDir() {
-			return filepath.Join(complianceDir, entry.Name()), nil
-		}
-	}
-
-	return "", fmt.Errorf("no harness file found in %s (expected harness.*)", complianceDir)
-}
-
 // Language represents a target language for harness generation
 type Language string
 

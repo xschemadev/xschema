@@ -139,8 +139,8 @@
 				"Full relevant test suite passes (no regressions)",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": "Runner generates harness from templates, but CLI still checks for compliance/harness.* today. This story makes the universal harness truly universal."
+			"passes": true,
+			"notes": "Removed harness lookup and updated CI/doc references for adapter discovery."
 		},
 
 		{
