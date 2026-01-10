@@ -83,7 +83,7 @@
         "Profile shows reduced adapter invocation time vs baseline in `progress.txt`",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

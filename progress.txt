@@ -6,6 +6,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
 - Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
 - `LoadTestSuite` can take a keyword to load only `tests/<draft>/<keyword>.json`; missing keywords should list available names.
+- Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
 
 ---
 
@@ -47,5 +48,16 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - Use `LoadTestSuite` keyword parameter to avoid loading all keyword files.
   - Missing keyword errors should list available keyword names.
+---
+
+## 2026-01-10 18:30 - US-006
+- Batched adapter conversion per (draft, keyword) - one adapter process call per keyword instead of per group.
+- Files changed: `cli/compliance/harness.go`, `cli/compliance/runner.go`, `prd.jsonc`, `progress.txt`.
+- Timing (zod adapter, full dev-report):
+  - Adapter invocation: 18.9s (batched, ~265 keywords)
+  - Total compliance run: 73.7s
+- **Learnings for future iterations:**
+  - `CallAdapterBatch` sends multiple schemas with unique IDs, returns outputs in input order.
+  - `processKeyword` bundles all schemas first, batches adapter call, then processes harness per group.
 ---
 

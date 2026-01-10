@@ -201,11 +201,9 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 			Failures: []TestResult{},
 		}
 
-		for _, group := range groups {
-			if err := processGroup(ctx, opts, group, &keywordResult, &result.Summary); err != nil {
-				if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-					return &result, err
-				}
+		if err := processKeyword(ctx, opts, groups, &keywordResult, &result.Summary); err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return &result, err
 			}
 		}
 
@@ -220,49 +218,113 @@ func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
 	return &result, nil
 }
 
-func processGroup(ctx context.Context, opts runDraftOptions, group TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
-	}
+// bundledGroup holds a test group with its pre-bundled schema
+type bundledGroup struct {
+	group         TestGroup
+	bundledSchema RawSchema
+	bundleErr     error
+}
 
-	bundleStart := time.Now()
-	bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
-	opts.timing.addSchemaBundling(time.Since(bundleStart))
-	if err != nil {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("bundling error: %v", err))
+// processKeyword batches adapter invocation for all groups in a keyword
+func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
+	if len(groups) == 0 {
 		return nil
 	}
 
-	adapterStart := time.Now()
-	adapterOutput, err := CallAdapter(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, bundledSchema)
-	opts.timing.addAdapterInvocation(time.Since(adapterStart))
-	if err != nil {
-		return fmt.Errorf("adapter call failed: %w", err)
-	}
-
-	harnessStart := time.Now()
-	tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, group.Tests, opts.workDir)
-	opts.timing.addHarnessGeneration(time.Since(harnessStart))
-	if err != nil {
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness generation error: %v", err))
-		return nil
-	}
-	defer os.Remove(tempHarness)
-
-	execStart := time.Now()
-	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
-	opts.timing.addHarnessExecution(time.Since(execStart))
-	if err != nil {
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return err
+	// Phase 1: Bundle all schemas
+	bundled := make([]bundledGroup, len(groups))
+	for i, group := range groups {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
 		}
-		markAllFailed(keywordResult, summary, group, fmt.Sprintf("harness execution error: %v", err))
-		return nil
+
+		bundleStart := time.Now()
+		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+		opts.timing.addSchemaBundling(time.Since(bundleStart))
+
+		bundled[i] = bundledGroup{
+			group:         group,
+			bundledSchema: bundledSchema,
+			bundleErr:     err,
+		}
 	}
 
-	processResults(harnessResults, group, keywordResult, summary)
+	// Phase 2: Batch adapter call for groups that bundled successfully
+	var adapterInputs []AdapterInput
+	var inputIndexes []int // maps adapter input index to bundled group index
+	for i, bg := range bundled {
+		if bg.bundleErr == nil {
+			adapterInputs = append(adapterInputs, AdapterInput{
+				Namespace: "compliance",
+				ID:        fmt.Sprintf("group_%d", i),
+				Schema:    bg.bundledSchema,
+			})
+			inputIndexes = append(inputIndexes, i)
+		}
+	}
+
+	var adapterOutputs []AdapterOutput
+	if len(adapterInputs) > 0 {
+		adapterStart := time.Now()
+		outputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
+		opts.timing.addAdapterInvocation(time.Since(adapterStart))
+		if err != nil {
+			return fmt.Errorf("adapter call failed: %w", err)
+		}
+		adapterOutputs = outputs
+	}
+
+	// Build map of group index -> adapter output
+	adapterOutputByGroup := make(map[int]*AdapterOutput)
+	for i, outIdx := range inputIndexes {
+		adapterOutputByGroup[outIdx] = &adapterOutputs[i]
+	}
+
+	// Phase 3: Process each group with its adapter output
+	for i, bg := range bundled {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		if bg.bundleErr != nil {
+			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
+			continue
+		}
+
+		adapterOutput := adapterOutputByGroup[i]
+		if adapterOutput == nil {
+			markAllFailed(keywordResult, summary, bg.group, "adapter did not return output for this group")
+			continue
+		}
+
+		harnessStart := time.Now()
+		tempHarness, err := GenerateTempHarness(opts.harnessFile, adapterOutput.Schema, bg.group.Tests, opts.workDir)
+		opts.timing.addHarnessGeneration(time.Since(harnessStart))
+		if err != nil {
+			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("harness generation error: %v", err))
+			continue
+		}
+
+		execStart := time.Now()
+		harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
+		opts.timing.addHarnessExecution(time.Since(execStart))
+		os.Remove(tempHarness)
+
+		if err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return err
+			}
+			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("harness execution error: %v", err))
+			continue
+		}
+
+		processResults(harnessResults, bg.group, keywordResult, summary)
+	}
+
 	return nil
 }
 

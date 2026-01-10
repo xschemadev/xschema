@@ -114,23 +114,39 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 	return results, nil
 }
 
+// AdapterInput represents a single schema input for the adapter
+type AdapterInput struct {
+	Namespace string    `json:"namespace"`
+	ID        string    `json:"id"`
+	Schema    RawSchema `json:"schema"`
+}
+
 // CallAdapter calls the adapter to convert a schema to code
 func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*AdapterOutput, error) {
-	// Build input
-	input := []map[string]interface{}{
-		{
-			"namespace": "compliance",
-			"id":        "Test",
-			"schema":    schema,
-		},
+	outputs, err := CallAdapterBatch(ctx, adapterBin, runner, runnerArgs, []AdapterInput{
+		{Namespace: "compliance", ID: "Test", Schema: schema},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(outputs) == 0 {
+		return nil, fmt.Errorf("adapter returned no output")
+	}
+	return &outputs[0], nil
+}
+
+// CallAdapterBatch calls the adapter to convert multiple schemas in a single process invocation.
+// Each input must have a unique ID; outputs are returned in the same order as inputs.
+func CallAdapterBatch(ctx context.Context, adapterBin string, runner string, runnerArgs []string, inputs []AdapterInput) ([]AdapterOutput, error) {
+	if len(inputs) == 0 {
+		return nil, nil
 	}
 
-	inputJSON, err := json.Marshal(input)
+	inputJSON, err := json.Marshal(inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to serialize input: %w", err)
 	}
 
-	// Build command: e.g., "bunx @xschemadev/zod"
 	args := append(runnerArgs, adapterBin)
 	cmd := exec.CommandContext(ctx, runner, args...)
 	cmd.Stdin = bytes.NewReader(inputJSON)
@@ -143,15 +159,26 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 		return nil, fmt.Errorf("adapter call failed: %w\nstderr: %s", err, stderr.String())
 	}
 
-	// Parse output
 	var outputs []AdapterOutput
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
 		return nil, fmt.Errorf("failed to parse adapter output: %w\nstdout: %s", err, stdout.String())
 	}
 
-	if len(outputs) == 0 {
-		return nil, fmt.Errorf("adapter returned no output")
+	// Build map by ID for lookup
+	outputByID := make(map[string]*AdapterOutput, len(outputs))
+	for i := range outputs {
+		outputByID[outputs[i].ID] = &outputs[i]
 	}
 
-	return &outputs[0], nil
+	// Return outputs in same order as inputs
+	result := make([]AdapterOutput, len(inputs))
+	for i, inp := range inputs {
+		out, ok := outputByID[inp.ID]
+		if !ok {
+			return nil, fmt.Errorf("adapter did not return output for id %q", inp.ID)
+		}
+		result[i] = *out
+	}
+
+	return result, nil
 }
