@@ -139,3 +139,13 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Test coverage includes real-world patterns from all current adapters
 ---
 
+## 2026-01-10 - US-014
+- Updated documentation to describe validate and validateImports fields
+- Documented canonical import format (full statements, no trailing semicolons)
+- Files changed: docs/adapter-system.md, docs/INDEX.md, typescript/AGENTS.md, prd.jsonc
+- **Learnings for future iterations:**
+  - Adapter protocol docs live in docs/adapter-system.md and typescript/AGENTS.md
+  - INDEX.md has a quick reference summary of adapter protocol
+  - No other docs had outdated "template adds import prefix" notes (only progress.txt historical entries)
+---
+
