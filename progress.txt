@@ -40,3 +40,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Tests updated to use AdapterOutput instead of raw code strings
   - Full compliance tests require adapters to return validate field (US-004+)
 ---
+
+## 2026-01-10 - US-004
+- Updated zod adapter to return validate function
+- Fixed imports format: `{ z } from "zod"` instead of `import { z } from "zod"` (template adds `import` prefix)
+- Added validate/validateImports to TypeScript ConvertResult type
+- Files changed: typescript/packages/adapters/zod/src/index.ts, typescript/packages/core/src/types.ts
+- **Learnings:**
+  - Imports array should NOT include `import` keyword - template adds it
+  - Validate function receives `data` param and can reference `schema` variable
+  - Compliance tests pass at 96-100% across all drafts
+---
