@@ -113,7 +113,7 @@ func TestGenerateTempHarness(t *testing.T) {
 
 	adapterOutput := &AdapterOutput{
 		Schema:   `z.object({ name: z.string() })`,
-		Imports:  []string{`{ z } from "zod"`},
+		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 	testCases := []TestCase{
@@ -221,7 +221,7 @@ func TestGenerateTempHarness_ComplexTestData(t *testing.T) {
 
 	adapterOutput := &AdapterOutput{
 		Schema:   `z.any()`,
-		Imports:  []string{`{ z } from "zod"`},
+		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => true`,
 	}
 
@@ -265,7 +265,7 @@ func TestGenerateTempHarness_EmptyTestCases(t *testing.T) {
 
 	adapterOutput := &AdapterOutput{
 		Schema:   `z.string()`,
-		Imports:  []string{`{ z } from "zod"`},
+		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 
@@ -306,7 +306,7 @@ func TestGenerateTempHarness_FilenamePattern(t *testing.T) {
 
 	adapterOutput := &AdapterOutput{
 		Schema:   `z.string()`,
-		Imports:  []string{`{ z } from "zod"`},
+		Imports:  []string{`import { z } from "zod"`},
 		Validate: `(data) => schema.safeParse(data).success`,
 	}
 
@@ -331,7 +331,7 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `z.object({ name: z.string() })`,
-		Imports:         []string{`{ z } from "zod"`},
+		Imports:         []string{`import { z } from "zod"`},
 		Validate:        `(data) => schema.safeParse(data).success`,
 		ValidateImports: nil,
 		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
@@ -433,9 +433,9 @@ func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `v.object({ name: v.string() })`,
-		Imports:         []string{`* as v from "valibot"`},
+		Imports:         []string{`import * as v from "valibot"`},
 		Validate:        `(data) => v.safeParse(schema, data).success`,
-		ValidateImports: []string{`{ safeParse } from "valibot"`},
+		ValidateImports: []string{`import { safeParse } from "valibot"`},
 		TestCasesString: `"[]"`,
 		IsTypeOnly:      false,
 	}
@@ -454,6 +454,40 @@ func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
 	if !strings.Contains(result, `import { safeParse } from "valibot";`) {
 		t.Error("missing validateImports")
 	}
+
+	if strings.Contains(result, "import import ") {
+		t.Error("should not prefix import statements")
+	}
+}
+
+func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
+	tmpl, err := template.New("harness").Parse(TSHarnessTemplate)
+	if err != nil {
+		t.Fatalf("failed to parse template: %v", err)
+	}
+
+	data := HarnessTemplateData{
+		Schema:          `v.object({ name: v.string() })`,
+		Imports:         nil,
+		Validate:        `(data) => safeParse(schema, data).success`,
+		ValidateImports: []string{`import { safeParse } from "valibot"`, `import * as v from "valibot"`},
+		TestCasesString: `"[]"`,
+		IsTypeOnly:      false,
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+
+	result := buf.String()
+
+	if !strings.Contains(result, `import { safeParse } from "valibot";`) {
+		t.Error("missing validateImports safeParse")
+	}
+	if !strings.Contains(result, `import * as v from "valibot";`) {
+		t.Error("missing validateImports namespace import")
+	}
 }
 
 func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
@@ -464,7 +498,7 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `Schema.Struct({ name: Schema.String })`,
-		Imports:         []string{`{ Schema } from "effect"`, `{ pipe } from "effect/Function"`},
+		Imports:         []string{`import { Schema } from "effect"`, `import { pipe } from "effect/Function"`},
 		Validate:        `(data) => Schema.decodeUnknownSync(schema)(data) !== undefined`,
 		ValidateImports: nil,
 		TestCasesString: `"[]"`,
@@ -502,7 +536,7 @@ func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `z.string()`,
-		Imports:         []string{`{ z } from "zod"`},
+		Imports:         []string{`import { z } from "zod"`},
 		Validate:        `(data) => schema.safeParse(data).success`,
 		TestCasesString: string(testCasesString),
 		IsTypeOnly:      false,

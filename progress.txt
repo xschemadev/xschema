@@ -5,7 +5,9 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 
 - Go code in cli/ directory
 - AdapterOutput struct in cli/compliance/types.go receives adapter responses
-- Adapter imports omit `import` keyword (template adds it)
+- TS adapters emit full `import ...` statements (no trailing semicolon)
+- TS harness template renders import lines verbatim and appends `;`
+- MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
 - Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
 - Avoid full compliance runs unless requested
 - Commit format: `feat(scope): lowercase message`
@@ -73,4 +75,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - Validate needs `validateImports` when using named exports
   - Valibot schemas still use `* as v` namespace import
   - Compliance run can exceed 5 minutes
+---
+
+## 2026-01-10 16:52 CET - US-011
+- Standardized TS adapters to emit full `import ...` statements (no trailing semicolons)
+- Updated TS harness template to render import lines verbatim (and added tests covering validateImports-only)
+- Added typebox `validate` via `Value.Check(schema, data)`
+- Files changed: cli/compliance/harness_template.go, cli/compliance/harness_test.go, typescript/packages/adapters/{zod,arktype,valibot,typebox}/src/index.ts, prd.jsonc, progress.txt
+- **Learnings for future iterations:**
+  - Type-only harness path currently uses `.Schema`, but the typescript type-only adapter returns its output in `.Type`
+  - `MergeTSImports` still needs to handle namespace imports (`import * as v from "x"`) + type-only forms for stable merging
 ---

@@ -3,10 +3,10 @@ package compliance
 // TSHarnessTemplate is a Go text/template for TypeScript compliance harness
 // Template data should be HarnessTemplateData
 const TSHarnessTemplate = `{{- range .Imports}}
-import {{.}};
+{{.}};
 {{- end}}
 {{- range .ValidateImports}}
-import {{.}};
+{{.}};
 {{- end}}
 {{- if .IsTypeOnly}}
 // Type-only adapter harness

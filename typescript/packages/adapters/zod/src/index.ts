@@ -11,7 +11,7 @@ export function convert(input: ConvertInput): ConvertResult {
 	return {
 		namespace,
 		id,
-		imports: ['{ z } from "zod"'],
+		imports: ['import { z } from "zod"'],
 		schema: schemaCode,
 		type: `z.infer<typeof ${varName}>`,
 		validate: "(data: unknown) => schema.safeParse(data).success",

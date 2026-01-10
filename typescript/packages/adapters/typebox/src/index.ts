@@ -17,5 +17,6 @@ export function convert(input: ConvertInput): ConvertResult {
 		],
 		schema: schemaCode,
 		type: `Static<typeof ${varName}>`,
+		validate: "(data: unknown) => Value.Check(schema, data)",
 	};
 }
