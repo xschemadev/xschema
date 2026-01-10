@@ -14,6 +14,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
 - Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
 - Avoid writing `*/` inside block comments (e.g. `adapters/` + wildcard), it terminates the comment and breaks parsing.
+- Generator invokes adapters via `language.AdapterInvoker` returning a validated `CommandSpec` (pass `projectRoot` so runner detection happens in the right directory).
 
 ---
 
@@ -126,5 +127,14 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Patterns discovered: emit `[]language.GeneratedFile` and sort by `Path`
   - Gotchas encountered: reject any `.`/`..` segments even if cleanable
   - Useful context: `language.NormalizeRelativePath` returns forward-slash paths
+---
+
+## 2026-01-11 00:44 - US-007
+- Refactored generator to resolve adapter execution via language `AdapterInvoker` (validated `CommandSpec` + project-root working directory).
+- Added TypeScript adapter ref validation + migration guidance for legacy `zod` -> `@xschemadev/zod`.
+- Files changed: `cli/cmd/generate.go`, `cli/generator/generator.go`, `cli/generator/generator_test.go`, `cli/injector/injector.go`, `cli/language/language.go`, `cli/language/python.go`, `cli/language/typescript.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Keep runner/bin derivation in the language invoker; generator should only execute `CommandSpec`.
+  - Always pass `projectRoot` through generation for correct runner detection.
 ---
 

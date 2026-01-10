@@ -120,7 +120,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
 		var genErr error
-		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name)
+		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name, root)
 		return genErr
 	})
 	if err != nil {

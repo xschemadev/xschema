@@ -31,6 +31,7 @@ type Language struct {
 	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
 	DetectRunner     func() (cmd string, args []string, err error)
+	AdapterInvoker   AdapterInvoker // resolves adapter refs to a runnable command
 
 	// Client injection (after generation)
 	BuildSchemasImport   func(importPath string) string    // build import statement for schemas

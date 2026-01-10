@@ -15,9 +15,9 @@ import (
 )
 
 type InjectInput struct {
-	Language string                 `json:"language"` // typescript, python, go
+	Language string                  `json:"language"` // typescript, python, go
 	Outputs  []adapter.ConvertResult `json:"outputs"`
-	OutDir   string                 `json:"outDir"` // default .xschema
+	OutDir   string                  `json:"outDir"` // default .xschema
 }
 
 // TemplateData is passed to the language template

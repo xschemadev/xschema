@@ -1,7 +1,9 @@
 package language
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,6 +16,7 @@ var typescript = Language{
 	SchemaExt:            "typescript.jsonc",
 	AdapterBinPrefix:     "xschema-",
 	DetectRunner:         detectTSRunner,
+	AdapterInvoker:       typescriptAdapterInvoker{},
 	BuildSchemasImport:   buildTSSchemasImport,
 	ImportPattern:        `(?m)^import\s+.*$`,
 	InjectSchemasKey:     injectSchemasKeyBrace,
@@ -28,6 +31,60 @@ var typescript = Language{
 	AdapterCLIPath:       getTSAdapterCLIPath,
 	HarnessExtension:     ".ts",
 	HarnessTemplate:      TSHarnessTemplate,
+}
+
+type typescriptAdapterInvoker struct{}
+
+func (typescriptAdapterInvoker) BuildAdapterCommand(ctx context.Context, input AdapterCommandInput) (CommandSpec, error) {
+	_ = ctx
+
+	projectRoot := strings.TrimSpace(input.ProjectRoot)
+	if projectRoot == "" {
+		return CommandSpec{}, fmt.Errorf("project root is required")
+	}
+
+	adapterRef := strings.TrimSpace(input.AdapterRef)
+	if adapterRef == "" {
+		return CommandSpec{}, fmt.Errorf("adapter ref is required")
+	}
+
+	// Migration help for legacy adapter names like "zod".
+	if !strings.HasPrefix(adapterRef, "@") && !strings.Contains(adapterRef, "/") {
+		return CommandSpec{}, fmt.Errorf(
+			"invalid typescript adapter ref %q: expected scoped npm package ref like %q (migration: change adapter to %q)",
+			adapterRef,
+			"@xschemadev/zod",
+			"@xschemadev/"+adapterRef,
+		)
+	}
+
+	if !strings.HasPrefix(adapterRef, "@xschemadev/") {
+		return CommandSpec{}, fmt.Errorf(
+			"invalid typescript adapter ref %q: expected %q scope (example: %q)",
+			adapterRef,
+			"@xschemadev",
+			"@xschemadev/zod",
+		)
+	}
+
+	parts := strings.Split(adapterRef, "/")
+	if len(parts) != 2 || strings.TrimSpace(parts[1]) == "" {
+		return CommandSpec{}, fmt.Errorf("invalid typescript adapter ref %q: expected format %q", adapterRef, "@xschemadev/<adapter>")
+	}
+
+	pkgName := parts[1]
+	binName := typescript.AdapterBinPrefix + pkgName
+
+	runner, runnerArgs, err := detectTSRunnerInDir(projectRoot)
+	if err != nil {
+		return CommandSpec{}, fmt.Errorf("failed to detect typescript runner: %w", err)
+	}
+
+	return CommandSpec{
+		Cmd:  runner,
+		Args: append(runnerArgs, binName),
+		Dir:  projectRoot,
+	}, nil
 }
 
 func detectTSRunner() (string, []string, error) {

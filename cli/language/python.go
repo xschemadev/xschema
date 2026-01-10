@@ -1,6 +1,8 @@
 package language
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +15,7 @@ var python = Language{
 	SchemaExt:            "py.jsonc",
 	AdapterBinPrefix:     "xschema-",
 	DetectRunner:         detectPythonRunner,
+	AdapterInvoker:       pythonAdapterInvoker{},
 	BuildSchemasImport:   buildPySchemasImport,
 	ImportPattern:        `(?m)^(?:import\s+|from\s+).*$`,
 	InjectSchemasKey:     injectSchemasKeyBrace,
@@ -23,10 +26,42 @@ var python = Language{
 	BuildFooter:          BuildPythonFooter,
 	BuildVarName:         buildVarNameUnderscore,
 	IgnoreDirs:           []string{"__pycache__", ".venv", "venv"},
-	DetectHarnessRunner: detectPyHarnessRunner,
-	GetPackageName:      getPyPackageName,
-	AdapterCLIPath:      getPyAdapterCLIPath,
-	HarnessExtension:    ".py",
+	DetectHarnessRunner:  detectPyHarnessRunner,
+	GetPackageName:       getPyPackageName,
+	AdapterCLIPath:       getPyAdapterCLIPath,
+	HarnessExtension:     ".py",
+}
+
+type pythonAdapterInvoker struct{}
+
+func (pythonAdapterInvoker) BuildAdapterCommand(ctx context.Context, input AdapterCommandInput) (CommandSpec, error) {
+	_ = ctx
+
+	projectRoot := strings.TrimSpace(input.ProjectRoot)
+	if projectRoot == "" {
+		return CommandSpec{}, fmt.Errorf("project root is required")
+	}
+
+	adapterRef := strings.TrimSpace(input.AdapterRef)
+	if adapterRef == "" {
+		return CommandSpec{}, fmt.Errorf("adapter ref is required")
+	}
+
+	runner, runnerArgs, err := detectPythonRunnerInDir(projectRoot)
+	if err != nil {
+		return CommandSpec{}, fmt.Errorf("failed to detect python runner: %w", err)
+	}
+
+	binName := adapterRef
+	if !strings.HasPrefix(binName, python.AdapterBinPrefix) {
+		binName = python.AdapterBinPrefix + binName
+	}
+
+	return CommandSpec{
+		Cmd:  runner,
+		Args: append(runnerArgs, binName),
+		Dir:  projectRoot,
+	}, nil
 }
 
 func detectPythonRunner() (string, []string, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/xschemadev/xschema/adapter"
@@ -26,12 +27,14 @@ func TestGenerateAdapterNotFound(t *testing.T) {
 	os.Chdir("testdata/typescript")
 	defer os.Chdir(originalDir)
 
+	adapterRef := "@xschemadev/nonexistent-adapter"
 	input := GenerateBatchInput{
 		Schemas: []retriever.RetrievedSchema{
-			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "@xschema/nonexistent-adapter"},
+			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: adapterRef},
 		},
-		Adapter:  "@xschema/nonexistent-adapter",
-		Language: "typescript",
+		AdapterRef:  adapterRef,
+		Language:    "typescript",
+		ProjectRoot: ".",
 	}
 
 	_, err := Generate(context.Background(), input)
@@ -40,13 +43,33 @@ func TestGenerateAdapterNotFound(t *testing.T) {
 	}
 }
 
+func TestGenerateLegacyAdapterRefMigrationGuidance(t *testing.T) {
+	input := GenerateBatchInput{
+		Schemas: []retriever.RetrievedSchema{
+			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "zod"},
+		},
+		AdapterRef:  "zod",
+		Language:    "typescript",
+		ProjectRoot: ".",
+	}
+
+	_, err := Generate(context.Background(), input)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !strings.Contains(err.Error(), "migration") || !strings.Contains(err.Error(), "@xschemadev/zod") {
+		t.Fatalf("expected migration guidance for legacy adapter ref, got: %v", err)
+	}
+}
+
 func TestGenerateUnsupportedLanguage(t *testing.T) {
 	input := GenerateBatchInput{
 		Schemas: []retriever.RetrievedSchema{
 			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "zod"},
 		},
-		Adapter:  "zod",
-		Language: "unsupported-lang",
+		AdapterRef:  "zod",
+		Language:    "unsupported-lang",
+		ProjectRoot: ".",
 	}
 
 	_, err := Generate(context.Background(), input)
@@ -63,12 +86,14 @@ func TestGenerateContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
+	adapterRef := "@xschemadev/zod"
 	input := GenerateBatchInput{
 		Schemas: []retriever.RetrievedSchema{
-			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "zod"},
+			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: adapterRef},
 		},
-		Adapter:  "zod",
-		Language: "typescript",
+		AdapterRef:  adapterRef,
+		Language:    "typescript",
+		ProjectRoot: ".",
 	}
 
 	_, err := Generate(ctx, input)
@@ -78,7 +103,7 @@ func TestGenerateContextCancellation(t *testing.T) {
 }
 
 func TestGenerateAllEmptySchemas(t *testing.T) {
-	outputs, err := GenerateAll(context.Background(), []retriever.RetrievedSchema{}, "typescript")
+	outputs, err := GenerateAll(context.Background(), []retriever.RetrievedSchema{}, "typescript", ".")
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}

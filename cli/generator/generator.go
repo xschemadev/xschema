@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/xschemadev/xschema/adapter"
@@ -26,9 +27,10 @@ func validateOutputs(outputs []adapter.ConvertResult, adapterName string) error 
 
 // GenerateBatchInput groups schemas by adapter for batch processing
 type GenerateBatchInput struct {
-	Adapter  string // adapter package e.g., "zod"
-	Language string // language name e.g., "typescript"
-	Schemas  []retriever.RetrievedSchema
+	AdapterRef  string // adapter ref e.g., "@xschemadev/zod"
+	Language    string // language name e.g., "typescript"
+	ProjectRoot string // project root directory
+	Schemas     []retriever.RetrievedSchema
 }
 
 // Generate calls the adapter to convert schemas to native code
@@ -38,20 +40,27 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 		return nil, fmt.Errorf("unsupported language: %s", input.Language)
 	}
 
-	runner, args, err := lang.DetectRunner()
+	if lang.AdapterInvoker == nil {
+		return nil, fmt.Errorf("language %s does not have adapter invocation configured", input.Language)
+	}
+
+	cmdSpec, err := lang.AdapterInvoker.BuildAdapterCommand(ctx, language.AdapterCommandInput{
+		ProjectRoot: input.ProjectRoot,
+		AdapterRef:  input.AdapterRef,
+	})
 	if err != nil {
 		return nil, err
 	}
+	if err := cmdSpec.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid adapter command: %w", err)
+	}
 
-	// Construct bin name: "zod" -> "xschema-zod"
-	binName := lang.AdapterBinPrefix + input.Adapter
+	ui.Verbosef("running adapter: %s (language: %s, cmd: %s, schemas: %d)", input.AdapterRef, input.Language, cmdSpec.Cmd, len(input.Schemas))
 
-	ui.Verbosef("running adapter: %s (language: %s, runner: %s, schemas: %d)", binName, input.Language, runner, len(input.Schemas))
-
-	// Check runner exists
-	if _, err := exec.LookPath(runner); err != nil {
-		ui.Verbosef("runner not found: %s", runner)
-		return nil, fmt.Errorf("%s not found: %w", runner, err)
+	// Check command exists
+	if _, err := exec.LookPath(cmdSpec.Cmd); err != nil {
+		ui.Verbosef("command not found: %s", cmdSpec.Cmd)
+		return nil, fmt.Errorf("%s not found: %w", cmdSpec.Cmd, err)
 	}
 
 	// Bundle schemas to resolve external $refs
@@ -75,54 +84,60 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 		}
 	}
 
-	cmdArgs := append(args, binName)
-	cmd := exec.CommandContext(ctx, runner, cmdArgs...)
+	cmd := exec.CommandContext(ctx, cmdSpec.Cmd, cmdSpec.Args...)
+	if cmdSpec.Dir != "" {
+		cmd.Dir = cmdSpec.Dir
+	}
+	if len(cmdSpec.Env) > 0 {
+		cmd.Env = append(os.Environ(), cmdSpec.Env...)
+	}
 
 	// Pipe schemas to stdin
 	stdinData, err := json.Marshal(adapterInput)
 	if err != nil {
-		ui.Verbosef("failed to marshal schemas for adapter %s", binName)
+		ui.Verbosef("failed to marshal schemas for adapter %s", input.AdapterRef)
 		return nil, fmt.Errorf("failed to marshal schemas: %w", err)
 	}
 	cmd.Stdin = bytes.NewReader(stdinData)
 
-	ui.Verbosef("executing adapter command: %s %v", runner, cmdArgs)
+	ui.Verbosef("executing adapter command: %s %v", cmdSpec.Cmd, cmdSpec.Args)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		ui.Verbosef("adapter execution failed: %s - %s", binName, stderr.String())
-		return nil, fmt.Errorf("adapter %s failed: %w\n%s", binName, err, stderr.String())
+		ui.Verbosef("adapter execution failed: %s - %s", input.AdapterRef, stderr.String())
+		return nil, fmt.Errorf("adapter %s failed: %w\n%s", input.AdapterRef, err, stderr.String())
 	}
 
 	var outputs []adapter.ConvertResult
 	if err := json.Unmarshal(stdout.Bytes(), &outputs); err != nil {
-		ui.Verbosef("invalid adapter output from %s: %s", binName, stdout.String())
-		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", binName, err, stdout.String())
+		ui.Verbosef("invalid adapter output from %s: %s", input.AdapterRef, stdout.String())
+		return nil, fmt.Errorf("invalid output from %s: %w\noutput: %s", input.AdapterRef, err, stdout.String())
 	}
 
-	if err := validateOutputs(outputs, binName); err != nil {
+	if err := validateOutputs(outputs, input.AdapterRef); err != nil {
 		return nil, err
 	}
 
-	ui.Verbosef("adapter execution successful: %s (outputs: %d)", binName, len(outputs))
+	ui.Verbosef("adapter execution successful: %s (outputs: %d)", input.AdapterRef, len(outputs))
 	return outputs, nil
 }
 
 // GenerateAll runs generation for all adapter groups and returns all outputs
-func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string) ([]adapter.ConvertResult, error) {
+func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string, projectRoot string) ([]adapter.ConvertResult, error) {
 	groups := retriever.GroupByAdapter(schemas)
 	adapters := retriever.SortedAdapters(groups)
 
 	var allOutputs []adapter.ConvertResult
 
-	for _, adapterName := range adapters {
+	for _, adapterRef := range adapters {
 		batch := GenerateBatchInput{
-			Adapter:  adapterName,
-			Language: langName,
-			Schemas:  groups[adapterName],
+			AdapterRef:  adapterRef,
+			Language:    langName,
+			ProjectRoot: projectRoot,
+			Schemas:     groups[adapterRef],
 		}
 
 		outputs, err := Generate(ctx, batch)
