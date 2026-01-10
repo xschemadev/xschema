@@ -535,8 +535,9 @@ func TestRetrievePreservesMetadata(t *testing.T) {
 func TestDefaultOptions(t *testing.T) {
 	opts := DefaultOptions()
 
-	if opts.Concurrency != 10 {
-		t.Errorf("expected concurrency 10, got %d", opts.Concurrency)
+	expectedConcurrency := min(runtime.NumCPU(), 8)
+	if opts.Concurrency != expectedConcurrency {
+		t.Errorf("expected concurrency %d, got %d", expectedConcurrency, opts.Concurrency)
 	}
 	if opts.HTTPTimeout != 30*time.Second {
 		t.Errorf("expected timeout 30s, got %v", opts.HTTPTimeout)
