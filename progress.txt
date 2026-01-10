@@ -16,3 +16,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - AdapterOutput is used by CallAdapter to parse adapter JSON responses
   - omitempty used for optional fields to support type-only adapters
 ---
+
+## 2026-01-10 - US-002
+- Created TSHarnessTemplate using Go text/template
+- Added HarnessTemplateData struct with Schema, Imports, Validate, ValidateImports, TestCasesString, IsTypeOnly
+- Files changed: cli/compliance/harness_template.go, cli/compliance/harness_test.go
+- **Learnings:**
+  - Template uses {{- for trimming whitespace before content
+  - IsTypeOnly branch outputs skipped results (no runtime validation possible for type-only)
+  - TestCasesString must be pre-escaped JSON string for JS string literal
+  - Tests verify both runtime and type-only paths
+---
