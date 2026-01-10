@@ -28,7 +28,41 @@ type TemplateData struct {
 	Footer  string                 // language-specific footer
 }
 
-// Inject writes generated code to output directory
+// WriteGeneratedFiles writes generated files under the output root.
+// Each GeneratedFile.Path is interpreted as a relative path.
+func WriteGeneratedFiles(outDir string, files []language.GeneratedFile) error {
+	if strings.TrimSpace(outDir) == "" {
+		return fmt.Errorf("outDir is required")
+	}
+
+	normalized := make([]language.GeneratedFile, len(files))
+	for i, file := range files {
+		path, err := language.NormalizeRelativePath(file.Path)
+		if err != nil {
+			return fmt.Errorf("invalid generated file path %q: %w", file.Path, err)
+		}
+		normalized[i] = language.GeneratedFile{Path: path, Contents: file.Contents}
+	}
+
+	language.SortGeneratedFiles(normalized)
+	if err := language.ValidateGeneratedFiles(normalized); err != nil {
+		return fmt.Errorf("invalid generated files: %w", err)
+	}
+
+	for _, file := range normalized {
+		outPath := filepath.Join(outDir, filepath.FromSlash(file.Path))
+		if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
+			return fmt.Errorf("failed to create output directory: %w", err)
+		}
+		if err := os.WriteFile(outPath, []byte(file.Contents), 0644); err != nil {
+			return fmt.Errorf("failed to write output file: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// Inject writes generated code to output directory.
 func Inject(input InjectInput) error {
 	lang := language.ByName(input.Language)
 	if lang == nil {
@@ -63,20 +97,17 @@ func Inject(input InjectInput) error {
 
 	ui.Verbosef("template execution successful: %d bytes", buf.Len())
 
-	// Ensure output directory exists
-	if err := os.MkdirAll(input.OutDir, 0755); err != nil {
-		ui.Verbosef("failed to create output directory: %s", input.OutDir)
-		return fmt.Errorf("failed to create output directory: %w", err)
+	files := []language.GeneratedFile{{
+		Path:     lang.OutputFile,
+		Contents: buf.String(),
+	}}
+
+	if err := WriteGeneratedFiles(input.OutDir, files); err != nil {
+		ui.Verbosef("failed to write generated files: outDir=%s", input.OutDir)
+		return err
 	}
 
-	// Write output file
-	outPath := filepath.Join(input.OutDir, lang.OutputFile)
-	if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
-		ui.Verbosef("failed to write output file: %s", outPath)
-		return fmt.Errorf("failed to write output file: %w", err)
-	}
-
-	ui.Verbosef("successfully injected schemas: path=%s, bytes=%d", outPath, buf.Len())
+	ui.Verbosef("successfully injected schemas: files=%d, outDir=%s", len(files), input.OutDir)
 	return nil
 }
 

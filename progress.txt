@@ -13,6 +13,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Language registry lives in `cli/language/registry.go`; tests should call `language.ResetForTests()` and `t.Cleanup(language.ResetForTests)` to avoid global state leaks.
 - Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
 - Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
+- Use `injector.WriteGeneratedFiles(outDir, files)` to safely write multi-file outputs under the output root.
 - Avoid writing `*/` inside block comments (e.g. `adapters/` + wildcard), it terminates the comment and breaks parsing.
 - Generator invokes adapters via `language.AdapterInvoker` returning a validated `CommandSpec` (pass `projectRoot` so runner detection happens in the right directory).
 
@@ -136,5 +137,14 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - Keep runner/bin derivation in the language invoker; generator should only execute `CommandSpec`.
   - Always pass `projectRoot` through generation for correct runner detection.
+---
+
+## 2026-01-11 00:50 - US-008
+- Implemented `injector.WriteGeneratedFiles` to write multiple emitted files safely under the output root (normalize + sort + validate).
+- Added tests for nested directory creation, unsafe path rejection, and normalized-path collisions.
+- Files changed: `cli/injector/injector.go`, `cli/injector/injector_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Normalize paths before sorting/duplicate checks (`a\\b.ts` should collide with `a/b.ts`).
+  - Use `filepath.FromSlash` when writing normalized forward-slash paths.
 ---
 

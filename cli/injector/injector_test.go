@@ -308,6 +308,62 @@ func TestInject_CreatesDirectory(t *testing.T) {
 	}
 }
 
+func TestWriteGeneratedFiles_CreatesNestedDirectories(t *testing.T) {
+	outDir := t.TempDir()
+
+	err := WriteGeneratedFiles(outDir, []language.GeneratedFile{{
+		Path:     "nested/xschema.gen.ts",
+		Contents: "// hello",
+	}})
+	if err != nil {
+		t.Fatalf("WriteGeneratedFiles failed: %v", err)
+	}
+
+	contents, err := os.ReadFile(filepath.Join(outDir, "nested", "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("failed reading generated file: %v", err)
+	}
+	if string(contents) != "// hello" {
+		t.Fatalf("unexpected contents: %q", string(contents))
+	}
+}
+
+func TestWriteGeneratedFiles_RejectsUnsafePaths(t *testing.T) {
+	outDir := t.TempDir()
+
+	tests := []struct {
+		name string
+		path string
+	}{
+		{name: "absolute", path: "/tmp/evil.ts"},
+		{name: "parent", path: "../evil.ts"},
+		{name: "dot", path: "./evil.ts"},
+		{name: "emptySegment", path: "a//b.ts"},
+		{name: "windowsDrive", path: "C:\\evil.ts"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := WriteGeneratedFiles(outDir, []language.GeneratedFile{{Path: tt.path, Contents: "x"}})
+			if err == nil {
+				t.Fatalf("expected error for path %q", tt.path)
+			}
+		})
+	}
+}
+
+func TestWriteGeneratedFiles_RejectsCollidingPaths(t *testing.T) {
+	outDir := t.TempDir()
+
+	err := WriteGeneratedFiles(outDir, []language.GeneratedFile{
+		{Path: "a/b.ts", Contents: "1"},
+		{Path: "a\\b.ts", Contents: "2"},
+	})
+	if err == nil {
+		t.Fatalf("expected error for colliding paths")
+	}
+}
+
 func TestInjectClient_TypeScript(t *testing.T) {
 	tmpDir := t.TempDir()
 
