@@ -2,11 +2,8 @@ package compliance
 
 // TSHarnessTemplate is a Go text/template for TypeScript compliance harness
 // Template data should be HarnessTemplateData
-const TSHarnessTemplate = `{{- range .Imports}}
-{{.}};
-{{- end}}
-{{- range .ValidateImports}}
-{{.}};
+const TSHarnessTemplate = `{{- if .Imports}}
+{{.Imports}}
 {{- end}}
 {{- if .IsTypeOnly}}
 // Type-only adapter harness
@@ -53,11 +50,10 @@ console.log(JSON.stringify(results));
 
 // HarnessTemplateData contains the data for rendering a harness template
 type HarnessTemplateData struct {
-	Schema          string   // generated schema code
-	Type            string   // generated type expression (type-only adapters)
-	Imports         []string // imports needed by schema
-	Validate        string   // validation function (empty = type-only)
-	ValidateImports []string // imports needed by validate function
-	TestCasesString string   // JSON string of test cases (already escaped for JS string literal)
-	IsTypeOnly      bool     // true when Validate is empty
+	Schema          string // generated schema code
+	Type            string // generated type expression (type-only adapters)
+	Imports         string // merged import block (already formatted)
+	Validate        string // validation function (empty = type-only)
+	TestCasesString string // JSON string of test cases (already escaped for JS string literal)
+	IsTypeOnly      bool   // true when Validate is empty
 }

@@ -6,7 +6,8 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - Go code in cli/ directory
 - AdapterOutput struct in cli/compliance/types.go receives adapter responses
 - TS adapters emit full `import ...` statements (no trailing semicolon)
-- TS harness template renders import lines verbatim and appends `;`
+- TS harness template renders merged import block verbatim (no semicolons)
+- Compliance harness merges Imports + ValidateImports via MergeTSImports before templating
 - MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
 - Compliance harnesses are generated from templates; adapter discovery uses adapter directories and manifests
 - Type-only compliance harness uses AdapterOutput.Type
@@ -114,5 +115,14 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - **Learnings for future iterations:**
   - Compliance harnesses are generated from templates; no per-adapter harness files
   - CI adapter discovery checks adapter manifests in language packages
+---
+
+## 2026-01-10 17:54:48 CET - US-012
+- Merged adapter imports and validateImports via MergeTSImports for TS harnesses
+- Updated TS harness template to render merged import block once
+- Files changed: cli/compliance/harness.go, cli/compliance/harness_template.go, cli/compliance/harness_test.go, prd.jsonc, progress.txt
+- **Learnings for future iterations:**
+  - Harness templates now expect pre-merged import blocks
+  - MergeTSImports ordering affects harness import output
 ---
 

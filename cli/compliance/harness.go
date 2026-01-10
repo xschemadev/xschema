@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/xschemadev/xschema/language"
 )
 
 // TypecheckConfig configures how typecheck runs
@@ -76,13 +78,25 @@ func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases 
 		return "", fmt.Errorf("failed to serialize test cases string: %w", err)
 	}
 
+	mergedImports := append([]string{}, adapterOutput.Imports...)
+	mergedImports = append(mergedImports, adapterOutput.ValidateImports...)
+
+	formattedImports := ""
+	if len(mergedImports) > 0 {
+		switch lang {
+		case LanguageTypeScript:
+			formattedImports = language.MergeTSImports(mergedImports)
+		default:
+			formattedImports = strings.Join(mergedImports, "\n")
+		}
+	}
+
 	// Build template data
 	data := HarnessTemplateData{
 		Schema:          adapterOutput.Schema,
 		Type:            adapterOutput.Type,
-		Imports:         adapterOutput.Imports,
+		Imports:         formattedImports,
 		Validate:        adapterOutput.Validate,
-		ValidateImports: adapterOutput.ValidateImports,
 		TestCasesString: string(testCasesString),
 		IsTypeOnly:      adapterOutput.Validate == "",
 	}

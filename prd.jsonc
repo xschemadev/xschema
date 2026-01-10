@@ -168,7 +168,7 @@
 				"Update harness template tests to assert deterministic merged output",
 				"Go tests pass"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "Harness template now accepts full import statements; this story adds MergeTSImports-based merging/dedupe across Imports + ValidateImports."
 		},
 		{

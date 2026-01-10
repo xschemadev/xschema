@@ -50,7 +50,7 @@ func TestGenerateTempHarness(t *testing.T) {
 	}
 
 	// Check import was inserted
-	if !strings.Contains(string(content), `import { z } from "zod";`) {
+	if !strings.Contains(string(content), `import { z } from "zod"`) {
 		t.Error("harness missing import")
 	}
 
@@ -62,6 +62,34 @@ func TestGenerateTempHarness(t *testing.T) {
 	// Check test cases were inserted
 	if !strings.Contains(string(content), "valid object") {
 		t.Error("harness missing test case descriptions")
+	}
+}
+
+func TestGenerateTempHarness_MergedImports(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	adapterOutput := &AdapterOutput{
+		Schema:          `z.object({ name: z.string() })`,
+		Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
+		Validate:        `(data) => schema.safeParse(data).success`,
+		ValidateImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
+	}
+	testCases := []TestCase{{Description: "valid", Data: map[string]interface{}{"name": "test"}, Valid: true}}
+
+	harnessPath, err := GenerateTempHarness(LanguageTypeScript, adapterOutput, testCases, tmpDir)
+	if err != nil {
+		t.Fatalf("GenerateTempHarness() error = %v", err)
+	}
+	defer os.Remove(harnessPath)
+
+	content, err := os.ReadFile(harnessPath)
+	if err != nil {
+		t.Fatalf("failed to read harness: %v", err)
+	}
+
+	mergedImports := "import { helper } from \"helper\"\nimport { ZodError, z } from \"zod\""
+	if !strings.Contains(string(content), mergedImports) {
+		t.Errorf("harness missing merged imports: %s", mergedImports)
 	}
 }
 
@@ -219,9 +247,8 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `z.object({ name: z.string() })`,
-		Imports:         []string{`import { z } from "zod"`},
+		Imports:         `import { z } from "zod"`,
 		Validate:        `(data) => schema.safeParse(data).success`,
-		ValidateImports: nil,
 		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
 		IsTypeOnly:      false,
 	}
@@ -234,7 +261,7 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 	result := buf.String()
 
 	// Should have import
-	if !strings.Contains(result, `import { z } from "zod";`) {
+	if !strings.Contains(result, `import { z } from "zod"`) {
 		t.Error("missing zod import")
 	}
 
@@ -273,9 +300,8 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 	data := HarnessTemplateData{
 		Schema:          "",
 		Type:            `{ name: string }`,
-		Imports:         nil,
+		Imports:         "",
 		Validate:        "",
-		ValidateImports: nil,
 		TestCasesString: `"[{\"data\":{\"name\":\"test\"},\"valid\":true}]"`,
 		IsTypeOnly:      true,
 	}
@@ -322,9 +348,8 @@ func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `v.object({ name: v.string() })`,
-		Imports:         []string{`import * as v from "valibot"`},
-		Validate:        `(data) => v.safeParse(schema, data).success`,
-		ValidateImports: []string{`import { safeParse } from "valibot"`},
+		Imports:         "import * as v from \"valibot\"\nimport { safeParse } from \"valibot\"",
+		Validate:        `(data) => safeParse(schema, data).success`,
 		TestCasesString: `"[]"`,
 		IsTypeOnly:      false,
 	}
@@ -337,10 +362,10 @@ func TestTSHarnessTemplate_WithValidateImports(t *testing.T) {
 	result := buf.String()
 
 	// Should have both imports
-	if !strings.Contains(result, `import * as v from "valibot";`) {
+	if !strings.Contains(result, `import * as v from "valibot"`) {
 		t.Error("missing schema import")
 	}
-	if !strings.Contains(result, `import { safeParse } from "valibot";`) {
+	if !strings.Contains(result, `import { safeParse } from "valibot"`) {
 		t.Error("missing validateImports")
 	}
 
@@ -357,9 +382,8 @@ func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `v.object({ name: v.string() })`,
-		Imports:         nil,
+		Imports:         "import * as v from \"valibot\"\nimport { safeParse } from \"valibot\"",
 		Validate:        `(data) => safeParse(schema, data).success`,
-		ValidateImports: []string{`import { safeParse } from "valibot"`, `import * as v from "valibot"`},
 		TestCasesString: `"[]"`,
 		IsTypeOnly:      false,
 	}
@@ -371,10 +395,10 @@ func TestTSHarnessTemplate_ValidateImportsOnly(t *testing.T) {
 
 	result := buf.String()
 
-	if !strings.Contains(result, `import { safeParse } from "valibot";`) {
+	if !strings.Contains(result, `import { safeParse } from "valibot"`) {
 		t.Error("missing validateImports safeParse")
 	}
-	if !strings.Contains(result, `import * as v from "valibot";`) {
+	if !strings.Contains(result, `import * as v from "valibot"`) {
 		t.Error("missing validateImports namespace import")
 	}
 }
@@ -387,9 +411,8 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `Schema.Struct({ name: Schema.String })`,
-		Imports:         []string{`import { Schema } from "effect"`, `import { pipe } from "effect/Function"`},
+		Imports:         "import { Schema } from \"effect\"\nimport { pipe } from \"effect/Function\"",
 		Validate:        `(data) => Schema.decodeUnknownSync(schema)(data) !== undefined`,
-		ValidateImports: nil,
 		TestCasesString: `"[]"`,
 		IsTypeOnly:      false,
 	}
@@ -402,10 +425,10 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 	result := buf.String()
 
 	// Should have both imports
-	if !strings.Contains(result, `import { Schema } from "effect";`) {
+	if !strings.Contains(result, `import { Schema } from "effect"`) {
 		t.Error("missing first import")
 	}
-	if !strings.Contains(result, `import { pipe } from "effect/Function";`) {
+	if !strings.Contains(result, `import { pipe } from "effect/Function"`) {
 		t.Error("missing second import")
 	}
 }
@@ -425,7 +448,7 @@ func TestTSHarnessTemplate_EscapedTestCases(t *testing.T) {
 
 	data := HarnessTemplateData{
 		Schema:          `z.string()`,
-		Imports:         []string{`import { z } from "zod"`},
+		Imports:         `import { z } from "zod"`,
 		Validate:        `(data) => schema.safeParse(data).success`,
 		TestCasesString: string(testCasesString),
 		IsTypeOnly:      false,
