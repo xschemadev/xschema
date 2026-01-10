@@ -8,8 +8,8 @@
 | draft2020-12 | 833 | 38 | 0 | 95.6% |
 | draft3 | 383 | 24 | 0 | 94.1% |
 | draft4 | 515 | 36 | 0 | 93.5% |
-| draft6 | 704 | 35 | 0 | 95.3% |
-| draft7 | 780 | 35 | 0 | 95.7% |
+| draft6 | 705 | 34 | 0 | 95.4% |
+| draft7 | 781 | 34 | 0 | 95.8% |
 
 ## Badges
 
@@ -17,8 +17,8 @@
 ![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-95.6%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-94.1%25-yellow)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-93.5%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-95.3%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-95.7%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-95.4%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-95.8%25-brightgreen)
 
 ## draft2019-09
 
@@ -837,7 +837,7 @@
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ❌ | 0/2 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ⚠️ | 33/36 |
 | enum | ⚠️ | 43/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -887,42 +887,11 @@
 </details>
 
 <details>
-<summary>definitions - 2 failures</summary>
+<summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: 1 | 
-2 | import { Schema as S } from "effect"
-3 | 
-4 | const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) => boolean }> = {
-5 |   "group_0": (() => {
-6 |     const schema = S.Union(S.Struct({ "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
-
-TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:6:73)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:39:115
-      at loadAndEvaluateModule (2:1)
-
-Bun v1.3.5 (Linux x64)
-`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: 1 | 
-2 | import { Schema as S } from "effect"
-3 | 
-4 | const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) => boolean }> = {
-5 |   "group_0": (() => {
-6 |     const schema = S.Union(S.Struct({ "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
-
-TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:6:73)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:39:115
-      at loadAndEvaluateModule (2:1)
-
-Bun v1.3.5 (Linux x64)
-`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1067,7 +1036,7 @@ Bun v1.3.5 (Linux x64)
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ❌ | 0/2 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ⚠️ | 33/36 |
 | enum | ⚠️ | 43/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1118,42 +1087,11 @@ Bun v1.3.5 (Linux x64)
 </details>
 
 <details>
-<summary>definitions - 2 failures</summary>
+<summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: 1 | 
-2 | import { Schema as S } from "effect"
-3 | 
-4 | const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) => boolean }> = {
-5 |   "group_0": (() => {
-6 |     const schema = S.Union(S.Struct({ "$comment": S.optional(S.String), "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "contentEncoding": S.optional(S.String), "contentMediaType": S.optional(S.String), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
-
-TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:6:107)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:39:115
-      at loadAndEvaluateModule (2:1)
-
-Bun v1.3.5 (Linux x64)
-`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: 1 | 
-2 | import { Schema as S } from "effect"
-3 | 
-4 | const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) => boolean }> = {
-5 |   "group_0": (() => {
-6 |     const schema = S.Union(S.Struct({ "$comment": S.optional(S.String), "$id": S.optional(S.String.pipe(S.url())), "$ref": S.optional(S.String.pipe(S.url())), "$schema": S.optional(S.String.pipe(S.url())), "additionalItems": S.optional(S.Unknown), "additionalProperties": S.optional(S.Unknown), "allOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "anyOf": S.optional(S.Array(S.Unknown).pipe(S.minItems(1))), "const": S.optional(S.Unknown), "contains": S.optional(S.Unknown), "contentEncoding": S.optional(S.String), "contentMediaType": S.optional(S.String), "default": S.optional(S.Unknown), "definitions": S.optional(S.Record({ key: S.String, value: S.Unknown })), "dependencies": S.optional(S.Record({ key: S.String, value: S.Union(S.Unknown, S.Array(S.String).pipe(S.filter((arr) => {
-
-TypeError: S.url is not a function. (In 'S.url()', 'S.url' is undefined)
-      at <anonymous> (/home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:6:107)
-      at /home/trapani/dev/xschema/typescript/packages/adapters/effect/xschema-harness.ts:39:115
-      at loadAndEvaluateModule (2:1)
-
-Bun v1.3.5 (Linux x64)
-`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 

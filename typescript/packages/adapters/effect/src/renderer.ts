@@ -83,10 +83,6 @@ function renderString(node: StringNode): string {
 			case "email":
 				result = "S.String.pipe(S.email())";
 				break;
-			case "uri":
-			case "uri-reference":
-				result = "S.String.pipe(S.url())";
-				break;
 			case "uuid":
 				result = "S.String.pipe(S.uuid())";
 				break;
