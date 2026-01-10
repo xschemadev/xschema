@@ -77,6 +77,17 @@ bun run typecheck                       # type check all packages
 bunx tsc --noEmit                       # type check single package (in pkg dir)
 ```
 
+### Web (run from `web/` directory)
+
+```bash
+bun install                             # install deps
+bun test                                # run bun tests
+bun run types:check                     # run tsc (requires fumadocs-mdx)
+bun run generate:schemas                # regenerate web json schemas
+```
+
+Note: `web/tsconfig.json` pins `compilerOptions.types`, so include both `bun` and `node` when scripts/tests import `bun:test` or `node:*`.
+
 ### Root (commitlint/husky)
 
 ```bash
