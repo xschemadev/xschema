@@ -75,9 +75,8 @@ type DraftSummary struct {
 
 // ComplianceReport is the complete report for an adapter
 type ComplianceReport struct {
-	Adapter     string        `json:"adapter"`
-	GeneratedAt string        `json:"generatedAt"`
-	Drafts      []DraftResult `json:"drafts"`
+	Adapter string        `json:"adapter"`
+	Drafts  []DraftResult `json:"drafts"`
 }
 
 // TimingSummary holds aggregate timings for a compliance run.

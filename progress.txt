@@ -3,6 +3,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 
 ## Codebase Patterns
 - Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
+- Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
 
 ---
 
@@ -21,5 +22,13 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Timing snapshot (not run locally): suite load n/a, schema bundling n/a, adapter invocation n/a, harness generation n/a, harness execution n/a.
 - **Learnings for future iterations:**
   - Aggregate timing is tracked in `compliance.TimingSummary`.
+---
+
+## 2026-01-10 17:49 - US-003
+- Removed generated timestamps from dev-report outputs and sorted drafts/keywords/failures for deterministic output.
+- Files changed: `cli/compliance/report.go`, `cli/compliance/report_test.go`, `cli/compliance/runner.go`, `cli/compliance/types.go`, `progress.txt`, `prd.jsonc`.
+- **Learnings for future iterations:**
+  - Use `sortComplianceReport`/`sortDraftResult` to keep report order deterministic.
+  - Keep `REPORT.md` free of generated timestamps for clean diffs.
 ---
 

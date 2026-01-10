@@ -8,8 +8,7 @@ import (
 
 func TestGenerateMarkdownReport(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "@xschemadev/zod",
-		GeneratedAt: "2025-01-05T12:00:00Z",
+		Adapter: "@xschemadev/zod",
 		Drafts: []DraftResult{
 			{
 				Draft: "draft2020-12",
@@ -32,9 +31,8 @@ func TestGenerateMarkdownReport(t *testing.T) {
 		t.Error("markdown missing report header")
 	}
 
-	// Check generated date
-	if !strings.Contains(md, "2025-01-05T12:00:00Z") {
-		t.Error("markdown missing generated date")
+	if strings.Contains(md, "Generated:") {
+		t.Error("markdown should not include generated timestamp")
 	}
 
 	// Check summary table
@@ -81,8 +79,7 @@ func TestGenerateMarkdownReport(t *testing.T) {
 
 func TestGenerateMarkdownReport_NoFailures(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "test-adapter",
-		GeneratedAt: "2025-01-05T12:00:00Z",
+		Adapter: "test-adapter",
 		Drafts: []DraftResult{
 			{
 				Draft: "draft7",
@@ -104,8 +101,7 @@ func TestGenerateMarkdownReport_NoFailures(t *testing.T) {
 
 func TestGenerateMarkdownReport_MultipleDrafts(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "test-adapter",
-		GeneratedAt: "2025-01-05T12:00:00Z",
+		Adapter: "test-adapter",
 		Drafts: []DraftResult{
 			{
 				Draft:    "draft2020-12",
@@ -171,6 +167,10 @@ func TestGenerateJSONReport(t *testing.T) {
 	jsonStr, err := GenerateJSONReport(draftResult)
 	if err != nil {
 		t.Fatalf("GenerateJSONReport() error = %v", err)
+	}
+
+	if strings.Contains(jsonStr, "generatedAt") {
+		t.Error("JSON report should not include generatedAt")
 	}
 
 	// Verify it's valid JSON
@@ -385,8 +385,7 @@ func TestPluralize(t *testing.T) {
 
 func TestGenerateMarkdownReport_FailureDetails(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "test",
-		GeneratedAt: "2025-01-05",
+		Adapter: "test",
 		Drafts: []DraftResult{
 			{
 				Draft: "draft7",
@@ -423,8 +422,7 @@ func TestGenerateMarkdownReport_FailureDetails(t *testing.T) {
 
 func TestGenerateMarkdownReport_FailureWithError(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "test",
-		GeneratedAt: "2025-01-05",
+		Adapter: "test",
 		Drafts: []DraftResult{
 			{
 				Draft: "draft7",
@@ -460,8 +458,7 @@ func TestGenerateMarkdownReport_FailureWithError(t *testing.T) {
 
 func TestGenerateMarkdownReport_SingleFailure(t *testing.T) {
 	report := ComplianceReport{
-		Adapter:     "test",
-		GeneratedAt: "2025-01-05",
+		Adapter: "test",
 		Drafts: []DraftResult{
 			{
 				Draft: "draft7",

@@ -65,9 +65,8 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	}
 
 	report := ComplianceReport{
-		Adapter:     opts.AdapterName,
-		GeneratedAt: time.Now().UTC().Format(time.RFC3339),
-		Drafts:      []DraftResult{},
+		Adapter: opts.AdapterName,
+		Drafts:  []DraftResult{},
 	}
 
 	for i, draft := range drafts {

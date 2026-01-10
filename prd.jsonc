@@ -42,7 +42,7 @@
         "CI can validate freshness with a plain diff check (no regex filtering for timestamps)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
