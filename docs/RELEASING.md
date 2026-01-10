@@ -12,23 +12,33 @@ xschema uses [release-please](https://github.com/googleapis/release-please) for 
 
 ## Components
 
-| Component   | Package              | Published To                      |
-| ----------- | -------------------- | --------------------------------- |
-| CLI         | `@xschemadev/cli`    | npm + GitHub Releases (goreleaser)|
-| Core        | `@xschemadev/core`   | npm                               |
-| Client      | `@xschemadev/client` | npm                               |
-| Zod Adapter | `@xschemadev/zod`    | npm                               |
+| Component          | Package                  | Published To                       |
+| ------------------ | ------------------------ | ---------------------------------- |
+| CLI                | `@xschemadev/cli`        | npm + GitHub Releases              |
+| Core               | `@xschemadev/core`       | npm                                |
+| Client             | `@xschemadev/client`     | npm                                |
+| Zod Adapter        | `@xschemadev/zod`        | npm                                |
+| ArkType Adapter    | `@xschemadev/arktype`    | npm                                |
+| Effect Adapter     | `@xschemadev/effect`     | npm                                |
+| TypeBox Adapter    | `@xschemadev/typebox`    | npm                                |
+| Valibot Adapter    | `@xschemadev/valibot`    | npm                                |
+| TypeScript Adapter | `@xschemadev/typescript` | npm                                |
 
 ## How Versioning Works
 
 Each component is versioned independently based on commits that touch its path:
 
-| Path                           | Component |
-| ------------------------------ | --------- |
-| `cli/**`                       | CLI       |
-| `typescript/packages/core/**`  | core      |
-| `typescript/packages/client/**`| client    |
-| `typescript/packages/zod/**`   | zod       |
+| Path                                    | Component  |
+| --------------------------------------- | ---------- |
+| `cli/**`                                | CLI        |
+| `typescript/packages/core/**`           | core       |
+| `typescript/packages/client/**`         | client     |
+| `typescript/packages/adapters/zod/**`   | zod        |
+| `typescript/packages/adapters/arktype/**` | arktype  |
+| `typescript/packages/adapters/effect/**`  | effect   |
+| `typescript/packages/adapters/typebox/**` | typebox  |
+| `typescript/packages/adapters/valibot/**` | valibot  |
+| `typescript/packages/adapters/typescript/**` | typescript |
 
 ### Version Bump Rules
 
@@ -82,11 +92,9 @@ After Release PR merge, GitHub Actions:
 
 ## Tags
 
-Release tags follow the pattern:
-- CLI: `cli-v1.2.3`
-- Core: `core-v1.2.3`
-- Client: `client-v1.2.3`
-- Zod: `zod-v1.2.3`
+Release tags follow the pattern: `{component}-v{version}`
+
+Examples: `cli-v1.2.3`, `zod-v0.2.1`, `effect-v0.1.0`
 
 ## Manual Release (Emergency)
 
@@ -99,10 +107,11 @@ cd typescript
 bun install
 bun run build
 
-# Publish each package (in order due to dependencies)
-cd packages/core && npm publish --access public && cd ..
-cd packages/client && npm publish --access public && cd ..
-cd packages/zod && npm publish --access public && cd ..
+# Publish core first (dependency), then others
+cd packages/core && bun publish --access public && cd ../..
+cd packages/client && bun publish --access public && cd ../..
+cd packages/adapters/zod && bun publish --access public && cd ../../..
+# repeat for other adapters as needed
 ```
 
 ### CLI
@@ -171,10 +180,57 @@ The main package uses `optionalDependencies` - npm/bun automatically installs on
 
 ## Configuration Files
 
-| File                            | Purpose                        |
-| ------------------------------- | ------------------------------ |
-| `release-please-config.json`    | Package paths and release types|
-| `.release-please-manifest.json` | Current versions               |
-| `cli/.goreleaser.yaml`          | Go binary build config         |
-| `cli/npm/`                      | npm package templates          |
-| `.github/workflows/release-please.yml` | Release automation     |
+| File                                   | Purpose                         |
+| -------------------------------------- | ------------------------------- |
+| `release-please-config.json`           | Package paths and release types |
+| `.release-please-manifest.json`        | Current versions                |
+| `.github/workflows/release-please.yml` | Release automation              |
+| `cli/npm/`                             | CLI npm package templates       |
+
+## Adding a New Adapter
+
+When creating a new adapter, update these 3 files:
+
+### 1. `release-please-config.json`
+
+Add to `packages`:
+
+```json
+"typescript/packages/adapters/{name}": {
+  "release-type": "node",
+  "component": "{name}"
+}
+```
+
+### 2. `.release-please-manifest.json`
+
+Add with initial version:
+
+```json
+"typescript/packages/adapters/{name}": "0.1.0"
+```
+
+### 3. `.github/workflows/release-please.yml`
+
+**a) Add output** (in `release-please` job outputs):
+
+```yaml
+{name}--release_created: ${{ steps.release.outputs['typescript/packages/adapters/{name}--release_created'] }}
+```
+
+**b) Add to condition** (in `release-ts` job `if`):
+
+```yaml
+needs.release-please.outputs.{name}--release_created == 'true' ||
+```
+
+**c) Add publish step** (in `release-ts` job steps):
+
+```yaml
+- name: Publish @xschemadev/{name}
+  if: needs.release-please.outputs.{name}--release_created == 'true'
+  run: bun publish --access public
+  working-directory: typescript/packages/adapters/{name}
+  env:
+    NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+```

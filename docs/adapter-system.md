@@ -646,3 +646,11 @@ export function convert(input: ConvertInput): ConvertResult {
 ```
 
 The CLI will catch any thrown errors and display them to the user.
+
+## Release Configuration
+
+After creating your adapter, you must configure it for automated releases. See the [Adding a New Adapter](./RELEASING.md#adding-a-new-adapter) section in RELEASING.md for the 3 files you need to update:
+
+1. `release-please-config.json` - add package entry
+2. `.release-please-manifest.json` - add initial version
+3. `.github/workflows/release-please.yml` - add output, condition, and publish step
