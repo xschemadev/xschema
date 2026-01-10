@@ -87,9 +87,11 @@ type HarnessResult struct {
 
 // AdapterOutput is the response from calling an adapter's convert function
 type AdapterOutput struct {
-	Namespace string   `json:"namespace"`
-	ID        string   `json:"id"`
-	Schema    string   `json:"schema"`
-	Type      string   `json:"type"`
-	Imports   []string `json:"imports"`
+	Namespace       string   `json:"namespace"`
+	ID              string   `json:"id"`
+	Schema          string   `json:"schema"`
+	Type            string   `json:"type"`
+	Imports         []string `json:"imports"`
+	Validate        string   `json:"validate,omitempty"`        // validation function in target language (empty = type-only adapter)
+	ValidateImports []string `json:"validateImports,omitempty"` // imports needed by validate function
 }
