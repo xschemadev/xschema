@@ -16,11 +16,12 @@ import (
 )
 
 var (
-	complianceDraft     string
-	complianceKeyword   string
-	complianceLang      string
-	complianceDevReport bool
-	complianceVerbose   bool
+	complianceDraft       string
+	complianceKeyword     string
+	complianceLang        string
+	complianceDevReport   bool
+	complianceVerbose     bool
+	complianceAdapterPath string
 )
 
 var complianceCmd = &cobra.Command{
@@ -57,6 +58,7 @@ func init() {
 	complianceCmd.Flags().StringVarP(&complianceLang, "lang", "l", "typescript", "language (typescript, python)")
 	complianceCmd.Flags().BoolVar(&complianceDevReport, "dev-report", false, "write results to compliance/results/ (for adapter developers)")
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
+	complianceCmd.Flags().StringVarP(&complianceAdapterPath, "adapter-path", "p", "", "path to adapter directory (defaults to current directory)")
 }
 
 func runCompliance(cmd *cobra.Command, args []string) error {
@@ -75,18 +77,26 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unknown language: %s", complianceLang)
 	}
 
-	// Must be run from within an adapter package directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get current directory: %w", err)
+	// Determine adapter path (from flag or current directory)
+	var adapterPath string
+	if complianceAdapterPath != "" {
+		absPath, err := filepath.Abs(complianceAdapterPath)
+		if err != nil {
+			return fmt.Errorf("failed to resolve adapter path: %w", err)
+		}
+		adapterPath = absPath
+	} else {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("failed to get current directory: %w", err)
+		}
+		adapterPath = cwd
 	}
-
-	adapterPath := cwd
 	var adapterName string
 	if lang.GetPackageName != nil {
-		adapterName = lang.GetPackageName(cwd)
+		adapterName = lang.GetPackageName(adapterPath)
 	} else {
-		adapterName = filepath.Base(cwd)
+		adapterName = filepath.Base(adapterPath)
 	}
 
 	// Fetch test suite (downloads from GitHub if not cached)

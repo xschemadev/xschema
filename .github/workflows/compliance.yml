@@ -135,14 +135,9 @@ jobs:
       - name: Setup ${{ matrix.lang }}
         run: source "${{ matrix.lang }}/.ci/setup.sh"
 
-      - name: Build CLI
-        run: go build -o xschema .
-        working-directory: cli
-
       - name: Run compliance for ${{ matrix.adapter }}
-        run: |
-          cd ${{ matrix.lang }}/packages/adapters/${{ matrix.adapter }}
-          ../../../../cli/xschema compliance --dev-report --lang ${{ matrix.lang }}
+        run: go run . compliance --dev-report --lang ${{ matrix.lang }} --adapter-path ../${{ matrix.lang }}/packages/adapters/${{ matrix.adapter }}
+        working-directory: cli
 
       - name: Check for uncommitted changes
         run: |
