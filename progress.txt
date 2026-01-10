@@ -149,3 +149,12 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Use `filepath.FromSlash` when writing normalized forward-slash paths.
 ---
 
+## 2026-01-11 00:55 - US-009
+- Added fixed-name manifest `xschema.manifest.json` under `--output` and delete stale files listed in the previous manifest.
+- Files changed: `cli/injector/injector.go`, `cli/injector/injector_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Delete stale files before writing new ones to avoid file-vs-dir conflicts when layouts change.
+  - Normalize + re-validate paths loaded from the manifest; never trust on-disk state.
+  - Write manifest atomically with temp + rename in the same directory.
+---
+
