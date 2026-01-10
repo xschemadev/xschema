@@ -2,6 +2,7 @@
 Started: Sat Jan 10 03:42:30 PM CET 2026
 
 ## Codebase Patterns
+- Adapters declare canonical refs in `typescript/packages/adapters/*/xschema.adapter.json` (single field: `ref`).
 - Compliance suite pinning lives in `cli/compliance/fetcher.go` via `testSuiteVersion`/`testSuiteCacheDir`; bump by updating the constant and regenerating results.
 - Dev-report outputs must stay deterministic: sort drafts/keywords/failures and omit generated timestamps.
 - Bun harness execution should use `bun <file>` (avoid `bun run`) to reduce overhead.
@@ -86,5 +87,12 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - `runDraftParallel` uses semaphore channel for bounded concurrency.
   - Results stored at pre-allocated indices for deterministic ordering.
   - Progress counter with mutex prevents interleaved output.
+---
+
+## 2026-01-11 00:04 - US-001
+- Added `xschema.adapter.json` to each TypeScript adapter directory with canonical `ref` values.
+- Files changed: `typescript/packages/adapters/arktype/xschema.adapter.json`, `typescript/packages/adapters/effect/xschema.adapter.json`, `typescript/packages/adapters/typebox/xschema.adapter.json`, `typescript/packages/adapters/typescript/xschema.adapter.json`, `typescript/packages/adapters/valibot/xschema.adapter.json`, `typescript/packages/adapters/zod/xschema.adapter.json`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Adapters should never be discovered by directory name; rely on `xschema.adapter.json`.
 ---
 

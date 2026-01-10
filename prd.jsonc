@@ -12,7 +12,7 @@
         "No duplicate `ref` values across adapters",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
