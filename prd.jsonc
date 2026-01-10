@@ -40,7 +40,7 @@
         "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

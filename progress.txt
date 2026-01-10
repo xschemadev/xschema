@@ -11,7 +11,9 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
 - Web `tsconfig.json` uses explicit `compilerOptions.types`: include `bun` and `node` for `bun:test` and `node:*` imports.
 - Language registry lives in `cli/language/registry.go`; tests should call `language.ResetForTests()` and `t.Cleanup(language.ResetForTests)` to avoid global state leaks.
-- Avoid writing `*/` inside block comments (e.g. `adapters/*/`), it terminates the comment and breaks parsing.
+- Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
+- Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
+- Avoid writing `*/` inside block comments (e.g. `adapters/` + wildcard), it terminates the comment and breaks parsing.
 
 ---
 
@@ -114,5 +116,15 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - **Learnings for future iterations:**
   - Keep `language.go` as thin wrappers; put registry behavior in `registry.go`.
   - Tests that mutate language state must use `ResetForTests()` + `t.Cleanup(ResetForTests)`.
+---
+
+## 2026-01-11 00:35 - US-003
+- Introduced language spec primitives for adapter invocation and multi-file emission (command + output interfaces, generated file type).
+- Added shared helpers for safe relative paths and deterministic file ordering.
+- Files changed: `cli/language/spec.go`, `cli/language/paths.go`, `cli/language/order.go`, `cli/language/paths_test.go`, `cli/language/order_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: emit `[]language.GeneratedFile` and sort by `Path`
+  - Gotchas encountered: reject any `.`/`..` segments even if cleanable
+  - Useful context: `language.NormalizeRelativePath` returns forward-slash paths
 ---
 
