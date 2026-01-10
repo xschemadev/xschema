@@ -122,8 +122,8 @@
 				"Adapter passes compliance tests (all results should be skipped)",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": "Type-only harness currently uses AdapterOutput.Schema; typescript adapter returns schema empty and type in AdapterOutput.Type, so the harness generation path needs adjustment."
+			"passes": true,
+			"notes": "Type-only harness now renders AdapterOutput.Type when validate is empty."
 		},
 
 		{

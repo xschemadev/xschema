@@ -13,7 +13,7 @@ const TSHarnessTemplate = `{{- range .Imports}}
 // Validates that generated TypeScript types are syntactically valid
 // but cannot run runtime validation tests since types are compile-time only
 
-type GeneratedType = {{.Schema}};
+type GeneratedType = {{.Type}};
 
 const testCases: Array<{ data: unknown; valid: boolean }> = JSON.parse({{.TestCasesString}});
 
@@ -54,6 +54,7 @@ console.log(JSON.stringify(results));
 // HarnessTemplateData contains the data for rendering a harness template
 type HarnessTemplateData struct {
 	Schema          string   // generated schema code
+	Type            string   // generated type expression (type-only adapters)
 	Imports         []string // imports needed by schema
 	Validate        string   // validation function (empty = type-only)
 	ValidateImports []string // imports needed by validate function

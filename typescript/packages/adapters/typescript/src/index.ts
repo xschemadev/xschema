@@ -20,5 +20,7 @@ export function convert(input: ConvertInput): ConvertResult {
     imports: [], // No imports needed for pure TS types
     schema: "", // No runtime code - type-only adapter
     type: typeExpr,
+    validate: "",
+    validateImports: [],
   };
 }

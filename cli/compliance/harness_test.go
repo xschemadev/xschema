@@ -169,7 +169,8 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 
 	// Type-only adapter has empty Validate
 	adapterOutput := &AdapterOutput{
-		Schema:   `{ name: string }`,
+		Schema:   "",
+		Type:     `{ name: string }`,
 		Imports:  nil,
 		Validate: "",
 	}
@@ -189,6 +190,10 @@ func TestGenerateTempHarness_TypeOnly(t *testing.T) {
 	// Should have type declaration (type-only mode)
 	if !strings.Contains(contentStr, "type GeneratedType") {
 		t.Error("type-only harness should have type declaration")
+	}
+
+	if !strings.Contains(contentStr, adapterOutput.Type) {
+		t.Error("type-only harness should include type expression")
 	}
 
 	// Should mark results as skipped
@@ -383,7 +388,8 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 	}
 
 	data := HarnessTemplateData{
-		Schema:          `{ name: string }`,
+		Schema:          "",
+		Type:            `{ name: string }`,
 		Imports:         nil,
 		Validate:        "",
 		ValidateImports: nil,

@@ -100,6 +100,7 @@ func GenerateTempHarness(lang Language, adapterOutput *AdapterOutput, testCases 
 	// Build template data
 	data := HarnessTemplateData{
 		Schema:          adapterOutput.Schema,
+		Type:            adapterOutput.Type,
 		Imports:         adapterOutput.Imports,
 		Validate:        adapterOutput.Validate,
 		ValidateImports: adapterOutput.ValidateImports,

@@ -8,6 +8,7 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
 - TS adapters emit full `import ...` statements (no trailing semicolon)
 - TS harness template renders import lines verbatim and appends `;`
 - MergeTSImports currently drops some real-world forms (namespace/type-only) until US-013
+- Type-only compliance harness uses AdapterOutput.Type
 - Compliance can be scoped: `xschema compliance --draft <draft> --keyword <keyword>`
 - Avoid full compliance runs unless requested
 - `xschema compliance --dev-report` cannot be combined with `--draft`/`--keyword`
@@ -95,5 +96,13 @@ Started: Sat Jan 10 01:35:45 AM CET 2026
   - `xschema compliance --dev-report` cannot be combined with `--draft`/`--keyword`
   - Full compliance run exceeded 10 minutes in sandbox; used scoped run for draft2020-12/type
   - Effect validation checks `S.decodeUnknownEither(schema)(data)._tag === "Right"`
+---
+
+## 2026-01-10 17:38:04 CET - US-009
+- Wired type-only harness to render adapter types and flagged adapter output as type-only
+- Files changed: cli/compliance/harness.go, cli/compliance/harness_template.go, cli/compliance/harness_test.go, typescript/packages/adapters/typescript/src/index.ts, progress.txt
+- **Learnings for future iterations:**
+  - Type-only harness should source `AdapterOutput.Type` instead of `Schema`
+  - Type-only adapters should return empty `validate` with optional empty `validateImports`
 ---
 
