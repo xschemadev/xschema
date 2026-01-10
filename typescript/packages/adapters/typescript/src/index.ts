@@ -17,10 +17,7 @@ export function convert(input: ConvertInput): ConvertResult {
   return {
     namespace,
     id,
-    imports: [], // No imports needed for pure TS types
-    schema: "", // No runtime code - type-only adapter
+    imports: [],
     type: typeExpr,
-    validate: "",
-    validateImports: [],
   };
 }
