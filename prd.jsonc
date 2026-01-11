@@ -126,8 +126,8 @@
 				"~100 'ignores non-X' tests pass in valibot compliance",
 				"bun run build + bun run typecheck pass from typescript/"
 			],
-			"passes": false,
-			"notes": "derived from US-009. biggest single improvement: ~100 tests across all drafts."
+			"passes": true,
+			"notes": "derived from US-009. fixed ~247 tests total via renderTypeGuarded fix. draft2020-12: 85.0%→90.0%, draft2019-09: 84.0%→89.2%, draft7: 88.7%→94.1%, draft6: 87.6%→93.5%, draft4: 87.0%→94.0%, draft3: 89.7%→95.6%."
 		},
 		{
 			"id": "US-011",
