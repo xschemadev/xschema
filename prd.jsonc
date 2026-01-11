@@ -1,29 +1,31 @@
 {
   "project": "xschema-adapters",
-  "description": "Compliance Known Issues System - Exclude intentionally unsupported features from compliance metrics",
+  "description": "Compliance Known Issues System - exclude intentional limitations from compliance percentages",
   "userStories": [
     {
       "id": "US-001",
       "title": "Known issues file structure",
-      "description": "As a maintainer, I want a JSON file per adapter listing known issues so that I can document expected failures with explanations.",
+      "description": "As a maintainer, I need a JSON file per adapter listing known issues with explanations.",
       "acceptanceCriteria": [
-        "File location: {adapter}/compliance/known-issues.json",
-        "Schema: array of groups, each with 'reason' (string) and 'tests' (array of test paths)",
+        "File location: typescript/packages/adapters/{adapter}/compliance/known-issues.json",
+        "Schema: array of groups with 'reason' (string) and 'tests' (array of test paths)",
         "Test path format: {draft}/{keyword}/{group}/{test}",
+        "Go types KnownIssues and KnownIssueGroup exist in cli/compliance/types.go",
         "Typecheck passes"
       ],
       "passes": true,
-      "notes": ""
+      "notes": "Completed in commit 92dcc91. Zod known-issues.json created as reference."
     },
     {
       "id": "US-002",
-      "title": "Skip known tests during execution",
-      "description": "As a developer, I want known-failing tests skipped during compliance runs so that execution is faster and output is cleaner.",
+      "title": "Runner skips known issue tests",
+      "description": "As a developer, I want known-failing tests skipped during compliance runs.",
       "acceptanceCriteria": [
-        "Runner loads known-issues.json before test execution",
+        "Runner loads known-issues.json from adapter's compliance directory",
         "Tests matching known issue paths are not executed",
         "Skipped known tests don't appear in pass/fail/skip counts",
-        "Log message indicates how many tests were skipped as known issues",
+        "CLI output shows 'X known issues' in summary line",
+        "Running 'xschema compliance --adapter=zod' shows ~146 known issues skipped",
         "Typecheck passes"
       ],
       "passes": false,
@@ -31,13 +33,13 @@
     },
     {
       "id": "US-003",
-      "title": "Separate known issues in JSON results",
-      "description": "As a developer, I want JSON results to track known issues separately so that percentages reflect actual compliance.",
+      "title": "JSON results track known issues separately",
+      "description": "As a developer, I want JSON results to exclude known issues from percentages.",
       "acceptanceCriteria": [
-        "Add knownIssues field to draft results (count + list)",
+        "Add knownIssues field to draft results: { count: number, items: Array<{ path, reason }> }",
         "summary.total excludes known issue tests",
-        "summary.percentage calculated without known issues",
-        "Each known issue entry includes: test path, reason",
+        "summary.percentage = passed / (total - knownIssueCount) * 100",
+        "Each known issue entry includes test path and reason from JSON file",
         "Typecheck passes"
       ],
       "passes": false,
@@ -45,12 +47,12 @@
     },
     {
       "id": "US-004",
-      "title": "Update dev report output",
-      "description": "As a developer, I want the CLI dev report to show known issues separately so I can see true compliance at a glance.",
+      "title": "CLI dev report shows known issues",
+      "description": "As a developer, I want CLI output to show known issues separately.",
       "acceptanceCriteria": [
-        "Summary line shows: 'X passed, Y failed, Z skipped, W known issues'",
+        "Summary line format: 'X passed, Y failed, Z skipped, W known issues'",
         "Percentage excludes known issues from denominator",
-        "Known issues section lists reasons with test counts",
+        "Known issues section lists reasons with test counts per reason",
         "Typecheck passes"
       ],
       "passes": false,
@@ -58,14 +60,13 @@
     },
     {
       "id": "US-005",
-      "title": "Update web compliance page generation",
-      "description": "As a user viewing docs, I want the compliance page to clearly separate known limitations from unexpected failures.",
+      "title": "Web compliance page known issues section",
+      "description": "As a docs user, I want compliance page to separate known limitations from unexpected failures.",
       "acceptanceCriteria": [
         "'Known Behaviors' section displays known issues grouped by reason",
-        "Each reason shows its test list",
+        "Each reason shows expandable test list",
         "'Issues' section only shows unexpected failures",
         "Summary table percentages exclude known issues",
-        "Coverage stats reflect true compliance (known issues excluded)",
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
@@ -74,12 +75,60 @@
     },
     {
       "id": "US-006",
-      "title": "Update REPORT.md generation",
-      "description": "As a developer, I want the markdown report to reflect the new known issues separation.",
+      "title": "REPORT.md generation with known issues",
+      "description": "As a developer, I want markdown report to show known issues separately.",
       "acceptanceCriteria": [
         "Summary table shows known issues count per draft",
         "Percentages exclude known issues",
-        "'Known Issues' section renamed/split: 'Known Behaviors' (from file) vs 'Unexpected Failures'",
+        "'Known Behaviors' section lists known issues by reason",
+        "'Unexpected Failures' section lists actual bugs",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Valibot known issues file",
+      "description": "As a maintainer, I want valibot's known issues documented.",
+      "acceptanceCriteria": [
+        "Create typescript/packages/adapters/valibot/compliance/known-issues.json",
+        "Copy zod's known-issues.json as starting point (shared limitations)",
+        "Run compliance, identify valibot-specific failures",
+        "Add entries for: JS prototype property names (__proto__, constructor, toString) if failing",
+        "Re-run compliance - output shows known issues count",
+        "No unexpected failures for documented README limitations",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "TODO: Verify prototype property names is valibot bug vs our implementation"
+    },
+    {
+      "id": "US-008",
+      "title": "ArkType known issues file",
+      "description": "As a maintainer, I want arktype's known issues documented.",
+      "acceptanceCriteria": [
+        "Create typescript/packages/adapters/arktype/compliance/known-issues.json",
+        "Copy zod's known-issues.json as starting point (shared limitations)",
+        "Run compliance, identify arktype-specific failures",
+        "Add entries for: relative URI $id scoping, URN identifiers if failing",
+        "Re-run compliance - output shows known issues count",
+        "No unexpected failures for documented README limitations",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Effect known issues file",
+      "description": "As a maintainer, I want effect's known issues documented.",
+      "acceptanceCriteria": [
+        "Create typescript/packages/adapters/effect/compliance/known-issues.json",
+        "Copy zod's known-issues.json as starting point (shared limitations)",
+        "Run compliance, identify effect-specific failures",
+        "Re-run compliance - output shows known issues count",
+        "No unexpected failures for documented README limitations",
         "Typecheck passes"
       ],
       "passes": false,

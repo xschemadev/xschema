@@ -14,16 +14,17 @@ Improve compliance reports by excluding explicitly unsupported features from per
 
 ## User Stories
 
-### US-001: Known issues file structure
+### US-001: Known issues file structure [DONE]
 
 **Description:** As a maintainer, I want a JSON file per adapter listing known issues so that I can document expected failures with explanations.
 
 **Acceptance Criteria:**
 
-- [ ] File location: `{adapter}/compliance/known-issues.json`
-- [ ] Schema: array of groups, each with `reason` (string) and `tests` (array of test paths)
-- [ ] Test path format: `{draft}/{keyword}/{group}/{test}` (e.g., `draft2020-12/additionalProperties/additionalProperties-are-allowed-by-default/no-additional-properties-is-valid`)
-- [ ] Typecheck passes
+- [x] File location: `typescript/packages/adapters/{adapter}/compliance/known-issues.json`
+- [x] Schema: array of groups, each with `reason` (string) and `tests` (array of test paths)
+- [x] Test path format: `{draft}/{keyword}/{group}/{test}` (e.g., `draft2020-12/additionalProperties/additionalProperties-are-allowed-by-default/no-additional-properties-is-valid`)
+- [x] Go types added: `KnownIssues`, `KnownIssueGroup`
+- [x] Typecheck passes
 
 ### US-002: Skip known tests during execution
 
@@ -85,9 +86,78 @@ Improve compliance reports by excluding explicitly unsupported features from per
 - [ ] "Known Issues" section renamed/split: "Known Behaviors" (from file) vs "Unexpected Failures"
 - [ ] Typecheck passes
 
+### US-007: Zod adapter known issues validation
+
+**Description:** As a maintainer, I want to validate zod's known-issues.json and verify compliance results are accurate.
+
+**Acceptance Criteria:**
+
+- [ ] Verify existing known-issues.json covers all documented README limitations
+- [ ] Run compliance suite with known issues excluded
+- [ ] Verify percentage reflects true compliance (not penalized for intentional limitations)
+- [ ] Add any missing known issues discovered during compliance run
+- [ ] Typecheck passes
+
+### US-008: Valibot adapter known issues
+
+**Description:** As a maintainer, I want valibot's known issues documented so compliance reflects actual support level.
+
+**Acceptance Criteria:**
+
+- [ ] Create `typescript/packages/adapters/valibot/compliance/known-issues.json`
+- [ ] Document all limitations from README:
+  - $dynamicRef/$recursiveRef (draft2019-09, draft2020-12)
+  - $recursiveRef (draft2019-09)
+  - Metaschema validation (bundler)
+  - Relative URI $id combinations (bundler)
+  - Vocabulary control
+  - Draft3 type with inline schemas
+  - JS prototype property names bug (__proto__, constructor, toString)
+- [ ] Run compliance suite with known issues excluded
+- [ ] Verify percentage reflects true compliance
+- [ ] TODO: Verify prototype property names is actually a valibot bug vs our implementation
+- [ ] Typecheck passes
+
+### US-009: ArkType adapter known issues
+
+**Description:** As a maintainer, I want arktype's known issues documented so compliance reflects actual support level.
+
+**Acceptance Criteria:**
+
+- [ ] Create `typescript/packages/adapters/arktype/compliance/known-issues.json`
+- [ ] Document all limitations from README:
+  - $dynamicRef/$recursiveRef (draft2019-09, draft2020-12)
+  - $recursiveRef (draft2019-09)
+  - Metaschema validation
+  - Relative URI $id scoping (bundler)
+  - URN identifiers with nested pointer refs
+  - Vocabulary control
+  - Draft3 type with inline schemas
+- [ ] Run compliance suite with known issues excluded
+- [ ] Verify percentage reflects true compliance
+- [ ] Typecheck passes
+
+### US-010: Effect adapter known issues
+
+**Description:** As a maintainer, I want effect's known issues documented so compliance reflects actual support level.
+
+**Acceptance Criteria:**
+
+- [ ] Create `typescript/packages/adapters/effect/compliance/known-issues.json`
+- [ ] Document all limitations from README:
+  - $dynamicRef/$recursiveRef (draft2019-09, draft2020-12)
+  - $recursiveRef (draft2019-09)
+  - Metaschema validation (bundler)
+  - Relative URI $id combinations (bundler)
+  - Vocabulary control
+  - Draft3 type with inline schemas
+- [ ] Run compliance suite with known issues excluded
+- [ ] Verify percentage reflects true compliance
+- [ ] Typecheck passes
+
 ## Functional Requirements
 
-- FR-1: Known issues file at `{adapter}/compliance/known-issues.json` with schema:
+- FR-1: Known issues file at `typescript/packages/adapters/{adapter}/compliance/known-issues.json` with schema:
   ```json
   [
     {
@@ -119,9 +189,14 @@ Improve compliance reports by excluding explicitly unsupported features from per
 - Web generation is TypeScript (`web/scripts/generate-compliance.ts`)
 - Existing types in `cli/compliance/types.go` need extension
 - Known issues file should be optional (graceful handling when missing)
+- Zod known-issues.json already created as reference implementation
 
 ## Success Metrics
 
 - Compliance percentages accurately reflect intentional support levels
 - Known limitations documented with clear explanations
 - No regression in compliance test execution time
+
+## Open Questions
+
+- valibot prototype property bug: is this valibot bug or our implementation? needs investigation during US-008
