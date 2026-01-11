@@ -4,67 +4,67 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 769 | 146 | 0 | 84.0% |
-| draft2020-12 | 782 | 138 | 0 | 85.0% |
-| draft3 | 365 | 42 | 0 | 89.7% |
-| draft4 | 494 | 74 | 0 | 87.0% |
-| draft6 | 673 | 95 | 0 | 87.6% |
-| draft7 | 749 | 95 | 0 | 88.7% |
+| draft2019-09 | 816 | 99 | 0 | 89.2% |
+| draft2020-12 | 828 | 92 | 0 | 90.0% |
+| draft3 | 389 | 18 | 0 | 95.6% |
+| draft4 | 534 | 34 | 0 | 94.0% |
+| draft6 | 718 | 50 | 0 | 93.5% |
+| draft7 | 794 | 50 | 0 | 94.1% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-84.0%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-85.0%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-89.7%25-yellow)
-![draft4](https://img.shields.io/badge/draft4%20compliance-87.0%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-87.6%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-88.7%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.2%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.0%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-95.6%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-94.0%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-93.5%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-94.1%25-yellow)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 16/21 |
+| additionalItems | ⚠️ | 17/19 |
+| additionalProperties | ⚠️ | 19/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ❌ | 0/2 |
-| dependentRequired | ⚠️ | 17/20 |
-| dependentSchemas | ⚠️ | 16/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ⚠️ | 18/20 |
 | enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
+| items | ⚠️ | 19/28 |
 | maxContains | ✅ | 12/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
 | minContains | ✅ | 28/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
 | oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 22/28 |
+| propertyNames | ⚠️ | 15/20 |
 | recursiveRef | ❌ | 0/34 |
 | ref | ❌ | 0/12 |
 | refRemote | ❌ | 0/4 |
-| required | ⚠️ | 5/16 |
+| required | ⚠️ | 9/16 |
 | type | ⚠️ | 79/80 |
 | unevaluatedItems | ❌ | 0/2 |
 | unevaluatedProperties | ❌ | 0/2 |
@@ -74,11 +74,8 @@
 ### Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>additionalItems - 2 failures</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `true`
@@ -89,35 +86,14 @@
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -134,22 +110,7 @@
 </details>
 
 <details>
-<summary>dependentRequired - 3 failures</summary>
-
-- **empty dependents**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 4 failures</summary>
+<summary>dependentSchemas - 2 failures</summary>
 
 - **dependencies with escaped characters**
   - Test: quoted quote
@@ -157,12 +118,6 @@
 - **dependencies with escaped characters**
   - Test: quoted quote invalid under dependent schema
   - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -179,35 +134,8 @@
 </details>
 
 <details>
-<summary>exclusiveMaximum - 1 failure</summary>
+<summary>items - 9 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 - **an array of schemas for items**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -239,102 +167,6 @@
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>oneOf - 4 failures</summary>
 
 - **oneOf with missing optional property**
@@ -353,47 +185,8 @@
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>properties - 6 failures</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -403,12 +196,6 @@
 - **properties whose names are Javascript object property names**
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -422,14 +209,8 @@
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
+<summary>propertyNames - 5 failures</summary>
 
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **propertyNames validation**
   - Test: some property names invalid
   - Expected: `invalid`, Got: `true`
@@ -617,7 +398,7 @@
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 7 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -629,23 +410,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **required validation**
   - Test: non-present required property is invalid
   - Expected: `invalid`, Got: `true`
@@ -713,47 +482,47 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 16/21 |
+| additionalProperties | ⚠️ | 19/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ❌ | 0/2 |
-| dependentRequired | ⚠️ | 17/20 |
-| dependentSchemas | ⚠️ | 16/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ⚠️ | 18/20 |
 | dynamicRef | ❌ | 0/33 |
 | enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 20/29 |
+| items | ⚠️ | 22/29 |
 | maxContains | ✅ | 12/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
 | minContains | ✅ | 28/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
 | oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| prefixItems | ⚠️ | 6/11 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| prefixItems | ⚠️ | 7/11 |
+| properties | ⚠️ | 22/28 |
+| propertyNames | ⚠️ | 15/20 |
 | ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
-| required | ⚠️ | 5/16 |
+| required | ⚠️ | 9/16 |
 | type | ⚠️ | 79/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
@@ -763,35 +532,14 @@
 ### Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -808,22 +556,7 @@
 </details>
 
 <details>
-<summary>dependentRequired - 3 failures</summary>
-
-- **empty dependents**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 4 failures</summary>
+<summary>dependentSchemas - 2 failures</summary>
 
 - **dependencies with escaped characters**
   - Test: quoted quote
@@ -831,12 +564,6 @@
 - **dependencies with escaped characters**
   - Test: quoted quote invalid under dependent schema
   - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -958,32 +685,8 @@
 </details>
 
 <details>
-<summary>exclusiveMaximum - 1 failure</summary>
+<summary>items - 7 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 9 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **items and subitems**
   - Test: fewer items is valid
   - Expected: `valid`, Got: `false`
@@ -1009,102 +712,6 @@
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>oneOf - 4 failures</summary>
 
 - **oneOf with missing optional property**
@@ -1123,47 +730,8 @@
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>prefixItems - 4 failures</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>prefixItems - 5 failures</summary>
-
-- **a schema given for prefixItems**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 - **a schema given for prefixItems**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -1180,11 +748,8 @@
 </details>
 
 <details>
-<summary>properties - 9 failures</summary>
+<summary>properties - 6 failures</summary>
 
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -1194,12 +759,6 @@
 - **properties whose names are Javascript object property names**
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -1213,14 +772,8 @@
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
+<summary>propertyNames - 5 failures</summary>
 
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **propertyNames validation**
   - Test: some property names invalid
   - Expected: `invalid`, Got: `true`
@@ -1294,7 +847,7 @@
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 7 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1306,23 +859,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **required validation**
   - Test: non-present required property is invalid
   - Expected: `invalid`, Got: `true`
@@ -1366,26 +907,26 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 11/14 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ⚠️ | 12/14 |
+| additionalProperties | ⚠️ | 14/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 15/18 |
+| dependencies | ⚠️ | 17/18 |
 | disallow | ✅ | 9/9 |
-| divisibleBy | ⚠️ | 7/8 |
+| divisibleBy | ✅ | 8/8 |
 | enum | ⚠️ | 15/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 6/7 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
-| maximum | ⚠️ | 12/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
-| minimum | ⚠️ | 11/13 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 16/17 |
-| properties | ⚠️ | 13/15 |
+| items | ✅ | 7/7 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
+| minimum | ✅ | 13/13 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 17/17 |
+| properties | ⚠️ | 14/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
 | required | ⚠️ | 3/4 |
@@ -1395,11 +936,8 @@
 ### Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>additionalItems - 2 failures</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `true`
@@ -1410,17 +948,8 @@
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
@@ -1431,26 +960,11 @@
 </details>
 
 <details>
-<summary>dependencies - 3 failures</summary>
+<summary>dependencies - 1 failure</summary>
 
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **dependencies**
   - Test: missing dependency
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>divisibleBy - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1464,113 +978,8 @@
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>properties - 1 failure</summary>
 
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 2 failures</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 1 failure</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 2 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
@@ -1581,8 +990,8 @@
 <summary>required - 1 failure</summary>
 
 - **required validation**
-  - Test: present required property is valid
-  - Expected: `valid`, Got: `false`
+  - Test: non-present required property is invalid
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1632,45 +1041,42 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/17 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ⚠️ | 15/17 |
+| additionalProperties | ⚠️ | 14/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 26/29 |
+| dependencies | ⚠️ | 28/29 |
 | enum | ⚠️ | 47/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 12/21 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
-| maxProperties | ⚠️ | 5/8 |
-| maximum | ⚠️ | 12/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
-| minProperties | ⚠️ | 3/6 |
-| minimum | ⚠️ | 14/17 |
-| multipleOf | ⚠️ | 9/10 |
+| items | ⚠️ | 15/21 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
+| maxProperties | ✅ | 8/8 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
+| minProperties | ✅ | 6/6 |
+| minimum | ✅ | 17/17 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
 | oneOf | ⚠️ | 19/23 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 16/18 |
-| properties | ⚠️ | 15/24 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 18/18 |
+| properties | ⚠️ | 18/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 17/17 |
-| required | ⚠️ | 4/15 |
+| required | ⚠️ | 8/15 |
 | type | ⚠️ | 78/79 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>additionalItems - 2 failures</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `true`
@@ -1681,17 +1087,8 @@
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
@@ -1711,14 +1108,8 @@
 </details>
 
 <details>
-<summary>dependencies - 3 failures</summary>
+<summary>dependencies - 1 failure</summary>
 
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **dependencies with escaped characters**
   - Test: invalid object 3
   - Expected: `invalid`, Got: `true`
@@ -1738,17 +1129,8 @@
 </details>
 
 <details>
-<summary>items - 9 failures</summary>
+<summary>items - 6 failures</summary>
 
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 - **an array of schemas for items**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -1771,108 +1153,6 @@
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 2 failures</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 3 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>oneOf - 4 failures</summary>
 
 - **oneOf with missing optional property**
@@ -1891,47 +1171,8 @@
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>properties - 6 failures</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -1941,12 +1182,6 @@
 - **properties whose names are Javascript object property names**
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -1960,7 +1195,7 @@
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 7 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1972,23 +1207,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **required validation**
   - Test: non-present required property is invalid
   - Expected: `invalid`, Got: `true`
@@ -2023,51 +1246,48 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ⚠️ | 17/19 |
+| additionalProperties | ⚠️ | 14/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 17/19 |
+| contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 32/36 |
+| dependencies | ⚠️ | 35/36 |
 | enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| items | ⚠️ | 19/28 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
 | oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 22/28 |
+| propertyNames | ⚠️ | 15/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
-| required | ⚠️ | 5/16 |
+| required | ⚠️ | 9/16 |
 | type | ⚠️ | 79/80 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>additionalItems - 2 failures</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `true`
@@ -2078,35 +1298,14 @@
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -2120,17 +1319,8 @@
 </details>
 
 <details>
-<summary>dependencies - 4 failures</summary>
+<summary>dependencies - 1 failure</summary>
 
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies with empty array**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
 - **dependencies with escaped characters**
   - Test: invalid object 3
   - Expected: `invalid`, Got: `true`
@@ -2150,35 +1340,8 @@
 </details>
 
 <details>
-<summary>exclusiveMaximum - 1 failure</summary>
+<summary>items - 9 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 - **an array of schemas for items**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -2210,102 +1373,6 @@
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>oneOf - 4 failures</summary>
 
 - **oneOf with missing optional property**
@@ -2324,47 +1391,8 @@
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>properties - 6 failures</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2374,12 +1402,6 @@
 - **properties whose names are Javascript object property names**
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2393,14 +1415,8 @@
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
+<summary>propertyNames - 5 failures</summary>
 
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **propertyNames validation**
   - Test: some property names invalid
   - Expected: `invalid`, Got: `true`
@@ -2456,7 +1472,7 @@
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 7 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -2468,23 +1484,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **required validation**
   - Test: non-present required property is invalid
   - Expected: `invalid`, Got: `true`
@@ -2519,52 +1523,49 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ⚠️ | 17/19 |
+| additionalProperties | ⚠️ | 14/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 32/36 |
+| dependencies | ⚠️ | 35/36 |
 | enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| items | ⚠️ | 19/28 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
 | oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 22/28 |
+| propertyNames | ⚠️ | 15/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
-| required | ⚠️ | 5/16 |
+| required | ⚠️ | 9/16 |
 | type | ⚠️ | 79/80 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>additionalItems - 2 failures</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `true`
@@ -2575,35 +1576,14 @@
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **additionalProperties being false does not allow other properties**
   - Test: patternProperties are not additional properties
   - Expected: `valid`, Got: `false`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -2617,17 +1597,8 @@
 </details>
 
 <details>
-<summary>dependencies - 4 failures</summary>
+<summary>dependencies - 1 failure</summary>
 
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies with empty array**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
 - **dependencies with escaped characters**
   - Test: invalid object 3
   - Expected: `invalid`, Got: `true`
@@ -2647,35 +1618,8 @@
 </details>
 
 <details>
-<summary>exclusiveMaximum - 1 failure</summary>
+<summary>items - 9 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 - **an array of schemas for items**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -2707,102 +1651,6 @@
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>oneOf - 4 failures</summary>
 
 - **oneOf with missing optional property**
@@ -2821,47 +1669,8 @@
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>properties - 6 failures</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2871,12 +1680,6 @@
 - **properties whose names are Javascript object property names**
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2890,14 +1693,8 @@
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
+<summary>propertyNames - 5 failures</summary>
 
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **propertyNames validation**
   - Test: some property names invalid
   - Expected: `invalid`, Got: `true`
@@ -2953,7 +1750,7 @@
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 7 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -2965,23 +1762,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
 - **required validation**
   - Test: non-present required property is invalid
   - Expected: `invalid`, Got: `true`

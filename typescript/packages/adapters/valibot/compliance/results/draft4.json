@@ -3,18 +3,11 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 14,
-      "failed": 3,
+      "passed": 15,
+      "failed": 2,
       "skipped": 0,
       "total": 17,
       "failures": [
-        {
-          "group": "additionalItems as false without items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "additionalItems with heterogeneous array",
           "test": "heterogeneous invalid instance",
@@ -33,32 +26,11 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 11,
-      "failed": 5,
+      "passed": 14,
+      "failed": 2,
       "skipped": 0,
       "total": 16,
       "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "additionalProperties being false does not allow other properties",
           "test": "patternProperties are not additional properties",
@@ -114,25 +86,11 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 26,
-      "failed": 3,
+      "passed": 28,
+      "failed": 1,
       "skipped": 0,
       "total": 29,
       "failures": [
-        {
-          "group": "dependencies",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "dependencies",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "dependencies with escaped characters",
           "test": "invalid object 3",
@@ -181,32 +139,11 @@
     },
     {
       "keyword": "items",
-      "passed": 12,
-      "failed": 9,
+      "passed": 15,
+      "failed": 6,
       "skipped": 0,
       "total": 21,
       "failures": [
-        {
-          "group": "a schema given for items",
-          "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "a schema given for items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "an array of schemas for items",
           "test": "empty array",
@@ -253,196 +190,66 @@
     },
     {
       "keyword": "maxItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "maxItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "maxLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "maxProperties",
-      "passed": 5,
-      "failed": 3,
+      "passed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "maxProperties validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 8
     },
     {
       "keyword": "maximum",
-      "passed": 12,
-      "failed": 2,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "maximum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "minItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "minLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "minProperties",
-      "passed": 3,
-      "failed": 3,
+      "passed": 6,
+      "failed": 0,
       "skipped": 0,
-      "total": 6,
-      "failures": [
-        {
-          "group": "minProperties validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minProperties validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minProperties validation",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 6
     },
     {
       "keyword": "minimum",
-      "passed": 14,
-      "failed": 3,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "minimum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "multipleOf",
-      "passed": 9,
-      "failed": 1,
+      "passed": 10,
+      "failed": 0,
       "skipped": 0,
-      "total": 10,
-      "failures": [
-        {
-          "group": "by int",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 10
     },
     {
       "keyword": "not",
@@ -490,92 +297,25 @@
     },
     {
       "keyword": "pattern",
-      "passed": 3,
-      "failed": 6,
+      "passed": 9,
+      "failed": 0,
       "skipped": 0,
-      "total": 9,
-      "failures": [
-        {
-          "group": "pattern validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores booleans",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores floats",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores integers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores null",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 9
     },
     {
       "keyword": "patternProperties",
-      "passed": 16,
-      "failed": 2,
+      "passed": 18,
+      "failed": 0,
       "skipped": 0,
-      "total": 18,
-      "failures": [
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 18
     },
     {
       "keyword": "properties",
-      "passed": 15,
-      "failed": 9,
+      "passed": 18,
+      "failed": 6,
       "skipped": 0,
       "total": 24,
       "failures": [
-        {
-          "group": "object properties validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "properties whose names are Javascript object property names",
           "test": "__proto__ not valid",
@@ -599,21 +339,6 @@
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -656,8 +381,8 @@
     },
     {
       "keyword": "required",
-      "passed": 4,
-      "failed": 11,
+      "passed": 8,
+      "failed": 7,
       "skipped": 0,
       "total": 15,
       "failures": [
@@ -687,21 +412,6 @@
         },
         {
           "group": "required properties whose names are Javascript object property names",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
           "test": "none of the properties mentioned",
           "expected": false,
           "actual": "error",
@@ -715,20 +425,6 @@
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "required validation",
-          "test": "ignores strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         },
         {
           "group": "required validation",
@@ -787,10 +483,10 @@
     }
   ],
   "summary": {
-    "passed": 494,
-    "failed": 74,
+    "passed": 534,
+    "failed": 34,
     "skipped": 0,
     "total": 568,
-    "percentage": 86.97183098591549
+    "percentage": 94.01408450704226
   }
 }

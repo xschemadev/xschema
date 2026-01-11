@@ -663,10 +663,44 @@ function renderConditional(node: ConditionalNode): string {
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-	// For now, render as union of all guarded schemas
 	if (node.guards.length === 0) return "v.any()";
-	if (node.guards.length === 1) return render(node.guards[0].schema);
-	return `v.union([${node.guards.map((g) => render(g.schema)).join(", ")}])`;
+
+	const checks: string[] = [];
+
+	for (const guard of node.guards) {
+		const schema = render(guard.schema);
+		switch (guard.check) {
+			case "object":
+				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "array":
+				checks.push(`if (Array.isArray(val)) {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "string":
+				checks.push(`if (typeof val === "string") {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "number":
+				checks.push(`if (typeof val === "number") {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+		}
+	}
+
+	return `v.pipe(v.any(), v.check((val) => {
+        ${checks.join("\n        ")}
+        return true;
+      }, "Type-guarded validation failed"))`;
 }
 
 function renderNullable(node: NullableNode): string {
