@@ -247,10 +247,16 @@ export function normalizeDeep(
 
 	if (result.dependencies) {
 		result.dependencies = Object.fromEntries(
-			Object.entries(result.dependencies).map(([k, v]) => [
-				k,
-				Array.isArray(v) ? v : normalizeNested(v, version),
-			]),
+			Object.entries(result.dependencies).map(([k, v]) => {
+				// draft3 allows string shorthand: { "bar": "foo" }
+				if (typeof v === "string") {
+					return [k, [v]];
+				}
+				if (Array.isArray(v)) {
+					return [k, v];
+				}
+				return [k, normalizeNested(v as JSONSchema | boolean, version)];
+			}),
 		);
 	}
 

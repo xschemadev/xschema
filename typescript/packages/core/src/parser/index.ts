@@ -104,16 +104,41 @@ export function parseSchema(
 	const hasAnyOf = schema.anyOf && schema.anyOf.length > 0;
 	const hasOneOf = schema.oneOf && schema.oneOf.length > 0;
 
-	// Check for base schema (type-specific properties)
+	// Check for base schema keywords alongside composition operators.
+	// If we have base constraints (like additionalProperties/dependencies/etc), they must
+	// be intersected with the composition result.
 	const hasBaseSchema =
 		schema.type !== undefined ||
+		// object keywords
 		schema.properties !== undefined ||
+		schema.additionalProperties !== undefined ||
+		schema.patternProperties !== undefined ||
+		schema.required !== undefined ||
+		schema.propertyNames !== undefined ||
+		schema.minProperties !== undefined ||
+		schema.maxProperties !== undefined ||
+		schema.dependentRequired !== undefined ||
+		schema.dependentSchemas !== undefined ||
+		schema.dependencies !== undefined ||
+		// array keywords
 		schema.items !== undefined ||
+		schema.prefixItems !== undefined ||
+		schema.additionalItems !== undefined ||
+		schema.minItems !== undefined ||
+		schema.maxItems !== undefined ||
+		schema.uniqueItems !== undefined ||
+		schema.contains !== undefined ||
+		// primitive keywords
 		schema.minimum !== undefined ||
 		schema.maximum !== undefined ||
+		schema.exclusiveMinimum !== undefined ||
+		schema.exclusiveMaximum !== undefined ||
+		schema.multipleOf !== undefined ||
 		schema.minLength !== undefined ||
 		schema.maxLength !== undefined ||
 		schema.pattern !== undefined ||
+		schema.format !== undefined ||
+		// value keywords
 		schema.enum !== undefined ||
 		schema.const !== undefined;
 

@@ -3,19 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalProperties",
-      "passed": 20,
-      "failed": 1,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "allOf",
@@ -743,10 +734,10 @@
     }
   ],
   "summary": {
-    "passed": 869,
-    "failed": 51,
+    "passed": 870,
+    "failed": 50,
     "skipped": 0,
     "total": 920,
-    "percentage": 94.45652173913044
+    "percentage": 94.56521739130434
   }
 }

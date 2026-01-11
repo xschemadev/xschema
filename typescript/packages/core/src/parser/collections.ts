@@ -124,17 +124,27 @@ export function parseObject(
 	// Handle legacy dependencies (draft3-7)
 	if (schema.dependencies) {
 		for (const [prop, dep] of Object.entries(schema.dependencies)) {
+			// draft3 allows a single string as a shorthand for a 1-element dependency list
+			if (typeof dep === "string") {
+				dependencies.set(prop, {
+					kind: "property",
+					requiredProperties: [dep],
+				});
+				continue;
+			}
+
 			if (Array.isArray(dep)) {
 				dependencies.set(prop, {
 					kind: "property",
 					requiredProperties: dep,
 				});
-			} else {
-				dependencies.set(prop, {
-					kind: "schema",
-					schema: parseSchema(dep, ctx),
-				});
+				continue;
 			}
+
+			dependencies.set(prop, {
+				kind: "schema",
+				schema: parseSchema(dep, ctx),
+			});
 		}
 	}
 

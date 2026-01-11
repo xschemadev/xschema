@@ -1,0 +1,122 @@
+{
+	"project": "adapters compliance closure + renderer cleanliness",
+	"description": "execution plan synced with tasks/prd-adapters-compliance-and-renderer-cleanup.md",
+	"userStories": [
+		{
+			"id": "US-001",
+			"title": "zod — compliance closure to static-codegen limits",
+			"description": "as a maintainer, i want the zod adapter to pass compliance except for limitations that are impossible with static code generation, so zod output is correct and predictable.",
+			"acceptanceCriteria": [
+				"run `bun run compliance` in `typescript/packages/adapters/zod/` and capture baseline per draft",
+				"use the full report in `typescript/packages/adapters/zod/compliance/results/` to inspect failing tests",
+				"for every failing test, decide: fixable bug vs known limitation (static-codegen impossible)",
+				"fix every failure categorized as fixable bug; rerun compliance until no fixable failures remain",
+				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
+				"update `typescript/packages/adapters/zod/README.md` with a known limitations section"
+			],
+			"passes": true,
+			"notes": "fixed core composition parsing so base constraints (additionalProperties/dependencies) are preserved; remaining failures are documented zod/bundler limitations (dynamic/recursive refs, metaschema recursion, draft3 schema-in-type)"
+		},
+		{
+			"id": "US-002",
+			"title": "zod — renderer cleanliness pass",
+			"description": "as a maintainer, i want the zod renderer to produce clean/idiomatic zod code, so generated schemas look like something a human would write.",
+			"acceptanceCriteria": [
+				"audit zod renderer output patterns for common schema shapes",
+				"replace weird/non-idiomatic constructs with idiomatic zod api usage while preserving semantics",
+				"do not add forced emulation out of scope for static code generation",
+				"run `bun run compliance` in `typescript/packages/adapters/zod/` and confirm results are not worse than US-001 baseline",
+				"update root `progress.txt` with a brief summary"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-003",
+			"title": "valibot — compliance closure to static-codegen limits",
+			"description": "as a maintainer, i want the valibot adapter to pass compliance except for limitations that are impossible with static code generation, so valibot output is correct and predictable.",
+			"acceptanceCriteria": [
+				"run `bun run compliance` in `typescript/packages/adapters/valibot/` and capture baseline per draft",
+				"use the full report in `typescript/packages/adapters/valibot/compliance/results/` to inspect failing tests",
+				"for every failing test, decide: fixable bug vs known limitation (static-codegen impossible)",
+				"fix every failure categorized as fixable bug; rerun compliance until no fixable failures remain",
+				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
+				"update `typescript/packages/adapters/valibot/README.md` with a known limitations section"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-004",
+			"title": "valibot — renderer cleanliness pass",
+			"description": "as a maintainer, i want the valibot renderer to produce clean/idiomatic valibot code, so generated schemas are readable and avoid compliance-only hacks.",
+			"acceptanceCriteria": [
+				"audit valibot renderer output patterns for common schema shapes",
+				"replace weird/non-idiomatic constructs with idiomatic valibot api usage while preserving semantics",
+				"prioritize idiomatic apis first, then performance",
+				"run `bun run compliance` in `typescript/packages/adapters/valibot/` and confirm results are not worse than US-003 baseline",
+				"update root `progress.txt` with a brief summary"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-005",
+			"title": "effect — compliance closure to static-codegen limits",
+			"description": "as a maintainer, i want the effect adapter to pass compliance except for limitations that are impossible with static code generation, so effect output is correct and predictable.",
+			"acceptanceCriteria": [
+				"run `bun run compliance` in `typescript/packages/adapters/effect/` and capture baseline per draft",
+				"use the full report in `typescript/packages/adapters/effect/compliance/results/` to inspect failing tests",
+				"for every failing test, decide: fixable bug vs known limitation (static-codegen impossible)",
+				"fix every failure categorized as fixable bug; rerun compliance until no fixable failures remain",
+				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
+				"update `typescript/packages/adapters/effect/README.md` with a known limitations section"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-006",
+			"title": "effect — renderer cleanliness pass",
+			"description": "as a maintainer, i want the effect renderer to use effect’s native schema apis as directly as possible, so generated code is idiomatic and maintainable.",
+			"acceptanceCriteria": [
+				"audit effect renderer output patterns for common schema shapes",
+				"replace weird/non-idiomatic constructs with idiomatic effect schema apis while preserving semantics",
+				"avoid adding custom runtime behavior just to pass tests",
+				"run `bun run compliance` in `typescript/packages/adapters/effect/` and confirm results are not worse than US-005 baseline",
+				"update root `progress.txt` with a brief summary"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-007",
+			"title": "arktype — compliance closure to static-codegen limits",
+			"description": "as a maintainer, i want the arktype adapter to pass compliance except for limitations that are impossible with static code generation, so arktype output is correct and predictable.",
+			"acceptanceCriteria": [
+				"run `bun run compliance` in `typescript/packages/adapters/arktype/` and capture baseline per draft",
+				"use the full report in `typescript/packages/adapters/arktype/compliance/results/` to inspect failing tests",
+				"for every failing test, decide: fixable bug vs known limitation (static-codegen impossible)",
+				"fix every failure categorized as fixable bug; rerun compliance until no fixable failures remain",
+				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
+				"update `typescript/packages/adapters/arktype/README.md` with a known limitations section"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-008",
+			"title": "arktype — renderer cleanliness pass",
+			"description": "as a maintainer, i want the arktype renderer to use arktype’s native syntax/constructs as directly as possible, so generated code stays readable and not overly clever.",
+			"acceptanceCriteria": [
+				"audit arktype renderer output patterns for common schema shapes",
+				"replace weird/non-idiomatic constructs with idiomatic arktype patterns while preserving semantics",
+				"stop when obviously weird hacks are removed; keep pragmatic patterns",
+				"run `bun run compliance` in `typescript/packages/adapters/arktype/` and confirm results are not worse than US-007 baseline",
+				"update root `progress.txt` with a brief summary"
+			],
+			"passes": false,
+			"notes": ""
+		}
+	]
+}

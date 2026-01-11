@@ -4,28 +4,28 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 857 | 58 | 0 | 93.7% |
-| draft2020-12 | 869 | 51 | 0 | 94.5% |
-| draft3 | 398 | 9 | 0 | 97.8% |
-| draft4 | 566 | 2 | 0 | 99.6% |
-| draft6 | 758 | 10 | 0 | 98.7% |
-| draft7 | 834 | 10 | 0 | 98.8% |
+| draft2019-09 | 858 | 57 | 0 | 93.8% |
+| draft2020-12 | 870 | 50 | 0 | 94.6% |
+| draft3 | 400 | 7 | 0 | 98.3% |
+| draft4 | 567 | 1 | 0 | 99.8% |
+| draft6 | 759 | 9 | 0 | 98.8% |
+| draft7 | 835 | 9 | 0 | 98.9% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-93.7%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-94.5%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-97.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.6%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.7%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.8%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-93.8%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-94.6%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 20/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -72,15 +72,6 @@
 | vocabulary | ⚠️ | 4/5 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>defs - 2 failures</summary>
@@ -299,7 +290,7 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 20/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -347,15 +338,6 @@
 | vocabulary | ⚠️ | 4/5 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>defs - 2 failures</summary>
@@ -542,9 +524,9 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 14/14 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 17/18 |
+| dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
 | divisibleBy | ✅ | 8/8 |
 | enum | ✅ | 16/16 |
@@ -568,24 +550,6 @@
 | uniqueItems | ✅ | 62/62 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>type - 7 failures</summary>
@@ -619,7 +583,7 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 17/17 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
@@ -652,15 +616,6 @@
 ### Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
@@ -674,7 +629,7 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -711,15 +666,6 @@
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -771,7 +717,7 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -809,15 +755,6 @@
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>

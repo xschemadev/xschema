@@ -6,6 +6,8 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
 - core parser hard-fails are discoverable via `throw new Error` / `is not supported` searches in `typescript/packages/core/src/parser/` and `typescript/packages/core/src/utils/json-pointer.ts`
 - keyword behavior is split between `normalizeDeep` (legacy rewrites) and the parser; check both before assuming a keyword is "ignored"
 - workspace packages resolve `@xschemadev/core` via built `dist`, so run `bun run build` after core api/type changes
+- composition parsing: if `allOf`/`anyOf`/`oneOf` is present, `hasBaseSchema` must include object/array keywords (`additionalProperties`, `dependencies`, etc) or base constraints get silently dropped
+- draft3 deps: `dependencies: {"bar": "foo"}` is valid; normalizer should coerce string-shorthand to `[{...}]`-style arrays before parsing
 ---
 
 ## 2026-01-11 - US-001
@@ -231,3 +233,15 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - TypeBox does NOT support via Value.Check: oneOf, if/then/else, dependentSchemas, propertyNames, patternProperties (as option)
   - Format validation requires FormatRegistry setup - unregistered formats cause all values to fail
 ---
+
+## 2026-01-11 20:40:11 CET - US-001
+- fixed composition parsing: base schema constraints (e.g. `additionalProperties`, `dependencies`) no longer dropped when `allOf`/`anyOf`/`oneOf` is present
+- fixed draft3 `dependencies` string shorthand (`{"bar":"foo"}`) via normalizer coercion
+- reran zod compliance; remaining failures are now mostly bundler limitations + a few known static-codegen gaps
+- Files changed: `typescript/packages/core/src/parser/index.ts`, `typescript/packages/core/src/parser/collections.ts`, `typescript/packages/core/src/schema/normalizer.ts`, `typescript/packages/adapters/zod/compliance/results/*`, `progress.txt`
+- **Learnings for future iterations:**
+  - base keyword detection for composition must include all object/array keywords, not just `properties/items`
+  - draft3 has odd shorthands (dependencies string, type schemas) that need normalization or explicit parser support
+  - circular `$ref` still degrades metaschema validation (see zod README known limitations)
+---
+
