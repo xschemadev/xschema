@@ -36,7 +36,7 @@ parser/     # parses JSON/JSONC config files, extracts declarations
 retriever/  # fetches schemas from URL/file/inline
 generator/  # calls adapter CLIs via stdin/stdout
 injector/   # writes generated code to output files
-language/   # language configs (typescript, python)
+language/   # language configs (typescript)
 bundler/    # bundles multiple schemas
 compliance/ # adapter compliance testing harness
 ui/         # terminal output helpers (colors, verbose logging)

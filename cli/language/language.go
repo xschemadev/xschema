@@ -60,7 +60,6 @@ type Language struct {
 
 var Languages = []Language{
 	typescript,
-	python,
 }
 
 // BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/typescript.jsonc"
@@ -96,7 +95,7 @@ func buildVarNameUnderscore(namespace, id string) string {
 	return namespace + "_" + id
 }
 
-// injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS/Python dict)
+// injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS object)
 func injectSchemasKeyBrace(configContent string) string {
 	// Find first { and insert after it
 	openIdx := strings.Index(configContent, "{")

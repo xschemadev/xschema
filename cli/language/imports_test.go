@@ -1,7 +1,6 @@
 package language
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -156,89 +155,5 @@ func TestMergeTSImports(t *testing.T) {
 				t.Errorf("MergeTSImports() =\n%q\nwant\n%q", got, tt.expected)
 			}
 		})
-	}
-}
-
-func TestMergePyImports(t *testing.T) {
-	tests := []struct {
-		name     string
-		imports  []string
-		expected string
-	}{
-		{
-			name:     "empty",
-			imports:  []string{},
-			expected: "",
-		},
-		{
-			name: "dedupe same import",
-			imports: []string{
-				`from pydantic import BaseModel`,
-				`from pydantic import BaseModel`,
-			},
-			expected: `from pydantic import BaseModel`,
-		},
-		{
-			name: "merge from same module",
-			imports: []string{
-				`from pydantic import BaseModel`,
-				`from pydantic import Field`,
-			},
-			expected: `from pydantic import BaseModel, Field`,
-		},
-		{
-			name: "multiple modules",
-			imports: []string{
-				`from pydantic import BaseModel`,
-				`from uuid import UUID`,
-			},
-			expected: "from pydantic import BaseModel\nfrom uuid import UUID",
-		},
-		{
-			name: "direct import",
-			imports: []string{
-				`import json`,
-			},
-			expected: `import json`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := MergePyImports(tt.imports)
-			if got != tt.expected {
-				t.Errorf("MergePyImports() =\n%q\nwant\n%q", got, tt.expected)
-			}
-		})
-	}
-}
-
-func TestBuildPythonFooter(t *testing.T) {
-	schemas := []SchemaEntry{
-		{Namespace: "user", ID: "User", VarName: "user_User", Code: "class user_User(BaseModel): pass", Type: "user_User"},
-		{Namespace: "user", ID: "Post", VarName: "user_Post", Code: "class user_Post(BaseModel): pass", Type: "user_Post"},
-	}
-
-	footer := BuildPythonFooter("", schemas)
-
-	// Check that it contains overloads for both schemas with namespace:id format
-	if !strings.Contains(footer, `Literal["user:User"]`) {
-		t.Error("expected user:User literal in footer")
-	}
-	if !strings.Contains(footer, `Literal["user:Post"]`) {
-		t.Error("expected user:Post literal in footer")
-	}
-	if !strings.Contains(footer, "from_url") {
-		t.Error("expected from_url in footer")
-	}
-	if !strings.Contains(footer, "from_file") {
-		t.Error("expected from_file in footer")
-	}
-}
-
-func TestBuildPythonFooterEmpty(t *testing.T) {
-	footer := BuildPythonFooter("", nil)
-	if footer != "" {
-		t.Errorf("expected empty footer for no schemas, got %q", footer)
 	}
 }

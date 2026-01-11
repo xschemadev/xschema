@@ -13,9 +13,6 @@ func TestRegistry_BuiltinsAndLookups(t *testing.T) {
 	if !slices.Contains(langs, "typescript") {
 		t.Fatalf("expected built-in language typescript, got %v", langs)
 	}
-	if !slices.Contains(langs, "py") {
-		t.Fatalf("expected built-in language py, got %v", langs)
-	}
 	if !slices.IsSorted(langs) {
 		t.Fatalf("expected SupportedLanguages sorted, got %v", langs)
 	}
@@ -33,9 +30,6 @@ func TestRegistry_BuiltinsAndLookups(t *testing.T) {
 	ignore := AllIgnoreDirs()
 	if !ignore["node_modules"] {
 		t.Fatalf("expected node_modules to be ignored, got %v", ignore)
-	}
-	if !ignore["__pycache__"] {
-		t.Fatalf("expected __pycache__ to be ignored, got %v", ignore)
 	}
 }
 

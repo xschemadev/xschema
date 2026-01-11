@@ -11,6 +11,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
 - Web `tsconfig.json` uses explicit `compilerOptions.types`: include `bun` and `node` for `bun:test` and `node:*` imports.
 - Language registry lives in `cli/language/registry.go`; tests should call `language.ResetForTests()` and `t.Cleanup(language.ResetForTests)` to avoid global state leaks.
+- For multi-language tests, register a fake `language.Language` with `SchemaURL` under `language.XSchemaBaseURL` (reset + cleanup).
 - Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
 - Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
 - Use `injector.WriteGeneratedFiles(outDir, files)` to safely write multi-file outputs under the output root.
@@ -156,5 +157,15 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Delete stale files before writing new ones to avoid file-vs-dir conflicts when layouts change.
   - Normalize + re-validate paths loaded from the manifest; never trust on-disk state.
   - Write manifest atomically with temp + rename in the same directory.
+---
+
+## 2026-01-11 01:10 - US-006
+- Removed unfinished python language support (it was non-compiling) so `--lang python`/`--lang py` now fails as unknown/unsupported.
+- Updated multi-language parser tests to register a test-only fake language instead of relying on python.
+- Files changed: `cli/language/python.go`, `cli/language/registry_test.go`, `cli/parser/parser_test.go`, `cli/injector/injector_test.go`, `cli/AGENTS.md`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: for multi-language tests, register a fake `language.Language` with schema under `language.XSchemaBaseURL`.
+  - Gotchas encountered: leaving incomplete language stubs breaks the whole cli build (even if not used).
+  - Useful context: extend `TestInject_UnsupportedLanguage` to cover removed languages like `py`.
 ---
 
