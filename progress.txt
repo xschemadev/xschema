@@ -323,3 +323,18 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - formatPropertyKey helper needed for valid identifier vs computed syntax
 ---
 
+## 2026-01-11 - US-006 (effect renderer cleanliness)
+- audited effect renderer for non-idiomatic patterns
+- cleaned up nullable detection: union of [T, null] now renders as S.NullOr(T) instead of S.Union(T, S.Null)
+- cleaned up property access syntax: val.name for valid identifiers instead of val["name"]
+- verified string length uses Intl.Segmenter (spec compliant, unchanged)
+- verified tuple uses array+filter for JSON Schema semantics (unchanged)
+- verified object validation uses S.Unknown.pipe(S.filter(...)) (necessary - S.Struct accepts arrays)
+- compliance unchanged: draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- Files changed: `typescript/packages/adapters/effect/src/renderer.ts`, `progress.txt`
+- **Learnings for future iterations:**
+  - S.NullOr(T) is idiomatic effect for T | null pattern
+  - formatPropertyAccess helper generates val.name vs val["key"] based on identifier validity
+  - JS reserved words (class, function, etc) and special chars require bracket syntax
+---
+

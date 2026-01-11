@@ -37,11 +37,16 @@ const RESERVED_WORDS = new Set([
 // Valid JS identifier pattern
 const VALID_IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
+function canUseDirectSyntax(key: string): boolean {
+	return VALID_IDENTIFIER.test(key) && !RESERVED_WORDS.has(key);
+}
+
 function formatPropertyKey(key: string): string {
-	if (VALID_IDENTIFIER.test(key) && !RESERVED_WORDS.has(key)) {
-		return key;
-	}
-	return `[${escapeString(key)}]`;
+	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
+}
+
+function formatPropertyAccess(obj: string, key: string): string {
+	return canUseDirectSyntax(key) ? `${obj}.${key}` : `${obj}[${escapeString(key)}]`;
 }
 
 /**
@@ -348,6 +353,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		const prop = node.properties.get(key)!;
 		const propCode = render(prop.schema as SchemaNode);
 		const keyExpr = escapeString(key);
+		const propAccess = formatPropertyAccess("val", key);
 
 		if (prop.required && (prop.schema as SchemaNode).kind === "any") {
 			// Required property with any schema - need explicit hasOwn check
@@ -356,7 +362,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		} else if (prop.required) {
 			validators.push(`
         if (Object.hasOwn(val, ${keyExpr})) {
-          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          const result = S.decodeUnknownEither(${propCode})(${propAccess});
           if (result._tag === "Left") return false;
         } else {
           return false;
@@ -364,7 +370,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		} else {
 			validators.push(`
         if (Object.hasOwn(val, ${keyExpr})) {
-          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          const result = S.decodeUnknownEither(${propCode})(${propAccess});
           if (result._tag === "Left") return false;
         }`);
 		}
@@ -640,6 +646,15 @@ function renderUnion(node: UnionNode): string {
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "S.Never";
 	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Detect nullable pattern: union of [T, null] -> S.NullOr(T)
+	if (filtered.length === 2) {
+		const nullIndex = filtered.findIndex((v) => v.kind === "null");
+		if (nullIndex !== -1) {
+			const otherIndex = nullIndex === 0 ? 1 : 0;
+			return `S.NullOr(${render(filtered[otherIndex]!)})`;
+		}
+	}
 
 	const schemas = filtered.map((v) => render(v));
 	return `S.Union(${schemas.join(", ")})`;

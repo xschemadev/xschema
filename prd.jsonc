@@ -78,7 +78,7 @@
 		{
 			"id": "US-006",
 			"title": "effect — renderer cleanliness pass",
-			"description": "as a maintainer, i want the effect renderer to use effect’s native schema apis as directly as possible, so generated code is idiomatic and maintainable.",
+			"description": "as a maintainer, i want the effect renderer to use effect's native schema apis as directly as possible, so generated code is idiomatic and maintainable.",
 			"acceptanceCriteria": [
 				"audit effect renderer output patterns for common schema shapes",
 				"replace weird/non-idiomatic constructs with idiomatic effect schema apis while preserving semantics",
@@ -86,8 +86,8 @@
 				"run `bun run compliance` in `typescript/packages/adapters/effect/` and confirm results are not worse than US-005 baseline",
 				"update root `progress.txt` with a brief summary"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "cleaned up nullable detection (S.NullOr for T | null) and property access syntax (val.name for valid identifiers); kept Intl.Segmenter for string length (spec compliance) and S.Unknown.pipe(filter) for objects (S.Struct accepts arrays)"
 		},
 		{
 			"id": "US-007",
