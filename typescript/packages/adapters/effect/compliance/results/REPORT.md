@@ -4,28 +4,28 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 821 | 38 | 0 | 95.6% |
-| draft2020-12 | 833 | 38 | 0 | 95.6% |
-| draft3 | 383 | 24 | 0 | 94.1% |
-| draft4 | 515 | 36 | 0 | 93.5% |
-| draft6 | 705 | 34 | 0 | 95.4% |
-| draft7 | 781 | 34 | 0 | 95.8% |
+| draft2019-09 | 858 | 57 | 0 | 93.8% |
+| draft2020-12 | 870 | 50 | 0 | 94.6% |
+| draft3 | 400 | 7 | 0 | 98.3% |
+| draft4 | 567 | 1 | 0 | 99.8% |
+| draft6 | 759 | 9 | 0 | 98.8% |
+| draft7 | 835 | 9 | 0 | 98.9% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-95.6%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-95.6%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-94.1%25-yellow)
-![draft4](https://img.shields.io/badge/draft4%20compliance-93.5%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-95.4%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-95.8%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-93.8%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-94.6%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 14/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -34,16 +34,16 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
-| dependentSchemas | ⚠️ | 16/20 |
-| enum | ⚠️ | 43/45 |
+| dependentSchemas | ✅ | 20/20 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -56,179 +56,224 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 24/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| recursiveRef | ✅ | 0/0 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ⚠️ | 10/16 |
-| type | ⚠️ | 71/80 |
-| unevaluatedItems | ✅ | 0/0 |
-| unevaluatedProperties | ✅ | 0/0 |
+| recursiveRef | ❌ | 0/34 |
+| ref | ❌ | 0/12 |
+| refRemote | ❌ | 0/4 |
+| required | ✅ | 16/16 |
+| type | ✅ | 80/80 |
+| unevaluatedItems | ❌ | 0/2 |
+| unevaluatedProperties | ❌ | 0/2 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ⚠️ | 4/5 |
 
 ### Failures
 
 <details>
-<summary>additionalProperties - 7 failures</summary>
+<summary>defs - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties can't see bar
-  - Expected: `invalid`, Got: `true`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties can't see bar even when foo2 is present
-  - Expected: `invalid`, Got: `true`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties doesn't consider dependentSchemas
-  - Expected: `invalid`, Got: `true`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>dependentSchemas - 4 failures</summary>
+<summary>recursiveRef - 34 failures</summary>
 
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: two levels, integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: integer now matches as a property value
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: two levels, properties match with $recursiveRef
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node does not match: recursion uses the inner schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node does not match; no recursion
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node matches: recursion uses the inner schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node does not match: recursion only uses inner schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node does not match; no recursion
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node matches: recursion only uses inner schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: two levels, integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: two levels, no match
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **dynamic $recursiveRef destination (not predictable at schema compile time)**
+  - Test: integer node
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **dynamic $recursiveRef destination (not predictable at schema compile time)**
+  - Test: numeric node
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $recursiveRef keyword**
+  - Test: recurse to anyLeafNode - floats are allowed
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $recursiveRef keyword**
+  - Test: recurse to integerNode - floats are not allowed
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>enum - 2 failures</summary>
+<summary>ref - 12 failures</summary>
 
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 4 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `true`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
+- **$ref with $recursiveAnchor**
+  - Test: extra items allowed for inner arrays
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$ref with $recursiveAnchor**
+  - Test: extra items disallowed for root
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>required - 6 failures</summary>
+<summary>refRemote - 4 failures</summary>
 
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 9 failures</summary>
-
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>unevaluatedItems - 2 failures</summary>
+
+- **unevaluatedItems with $recursiveRef**
+  - Test: with no unevaluated items
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **unevaluatedItems with $recursiveRef**
+  - Test: with unevaluated items
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties - 2 failures</summary>
+
+- **unevaluatedProperties with $recursiveRef**
+  - Test: with no unevaluated properties
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **unevaluatedProperties with $recursiveRef**
+  - Test: with unevaluated properties
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
@@ -245,7 +290,7 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 14/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -254,17 +299,17 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
-| dependentSchemas | ⚠️ | 16/20 |
-| dynamicRef | ✅ | 0/0 |
-| enum | ⚠️ | 43/45 |
+| dependentSchemas | ✅ | 20/20 |
+| dynamicRef | ❌ | 0/33 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 28/29 |
+| items | ✅ | 29/29 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -277,16 +322,16 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | prefixItems | ✅ | 11/11 |
-| properties | ⚠️ | 24/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ⚠️ | 10/16 |
-| type | ⚠️ | 71/80 |
+| ref | ❌ | 0/10 |
+| refRemote | ❌ | 0/4 |
+| required | ✅ | 16/16 |
+| type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ✅ | 69/69 |
@@ -295,161 +340,173 @@
 ### Failures
 
 <details>
-<summary>additionalProperties - 7 failures</summary>
+<summary>defs - 2 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties can't see bar
-  - Expected: `invalid`, Got: `true`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties can't see bar even when foo2 is present
-  - Expected: `invalid`, Got: `true`
-- **dependentSchemas with additionalProperties**
-  - Test: additionalProperties doesn't consider dependentSchemas
-  - Expected: `invalid`, Got: `true`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>dependentSchemas - 4 failures</summary>
+<summary>dynamicRef - 33 failures</summary>
 
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
+- **$dynamicRef points to a boolean schema**
+  - Test: follow $dynamicRef to a false schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **$dynamicRef points to a boolean schema**
+  - Test: follow $dynamicRef to a true schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **$dynamicRef skips over intermediate resources - direct reference**
+  - Test: integer property passes
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$dynamicRef skips over intermediate resources - direct reference**
+  - Test: string property fails
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref to $dynamicRef finds detached $dynamicAnchor**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/detached-dynamicref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref to $dynamicRef finds detached $dynamicAnchor**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/detached-dynamicref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope**
+  - Test: The recursive part is not valid against the root
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope**
+  - Test: The recursive part is valid against the root
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor**
+  - Test: The recursive part doesn't need to validate against the root
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: /then/$defs/thingy is the final stop for the $dynamicRef
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: first_scope is not in dynamic scope for the $dynamicRef
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: string matches /$defs/thingy, but the $dynamicRef does not stop here
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: number list with number values
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: number list with string values
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: string list with number values
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: string list with string values
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **strict-tree schema, guards against misspelled properties**
+  - Test: instance with correct field
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **strict-tree schema, guards against misspelled properties**
+  - Test: instance with misspelled field
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>enum - 2 failures</summary>
+<summary>ref - 10 failures</summary>
 
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>properties - 4 failures</summary>
+<summary>refRemote - 4 failures</summary>
 
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `true`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 6 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 9 failures</summary>
-
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
 
 </details>
 
@@ -467,131 +524,38 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 14/14 |
-| additionalProperties | ⚠️ | 12/16 |
+| additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 17/18 |
+| dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
 | divisibleBy | ✅ | 8/8 |
-| enum | ⚠️ | 15/16 |
+| enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
 | infinite-loop-detection | ✅ | 2/2 |
 | items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
-| maximum | ⚠️ | 13/14 |
+| maximum | ✅ | 14/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
-| minimum | ⚠️ | 12/13 |
+| minimum | ✅ | 13/13 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
-| properties | ⚠️ | 12/15 |
+| properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
-| required | ⚠️ | 3/4 |
-| type | ⚠️ | 68/80 |
+| required | ✅ | 4/4 |
+| type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
 ### Failures
 
 <details>
-<summary>additionalProperties - 4 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>properties - 3 failures</summary>
-
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 1 failure</summary>
-
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 12 failures</summary>
+<summary>type - 7 failures</summary>
 
 - **applies a nested schema**
   - Test: an object is invalid otherwise
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
   - Expected: `invalid`, Got: `true`
 - **types can include schemas**
   - Test: a boolean is invalid
@@ -619,208 +583,43 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 17/17 |
-| additionalProperties | ⚠️ | 12/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 26/29 |
-| enum | ⚠️ | 47/49 |
+| dependencies | ✅ | 29/29 |
+| enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 20/21 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
-| maximum | ⚠️ | 13/14 |
+| maximum | ✅ | 14/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
 | minProperties | ✅ | 6/6 |
-| minimum | ⚠️ | 16/17 |
+| minimum | ✅ | 17/17 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
-| oneOf | ⚠️ | 19/23 |
+| oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ⚠️ | 20/24 |
+| properties | ✅ | 24/24 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ⚠️ | 9/15 |
-| type | ⚠️ | 70/79 |
+| refRemote | ✅ | 17/17 |
+| required | ✅ | 15/15 |
+| type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 4 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 3 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 4 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `true`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 6 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 9 failures</summary>
-
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: string is invalid
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -830,7 +629,7 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 12/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -838,13 +637,13 @@
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 33/36 |
-| enum | ⚠️ | 43/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -855,36 +654,18 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 24/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ⚠️ | 10/16 |
-| type | ⚠️ | 71/80 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
+| required | ✅ | 16/16 |
+| type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 4 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -896,131 +677,38 @@
 </details>
 
 <details>
-<summary>dependencies - 3 failures</summary>
+<summary>ref - 6 failures</summary>
 
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>refRemote - 2 failures</summary>
 
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 4 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `true`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 6 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 9 failures</summary>
-
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
+- **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 
 </details>
 
@@ -1029,7 +717,7 @@
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 12/16 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -1037,14 +725,14 @@
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 33/36 |
-| enum | ⚠️ | 43/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -1055,36 +743,18 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 24/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ⚠️ | 10/16 |
-| type | ⚠️ | 71/80 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
+| required | ✅ | 16/16 |
+| type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 4 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: an additional property is invalid
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional valid property is valid
-  - Expected: `valid`, Got: `false`
-- **additionalProperties with schema**
-  - Test: no additional properties is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -1096,131 +766,38 @@
 </details>
 
 <details>
-<summary>dependencies - 3 failures</summary>
+<summary>ref - 6 failures</summary>
 
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>refRemote - 2 failures</summary>
 
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 4 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `true`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 6 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 9 failures</summary>
-
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
+- **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array or object**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `true`
-- **type: array, object or null**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 
 </details>
 

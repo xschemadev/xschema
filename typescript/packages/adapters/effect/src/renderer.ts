@@ -24,6 +24,26 @@ import type {
 } from "@xschemadev/core";
 import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
 
+// JS reserved words that require computed property syntax
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "class", "const", "continue", "debugger", "default",
+	"delete", "do", "else", "enum", "export", "extends", "false", "finally", "for",
+	"function", "if", "implements", "import", "in", "instanceof", "interface", "let",
+	"new", "null", "package", "private", "protected", "public", "return", "static",
+	"super", "switch", "this", "throw", "true", "try", "typeof", "var", "void",
+	"while", "with", "yield"
+]);
+
+// Valid JS identifier pattern
+const VALID_IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+function formatPropertyKey(key: string): string {
+	if (VALID_IDENTIFIER.test(key) && !RESERVED_WORDS.has(key)) {
+		return key;
+	}
+	return `[${escapeString(key)}]`;
+}
+
 /**
  * Render a SchemaNode to Effect Schema code
  */
@@ -187,17 +207,47 @@ function renderNumber(node: NumberNode): string {
 	return `S.Number.pipe(${filters.join(", ")})`;
 }
 
+// Check for JS prototype property names that cause runtime issues
+function hasProtoProps(node: ObjectNode): boolean {
+	const protoNames = new Set(["__proto__", "constructor", "toString"]);
+	for (const key of node.properties.keys()) {
+		if (protoNames.has(key)) return true;
+	}
+	for (const dep of node.dependencies.keys()) {
+		if (protoNames.has(dep)) return true;
+	}
+	return false;
+}
+
 function renderObject(node: ObjectNode): string {
 	const propKeys = Array.from(node.properties.keys());
+	const requiredKeys = propKeys.filter((k) => node.properties.get(k)!.required);
+
+	// For objects with JS prototype property names, use full custom validation
+	if (hasProtoProps(node)) {
+		return renderObjectWithProtoProps(node);
+	}
+
+	const hasPatternProps = node.patternProperties.length > 0;
+	const needsCustomValidation = hasPatternProps || node.propertyNames !== undefined ||
+		node.additionalProperties === false ||
+		(typeof node.additionalProperties === "object" && node.additionalProperties.kind !== "any");
 
 	// If using record-style (no properties, just additionalProperties schema)
 	if (
 		propKeys.length === 0 &&
+		!hasPatternProps &&
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
 		const valueSchema = render(node.additionalProperties);
-		let result = `S.Record({ key: S.String, value: ${valueSchema} })`;
+		let result = `S.Unknown.pipe(S.filter((val) => typeof val === "object" && val !== null && !Array.isArray(val), { message: () => "Expected object" }), S.filter((val) => {
+      for (const [key, value] of Object.entries(val)) {
+        const result = S.decodeUnknownEither(${valueSchema})(value);
+        if (result._tag === "Left") return false;
+      }
+      return true;
+    }, { message: () => "Invalid property value" }))`;
 		const filters = renderObjectConstraints(node);
 		if (filters.length > 0) {
 			result = `${result}.pipe(${filters.join(", ")})`;
@@ -205,126 +255,237 @@ function renderObject(node: ObjectNode): string {
 		return result;
 	}
 
-	// Build shape
-	const shape = propKeys.map((key) => {
+	// For objects that need custom validation (additionalProperties, patternProperties, propertyNames)
+	// OR simple objects - always use custom validation to properly reject arrays
+	return renderObjectWithPatternProps(node);
+}
+
+function renderObjectWithProtoProps(node: ObjectNode): string {
+	const propKeys = Array.from(node.properties.keys());
+	const validators: string[] = [];
+
+	// Property validators
+	for (const key of propKeys) {
 		const prop = node.properties.get(key)!;
-		let propCode = render(prop.schema as SchemaNode);
-		if (!prop.required) {
-			propCode = `S.optional(${propCode})`;
+		const propCode = render(prop.schema as SchemaNode);
+		const keyExpr = escapeString(key);
+
+		if (prop.required) {
+			validators.push(`
+        if (Object.hasOwn(val, ${keyExpr})) {
+          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          if (result._tag === "Left") return false;
+        } else {
+          return false;
+        }`);
+		} else {
+			validators.push(`
+        if (Object.hasOwn(val, ${keyExpr})) {
+          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          if (result._tag === "Left") return false;
+        }`);
 		}
-		return `${escapeString(key)}: ${propCode}`;
-	});
+	}
 
-	let result = "";
-
-	// Choose object type based on additionalProperties
+	// Additional properties check
+	let additionalCheck = "";
 	if (node.additionalProperties === false) {
-		// Strict mode - no additional properties allowed
-		result =
-			shape.length > 0
-				? `S.Struct({ ${shape.join(", ")} })`
-				: "S.Struct({})";
+		const definedPropsJson = JSON.stringify(propKeys);
+		additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const key of Object.keys(val)) {
+          if (!definedProps.has(key)) return false;
+        }`;
 	} else if (
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		// Validate additional properties against schema using catchall
-		const restSchema = render(node.additionalProperties);
-		result =
-			shape.length > 0
-				? `S.Struct({ ${shape.join(", ")} }, S.Record({ key: S.String, value: ${restSchema} }))`
-				: `S.Record({ key: S.String, value: ${restSchema} })`;
-	} else {
-		// Allow additional properties (loose mode)
-		result =
-			shape.length > 0
-				? `S.Struct({ ${shape.join(", ")} })`
-				: "S.Struct({})";
+		const additionalSchema = render(node.additionalProperties);
+		const definedPropsJson = JSON.stringify(propKeys);
+		additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const [key, value] of Object.entries(val)) {
+          if (!definedProps.has(key)) {
+            const result = S.decodeUnknownEither(${additionalSchema})(value);
+            if (result._tag === "Left") return false;
+          }
+        }`;
 	}
 
-	// Collect all validation filters
-	const filters: string[] = [];
-
-	// Handle additionalProperties: false by rejecting unknown keys
-	if (node.additionalProperties === false) {
-		const definedKeys = JSON.stringify(propKeys);
-		const hasPatternProps = node.patternProperties.length > 0;
-		
-		if (hasPatternProps) {
-			const patterns = node.patternProperties.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
-			filters.push(`S.filter((val) => {
-        const definedProps = new Set(${definedKeys});
-        const patterns = [${patterns}];
-        for (const key of Object.keys(val)) {
-          if (definedProps.has(key)) continue;
-          const matchesPattern = patterns.some(p => p.test(key));
-          if (!matchesPattern) return false;
-        }
-        return true;
-      }, { message: () => "Additional properties not allowed" })`);
+	// Dependencies check
+	let dependenciesCheck = "";
+	for (const [prop, dep] of node.dependencies) {
+		if (dep.kind === "property") {
+			if (dep.requiredProperties.length > 0) {
+				dependenciesCheck += `
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          if (!(${dep.requiredProperties.map((d) => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")})) return false;
+        }`;
+			}
 		} else {
-			filters.push(`S.filter((val) => {
-        const definedProps = new Set(${definedKeys});
-        for (const key of Object.keys(val)) {
-          if (!definedProps.has(key)) return false;
-        }
-        return true;
-      }, { message: () => "Additional properties not allowed" })`);
+			const depCode = render(dep.schema as SchemaNode);
+			dependenciesCheck += `
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          const result = S.decodeUnknownEither(${depCode})(val);
+          if (result._tag === "Left") return false;
+        }`;
+		}
+	}
+
+	return `S.Unknown.pipe(S.filter((val) => {
+      if (typeof val !== "object" || val === null || Array.isArray(val)) return false;${validators.join("")}${additionalCheck}${dependenciesCheck}
+      return true;
+    }, { message: () => "Object validation failed" }))`;
+}
+
+function renderObjectWithPatternProps(node: ObjectNode): string {
+	const propKeys = Array.from(node.properties.keys());
+	const requiredKeys = propKeys.filter((k) => node.properties.get(k)!.required);
+	const validators: string[] = [];
+
+	// Property validators
+	for (const key of propKeys) {
+		const prop = node.properties.get(key)!;
+		const propCode = render(prop.schema as SchemaNode);
+		const keyExpr = escapeString(key);
+
+		if (prop.required && (prop.schema as SchemaNode).kind === "any") {
+			// Required property with any schema - need explicit hasOwn check
+			validators.push(`
+        if (!Object.hasOwn(val, ${keyExpr})) return false;`);
+		} else if (prop.required) {
+			validators.push(`
+        if (Object.hasOwn(val, ${keyExpr})) {
+          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          if (result._tag === "Left") return false;
+        } else {
+          return false;
+        }`);
+		} else {
+			validators.push(`
+        if (Object.hasOwn(val, ${keyExpr})) {
+          const result = S.decodeUnknownEither(${propCode})(val[${keyExpr}]);
+          if (result._tag === "Left") return false;
+        }`);
 		}
 	}
 
 	// Pattern properties validation
-	if (node.patternProperties.length > 0) {
-		filters.push(...renderPatternPropsFilters(node));
+	const patterns = node.patternProperties;
+	const patternValidators: string[] = [];
+	if (patterns.length > 0) {
+		const definedProps = JSON.stringify(propKeys);
+		for (const p of patterns) {
+			const patternCode = render(p.schema as SchemaNode);
+			const patternStr = escapeString(p.pattern);
+			patternValidators.push(`
+        for (const [key, value] of Object.entries(val)) {
+          if (new RegExp(${patternStr}).test(key)) {
+            const result = S.decodeUnknownEither(${patternCode})(value);
+            if (result._tag === "Left") return false;
+          }
+        }`);
+		}
+	}
+
+	// Additional properties handling
+	let additionalCheck = "";
+	if (node.additionalProperties === false) {
+		const definedPropsJson = JSON.stringify(propKeys);
+		const patternChecks = patterns.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
+		if (patterns.length > 0) {
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        const patterns = [${patternChecks}];
+        for (const key of Object.keys(val)) {
+          if (definedProps.has(key)) continue;
+          const matchesPattern = patterns.some(p => p.test(key));
+          if (!matchesPattern) return false;
+        }`;
+		} else {
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const key of Object.keys(val)) {
+          if (!definedProps.has(key)) return false;
+        }`;
+		}
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const additionalSchema = render(node.additionalProperties);
+		const definedPropsJson = JSON.stringify(propKeys);
+		const patternChecks = patterns.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
+		if (patterns.length > 0) {
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        const patterns = [${patternChecks}];
+        for (const [key, value] of Object.entries(val)) {
+          if (definedProps.has(key)) continue;
+          const matchesPattern = patterns.some(p => p.test(key));
+          if (!matchesPattern) {
+            const result = S.decodeUnknownEither(${additionalSchema})(value);
+            if (result._tag === "Left") return false;
+          }
+        }`;
+		} else {
+			additionalCheck = `
+        const definedProps = new Set(${definedPropsJson});
+        for (const [key, value] of Object.entries(val)) {
+          if (!definedProps.has(key)) {
+            const result = S.decodeUnknownEither(${additionalSchema})(value);
+            if (result._tag === "Left") return false;
+          }
+        }`;
+		}
 	}
 
 	// Property names validation
+	let propertyNamesCheck = "";
 	if (node.propertyNames) {
 		const keySchema = render(node.propertyNames);
-		filters.push(`S.filter((val) => {
-      for (const key of Object.keys(val)) {
-        const result = S.decodeUnknownEither(${keySchema})(key);
-        if (result._tag === "Left") return false;
-      }
-      return true;
-    }, { message: () => "Invalid property name" })`);
+		propertyNamesCheck = `
+        for (const key of Object.keys(val)) {
+          const result = S.decodeUnknownEither(${keySchema})(key);
+          if (result._tag === "Left") return false;
+        }`;
+	}
+
+	// Dependencies check
+	let dependenciesCheck = "";
+	for (const [prop, dep] of node.dependencies) {
+		if (dep.kind === "property") {
+			if (dep.requiredProperties.length > 0) {
+				dependenciesCheck += `
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          if (!(${dep.requiredProperties.map((d) => `Object.hasOwn(val, ${escapeString(d)})`).join(" && ")})) return false;
+        }`;
+			}
+		} else {
+			const depCode = render(dep.schema as SchemaNode);
+			dependenciesCheck += `
+        if (Object.hasOwn(val, ${escapeString(prop)})) {
+          const result = S.decodeUnknownEither(${depCode})(val);
+          if (result._tag === "Left") return false;
+        }`;
+		}
 	}
 
 	// Min/max properties
-	filters.push(...renderObjectConstraints(node));
-
-	// Dependencies
-	filters.push(...renderDependenciesFilters(node));
-
-	// Apply all filters in pipe
-	if (filters.length > 0) {
-		result = `${result}.pipe(${filters.join(", ")})`;
+	let sizeChecks = "";
+	if (node.minProperties !== undefined) {
+		sizeChecks += `
+        if (Object.keys(val).length < ${node.minProperties}) return false;`;
+	}
+	if (node.maxProperties !== undefined) {
+		sizeChecks += `
+        if (Object.keys(val).length > ${node.maxProperties}) return false;`;
 	}
 
-	return result;
-}
-
-function renderPatternPropsFilters(node: ObjectNode): string[] {
-	const patterns = node.patternProperties;
-
-	const checks: string[] = [];
-
-	// Validate pattern properties
-	patterns.forEach((p) => {
-		const patternCode = render(p.schema as SchemaNode);
-		const patternStr = escapeString(p.pattern);
-		checks.push(`
-      for (const [key, value] of Object.entries(val)) {
-        if (new RegExp(${patternStr}).test(key)) {
-          const result = S.decodeUnknownEither(${patternCode})(value);
-          if (result._tag === "Left") return false;
-        }
-      }`);
-	});
-
-	return [`S.filter((val) => {${checks.join("")}
+	return `S.Unknown.pipe(S.filter((val) => {
+      if (typeof val !== "object" || val === null || Array.isArray(val)) return false;${validators.join("")}${patternValidators.join("")}${additionalCheck}${propertyNamesCheck}${dependenciesCheck}${sizeChecks}
       return true;
-    }, { message: () => "Pattern property validation failed" })`];
+    }, { message: () => "Object validation failed" }))`;
 }
 
 function renderObjectConstraints(node: ObjectNode): string[] {
@@ -583,27 +744,31 @@ function renderEnum(node: EnumNode): string {
 		return `S.Union(${literals.join(", ")})`;
 	}
 
-	// Check for complex values
-	const hasComplexValues = values.some((v) => !isPrimitive(v));
+	// All same-type primitives - use S.Literal union
+	if (values.every((v) => isPrimitive(v))) {
+		const allSameType = values.every((v) => typeof v === typeof values[0]);
+		if (allSameType) {
+			const literals = values.map((v) => `S.Literal(${JSON.stringify(v)})`);
+			return `S.Union(${literals.join(", ")})`;
+		}
+	}
 
-	if (hasComplexValues) {
-		const sortedValues = values.map((v) =>
-			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v as object).sort()
-					: undefined,
-			),
+	// Heterogeneous enum (mixed types or complex values) - stringify for comparison
+	// Single-stringify each value (with sorted keys for objects), then JSON.stringify to embed as string literal
+	const sortedValues = values.map((v) => {
+		const stringified = JSON.stringify(
+			v,
+			v != null && typeof v === "object"
+				? Object.keys(v as object).sort()
+				: undefined,
 		);
-		return `S.Unknown.pipe(S.filter((val) => {
+		// Wrap in JSON.stringify to produce a valid JS string literal for code gen
+		return JSON.stringify(stringified);
+	});
+	return `S.Unknown.pipe(S.filter((val) => {
       const sorted = JSON.stringify(val, val != null && typeof val === "object" ? Object.keys(val as object).sort() : undefined);
       return [${sortedValues.join(", ")}].includes(sorted);
     }, { message: () => "Value must match one of the enum values" }))`;
-	}
-
-	// Mixed primitives - use union of literals
-	const literals = values.map((v) => `S.Literal(${JSON.stringify(v)})`);
-	return `S.Union(${literals.join(", ")})`;
 }
 
 function renderRef(node: RefNode): string {
