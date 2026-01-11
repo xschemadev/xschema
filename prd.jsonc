@@ -29,12 +29,12 @@
 		},
 		{
 			"id": "US-003",
-			"title": "core: make parsing total (no throws)",
-			"description": "as a maintainer, i want core parsing to never throw on supported inputs so that compliances can run end-to-end and adapters can choose how to handle unsupported keywords.",
+			"title": "core: make parsing total (breaking api)",
+			"description": "as a maintainer, i want core parsing to never throw so compliances can run end-to-end and adapters can choose how to handle unsupported keywords.",
 			"acceptanceCriteria": [
-				"add a new API `parseWithIssues` that returns `{ node, issues }`",
+				"change `parse()` to return `{ node, issues }` (breaking change)",
 				"replace current throws for `unevaluatedItems`, `unevaluatedProperties`+applicators, and `$ref` resolution with captured issues + best-effort nodes",
-				"keep existing `parse()` API working (no signature break)",
+				"update all adapters/callers to the new `parse()` signature",
 				"Typecheck passes"
 			],
 			"passes": false,
