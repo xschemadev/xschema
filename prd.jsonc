@@ -116,8 +116,8 @@
         "No unexpected failures for documented README limitations",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Extended bundler/metaschema issues to draft7/6/4. No arktype-specific failures. All drafts now 100%."
     },
     {
       "id": "US-009",

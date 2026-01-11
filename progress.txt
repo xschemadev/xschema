@@ -233,3 +233,30 @@ Known Issues:
 - need to track adapter-specific limitations separately from shared bundler limitations
 
 ---
+
+## 2026-01-11 - US-008: ArkType known issues file
+
+### What was implemented
+- created arktype known-issues.json starting from zod's version
+- extended bundler limitations to draft7/6/4 (same as valibot)
+- extended metaschema validation issues to draft7/6/4
+- no arktype-specific failures found
+
+### Files changed
+- typescript/packages/adapters/arktype/compliance/known-issues.json (new)
+
+### Final compliance results
+| Draft | Passed | Known | Coverage |
+|-------|--------|-------|----------|
+| draft2020-12 | 870 | 50 | 100.0% |
+| draft2019-09 | 858 | 57 | 100.0% |
+| draft7 | 835 | 9 | 100.0% |
+| draft6 | 759 | 9 | 100.0% |
+| draft4 | 567 | 1 | 100.0% |
+| draft3 | 400 | 7 | 100.0% |
+
+### Learnings
+- arktype handles JS prototype property names correctly (unlike valibot)
+- failure patterns for draft7/6/4 are consistent across adapters (bundler limitation)
+
+---

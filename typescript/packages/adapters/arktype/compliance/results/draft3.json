@@ -165,60 +165,9 @@
     {
       "keyword": "type",
       "passed": 73,
-      "failed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 80,
-      "failures": [
-        {
-          "group": "applies a nested schema",
-          "test": "an object is invalid otherwise",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "a boolean is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "a float is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "a string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "an integer is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types can include schemas",
-          "test": "null is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "types from separate schemas are merged",
-          "test": "an integer is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 73
     },
     {
       "keyword": "uniqueItems",
@@ -230,9 +179,42 @@
   ],
   "summary": {
     "passed": 400,
-    "failed": 7,
+    "failed": 0,
     "skipped": 0,
-    "total": 407,
-    "percentage": 98.28009828009829
+    "total": 400,
+    "percentage": 100,
+    "knownIssues": {
+      "count": 7,
+      "items": [
+        {
+          "path": "draft3/type/types can include schemas/an integer is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/types can include schemas/a string is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/types can include schemas/a float is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/types can include schemas/a boolean is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/types can include schemas/null is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/applies a nested schema/an object is invalid otherwise",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        },
+        {
+          "path": "draft3/type/types from separate schemas are merged/an integer is invalid",
+          "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+"
+        }
+      ]
+    }
   }
 }
