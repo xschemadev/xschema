@@ -59,8 +59,6 @@ export {
   parse,
   parseSchema,
   type ParseContext,
-  type ParseIssue,
-  type ParseResult,
 } from "./parser/index.js";
 
 // Utilities

@@ -9,7 +9,7 @@ import { detectVersion, supportsRefSiblings } from "../schema/version.js";
 import { normalizeDeep } from "../schema/normalizer.js";
 import { resolveJsonPointer } from "../utils/json-pointer.js";
 import { isEmptyObject } from "../utils/primitives.js";
-import { createContext, type ParseContext, type ParseIssue } from "./context.js";
+import { createContext, type ParseContext } from "./context.js";
 import { parseString, parseNumber } from "./primitives.js";
 import { parseObject, parseArray } from "./collections.js";
 import {
@@ -21,28 +21,21 @@ import {
 } from "./composition.js";
 import { parseLiteral, parseEnum } from "./values.js";
 
-export type { ParseContext, ParseIssue } from "./context.js";
-
-export interface ParseResult {
-	node: SchemaNode;
-	issues: ParseIssue[];
-}
+export type { ParseContext } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
  */
-export function parse(schema: JSONSchema | boolean): ParseResult {
+export function parse(schema: JSONSchema | boolean): SchemaNode {
 	// Handle boolean schemas at root level
 	if (typeof schema === "boolean") {
-		return { node: schema ? { kind: "any" } : { kind: "never" }, issues: [] };
+		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
 	const version = detectVersion(schema);
 	const normalized = normalizeDeep(schema, version);
 	const ctx = createContext(normalized, version);
-	const node = parseSchema(normalized, ctx);
-
-	return { node, issues: ctx.issues };
+	return parseSchema(normalized, ctx);
 }
 
 /**
@@ -222,19 +215,10 @@ function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	// Resolve and parse
 	ctx.processing.add(refPath);
 
-	let parsed: SchemaNode;
-	try {
-		const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
-		parsed = parseSchema(resolved, ctx);
-		ctx.refs.set(refPath, parsed);
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		ctx.addIssue({ code: "ref_resolution_failed", ref: refPath, message });
-		parsed = { kind: "any" };
-		ctx.refs.set(refPath, parsed);
-	} finally {
-		ctx.processing.delete(refPath);
-	}
+	const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
+	const parsed = parseSchema(resolved, ctx);
+	ctx.refs.set(refPath, parsed);
+	ctx.processing.delete(refPath);
 
 	// Handle sibling keywords in draft-2019-09+
 	if (supportsRefSiblings(ctx.version)) {
