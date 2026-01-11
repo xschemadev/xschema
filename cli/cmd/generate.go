@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/generator"
@@ -23,6 +24,7 @@ var (
 	verbose     bool
 	dryRun      bool
 	concurrency int
+	envFile     string
 	// TODO: implement watch mode
 	watch bool
 )
@@ -42,6 +44,7 @@ func init() {
 	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show verbose output")
 	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
 	generateCmd.Flags().IntVarP(&concurrency, "concurrency", "c", min(runtime.NumCPU(), 8), "number of parallel schema fetches")
+	generateCmd.Flags().StringVar(&envFile, "env-file", "", "path to env file for header variable substitution")
 	generateCmd.Flags().BoolVarP(&watch, "watch", "w", false, "watch for changes and regenerate")
 }
 
@@ -60,6 +63,21 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		root, err = os.Getwd()
 		if err != nil {
 			return fmt.Errorf("failed to get current directory: %w", err)
+		}
+	}
+
+	// Load env file for header variable substitution
+	if envFile != "" {
+		ui.Verbosef("loading env file: %s", envFile)
+		if err := godotenv.Load(envFile); err != nil {
+			return fmt.Errorf("failed to load env file %s: %w", envFile, err)
+		}
+	} else {
+		// Try to load .env from cwd if it exists
+		defaultEnvPath := filepath.Join(root, ".env")
+		if _, err := os.Stat(defaultEnvPath); err == nil {
+			ui.Verbosef("loading default .env file: %s", defaultEnvPath)
+			_ = godotenv.Load(defaultEnvPath) // ignore error if .env doesn't exist or is invalid
 		}
 	}
 

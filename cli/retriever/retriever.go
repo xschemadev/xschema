@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -81,14 +83,86 @@ func (c *schemaCache) set(key string, val json.RawMessage) {
 	c.items[key] = val
 }
 
+var envVarRegex = regexp.MustCompile(`\$\{([^}]+)\}`)
+
+// resolveEnvVars replaces ${VAR} patterns with environment variable values.
+// Returns error if any referenced env var is not set.
+func resolveEnvVars(input string) (string, error) {
+	var missing []string
+
+	result := envVarRegex.ReplaceAllStringFunc(input, func(match string) string {
+		varName := envVarRegex.FindStringSubmatch(match)[1]
+		value, exists := os.LookupEnv(varName)
+		if !exists {
+			missing = append(missing, varName)
+			return match
+		}
+		return value
+	})
+
+	if len(missing) > 0 {
+		return "", fmt.Errorf("missing env var: %s. use --env-file to specify env file", strings.Join(missing, ", "))
+	}
+	return result, nil
+}
+
+// resolveHeaders resolves all env var references in header values.
+func resolveHeaders(headers map[string]string) (map[string]string, error) {
+	if len(headers) == 0 {
+		return nil, nil
+	}
+
+	resolved := make(map[string]string, len(headers))
+	for name, value := range headers {
+		resolvedValue, err := resolveEnvVars(value)
+		if err != nil {
+			return nil, fmt.Errorf("header %q: %w", name, err)
+		}
+		resolved[name] = resolvedValue
+	}
+	return resolved, nil
+}
+
+// headersCacheKey returns a deterministic string for headers to use in cache keys
+func headersCacheKey(headers map[string]string) string {
+	if len(headers) == 0 {
+		return ""
+	}
+	keys := make([]string, 0, len(headers))
+	for k := range headers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var parts []string
+	for _, k := range keys {
+		parts = append(parts, k+"="+headers[k])
+	}
+	return strings.Join(parts, "&")
+}
+
+// maskHeaderValue masks the value of a header for logging
+func maskHeaderValue(value string) string {
+	if len(value) <= 4 {
+		return "***"
+	}
+	return value[:2] + "***" + value[len(value)-2:]
+}
+
 // RetrieveFromURL fetches a JSON schema from a URL with retry
-func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMessage, error) {
+// headers is a map of already-resolved header values (no ${VAR} syntax)
+func RetrieveFromURL(ctx context.Context, url string, headers map[string]string, opts Options) (json.RawMessage, error) {
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
 	maxAttempts := max(opts.Retries, 1)
 
 	ui.Verbosef("fetching from URL: %s (max_attempts: %d)", url, maxAttempts)
+	if len(headers) > 0 {
+		for name, value := range headers {
+			ui.Verbosef("  header: %s=%s", name, maskHeaderValue(value))
+		}
+	}
 
 	for attempt := range maxAttempts {
 		if attempt > 0 {
@@ -106,6 +180,11 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 			return nil, fmt.Errorf("failed to create request for %s: %w", url, err)
 		}
 		req.Header.Set("User-Agent", userAgent)
+
+		// Add custom headers
+		for name, value := range headers {
+			req.Header.Set(name, value)
+		}
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -231,6 +310,16 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 	for i, decl := range decls {
 		idx, d := i, decl
 
+		// Resolve headers for URL sources (do this early for cache key)
+		var resolvedHeaders map[string]string
+		if d.SourceType == parser.SourceURL && len(d.Headers) > 0 {
+			var err error
+			resolvedHeaders, err = resolveHeaders(d.Headers)
+			if err != nil {
+				return nil, fmt.Errorf("schema %s: %w", d.Key(), err)
+			}
+		}
+
 		// Build cache key based on source type
 		var cacheKey string
 		switch d.SourceType {
@@ -240,6 +329,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				return nil, fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
 			}
 			cacheKey = "url:" + url
+			if hKey := headersCacheKey(resolvedHeaders); hKey != "" {
+				cacheKey += ":h:" + hKey
+			}
 		case parser.SourceFile:
 			var filePath string
 			if err := json.Unmarshal(d.Source, &filePath); err != nil {
@@ -280,7 +372,8 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			ui.Verbosef("cache miss: schema=%s, key=%s", d.Key(), cacheKey)
 		}
 
-		srcURI := sourceURI // capture for closure
+		srcURI := sourceURI       // capture for closure
+		hdrs := resolvedHeaders   // capture for closure
 		g.Go(func() error {
 			var schema json.RawMessage
 			var err error
@@ -291,7 +384,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				if err := json.Unmarshal(d.Source, &url); err != nil {
 					return fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
 				}
-				schema, err = RetrieveFromURL(ctx, url, opts)
+				schema, err = RetrieveFromURL(ctx, url, hdrs, opts)
 			case parser.SourceFile:
 				var filePath string
 				if err := json.Unmarshal(d.Source, &filePath); err != nil {

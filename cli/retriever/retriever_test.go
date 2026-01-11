@@ -3,8 +3,10 @@ package retriever
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -75,7 +77,7 @@ func TestRetrieveFromURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := RetrieveFromURL(ctx, tt.url, opts)
+			result, err := RetrieveFromURL(ctx, tt.url, nil, opts)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error, got nil")
@@ -547,5 +549,259 @@ func TestDefaultOptions(t *testing.T) {
 	}
 	if opts.NoCache != false {
 		t.Error("expected NoCache false by default")
+	}
+}
+
+func TestResolveEnvVars(t *testing.T) {
+	// Set test env var
+	os.Setenv("TEST_TOKEN", "secret123")
+	os.Setenv("TEST_USER", "admin")
+	defer os.Unsetenv("TEST_TOKEN")
+	defer os.Unsetenv("TEST_USER")
+
+	tests := []struct {
+		name    string
+		input   string
+		want    string
+		wantErr bool
+	}{
+		{"simple substitution", "Bearer ${TEST_TOKEN}", "Bearer secret123", false},
+		{"multiple vars", "${TEST_USER}:${TEST_TOKEN}", "admin:secret123", false},
+		{"no vars", "plain text", "plain text", false},
+		{"missing var", "${MISSING_VAR}", "", true},
+		{"partial missing", "${TEST_TOKEN}:${MISSING}", "", true},
+		{"empty string", "", "", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := resolveEnvVars(tt.input)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				}
+				if !strings.Contains(err.Error(), "missing env var") {
+					t.Errorf("expected 'missing env var' in error, got: %v", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if result != tt.want {
+				t.Errorf("expected %q, got %q", tt.want, result)
+			}
+		})
+	}
+}
+
+func TestResolveHeaders(t *testing.T) {
+	os.Setenv("AUTH_TOKEN", "xyz")
+	defer os.Unsetenv("AUTH_TOKEN")
+
+	tests := []struct {
+		name    string
+		headers map[string]string
+		want    map[string]string
+		wantErr bool
+	}{
+		{
+			name:    "nil headers",
+			headers: nil,
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name:    "empty headers",
+			headers: map[string]string{},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name:    "static headers",
+			headers: map[string]string{"X-Custom": "value"},
+			want:    map[string]string{"X-Custom": "value"},
+			wantErr: false,
+		},
+		{
+			name:    "with env var",
+			headers: map[string]string{"Authorization": "Bearer ${AUTH_TOKEN}"},
+			want:    map[string]string{"Authorization": "Bearer xyz"},
+			wantErr: false,
+		},
+		{
+			name:    "missing env var",
+			headers: map[string]string{"Authorization": "Bearer ${NOPE}"},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := resolveHeaders(tt.headers)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if len(result) != len(tt.want) {
+				t.Errorf("expected %d headers, got %d", len(tt.want), len(result))
+			}
+			for k, v := range tt.want {
+				if result[k] != v {
+					t.Errorf("header %s: expected %q, got %q", k, v, result[k])
+				}
+			}
+		})
+	}
+}
+
+func TestHeadersCacheKey(t *testing.T) {
+	tests := []struct {
+		name    string
+		headers map[string]string
+		want    string
+	}{
+		{"nil", nil, ""},
+		{"empty", map[string]string{}, ""},
+		{"single", map[string]string{"A": "1"}, "A=1"},
+		{"multiple sorted", map[string]string{"B": "2", "A": "1"}, "A=1&B=2"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := headersCacheKey(tt.headers)
+			if result != tt.want {
+				t.Errorf("expected %q, got %q", tt.want, result)
+			}
+		})
+	}
+}
+
+func TestMaskHeaderValue(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"", "***"},
+		{"a", "***"},
+		{"ab", "***"},
+		{"abc", "***"},
+		{"abcd", "***"},
+		{"abcde", "ab***de"},
+		{"secrettoken123", "se***23"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			result := maskHeaderValue(tt.input)
+			if result != tt.want {
+				t.Errorf("maskHeaderValue(%q) = %q, want %q", tt.input, result, tt.want)
+			}
+		})
+	}
+}
+
+func TestRetrieveWithHeaders(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	os.Setenv("TEST_HEADER_VAL", "test-value")
+	defer os.Unsetenv("TEST_HEADER_VAL")
+
+	// Test that headers are resolved and don't cause errors
+	decls := []parser.Declaration{
+		{
+			Namespace:  "test",
+			ID:         "WithHeaders",
+			SourceType: parser.SourceURL,
+			Source:     json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`),
+			Adapter:    "zod",
+			ConfigPath: configPath,
+			Headers:    map[string]string{"X-Custom": "${TEST_HEADER_VAL}"},
+		},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 1 {
+		t.Errorf("expected 1 schema, got %d", len(schemas))
+	}
+}
+
+func TestRetrieveHeadersMissingEnvVar(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	decls := []parser.Declaration{
+		{
+			Namespace:  "test",
+			ID:         "MissingEnv",
+			SourceType: parser.SourceURL,
+			Source:     json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`),
+			Adapter:    "zod",
+			ConfigPath: configPath,
+			Headers:    map[string]string{"Authorization": "Bearer ${UNDEFINED_VAR}"},
+		},
+	}
+
+	_, err := Retrieve(ctx, decls, DefaultOptions())
+	if err == nil {
+		t.Error("expected error for missing env var")
+	}
+	if !strings.Contains(err.Error(), "missing env var") {
+		t.Errorf("expected 'missing env var' in error, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "--env-file") {
+		t.Errorf("expected '--env-file' hint in error, got: %v", err)
+	}
+}
+
+func TestRetrieveCacheWithDifferentHeaders(t *testing.T) {
+	ctx := context.Background()
+	configPath := testdataPath("fake.jsonc")
+
+	os.Setenv("HEADER_A", "value-a")
+	os.Setenv("HEADER_B", "value-b")
+	defer os.Unsetenv("HEADER_A")
+	defer os.Unsetenv("HEADER_B")
+
+	// Same URL, different headers = different cache keys
+	decls := []parser.Declaration{
+		{
+			Namespace:  "test",
+			ID:         "HeaderA",
+			SourceType: parser.SourceURL,
+			Source:     json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`),
+			Adapter:    "zod",
+			ConfigPath: configPath,
+			Headers:    map[string]string{"X-Test": "${HEADER_A}"},
+		},
+		{
+			Namespace:  "test",
+			ID:         "HeaderB",
+			SourceType: parser.SourceURL,
+			Source:     json.RawMessage(`"https://json.schemastore.org/eslintrc.json"`),
+			Adapter:    "zod",
+			ConfigPath: configPath,
+			Headers:    map[string]string{"X-Test": "${HEADER_B}"},
+		},
+	}
+
+	schemas, err := Retrieve(ctx, decls, DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(schemas) != 2 {
+		t.Errorf("expected 2 schemas, got %d", len(schemas))
 	}
 }

@@ -323,7 +323,7 @@ func (b *bundleContext) fetch(uri string) (json.RawMessage, error) {
 			HTTPTimeout: b.opts.HTTPTimeout,
 			Retries:     b.opts.Retries,
 		}
-		return retriever.RetrieveFromURL(b.ctx, uri, opts)
+		return retriever.RetrieveFromURL(b.ctx, uri, nil, opts)
 	}
 
 	// Assume it's a file path

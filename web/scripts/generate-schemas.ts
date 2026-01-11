@@ -194,10 +194,32 @@ export function generateSchema(
 	const adapters = [...lang.adapters].sort();
 
 	// Build conditional validation rules for source field
-	const urlFileCondition = createConditional(
+	const urlCondition = createConditional(
 		{
 			properties: {
-				sourceType: { enum: ["url", "file"] },
+				sourceType: { const: "url" },
+			},
+		},
+		{
+			properties: {
+				source: {
+					type: "string",
+					description: "URL to fetch the JSON Schema from.",
+				},
+				headers: {
+					type: "object",
+					description:
+						"HTTP headers to include when fetching. Values support ${ENV_VAR} syntax for environment variable substitution.",
+					additionalProperties: { type: "string" },
+				},
+			},
+		},
+	);
+
+	const fileCondition = createConditional(
+		{
+			properties: {
+				sourceType: { const: "file" },
 			},
 		},
 		{
@@ -205,7 +227,7 @@ export function generateSchema(
 				source: {
 					type: "string",
 					description:
-						"URL or file path to the JSON Schema. File paths are relative to this config file.",
+						"File path to the JSON Schema. Relative paths are resolved from this config file.",
 				},
 			},
 		},
@@ -276,7 +298,7 @@ export function generateSchema(
 						},
 					},
 					required: ["id", "sourceType", "source", "adapter"],
-					allOf: [urlFileCondition, jsonCondition],
+					allOf: [urlCondition, fileCondition, jsonCondition],
 				},
 			},
 		},
