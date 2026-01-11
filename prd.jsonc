@@ -63,11 +63,49 @@
 				"edit `prd.jsonc` to insert new one-iteration implementation stories derived from `zod-discovery.md` (dependencies first), directly after this story; renumber story ids to remain sequential",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "baseline: draft2020-12 92.8%, draft2019-09 92.1%, draft7 97.2%, draft6 96.9%, draft4 97.2%, draft3 95.9%. most failures are bundler limitations (dynamic refs, anchors, uri-encoding). zod adapter itself is solid."
 		},
 		{
 			"id": "US-006",
+			"title": "bundler: inject $schema for version detection",
+			"description": "as a maintainer, i want the bundler to inject `$schema` based on draft when the input schema lacks one, so the ts core parser correctly normalizes draft3/4 boolean exclusiveMinimum/Maximum.",
+			"acceptanceCriteria": [
+				"compliance runner passes draft name to bundleSchema",
+				"bundler injects `$schema` if missing (e.g., `http://json-schema.org/draft-04/schema#` for draft4)",
+				"draft3/4 exclusiveMaximum/Minimum validation tests pass in zod compliance",
+				"go build + go test ./... pass"
+			],
+			"passes": false,
+			"notes": "derived from US-005 zod-discovery. fixes ~5 tests across draft3/4."
+		},
+		{
+			"id": "US-007",
+			"title": "bundler: URI-decode JSON pointer segments",
+			"description": "as a maintainer, i want the bundler to properly decode URI-encoded segments in JSON pointers, so refs like `#/definitions/percent%25field` resolve correctly.",
+			"acceptanceCriteria": [
+				"bundler decodes percent-encoded segments when validating/resolving internal $refs",
+				"escaped pointer ref tests pass (percent, slash, tilde, quote characters)",
+				"go build + go test ./... pass"
+			],
+			"passes": false,
+			"notes": "derived from US-005 zod-discovery. fixes ~30 tests across all drafts."
+		},
+		{
+			"id": "US-008",
+			"title": "bundler: resolve $anchor fragments",
+			"description": "as a maintainer, i want the bundler to resolve `#anchor` style refs (location-independent identifiers) to their $anchor/$id declarations, so schemas using anchors work correctly.",
+			"acceptanceCriteria": [
+				"bundler collects $anchor declarations during first pass",
+				"bundler resolves fragment-only refs like `#foo` to $anchor: foo locations",
+				"location-independent identifier tests pass across drafts",
+				"go build + go test ./... pass"
+			],
+			"passes": false,
+			"notes": "derived from US-005 zod-discovery. fixes ~20 tests across all drafts."
+		},
+		{
+			"id": "US-009",
 			"title": "valibot adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand valibot compliance failures and which ones are idiomatic to fix so that we improve without forced emulation.",
 			"acceptanceCriteria": [
@@ -80,7 +118,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-007",
+			"id": "US-010",
 			"title": "typebox adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typebox compliance failures, separating expressible schemas vs runtime-enforced behavior.",
 			"acceptanceCriteria": [
@@ -93,7 +131,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-008",
+			"id": "US-011",
 			"title": "effect adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand effect schema compliance failures and which ones are solvable using effect-native options.",
 			"acceptanceCriteria": [
@@ -106,7 +144,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-009",
+			"id": "US-012",
 			"title": "arktype adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand arktype compliance failures and keep the adapter idiomatic.",
 			"acceptanceCriteria": [
@@ -119,7 +157,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-010",
+			"id": "US-013",
 			"title": "typescript (type-only) adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typescript adapter compliance behavior and identify readability simplifications that are worth it.",
 			"acceptanceCriteria": [
@@ -132,7 +170,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-011",
+			"id": "US-014",
 			"title": "cli bundler: strict internal refs + reject dynamic refs",
 			"description": "as a maintainer, i want the go bundler to guarantee schemas passed to adapters have valid internal $refs and do not use dynamic/recursive refs, so adapters only handle a stable, self-contained subset.",
 			"acceptanceCriteria": [
@@ -146,7 +184,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-012",
+			"id": "US-015",
 			"title": "ts core: revert parse() to return SchemaNode",
 			"description": "as a maintainer, i want core parse() to return SchemaNode (no issues payload) and rely on cli bundling for strict $ref validation, so adapters stay simple and api stays stable.",
 			"acceptanceCriteria": [
@@ -155,7 +193,7 @@
 				"Typecheck passes (`bun run build` + `bun run typecheck` from `typescript/`)"
 			],
 			"passes": true,
-			"notes": "depends on us-011"
+			"notes": "depends on us-014"
 		}
 	]
 }
