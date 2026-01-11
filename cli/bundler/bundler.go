@@ -25,6 +25,7 @@ type Options struct {
 	RemotesPath string        // path to remotes/ folder for localhost:1234 mapping
 	HTTPTimeout time.Duration // timeout for HTTP requests
 	Retries     int           // number of retries for HTTP requests
+	Draft       string        // JSON Schema draft (e.g., "draft4", "draft7") for $schema injection
 }
 
 // DefaultOptions returns sensible defaults
@@ -45,12 +46,33 @@ type bundleContext struct {
 	ctx        context.Context
 }
 
+// draftToSchemaURI maps draft names to their canonical $schema URIs
+var draftToSchemaURI = map[string]string{
+	"draft3":      "http://json-schema.org/draft-03/schema#",
+	"draft4":      "http://json-schema.org/draft-04/schema#",
+	"draft6":      "http://json-schema.org/draft-06/schema#",
+	"draft7":      "http://json-schema.org/draft-07/schema#",
+	"draft2019-09": "https://json-schema.org/draft/2019-09/schema",
+	"draft2020-12": "https://json-schema.org/draft/2020-12/schema",
+}
+
 // Bundle resolves all external $refs in a schema, returning a self-contained schema.
 // External refs are fetched, bundled recursively, and embedded in $defs.
 func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.RawMessage, error) {
 	var parsed any
 	if err := json.Unmarshal(schema, &parsed); err != nil {
 		return nil, fmt.Errorf("failed to parse schema: %w", err)
+	}
+
+	// Inject $schema if missing and draft is specified
+	if opts.Draft != "" {
+		if obj, ok := parsed.(map[string]any); ok {
+			if _, hasSchema := obj["$schema"]; !hasSchema {
+				if schemaURI, known := draftToSchemaURI[opts.Draft]; known {
+					obj["$schema"] = schemaURI
+				}
+			}
+		}
 	}
 
 	bctx := &bundleContext{

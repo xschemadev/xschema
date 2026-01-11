@@ -571,6 +571,93 @@ func TestValidateJSONPointer(t *testing.T) {
 	}
 }
 
+func TestBundleInjectsSchemaForDraft(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		draft      string
+		wantSchema string
+	}{
+		{"draft3", "http://json-schema.org/draft-03/schema#"},
+		{"draft4", "http://json-schema.org/draft-04/schema#"},
+		{"draft6", "http://json-schema.org/draft-06/schema#"},
+		{"draft7", "http://json-schema.org/draft-07/schema#"},
+		{"draft2019-09", "https://json-schema.org/draft/2019-09/schema"},
+		{"draft2020-12", "https://json-schema.org/draft/2020-12/schema"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.draft, func(t *testing.T) {
+			schema := `{"type": "string"}`
+			opts := Options{Draft: tt.draft}
+
+			bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			var result map[string]any
+			if err := json.Unmarshal(bundled, &result); err != nil {
+				t.Fatalf("failed to parse result: %v", err)
+			}
+
+			got, ok := result["$schema"].(string)
+			if !ok {
+				t.Fatalf("$schema not found in bundled schema")
+			}
+			if got != tt.wantSchema {
+				t.Errorf("$schema: got %q, want %q", got, tt.wantSchema)
+			}
+		})
+	}
+}
+
+func TestBundlePreservesExistingSchema(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema already has $schema - should NOT be overwritten
+	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+	opts := Options{Draft: "draft4"} // trying to inject draft4
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	got := result["$schema"].(string)
+	// Should preserve the original draft7 schema, not inject draft4
+	if got != "http://json-schema.org/draft-07/schema#" {
+		t.Errorf("existing $schema should be preserved, got %q", got)
+	}
+}
+
+func TestBundleNoDraftNoInjection(t *testing.T) {
+	ctx := context.Background()
+
+	// No draft specified - should not inject $schema
+	schema := `{"type": "string"}`
+	opts := DefaultOptions() // no Draft set
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if _, hasSchema := result["$schema"]; hasSchema {
+		t.Error("should not inject $schema when no draft is specified")
+	}
+}
+
 func TestValidateJSONPointerURIEncoded(t *testing.T) {
 	// Schema with keys that need URI encoding in refs
 	root := map[string]any{

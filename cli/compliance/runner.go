@@ -362,7 +362,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 
 		bundleStart := time.Now()
-		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath, opts.draft)
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
 		bundled[i] = bundledGroup{
@@ -585,7 +585,7 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 	return nil
 }
 
-func bundleSchema(ctx context.Context, schema RawSchema, suitePath string) (RawSchema, error) {
+func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string) (RawSchema, error) {
 	schemaJSON, err := json.Marshal(schema)
 	if err != nil {
 		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
@@ -593,6 +593,7 @@ func bundleSchema(ctx context.Context, schema RawSchema, suitePath string) (RawS
 
 	bundleOpts := bundler.Options{
 		RemotesPath: filepath.Join(suitePath, "remotes"),
+		Draft:       draft,
 	}
 
 	bundled, err := bundler.Bundle(ctx, schemaJSON, bundleOpts)

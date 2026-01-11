@@ -105,3 +105,17 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - refs with quotes (%22) also fixed by same mechanism
   - remaining ref failures are: $anchor resolution (US-008), relative URI with $id scoping, URN refs
 ---
+
+## 2026-01-11 - US-006
+- bundler now injects $schema URI based on draft when schema lacks one
+- added Draft field to bundler.Options
+- compliance runner passes draft name to bundleSchema
+- Files changed: `cli/bundler/bundler.go`, `cli/bundler/bundler_test.go`, `cli/compliance/runner.go`, zod compliance results, `prd.jsonc`
+- **Results:**
+  - draft4: 98.6% → 98.9% (+2 tests)
+  - draft3: 97.3% → 97.8% (+2 tests)
+- **Learnings for future iterations:**
+  - $schema injection only applies to root schema objects, not boolean schemas
+  - draftToSchemaURI map covers draft3 through draft2020-12
+  - ts core parser uses $schema to determine exclusiveMin/Max boolean vs number behavior
+---

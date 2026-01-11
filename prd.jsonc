@@ -76,8 +76,8 @@
 				"draft3/4 exclusiveMaximum/Minimum validation tests pass in zod compliance",
 				"go build + go test ./... pass"
 			],
-			"passes": false,
-			"notes": "derived from US-005 zod-discovery. fixes ~5 tests across draft3/4."
+			"passes": true,
+			"notes": "derived from US-005. draft4: 98.6%→98.9% (+2 tests), draft3: 97.3%→97.8% (+2 tests)"
 		},
 		{
 			"id": "US-007",

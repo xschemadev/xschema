@@ -6,8 +6,8 @@
 | ----- | ------ | ------ | ------- | -------- |
 | draft2019-09 | 857 | 66 | 0 | 92.8% |
 | draft2020-12 | 869 | 59 | 0 | 93.6% |
-| draft3 | 396 | 11 | 0 | 97.3% |
-| draft4 | 562 | 8 | 0 | 98.6% |
+| draft3 | 398 | 9 | 0 | 97.8% |
+| draft4 | 564 | 6 | 0 | 98.9% |
 | draft6 | 754 | 16 | 0 | 97.9% |
 | draft7 | 830 | 16 | 0 | 98.1% |
 
@@ -15,8 +15,8 @@
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-92.8%25-yellow)
 ![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-93.6%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-97.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.6%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-97.8%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.9%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-97.9%25-brightgreen)
 ![draft7](https://img.shields.io/badge/draft7%20compliance-98.1%25-brightgreen)
 
@@ -614,10 +614,10 @@
 | items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
-| maximum | ⚠️ | 13/14 |
+| maximum | ✅ | 14/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
-| minimum | ⚠️ | 12/13 |
+| minimum | ✅ | 13/13 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
@@ -643,24 +643,6 @@
 
 - **dependencies**
   - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -710,11 +692,11 @@
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
-| maximum | ⚠️ | 13/14 |
+| maximum | ✅ | 14/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
 | minProperties | ✅ | 6/6 |
-| minimum | ⚠️ | 16/17 |
+| minimum | ✅ | 17/17 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
 | oneOf | ✅ | 23/23 |
@@ -743,24 +725,6 @@
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
   - Expected: `invalid`, Got: `true`
 
 </details>
