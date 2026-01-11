@@ -287,3 +287,30 @@ Known Issues:
 - all 4 TS adapters now have known-issues.json files with 100% compliance
 
 ---
+
+## 2026-01-11 - US-005: Web compliance page known issues section
+
+### What was implemented
+- updated generate-compliance.ts to read knownIssues from compliance JSON results
+- added "Known" column to summary table (only shown when adapter has known issues)
+- added "Known Behaviors" section grouped by reason with expandable test lists
+- renamed "Known Issues" section to "Unexpected Failures" for actual test failures
+- removed stale typebox docs entry (no adapter exists)
+
+### Files changed
+- web/scripts/generate-compliance.ts (DraftResult interface, groupKnownIssuesByReason helper, summary table, Known Behaviors section, Unexpected Failures section)
+- web/content/docs/typescript/adapters/typebox/ (deleted - no adapter exists)
+- web/content/docs/typescript/adapters/*/compliance.mdx (regenerated)
+
+### Key design decisions
+- known issues data comes from compliance JSON results (which already include knownIssues.items array)
+- Known Behaviors section uses Accordion components for expandable test lists per reason
+- test paths are shown as inline code for readability
+- summary table only shows Known column if at least one draft has known issues
+
+### Learnings
+- compliance JSON already includes knownIssues.items with path+reason from CLI runner
+- fumadocs Accordion component handles expandable sections well
+- curly braces in MDX need escaping via escapeMdx function
+
+---

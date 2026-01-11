@@ -42,6 +42,11 @@ interface KeywordResult {
   }[];
 }
 
+interface KnownIssueItem {
+  path: string;
+  reason: string;
+}
+
 interface DraftResult {
   draft: string;
   keywords: KeywordResult[];
@@ -51,6 +56,10 @@ interface DraftResult {
     skipped: number;
     total: number;
     percentage: number;
+    knownIssues?: {
+      count: number;
+      items: KnownIssueItem[];
+    };
   };
 }
 
@@ -277,6 +286,38 @@ function groupIssuesByKeyword(drafts: DraftResult[]): KeywordIssue[] {
 }
 
 /**
+ * Group known issues by reason across all drafts
+ */
+interface KnownBehaviorGroup {
+  reason: string;
+  tests: string[];
+}
+
+function groupKnownIssuesByReason(drafts: DraftResult[]): KnownBehaviorGroup[] {
+  const reasonMap = new Map<string, Set<string>>();
+
+  for (const draft of drafts) {
+    const knownIssues = draft.summary.knownIssues;
+    if (!knownIssues || !knownIssues.items) continue;
+
+    for (const item of knownIssues.items) {
+      if (!reasonMap.has(item.reason)) {
+        reasonMap.set(item.reason, new Set());
+      }
+      reasonMap.get(item.reason)!.add(item.path);
+    }
+  }
+
+  // Convert to array and sort by count descending
+  return Array.from(reasonMap.entries())
+    .map(([reason, tests]) => ({
+      reason,
+      tests: Array.from(tests).sort(),
+    }))
+    .sort((a, b) => b.tests.length - a.tests.length);
+}
+
+/**
  * Check if adapter is type-only (no runtime validation).
  * Type-only adapters have no passed tests and at least some skipped tests.
  */
@@ -333,16 +374,34 @@ function generateComplianceMdx(info: AdapterInfo): string {
     // Summary section
     lines.push("## Summary");
     lines.push("");
-    lines.push("| Draft | Passed | Failed | Coverage |");
-    lines.push("| ----- | ------ | ------ | -------- |");
+
+    // Check if any draft has known issues to decide on table format
+    const hasKnownIssues = info.drafts.some(
+      (d) => d.summary.knownIssues && d.summary.knownIssues.count > 0,
+    );
+
+    if (hasKnownIssues) {
+      lines.push("| Draft | Passed | Failed | Known | Coverage |");
+      lines.push("| ----- | ------ | ------ | ----- | -------- |");
+    } else {
+      lines.push("| Draft | Passed | Failed | Coverage |");
+      lines.push("| ----- | ------ | ------ | -------- |");
+    }
 
     for (const draft of info.drafts) {
-      const { passed, failed, percentage } = draft.summary;
+      const { passed, failed, percentage, knownIssues } = draft.summary;
+      const knownCount = knownIssues?.count ?? 0;
       const coverageEmoji =
         percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
-      lines.push(
-        `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
-      );
+      if (hasKnownIssues) {
+        lines.push(
+          `| ${draft.draft} | ${passed} | ${failed} | ${knownCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+        );
+      } else {
+        lines.push(
+          `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+        );
+      }
     }
     lines.push("");
 
@@ -405,11 +464,39 @@ function generateComplianceMdx(info: AdapterInfo): string {
     lines.push("");
   }
 
-  // Known Issues section - grouped by keyword
+  // Known Behaviors section - grouped by reason from knownIssues
+  const knownBehaviors = groupKnownIssuesByReason(info.drafts);
+
+  if (knownBehaviors.length > 0) {
+    lines.push("## Known Behaviors");
+    lines.push("");
+    lines.push(
+      "The following tests are intentionally excluded from compliance percentages. " +
+        "These represent fundamental limitations of static code generation.",
+    );
+    lines.push("");
+    lines.push("<Accordions>");
+
+    for (const behavior of knownBehaviors) {
+      const title = `${escapeMdx(behavior.reason)} (${behavior.tests.length} tests)`;
+      lines.push(`<Accordion title="${title}">`);
+      lines.push("");
+      for (const test of behavior.tests) {
+        lines.push(`- \`${escapeMdx(test)}\``);
+      }
+      lines.push("");
+      lines.push("</Accordion>");
+    }
+
+    lines.push("</Accordions>");
+    lines.push("");
+  }
+
+  // Unexpected Failures section - actual failures grouped by keyword
   const issues = groupIssuesByKeyword(info.drafts);
 
   if (issues.length > 0) {
-    lines.push("## Known Issues");
+    lines.push("## Unexpected Failures");
     lines.push("");
     lines.push(
       "The following JSON Schema keywords have incomplete support. " +
@@ -449,11 +536,12 @@ function generateComplianceMdx(info: AdapterInfo): string {
 
     lines.push("</Accordions>");
     lines.push("");
-  } else {
-    lines.push("## Known Issues");
+  } else if (knownBehaviors.length === 0) {
+    // Only show "no issues" if there are also no known behaviors
+    lines.push("## Test Results");
     lines.push("");
     lines.push(
-      "🎉 **No known issues!** All JSON Schema keywords are fully supported.",
+      "All JSON Schema keywords are fully supported.",
     );
     lines.push("");
   }

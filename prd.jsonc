@@ -70,8 +70,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Known column to summary table. Known Behaviors section shows issues grouped by reason with expandable test lists. Renamed old Known Issues to Unexpected Failures for actual failures only."
     },
     {
       "id": "US-006",
