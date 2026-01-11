@@ -15,6 +15,7 @@ import (
 
 	"github.com/xschemadev/xschema/parser"
 	"github.com/xschemadev/xschema/ui"
+	"github.com/xschemadev/xschema/validator"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -136,6 +137,10 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMes
 			return nil, fmt.Errorf("invalid JSON from %s", url)
 		}
 
+		if err := validator.ValidateSchema(data); err != nil {
+			return nil, fmt.Errorf("schema from %s: %w", url, err)
+		}
+
 		ui.Verbosef("successfully fetched from URL: url=%s, status=%d, bytes=%d", url, resp.StatusCode, len(data))
 		return json.RawMessage(data), nil
 	}
@@ -168,6 +173,10 @@ func retrieveFromFile(ctx context.Context, filePath string, configPath string) (
 		return nil, fmt.Errorf("invalid JSON in %s", fullPath)
 	}
 
+	if err := validator.ValidateSchema(data); err != nil {
+		return nil, fmt.Errorf("schema in %s: %w", fullPath, err)
+	}
+
 	ui.Verbosef("successfully read file: path=%s, bytes=%d", fullPath, len(data))
 	return json.RawMessage(data), nil
 }
@@ -191,6 +200,10 @@ func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMes
 	if !json.Valid(data) {
 		ui.Verbosef("invalid JSON in file: %s", absolutePath)
 		return nil, fmt.Errorf("invalid JSON in %s", absolutePath)
+	}
+
+	if err := validator.ValidateSchema(data); err != nil {
+		return nil, fmt.Errorf("schema in %s: %w", absolutePath, err)
 	}
 
 	ui.Verbosef("successfully read file: path=%s, bytes=%d", absolutePath, len(data))
@@ -288,6 +301,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			case parser.SourceJSON:
 				// Inline JSON - source is already the schema
 				schema = d.Source
+				if err := validator.ValidateSchema(schema); err != nil {
+					return fmt.Errorf("inline schema %s: %w", d.Key(), err)
+				}
 			default:
 				err = fmt.Errorf("unknown source type: %s", d.SourceType)
 			}
