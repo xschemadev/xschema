@@ -107,7 +107,7 @@
 		{
 			"id": "US-008",
 			"title": "arktype — renderer cleanliness pass",
-			"description": "as a maintainer, i want the arktype renderer to use arktype’s native syntax/constructs as directly as possible, so generated code stays readable and not overly clever.",
+			"description": "as a maintainer, i want the arktype renderer to use arktype's native syntax/constructs as directly as possible, so generated code stays readable and not overly clever.",
 			"acceptanceCriteria": [
 				"audit arktype renderer output patterns for common schema shapes",
 				"replace weird/non-idiomatic constructs with idiomatic arktype patterns while preserving semantics",
@@ -115,8 +115,8 @@
 				"run `bun run compliance` in `typescript/packages/adapters/arktype/` and confirm results are not worse than US-007 baseline",
 				"update root `progress.txt` with a brief summary"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "cleaned up property syntax (direct vs computed); kept .or(type.null) for nullable (idiomatic arktype), Intl.Segmenter for string length (spec compliance), and narrow for tuples (JSON Schema semantics)"
 		}
 	]
 }

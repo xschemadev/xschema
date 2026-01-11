@@ -359,3 +359,16 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - bundler would need full URI resolution with $id scope tracking to fix relative ref failures
 ---
 
+## 2026-01-11 - US-008 (arktype renderer cleanliness)
+- audited arktype renderer for non-idiomatic patterns
+- cleaned up object property syntax: uses direct `key:` for valid JS identifiers, computed `"key":` only for special chars/reserved words
+- verified nullable uses `.or(type.null)` which is the idiomatic arktype pattern (not `.nullable()`)
+- verified string length uses Intl.Segmenter for JSON Schema grapheme counting compliance (unchanged)
+- verified tuple uses narrow for JSON Schema semantics (arrays shorter than prefix are valid)
+- compliance unchanged: draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- Files changed: `typescript/packages/adapters/arktype/src/renderer.ts`, `progress.txt`
+- **Learnings for future iterations:**
+  - arktype doesn't have a `.nullable()` method; `.or(type.null)` is the idiomatic pattern
+  - JS reserved words (class, function, etc) and special chars require quoted property syntax
+---
+
