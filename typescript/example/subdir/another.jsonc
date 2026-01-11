@@ -19,21 +19,28 @@
 			"id": "Native",
 			"sourceType": "json",
 			"source": {
-				"fruits": [
-					"apple",
-					"orange",
-					"pear"
-				],
-				"vegetables": [
-					{
-						"veggieName": "potato",
-						"veggieLike": true
+				"type": "object",
+				"properties": {
+					"fruits": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["apple", "orange", "pear"]
+						}
 					},
-					{
-						"veggieName": "broccoli",
-						"veggieLike": false
+					"vegetables": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"veggieName": { "type": "string" },
+								"veggieLike": { "type": "boolean" }
+							},
+							"required": ["veggieName", "veggieLike"]
+						}
 					}
-				]
+				},
+				"required": ["fruits", "vegetables"]
 			},
 			"adapter": "@xschemadev/typescript"
 		}
