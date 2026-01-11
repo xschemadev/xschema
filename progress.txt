@@ -204,3 +204,32 @@ Known Issues:
 ```
 
 ---
+
+## 2026-01-11 - US-007: Valibot known issues file
+
+### What was implemented
+- created valibot known-issues.json starting from zod's version
+- identified valibot-specific failures: JS prototype property names (__proto__, constructor, toString)
+- extended bundler limitations to draft7/6/4 (valibot fails these, zod doesn't)
+- extended metaschema validation issues to draft7/6/4
+- added 50 new entries for JS prototype properties across all applicable drafts
+
+### Files changed
+- typescript/packages/adapters/valibot/compliance/known-issues.json (new)
+
+### Final compliance results
+| Draft | Passed | Known | Coverage |
+|-------|--------|-------|----------|
+| draft2020-12 | 860 | 60 | 100.0% |
+| draft2019-09 | 848 | 67 | 100.0% |
+| draft7 | 825 | 19 | 100.0% |
+| draft6 | 749 | 19 | 100.0% |
+| draft4 | 557 | 11 | 100.0% |
+| draft3 | 400 | 7 | 100.0% |
+
+### Learnings
+- valibot has a known bug with JS prototype property names that zod handles correctly
+- bundler issues in draft7/6/4 exist but were not in zod's known-issues (zod passes them)
+- need to track adapter-specific limitations separately from shared bundler limitations
+
+---

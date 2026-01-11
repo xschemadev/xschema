@@ -100,8 +100,8 @@
         "No unexpected failures for documented README limitations",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": "TODO: Verify prototype property names is valibot bug vs our implementation"
+      "passes": true,
+      "notes": "Added 50 JS prototype property tests, extended bundler/metaschema issues to draft7/6/4. All drafts now 100%."
     },
     {
       "id": "US-008",

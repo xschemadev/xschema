@@ -427,6 +427,10 @@
     "failed": 19,
     "skipped": 0,
     "total": 844,
-    "percentage": 97.74881516587678
+    "percentage": 97.74881516587678,
+    "knownIssues": {
+      "count": 0,
+      "items": null
+    }
   }
 }
