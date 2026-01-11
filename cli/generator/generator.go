@@ -15,13 +15,37 @@ import (
 	"github.com/xschemadev/xschema/ui"
 )
 
-// validateOutputs checks that each output has at least schema or type
+// validateOutputs checks that each output has at least schema or type.
 func validateOutputs(outputs []adapter.ConvertResult, adapterName string) error {
 	for _, output := range outputs {
 		if output.Schema == "" && output.Type == "" {
 			return fmt.Errorf("adapter %s returned neither schema nor type for %s", adapterName, output.Key())
 		}
+		if output.VarName == "" {
+			return fmt.Errorf("adapter %s returned empty varName for %s", adapterName, output.Key())
+		}
 	}
+	return nil
+}
+
+func validateOutputVarNamesMatchInputs(outputs []adapter.ConvertResult, inputs []adapter.ConvertInput, adapterName string) error {
+	expected := make(map[string]string, len(inputs))
+	for _, in := range inputs {
+		key := in.Namespace + ":" + in.ID
+		expected[key] = in.VarName
+	}
+
+	for _, out := range outputs {
+		key := out.Key()
+		want, ok := expected[key]
+		if !ok {
+			return fmt.Errorf("adapter %s returned output for unexpected key %q", adapterName, key)
+		}
+		if out.VarName != want {
+			return fmt.Errorf("adapter %s returned mismatched varName for %s: got %q want %q", adapterName, key, out.VarName, want)
+		}
+	}
+
 	return nil
 }
 
@@ -77,9 +101,16 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 			}
 			schema = bundled
 		}
+
+		varName := s.Namespace + "_" + s.ID
+		if lang.BuildVarName != nil {
+			varName = lang.BuildVarName(s.Namespace, s.ID)
+		}
+
 		adapterInput[i] = adapter.ConvertInput{
 			Namespace: s.Namespace,
 			ID:        s.ID,
+			VarName:   varName,
 			Schema:    schema,
 		}
 	}
@@ -118,6 +149,9 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 	}
 
 	if err := validateOutputs(outputs, input.AdapterRef); err != nil {
+		return nil, err
+	}
+	if err := validateOutputVarNamesMatchInputs(outputs, adapterInput, input.AdapterRef); err != nil {
 		return nil, err
 	}
 

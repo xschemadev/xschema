@@ -20,6 +20,7 @@ func TestGenerateHarness(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   `z.object({ name: z.string() })`,
 				Imports:  []string{`import { z } from "zod"`},
 				Validate: `(data) => schema.safeParse(data).success`,
@@ -81,6 +82,7 @@ func TestGenerateHarness_MultipleGroups(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   `z.string()`,
 				Imports:  []string{`import { z } from "zod"`},
 				Validate: `(data) => schema.safeParse(data).success`,
@@ -90,6 +92,7 @@ func TestGenerateHarness_MultipleGroups(t *testing.T) {
 		{
 			GroupID: "group_1",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_1",
 				Schema:   `z.number()`,
 				Imports:  []string{`import { z } from "zod"`},
 				Validate: `(data) => schema.safeParse(data).success`,
@@ -131,6 +134,7 @@ func TestGenerateHarness_MergedImports(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:         "group_0",
 				Schema:          `z.object({ name: z.string() })`,
 				Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
 				Validate:        `(data) => schema.safeParse(data).success`,
@@ -164,6 +168,7 @@ func TestGenerateHarness_TypeOnly(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   "",
 				Type:     `{ name: string }`,
 				Imports:  nil,
@@ -206,6 +211,7 @@ func TestGenerateHarness_MissingTemplate(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   "some_schema",
 				Validate: "validate_fn",
 			},
@@ -237,6 +243,7 @@ func TestGenerateHarness_ComplexTestData(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   `z.any()`,
 				Imports:  []string{`import { z } from "zod"`},
 				Validate: `(data) => true`,
@@ -284,6 +291,7 @@ func TestGenerateHarness_FilenamePattern(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
+				VarName:  "group_0",
 				Schema:   `z.string()`,
 				Imports:  []string{`import { z } from "zod"`},
 				Validate: `(data) => schema.safeParse(data).success`,

@@ -118,6 +118,7 @@ func TestConvertInputJSON(t *testing.T) {
 	input := adapter.ConvertInput{
 		Namespace: "user",
 		ID:        "Test",
+		VarName:   "user_Test",
 		Schema:    json.RawMessage(`{"type": "string"}`),
 	}
 
@@ -131,7 +132,7 @@ func TestConvertInputJSON(t *testing.T) {
 		t.Fatalf("failed to unmarshal: %v", err)
 	}
 
-	if decoded.Namespace != "user" || decoded.ID != "Test" {
+	if decoded.Namespace != "user" || decoded.ID != "Test" || decoded.VarName != "user_Test" {
 		t.Errorf("round-trip failed: %+v", decoded)
 	}
 }
@@ -150,28 +151,28 @@ func TestValidateOutputs(t *testing.T) {
 		{
 			name: "valid with schema only",
 			outputs: []adapter.ConvertResult{
-				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: ""},
+				{Namespace: "test", ID: "Test", VarName: "test_Test", Schema: "z.string()", Type: ""},
 			},
 			wantErr: false,
 		},
 		{
 			name: "valid with type only",
 			outputs: []adapter.ConvertResult{
-				{Namespace: "test", ID: "Test", Schema: "", Type: "string"},
+				{Namespace: "test", ID: "Test", VarName: "test_Test", Schema: "", Type: "string"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "valid with both",
 			outputs: []adapter.ConvertResult{
-				{Namespace: "test", ID: "Test", Schema: "z.string()", Type: "string"},
+				{Namespace: "test", ID: "Test", VarName: "test_Test", Schema: "z.string()", Type: "string"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid with neither",
 			outputs: []adapter.ConvertResult{
-				{Namespace: "test", ID: "Test", Schema: "", Type: ""},
+				{Namespace: "test", ID: "Test", VarName: "test_Test", Schema: "", Type: ""},
 			},
 			wantErr: true,
 		},

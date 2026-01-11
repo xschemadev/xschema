@@ -6,6 +6,7 @@ import "encoding/json"
 type ConvertInput struct {
 	Namespace string          `json:"namespace"`
 	ID        string          `json:"id"`
+	VarName   string          `json:"varName"`
 	Schema    json.RawMessage `json:"schema"`
 }
 
@@ -13,6 +14,7 @@ type ConvertInput struct {
 type ConvertResult struct {
 	Namespace       string   `json:"namespace"`
 	ID              string   `json:"id"`
+	VarName         string   `json:"varName"`
 	Imports         []string `json:"imports"`
 	Schema          string   `json:"schema,omitempty"`
 	Type            string   `json:"type,omitempty"`

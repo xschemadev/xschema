@@ -1,16 +1,16 @@
-import type { ConvertInput, ConvertResult, JSONSchema } from "@xschemadev/core";
-import { parse } from "@xschemadev/core";
+import { parse, type ConvertInput, type ConvertResult, type JSONSchema } from "@xschemadev/core";
+
 import { render } from "./renderer.js";
 
 export function convert(input: ConvertInput): ConvertResult {
-	const { namespace, id, schema } = input;
+	const { namespace, id, varName, schema } = input;
 	const ir = parse(schema as JSONSchema);
 	const schemaCode = render(ir);
-	const varName = `${namespace}_${id}`;
 
 	return {
 		namespace,
 		id,
+		varName,
 		imports: [
 			'import { Type, type Static } from "@sinclair/typebox"',
 			'import { Value } from "@sinclair/typebox/value"',

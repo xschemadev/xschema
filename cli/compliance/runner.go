@@ -385,9 +385,11 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	var inputIndexes []int // maps adapter input index to bundled group index
 	for i, bg := range bundled {
 		if bg.bundleErr == nil {
+			groupID := fmt.Sprintf("group_%d", i)
 			adapterInputs = append(adapterInputs, adapter.ConvertInput{
 				Namespace: "compliance",
-				ID:        fmt.Sprintf("group_%d", i),
+				ID:        groupID,
+				VarName:   groupID,
 				Schema:    bg.bundledSchema.Raw(),
 			})
 			inputIndexes = append(inputIndexes, i)

@@ -148,7 +148,7 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 // CallAdapter calls the adapter to convert a schema to code
 func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*adapter.ConvertResult, error) {
 	outputs, err := CallAdapterBatch(ctx, adapterBin, runner, runnerArgs, []adapter.ConvertInput{
-		{Namespace: "compliance", ID: "Test", Schema: schema.Raw()},
+		{Namespace: "compliance", ID: "Test", VarName: "compliance_Test", Schema: schema.Raw()},
 	})
 	if err != nil {
 		return nil, err

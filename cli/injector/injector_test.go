@@ -22,6 +22,7 @@ func TestInject_TypeScript(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "User",
+				VarName:   "user_User",
 				Schema:    `z.object({ id: z.string(), name: z.string() })`,
 				Type:      "z.infer<typeof user_User>",
 				Imports:   []string{`import { z } from "zod"`},
@@ -29,6 +30,7 @@ func TestInject_TypeScript(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "Post",
+				VarName:   "user_Post",
 				Schema:    `z.object({ title: z.string(), body: z.string() })`,
 				Type:      "z.infer<typeof user_Post>",
 				Imports:   []string{`import { z } from "zod"`},
@@ -108,6 +110,7 @@ func TestInject_TypeOnly(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "User",
+				VarName:   "user_User",
 				Type:      "{ id: string; name: string }",
 				Schema:    "", // type only, no schema
 				Imports:   []string{},
@@ -168,6 +171,7 @@ func TestInject_SchemaOnly(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "User",
+				VarName:   "user_User",
 				Schema:    "z.object({ id: z.string() })",
 				Type:      "", // schema only, no explicit type
 				Imports:   []string{`import { z } from "zod"`},
@@ -218,6 +222,62 @@ func TestInject_SchemaOnly(t *testing.T) {
 	}
 }
 
+func TestInject_DottedNamespaceVarName(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   tmpDir,
+		Outputs: []adapter.ConvertResult{
+			{
+				Namespace: "user.xschema",
+				ID:        "User",
+				VarName:   "userXschema_User",
+				Schema:    "z.string()",
+				Type:      "z.infer<typeof userXschema_User>",
+				Imports:   []string{`import { z } from "zod"`},
+			},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, "xschema.gen.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
+	output := string(content)
+
+	if !strings.Contains(output, "const userXschema_User =") {
+		t.Fatalf("expected sanitized varName const, got:\n%s", output)
+	}
+	if !strings.Contains(output, `"user.xschema:User": userXschema_User`) {
+		t.Fatalf("expected dotted namespace key, got:\n%s", output)
+	}
+}
+
+func TestInject_DuplicateVarNameErrors(t *testing.T) {
+	input := InjectInput{
+		Language: "typescript",
+		OutDir:   t.TempDir(),
+		Outputs: []adapter.ConvertResult{
+			{Namespace: "user.xschema", ID: "User", VarName: "userXschema_User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "user-xschema", ID: "User", VarName: "userXschema_User", Schema: "z.number()", Imports: []string{`import { z } from "zod"`}},
+		},
+	}
+
+	err := Inject(input)
+	if err == nil {
+		t.Fatal("expected collision error")
+	}
+	if !strings.Contains(err.Error(), "multiple schemas map to the same generated variable name") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestInject_CreatesDirectory(t *testing.T) {
 	tmpDir := t.TempDir()
 	outDir := filepath.Join(tmpDir, "nested", ".xschema")
@@ -226,7 +286,7 @@ func TestInject_CreatesDirectory(t *testing.T) {
 		Language: "typescript",
 		OutDir:   outDir,
 		Outputs: []adapter.ConvertResult{
-			{Namespace: "test", ID: "Test", Schema: "z.string()", Imports: []string{}},
+			{Namespace: "test", ID: "Test", VarName: "test_Test", Schema: "z.string()", Imports: []string{}},
 		},
 	})
 
@@ -559,6 +619,7 @@ func TestInject_MixedSchemaAndType(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "WithBoth",
+				VarName:   "user_WithBoth",
 				Schema:    `z.object({ id: z.string() })`,
 				Type:      "z.infer<typeof user_WithBoth>",
 				Imports:   []string{`import { z } from "zod"`},
@@ -566,6 +627,7 @@ func TestInject_MixedSchemaAndType(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "TypeOnly",
+				VarName:   "user_TypeOnly",
 				Schema:    "",
 				Type:      "{ id: string }",
 				Imports:   []string{},
@@ -573,6 +635,7 @@ func TestInject_MixedSchemaAndType(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "SchemaOnly",
+				VarName:   "user_SchemaOnly",
 				Schema:    `z.string()`,
 				Type:      "",
 				Imports:   []string{`import { z } from "zod"`},
@@ -611,9 +674,9 @@ func TestInject_MultipleNamespaces(t *testing.T) {
 		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []adapter.ConvertResult{
-			{Namespace: "user", ID: "User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
-			{Namespace: "post", ID: "Post", Schema: "z.number()", Imports: []string{`import { z } from "zod"`}},
-			{Namespace: "comment", ID: "Comment", Schema: "z.boolean()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "user", ID: "User", VarName: "user_User", Schema: "z.string()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "post", ID: "Post", VarName: "post_Post", Schema: "z.number()", Imports: []string{`import { z } from "zod"`}},
+			{Namespace: "comment", ID: "Comment", VarName: "comment_Comment", Schema: "z.boolean()", Imports: []string{`import { z } from "zod"`}},
 		},
 	}
 
@@ -651,12 +714,14 @@ func TestInject_DifferentImports(t *testing.T) {
 			{
 				Namespace: "user",
 				ID:        "User",
+				VarName:   "user_User",
 				Schema:    "z.string()",
 				Imports:   []string{`import { z } from "zod"`, `import { ZodError } from "zod"`},
 			},
 			{
 				Namespace: "user",
 				ID:        "Post",
+				VarName:   "user_Post",
 				Schema:    "someOther()",
 				Imports:   []string{`import { someOther } from "other-lib"`},
 			},
@@ -697,7 +762,7 @@ func TestInject_OverwriteExisting(t *testing.T) {
 		Language: "typescript",
 		OutDir:   tmpDir,
 		Outputs: []adapter.ConvertResult{
-			{Namespace: "user", ID: "New", Schema: "z.string()", Imports: []string{}},
+			{Namespace: "user", ID: "New", VarName: "user_New", Schema: "z.string()", Imports: []string{}},
 		},
 	}
 

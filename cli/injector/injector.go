@@ -257,7 +257,10 @@ func Inject(input InjectInput) error {
 	ui.Verbosef("injecting schemas: language=%s, outputs=%d, outDir=%s", input.Language, len(input.Outputs), input.OutDir)
 
 	// Build template data
-	data := buildTemplateData(input, lang)
+	data, err := buildTemplateData(input, lang)
+	if err != nil {
+		return err
+	}
 
 	ui.Verbosef("template data: imports=%d, schemas=%d", len(data.Imports), len(data.Schemas))
 
@@ -290,7 +293,7 @@ func Inject(input InjectInput) error {
 	return nil
 }
 
-func buildTemplateData(input InjectInput, lang *language.Language) TemplateData {
+func buildTemplateData(input InjectInput, lang *language.Language) (TemplateData, error) {
 	// Collect all imports
 	var allImports []string
 	for _, out := range input.Outputs {
@@ -301,11 +304,27 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 
 	// Build schema entries
 	schemas := make([]language.SchemaEntry, len(input.Outputs))
+	varNameToKey := make(map[string]string, len(input.Outputs))
 	for i, out := range input.Outputs {
-		varName := out.Namespace + "_" + out.ID // default
-		if lang.BuildVarName != nil {
-			varName = lang.BuildVarName(out.Namespace, out.ID)
+		varName := strings.TrimSpace(out.VarName)
+		if varName == "" {
+			varName = out.Namespace + "_" + out.ID
+			if lang.BuildVarName != nil {
+				varName = lang.BuildVarName(out.Namespace, out.ID)
+			}
 		}
+
+		key := out.Key()
+		if existingKey, ok := varNameToKey[varName]; ok && existingKey != key {
+			return TemplateData{}, fmt.Errorf(
+				"multiple schemas map to the same generated variable name %q (keys: %q, %q). fix: rename one schema id, set an explicit namespace, or rename the config file",
+				varName,
+				existingKey,
+				key,
+			)
+		}
+		varNameToKey[varName] = key
+
 		schemas[i] = language.SchemaEntry{
 			Namespace: out.Namespace,
 			ID:        out.ID,
@@ -329,7 +348,7 @@ func buildTemplateData(input InjectInput, lang *language.Language) TemplateData 
 		Schemas: schemas,
 		Header:  header,
 		Footer:  footer,
-	}
+	}, nil
 }
 
 // InjectClientInput holds info needed to inject schemas import into client file
