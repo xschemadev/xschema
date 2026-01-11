@@ -222,18 +222,11 @@
     },
     {
       "keyword": "maximum",
-      "passed": 11,
-      "failed": 3,
+      "passed": 12,
+      "failed": 2,
       "skipped": 0,
       "total": 14,
       "failures": [
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "maximum validation",
           "test": "ignores non-numbers",
@@ -284,18 +277,11 @@
     },
     {
       "keyword": "minimum",
-      "passed": 10,
-      "failed": 3,
+      "passed": 11,
+      "failed": 2,
       "skipped": 0,
       "total": 13,
       "failures": [
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "minimum validation",
           "test": "ignores non-numbers",
@@ -522,10 +508,10 @@
     }
   ],
   "summary": {
-    "passed": 363,
-    "failed": 44,
+    "passed": 365,
+    "failed": 42,
     "skipped": 0,
     "total": 407,
-    "percentage": 89.1891891891892
+    "percentage": 89.68058968058969
   }
 }

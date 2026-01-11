@@ -114,11 +114,47 @@
 				"edit `prd.jsonc` to insert new one-iteration implementation stories derived from `valibot-discovery.md` (dependencies first), directly after this story; renumber story ids to remain sequential",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "baseline: draft2020-12 85.0%, draft2019-09 84.0%, draft7 88.7%, draft6 87.6%, draft4 87.0%, draft3 89.7%. major issues: ~100 'ignores non-X' type coercion failures, propertyNames not enforced, type:object accepts arrays, JS prototype property names cause runtime errors."
 		},
 		{
 			"id": "US-010",
+			"title": "valibot adapter: type-coercion passthrough",
+			"description": "as a maintainer, i want valibot validators to pass (not reject) values of wrong types, so that keywords like maxLength, pattern, minimum only validate matching types per JSON Schema spec.",
+			"acceptanceCriteria": [
+				"keywords (maxLength, minLength, pattern, minimum, maximum, etc) pass validation for non-matching types instead of rejecting",
+				"~100 'ignores non-X' tests pass in valibot compliance",
+				"bun run build + bun run typecheck pass from typescript/"
+			],
+			"passes": false,
+			"notes": "derived from US-009. biggest single improvement: ~100 tests across all drafts."
+		},
+		{
+			"id": "US-011",
+			"title": "valibot adapter: type:object rejects arrays",
+			"description": "as a maintainer, i want type:object schemas to reject arrays, matching JSON Schema behavior where arrays are not objects.",
+			"acceptanceCriteria": [
+				"type:object schemas reject array values",
+				"'an array is not an object' tests pass across all drafts",
+				"bun run build + bun run typecheck pass from typescript/"
+			],
+			"passes": false,
+			"notes": "derived from US-009. fixes 6 tests."
+		},
+		{
+			"id": "US-012",
+			"title": "valibot adapter: propertyNames validation",
+			"description": "as a maintainer, i want propertyNames schemas to be enforced, so that property name constraints work correctly.",
+			"acceptanceCriteria": [
+				"propertyNames schema validates object keys against the schema",
+				"propertyNames validation tests pass",
+				"bun run build + bun run typecheck pass from typescript/"
+			],
+			"passes": false,
+			"notes": "derived from US-009. fixes ~5 tests per draft that supports propertyNames."
+		},
+		{
+			"id": "US-013",
 			"title": "typebox adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typebox compliance failures, separating expressible schemas vs runtime-enforced behavior.",
 			"acceptanceCriteria": [
@@ -131,7 +167,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-011",
+			"id": "US-014",
 			"title": "effect adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand effect schema compliance failures and which ones are solvable using effect-native options.",
 			"acceptanceCriteria": [
@@ -144,7 +180,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-012",
+			"id": "US-015",
 			"title": "arktype adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand arktype compliance failures and keep the adapter idiomatic.",
 			"acceptanceCriteria": [
@@ -157,7 +193,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-013",
+			"id": "US-016",
 			"title": "typescript (type-only) adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typescript adapter compliance behavior and identify readability simplifications that are worth it.",
 			"acceptanceCriteria": [
@@ -170,7 +206,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-014",
+			"id": "US-017",
 			"title": "cli bundler: strict internal refs + reject dynamic refs",
 			"description": "as a maintainer, i want the go bundler to guarantee schemas passed to adapters have valid internal $refs and do not use dynamic/recursive refs, so adapters only handle a stable, self-contained subset.",
 			"acceptanceCriteria": [
@@ -184,7 +220,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-015",
+			"id": "US-018",
 			"title": "ts core: revert parse() to return SchemaNode",
 			"description": "as a maintainer, i want core parse() to return SchemaNode (no issues payload) and rely on cli bundling for strict $ref validation, so adapters stay simple and api stays stable.",
 			"acceptanceCriteria": [
@@ -193,7 +229,7 @@
 				"Typecheck passes (`bun run build` + `bun run typecheck` from `typescript/`)"
 			],
 			"passes": true,
-			"notes": "depends on us-014"
+			"notes": "depends on us-017"
 		}
 	]
 }

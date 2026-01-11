@@ -315,18 +315,11 @@
     },
     {
       "keyword": "maximum",
-      "passed": 11,
-      "failed": 3,
+      "passed": 12,
+      "failed": 2,
       "skipped": 0,
       "total": 14,
       "failures": [
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "maximum validation",
           "test": "ignores non-numbers",
@@ -407,18 +400,11 @@
     },
     {
       "keyword": "minimum",
-      "passed": 13,
-      "failed": 4,
+      "passed": 14,
+      "failed": 3,
       "skipped": 0,
       "total": 17,
       "failures": [
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "minimum validation",
           "test": "ignores non-numbers",
@@ -663,10 +649,10 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
+      "passed": 17,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 17
     },
     {
       "keyword": "required",
@@ -801,10 +787,10 @@
     }
   ],
   "summary": {
-    "passed": 475,
-    "failed": 76,
+    "passed": 494,
+    "failed": 74,
     "skipped": 0,
-    "total": 551,
-    "percentage": 86.20689655172413
+    "total": 568,
+    "percentage": 86.97183098591549
   }
 }

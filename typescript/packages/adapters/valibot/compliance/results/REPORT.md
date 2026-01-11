@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 769 | 90 | 0 | 89.5% |
-| draft2020-12 | 782 | 89 | 0 | 89.8% |
-| draft3 | 363 | 44 | 0 | 89.2% |
-| draft4 | 475 | 76 | 0 | 86.2% |
-| draft6 | 652 | 87 | 0 | 88.2% |
-| draft7 | 728 | 87 | 0 | 89.3% |
+| draft2019-09 | 769 | 146 | 0 | 84.0% |
+| draft2020-12 | 782 | 138 | 0 | 85.0% |
+| draft3 | 365 | 42 | 0 | 89.7% |
+| draft4 | 494 | 74 | 0 | 87.0% |
+| draft6 | 673 | 95 | 0 | 87.6% |
+| draft7 | 749 | 95 | 0 | 88.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.5%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-89.8%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-89.2%25-yellow)
-![draft4](https://img.shields.io/badge/draft4%20compliance-86.2%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-88.2%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-89.3%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-84.0%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-85.0%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-89.7%25-yellow)
+![draft4](https://img.shields.io/badge/draft4%20compliance-87.0%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-87.6%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-88.7%25-yellow)
 
 ## draft2019-09
 
@@ -34,7 +34,7 @@
 | contains | ⚠️ | 19/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ⚠️ | 17/20 |
 | dependentSchemas | ⚠️ | 16/20 |
 | enum | ⚠️ | 43/45 |
@@ -61,13 +61,13 @@
 | patternProperties | ⚠️ | 21/23 |
 | properties | ⚠️ | 19/28 |
 | propertyNames | ⚠️ | 13/20 |
-| recursiveRef | ✅ | 0/0 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| recursiveRef | ❌ | 0/34 |
+| ref | ❌ | 0/12 |
+| refRemote | ❌ | 0/4 |
 | required | ⚠️ | 5/16 |
 | type | ⚠️ | 79/80 |
-| unevaluatedItems | ✅ | 0/0 |
-| unevaluatedProperties | ✅ | 0/0 |
+| unevaluatedItems | ❌ | 0/2 |
+| unevaluatedProperties | ❌ | 0/2 |
 | uniqueItems | ⚠️ | 67/69 |
 | vocabulary | ⚠️ | 4/5 |
 
@@ -118,6 +118,18 @@
 - **contains keyword with boolean schema false**
   - Test: non-arrays are valid
   - Expected: `valid`, Got: `false`
+
+</details>
+
+<details>
+<summary>defs - 2 failures</summary>
+
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
@@ -437,6 +449,174 @@
 </details>
 
 <details>
+<summary>recursiveRef - 34 failures</summary>
+
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: two levels, integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with $recursiveAnchor: false works like $ref**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: integer now matches as a property value
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: two levels, properties match with $recursiveRef
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with nesting**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node does not match: recursion uses the inner schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node does not match; no recursion
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the initial target schema resource**
+  - Test: leaf node matches: recursion uses the inner schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node does not match: recursion only uses inner schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node does not match; no recursion
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor in the outer schema resource**
+  - Test: leaf node matches: recursion only uses inner schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: two levels, integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef with no $recursiveAnchor works like $ref**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without $recursiveAnchor works like $ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveRef": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: integer does not match as a property value
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: integer matches at the outer level
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: single level match
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: two levels, no match
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$recursiveRef without using nesting**
+  - Test: two levels, properties match with inner definition
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **dynamic $recursiveRef destination (not predictable at schema compile time)**
+  - Test: integer node
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **dynamic $recursiveRef destination (not predictable at schema compile time)**
+  - Test: numeric node
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $recursiveRef keyword**
+  - Test: recurse to anyLeafNode - floats are allowed
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $recursiveRef keyword**
+  - Test: recurse to integerNode - floats are not allowed
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
+<summary>ref - 12 failures</summary>
+
+- **$ref with $recursiveAnchor**
+  - Test: extra items allowed for inner arrays
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **$ref with $recursiveAnchor**
+  - Test: extra items disallowed for root
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
 <summary>required - 11 failures</summary>
 
 - **required properties whose names are Javascript object property names**
@@ -485,6 +665,30 @@
 </details>
 
 <details>
+<summary>unevaluatedItems - 2 failures</summary>
+
+- **unevaluatedItems with $recursiveRef**
+  - Test: with no unevaluated items
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **unevaluatedItems with $recursiveRef**
+  - Test: with unevaluated items
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties - 2 failures</summary>
+
+- **unevaluatedProperties with $recursiveRef**
+  - Test: with no unevaluated properties
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **unevaluatedProperties with $recursiveRef**
+  - Test: with unevaluated properties
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
 <summary>uniqueItems - 2 failures</summary>
 
 - **uniqueItems with an array of items and additionalItems=false**
@@ -518,10 +722,10 @@
 | contains | ⚠️ | 19/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ⚠️ | 17/20 |
 | dependentSchemas | ⚠️ | 16/20 |
-| dynamicRef | ✅ | 0/0 |
+| dynamicRef | ❌ | 0/33 |
 | enum | ⚠️ | 43/45 |
 | exclusiveMaximum | ⚠️ | 3/4 |
 | exclusiveMinimum | ⚠️ | 3/4 |
@@ -547,8 +751,8 @@
 | prefixItems | ⚠️ | 6/11 |
 | properties | ⚠️ | 19/28 |
 | propertyNames | ⚠️ | 13/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ❌ | 0/10 |
+| refRemote | ❌ | 0/4 |
 | required | ⚠️ | 5/16 |
 | type | ⚠️ | 79/80 |
 | unevaluatedItems | ✅ | 0/0 |
@@ -592,6 +796,18 @@
 </details>
 
 <details>
+<summary>defs - 2 failures</summary>
+
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
 <summary>dependentRequired - 3 failures</summary>
 
 - **empty dependents**
@@ -621,6 +837,111 @@
 - **single dependency**
   - Test: ignores strings
   - Expected: `valid`, Got: `false`
+
+</details>
+
+<details>
+<summary>dynamicRef - 33 failures</summary>
+
+- **$dynamicRef points to a boolean schema**
+  - Test: follow $dynamicRef to a false schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **$dynamicRef points to a boolean schema**
+  - Test: follow $dynamicRef to a true schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **$dynamicRef skips over intermediate resources - direct reference**
+  - Test: integer property passes
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$dynamicRef skips over intermediate resources - direct reference**
+  - Test: string property fails
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $defs first**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref and $dynamicAnchor are independent of order - $ref first**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref to $dynamicRef finds detached $dynamicAnchor**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/detached-dynamicref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **$ref to $dynamicRef finds detached $dynamicAnchor**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/detached-dynamicref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope**
+  - Test: The recursive part is not valid against the root
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope**
+  - Test: The recursive part is valid against the root
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor**
+  - Test: The recursive part doesn't need to validate against the root
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array containing non-strings is invalid
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor**
+  - Test: An array of strings is valid
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: /then/$defs/thingy is the final stop for the $dynamicRef
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: first_scope is not in dynamic scope for the $dynamicRef
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **after leaving a dynamic scope, it is not used by a $dynamicRef**
+  - Test: string matches /$defs/thingy, but the $dynamicRef does not stop here
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicRef": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: number list with number values
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: number list with string values
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: string list with number values
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **multiple dynamic paths to the $dynamicRef keyword**
+  - Test: string list with string values
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **strict-tree schema, guards against misspelled properties**
+  - Test: instance with correct field
+  - Expected: `valid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **strict-tree schema, guards against misspelled properties**
+  - Test: instance with misspelled field
+  - Expected: `invalid`, Got: `error: bundling error: unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: correct extended schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: incorrect extended schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **tests for implementation dynamic anchor and reference link**
+  - Test: incorrect parent schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
@@ -919,6 +1240,60 @@
 </details>
 
 <details>
+<summary>ref - 10 failures</summary>
+
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
 <summary>required - 11 failures</summary>
 
 - **required properties whose names are Javascript object property names**
@@ -1004,10 +1379,10 @@
 | items | ⚠️ | 6/7 |
 | maxItems | ⚠️ | 3/4 |
 | maxLength | ⚠️ | 4/5 |
-| maximum | ⚠️ | 11/14 |
+| maximum | ⚠️ | 12/14 |
 | minItems | ⚠️ | 3/4 |
 | minLength | ⚠️ | 4/5 |
-| minimum | ⚠️ | 10/13 |
+| minimum | ⚠️ | 11/13 |
 | pattern | ⚠️ | 3/9 |
 | patternProperties | ⚠️ | 16/17 |
 | properties | ⚠️ | 13/15 |
@@ -1116,11 +1491,8 @@
 </details>
 
 <details>
-<summary>maximum - 3 failures</summary>
+<summary>maximum - 2 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
 - **maximum validation**
   - Test: ignores non-numbers
   - Expected: `valid`, Got: `false`
@@ -1149,11 +1521,8 @@
 </details>
 
 <details>
-<summary>minimum - 3 failures</summary>
+<summary>minimum - 2 failures</summary>
 
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
 - **minimum validation**
   - Test: ignores non-numbers
   - Expected: `valid`, Got: `false`
@@ -1277,11 +1646,11 @@
 | maxItems | ⚠️ | 3/4 |
 | maxLength | ⚠️ | 4/5 |
 | maxProperties | ⚠️ | 5/8 |
-| maximum | ⚠️ | 11/14 |
+| maximum | ⚠️ | 12/14 |
 | minItems | ⚠️ | 3/4 |
 | minLength | ⚠️ | 4/5 |
 | minProperties | ⚠️ | 3/6 |
-| minimum | ⚠️ | 13/17 |
+| minimum | ⚠️ | 14/17 |
 | multipleOf | ⚠️ | 9/10 |
 | not | ✅ | 20/20 |
 | oneOf | ⚠️ | 19/23 |
@@ -1289,7 +1658,7 @@
 | patternProperties | ⚠️ | 16/18 |
 | properties | ⚠️ | 15/24 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| refRemote | ✅ | 17/17 |
 | required | ⚠️ | 4/15 |
 | type | ⚠️ | 78/79 |
 | uniqueItems | ⚠️ | 67/69 |
@@ -1435,11 +1804,8 @@
 </details>
 
 <details>
-<summary>maximum - 3 failures</summary>
+<summary>maximum - 2 failures</summary>
 
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
 - **maximum validation**
   - Test: ignores non-numbers
   - Expected: `valid`, Got: `false`
@@ -1483,11 +1849,8 @@
 </details>
 
 <details>
-<summary>minimum - 4 failures</summary>
+<summary>minimum - 3 failures</summary>
 
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
 - **minimum validation**
   - Test: ignores non-numbers
   - Expected: `valid`, Got: `false`
@@ -1691,8 +2054,8 @@
 | patternProperties | ⚠️ | 21/23 |
 | properties | ⚠️ | 19/28 |
 | propertyNames | ⚠️ | 13/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 5/16 |
 | type | ⚠️ | 79/80 |
 | uniqueItems | ⚠️ | 67/69 |
@@ -2053,6 +2416,42 @@
 - **propertyNames with enum**
   - Test: object with any other property is invalid
   - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
+<summary>ref - 6 failures</summary>
+
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 2 failures</summary>
+
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 
 </details>
 
@@ -2152,8 +2551,8 @@
 | patternProperties | ⚠️ | 21/23 |
 | properties | ⚠️ | 19/28 |
 | propertyNames | ⚠️ | 13/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 5/16 |
 | type | ⚠️ | 79/80 |
 | uniqueItems | ⚠️ | 67/69 |
@@ -2514,6 +2913,42 @@
 - **propertyNames with enum**
   - Test: object with any other property is invalid
   - Expected: `invalid`, Got: `true`
+
+</details>
+
+<details>
+<summary>ref - 6 failures</summary>
+
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 2 failures</summary>
+
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 
 </details>
 

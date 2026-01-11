@@ -136,3 +136,22 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - anchors map stores anchor name → JSON pointer path
   - remaining refRemote failures are $id scoping issues (separate bundler limitation)
 ---
+
+## 2026-01-11 - US-009
+- ran valibot compliance tests: draft2020-12 85.0%, draft2019-09 84.0%, draft7 88.7%, draft6 87.6%, draft4 87.0%, draft3 89.7%
+- wrote `tasks/adapters-optimization/valibot-discovery.md` with full failing test list and categorized failures
+- added 3 valibot adapter improvement stories (US-010, US-011, US-012) and renumbered subsequent stories
+- Files changed: `tasks/adapters-optimization/valibot-discovery.md`, `prd.jsonc`, compliance results, `progress.txt`
+- **Results:**
+  - valibot baseline is 85-90% vs zod's 93-99%
+  - ~100 tests fail due to type coercion (validators reject wrong types instead of ignoring)
+  - ~5 tests fail due to propertyNames not being enforced
+  - 6 tests fail due to type:object accepting arrays
+  - ~14 tests fail due to JS prototype property names (valibot bug)
+- **Learnings for future iterations:**
+  - valibot validators reject wrong types instead of ignoring them (JSON Schema says keywords only apply to matching types)
+  - `v.object()` accepts arrays but JSON Schema "object" excludes arrays
+  - properties named `__proto__`, `constructor`, `toString` cause valibot runtime errors
+  - tuple handling (items/prefixItems as arrays) has multiple issues
+  - dynamic/recursive ref failures (~67 tests) same as zod - bundler limitation
+---
