@@ -195,6 +195,13 @@ function readComplianceResults(resultsPath: string): DraftResult[] {
 }
 
 /**
+ * Escape curly braces for MDX (they're interpreted as JSX expressions)
+ */
+function escapeMdx(str: string): string {
+  return str.replace(/\{/g, "\\{").replace(/\}/g, "\\}");
+}
+
+/**
  * Get display name for adapter
  */
 function getAdapterDisplayName(adapter: string): string {
@@ -312,8 +319,9 @@ function generateComplianceMdx(info: AdapterInfo): string {
   );
   lines.push("");
 
-  // Type-only adapter callout
-  if (isTypeOnlyAdapter(info.drafts)) {
+  // Type-only adapter callout - skip summary and coverage for these
+  const typeOnly = isTypeOnlyAdapter(info.drafts);
+  if (typeOnly) {
     lines.push('<Callout type="info" title="Type-Only Adapter">');
     lines.push(
       "This adapter generates TypeScript types only — no runtime validation. " +
@@ -321,94 +329,81 @@ function generateComplianceMdx(info: AdapterInfo): string {
     );
     lines.push("</Callout>");
     lines.push("");
-  }
-
-  // Summary section
-  lines.push("## Summary");
-  lines.push("");
-
-  const typeOnly = isTypeOnlyAdapter(info.drafts);
-  if (typeOnly) {
-    lines.push("| Draft | Passed | Failed | Skipped | Coverage |");
-    lines.push("| ----- | ------ | ------ | ------- | -------- |");
   } else {
+    // Summary section
+    lines.push("## Summary");
+    lines.push("");
     lines.push("| Draft | Passed | Failed | Coverage |");
     lines.push("| ----- | ------ | ------ | -------- |");
-  }
 
-  for (const draft of info.drafts) {
-    const { passed, failed, skipped, percentage } = draft.summary;
-    const coverageEmoji =
-      percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
-    if (typeOnly) {
-      lines.push(
-        `| ${draft.draft} | ${passed} | ${failed} | ${skipped} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
-      );
-    } else {
+    for (const draft of info.drafts) {
+      const { passed, failed, percentage } = draft.summary;
+      const coverageEmoji =
+        percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
       lines.push(
         `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
       );
     }
-  }
-  lines.push("");
+    lines.push("");
 
-  // Coverage by Draft - using tabs
-  lines.push("## Coverage by Draft");
-  lines.push("");
-  lines.push(
-    "<Tabs items={[" +
-      info.drafts.map((d) => `"${d.draft}"`).join(", ") +
-      "]}>",
-  );
-  lines.push("");
-
-  for (const draft of info.drafts) {
-    lines.push(`<Tab value="${draft.draft}">`);
+    // Coverage by Draft - using tabs
+    lines.push("## Coverage by Draft");
     lines.push("");
     lines.push(
-      `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
+      "<Tabs items={[" +
+        info.drafts.map((d) => `"${d.draft}"`).join(", ") +
+        "]}>",
     );
     lines.push("");
 
-    // Only show keywords with issues, or a success message
-    const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
-    const passingKeywords = draft.keywords.filter(
-      (kw) => kw.total > 0 && kw.failed === 0,
-    );
-
-    if (failingKeywords.length > 0) {
-      lines.push("**Keywords with issues:**");
+    for (const draft of info.drafts) {
+      lines.push(`<Tab value="${draft.draft}">`);
       lines.push("");
-      lines.push("| Keyword | Status | Pass Rate |");
-      lines.push("| ------- | ------ | --------- |");
-      for (const kw of failingKeywords) {
-        const rate = formatPercentage((kw.passed / kw.total) * 100);
-        lines.push(
-          `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
-        );
-      }
-      lines.push("");
-    }
-
-    if (passingKeywords.length > 0) {
-      lines.push("<Accordions>");
       lines.push(
-        `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+        `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
       );
       lines.push("");
-      lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
-      lines.push("");
-      lines.push("</Accordion>");
-      lines.push("</Accordions>");
+
+      // Only show keywords with issues, or a success message
+      const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
+      const passingKeywords = draft.keywords.filter(
+        (kw) => kw.total > 0 && kw.failed === 0,
+      );
+
+      if (failingKeywords.length > 0) {
+        lines.push("**Keywords with issues:**");
+        lines.push("");
+        lines.push("| Keyword | Status | Pass Rate |");
+        lines.push("| ------- | ------ | --------- |");
+        for (const kw of failingKeywords) {
+          const rate = formatPercentage((kw.passed / kw.total) * 100);
+          lines.push(
+            `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
+          );
+        }
+        lines.push("");
+      }
+
+      if (passingKeywords.length > 0) {
+        lines.push("<Accordions>");
+        lines.push(
+          `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+        );
+        lines.push("");
+        lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
+        lines.push("");
+        lines.push("</Accordion>");
+        lines.push("</Accordions>");
+        lines.push("");
+      }
+
+      lines.push("</Tab>");
       lines.push("");
     }
 
-    lines.push("</Tab>");
+    lines.push("</Tabs>");
     lines.push("");
   }
-
-  lines.push("</Tabs>");
-  lines.push("");
 
   // Known Issues section - grouped by keyword
   const issues = groupIssuesByKeyword(info.drafts);
@@ -443,8 +438,8 @@ function generateComplianceMdx(info: AdapterInfo): string {
         );
         lines.push("");
         for (const failure of draftInfo.failures) {
-          lines.push(`- ${failure.group}`);
-          lines.push(`  - *${failure.test}*`);
+          lines.push(`- ${escapeMdx(failure.group)}`);
+          lines.push(`  - *${escapeMdx(failure.test)}*`);
         }
         lines.push("");
       }

@@ -1,0 +1,115 @@
+---
+title: Effect Schema
+description: Generate Effect schemas from JSON Schema definitions
+icon: Layers
+---
+
+The Effect adapter converts JSON Schema definitions into [Effect Schema](https://effect.website/docs/schema/introduction) validation schemas with full TypeScript type inference.
+
+## Overview
+
+Effect Schema is part of the Effect ecosystem, providing a powerful schema library with encoding/decoding capabilities. XSchema's Effect adapter provides:
+
+- **Strong compliance** with JSON Schema specifications (95%+ for modern drafts)
+- **Full type inference** - generated schemas include TypeScript types
+- **Bidirectional transformations** - encode and decode data
+- **Effect ecosystem integration** - works seamlessly with Effect
+
+## Installation
+
+The Effect adapter is included with the XSchema CLI. You just need Effect installed in your project:
+
+```bash
+npm install effect @effect/schema
+# or
+bun add effect @effect/schema
+```
+
+## Usage
+
+Specify `"adapter": "effect"` in your schema definitions:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "sourceType": "json",
+      "source": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "name": { "type": "string", "minLength": 1 },
+          "age": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "adapter": "effect"
+    }
+  ]
+}
+```
+
+## Generated Output
+
+Running `xschema generate` produces:
+
+```typescript
+import { Schema as S } from "@effect/schema";
+
+export const User = S.Struct({
+  id: S.UUID,
+  email: S.String.pipe(S.pattern(/@/)),
+  name: S.String.pipe(S.minLength(1)),
+  age: S.optional(S.Int.pipe(S.greaterThanOrEqualTo(0))),
+});
+
+export type User = S.Schema.Type<typeof User>;
+```
+
+## Using Generated Schemas
+
+```typescript
+import { User } from "./__generated__/schemas";
+import { Schema as S } from "@effect/schema";
+
+// Validate data
+const result = S.decodeUnknownEither(User)(userData);
+if (result._tag === "Left") {
+  console.error(result.left);
+} else {
+  console.log(result.right); // Fully typed!
+}
+
+// Or use sync version
+const user = S.decodeUnknownSync(User)(userData);
+```
+
+## Supported Features
+
+The Effect adapter supports most JSON Schema keywords. See the [Compliance](/docs/typescript/adapters/effect/compliance) page for detailed coverage by JSON Schema draft.
+
+### Highlights
+
+- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
+- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
+- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
+- String constraints (`minLength`, `maxLength`, `pattern`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`)
+- Object constraints (`required`, `additionalProperties`, `propertyNames`)
+- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
+- Conditionals (`if`/`then`/`else`)
+- References (`$ref`, `$defs`)
+
+## Limitations
+
+Some advanced JSON Schema features have partial support:
+
+- `additionalProperties` interactions with other keywords
+- `dependentSchemas` with complex property dependencies
+- Some `oneOf` edge cases with optional properties
+- Object type validation in union types
+
+See the [Compliance](/docs/typescript/adapters/effect/compliance) page for the full breakdown.

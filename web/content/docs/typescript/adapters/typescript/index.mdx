@@ -1,0 +1,111 @@
+---
+title: TypeScript
+description: Generate TypeScript type definitions from JSON Schema
+icon: FileType
+---
+
+The TypeScript adapter converts JSON Schema definitions into pure TypeScript type definitions. This is a **type-only** adapter that produces no runtime validation code.
+
+## Overview
+
+Unlike other adapters that generate runtime validators, the TypeScript adapter produces only type definitions. This is useful when:
+
+- You only need compile-time type checking
+- Validation is handled elsewhere (API layer, database, etc.)
+- You want minimal bundle size with no runtime overhead
+- You're gradually adopting TypeScript in an existing codebase
+
+## Installation
+
+The TypeScript adapter is included with the XSchema CLI. No additional dependencies are required.
+
+## Usage
+
+Specify `"adapter": "typescript"` in your schema definitions:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "sourceType": "json",
+      "source": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "name": { "type": "string", "minLength": 1 },
+          "age": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "adapter": "typescript"
+    }
+  ]
+}
+```
+
+## Generated Output
+
+Running `xschema generate` produces:
+
+```typescript
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  age?: number;
+}
+```
+
+## Using Generated Types
+
+```typescript
+import type { User } from "./__generated__/schemas";
+
+function createUser(data: User): void {
+  // data is typed, but no runtime validation occurs
+  console.log(data.name);
+}
+
+// TypeScript will catch type errors at compile time
+createUser({ id: "123", email: "test@example.com", name: "John" }); // OK
+createUser({ id: 123 }); // Type error!
+```
+
+## Important Considerations
+
+### No Runtime Validation
+
+This adapter generates **types only**. Runtime validation keywords like `minLength`, `pattern`, `minimum`, etc. are not enforced at runtime. They are only used to inform the type structure.
+
+```typescript
+// This compiles fine, but "a" violates minLength: 1 at runtime
+const user: User = {
+  id: "123",
+  email: "test@example.com",
+  name: "", // Empty string - no runtime error!
+};
+```
+
+If you need runtime validation, use a different adapter like [Zod](/docs/typescript/adapters/zod), [ArkType](/docs/typescript/adapters/arktype), or [Effect](/docs/typescript/adapters/effect).
+
+### Compliance
+
+Since this adapter produces only types (no runtime validators), compliance tests are skipped. The generated types are validated via TypeScript's type checker (`tsc --noEmit`).
+
+## When to Use This Adapter
+
+- **API clients** - when the server already validates data
+- **Database models** - when the database enforces constraints
+- **Legacy codebases** - for gradual TypeScript adoption
+- **Performance critical paths** - when you can't afford any runtime overhead
+- **Type documentation** - for generating types from API specifications
+
+## When NOT to Use This Adapter
+
+- When you need runtime validation of user input
+- When data comes from untrusted sources
+- When you need detailed validation error messages
+- When enforcing business rules at runtime

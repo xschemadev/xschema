@@ -1,32 +1,33 @@
 ---
-title: Zod
-description: Generate Zod schemas from JSON Schema definitions
-icon: Shield
+title: ArkType
+description: Generate ArkType schemas from JSON Schema definitions
+icon: Box
 ---
 
-The Zod adapter converts JSON Schema definitions into [Zod](https://zod.dev) validation schemas with full TypeScript type inference.
+The ArkType adapter converts JSON Schema definitions into [ArkType](https://arktype.io) validation schemas with full TypeScript type inference.
 
 ## Overview
 
-Zod is a TypeScript-first schema declaration and validation library. XSchema's Zod adapter provides:
+ArkType is a TypeScript validation library with a unique syntax that mirrors TypeScript's type syntax. XSchema's ArkType adapter provides:
 
-- **High compliance** with JSON Schema specifications (98%+ for modern drafts)
+- **Excellent compliance** with JSON Schema specifications (99.8% for modern drafts)
 - **Full type inference** - generated schemas include TypeScript types
 - **Runtime validation** - validate data at runtime with detailed error messages
+- **Familiar syntax** - type definitions that look like TypeScript
 
 ## Installation
 
-The Zod adapter is included with the XSchema CLI. You just need Zod installed in your project:
+The ArkType adapter is included with the XSchema CLI. You just need ArkType installed in your project:
 
 ```bash
-npm install zod
+npm install arktype
 # or
-bun add zod
+bun add arktype
 ```
 
 ## Usage
 
-Specify `"adapter": "zod"` in your schema definitions:
+Specify `"adapter": "arktype"` in your schema definitions:
 
 ```jsonc
 {
@@ -45,7 +46,7 @@ Specify `"adapter": "zod"` in your schema definitions:
         },
         "required": ["id", "email", "name"]
       },
-      "adapter": "zod"
+      "adapter": "arktype"
     }
   ]
 }
@@ -56,16 +57,16 @@ Specify `"adapter": "zod"` in your schema definitions:
 Running `xschema generate` produces:
 
 ```typescript
-import { z } from "zod";
+import { type } from "arktype";
 
-export const User = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  name: z.string().min(1),
-  age: z.number().int().min(0).optional(),
+export const User = type({
+  id: "string.uuid",
+  email: "string.email",
+  name: "string >= 1",
+  "age?": "integer >= 0",
 });
 
-export type User = z.infer<typeof User>;
+export type User = typeof User.infer;
 ```
 
 ## Using Generated Schemas
@@ -74,20 +75,17 @@ export type User = z.infer<typeof User>;
 import { User } from "./__generated__/schemas";
 
 // Validate data
-const result = User.safeParse(userData);
-if (result.success) {
-  console.log(result.data); // Fully typed!
+const result = User(userData);
+if (result instanceof type.errors) {
+  console.error(result.summary);
 } else {
-  console.error(result.error.issues);
+  console.log(result); // Fully typed!
 }
-
-// Parse and throw on error
-const user = User.parse(userData);
 ```
 
 ## Supported Features
 
-The Zod adapter supports the vast majority of JSON Schema keywords. See the [Compliance](/docs/ts/adapters/zod/compliance) page for detailed coverage by JSON Schema draft.
+The ArkType adapter supports the vast majority of JSON Schema keywords. See the [Compliance](/docs/typescript/adapters/arktype/compliance) page for detailed coverage by JSON Schema draft.
 
 ### Highlights
 
@@ -105,8 +103,7 @@ The Zod adapter supports the vast majority of JSON Schema keywords. See the [Com
 
 Some advanced JSON Schema features have partial support:
 
-- `$dynamicRef` / `$dynamicAnchor` - complex dynamic references may not resolve correctly
-- `unevaluatedProperties` with cyclic refs - edge cases may pass incorrectly
+- `additionalProperties` with `allOf` - properties in applicators may not be examined
 - Meta-schema vocabulary validation - custom vocabularies not fully supported
 
-See the [Compliance](/docs/ts/adapters/zod/compliance) page for the full breakdown.
+See the [Compliance](/docs/typescript/adapters/arktype/compliance) page for the full breakdown.
