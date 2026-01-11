@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 817 | 98 | 0 | 89.3% |
-| draft2020-12 | 829 | 91 | 0 | 90.1% |
+| draft2019-09 | 822 | 93 | 0 | 89.8% |
+| draft2020-12 | 834 | 86 | 0 | 90.7% |
 | draft3 | 390 | 17 | 0 | 95.8% |
 | draft4 | 535 | 33 | 0 | 94.2% |
-| draft6 | 719 | 49 | 0 | 93.6% |
-| draft7 | 795 | 49 | 0 | 94.2% |
+| draft6 | 724 | 44 | 0 | 94.3% |
+| draft7 | 800 | 44 | 0 | 94.8% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.3%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.1%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.8%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.7%25-yellow)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-95.8%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-94.2%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-93.6%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-94.2%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-94.3%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-94.8%25-yellow)
 
 ## draft2019-09
 
@@ -60,7 +60,7 @@
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | properties | ⚠️ | 22/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | recursiveRef | ❌ | 0/34 |
 | ref | ❌ | 0/12 |
 | refRemote | ❌ | 0/4 |
@@ -205,27 +205,6 @@
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -510,7 +489,7 @@
 | patternProperties | ✅ | 23/23 |
 | prefixItems | ⚠️ | 7/11 |
 | properties | ⚠️ | 22/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
 | required | ⚠️ | 9/16 |
@@ -759,27 +738,6 @@
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1246,7 +1204,7 @@
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | properties | ⚠️ | 22/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 9/16 |
@@ -1381,27 +1339,6 @@
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1515,7 +1452,7 @@
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | properties | ⚠️ | 22/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 9/16 |
@@ -1650,27 +1587,6 @@
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 

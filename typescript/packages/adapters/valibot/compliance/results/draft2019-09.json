@@ -481,47 +481,10 @@
     },
     {
       "keyword": "propertyNames",
-      "passed": 15,
-      "failed": 5,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "propertyNames validation",
-          "test": "some property names invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames validation with pattern",
-          "test": "non-matching property name is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with boolean schema false",
-          "test": "object with any properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with const",
-          "test": "object with any other property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with enum",
-          "test": "object with any other property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "recursiveRef",
@@ -1111,10 +1074,10 @@
     }
   ],
   "summary": {
-    "passed": 817,
-    "failed": 98,
+    "passed": 822,
+    "failed": 93,
     "skipped": 0,
     "total": 915,
-    "percentage": 89.2896174863388
+    "percentage": 89.8360655737705
   }
 }

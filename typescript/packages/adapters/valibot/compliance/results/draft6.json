@@ -423,47 +423,10 @@
     },
     {
       "keyword": "propertyNames",
-      "passed": 15,
-      "failed": 5,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "propertyNames validation",
-          "test": "some property names invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames validation with pattern",
-          "test": "non-matching property name is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with boolean schema false",
-          "test": "object with any properties is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with const",
-          "test": "object with any other property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "propertyNames with enum",
-          "test": "object with any other property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "ref",
@@ -642,10 +605,10 @@
     }
   ],
   "summary": {
-    "passed": 719,
-    "failed": 49,
+    "passed": 724,
+    "failed": 44,
     "skipped": 0,
     "total": 768,
-    "percentage": 93.61979166666666
+    "percentage": 94.27083333333334
   }
 }

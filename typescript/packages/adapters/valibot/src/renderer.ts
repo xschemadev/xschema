@@ -335,6 +335,19 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 	allActions.push(`v.check((val) => {${checks.join("")}
       return true;
     }, "Object validation failed")`);
+
+	// Property names validation
+	if (node.propertyNames) {
+		const keySchema = render(node.propertyNames);
+		allActions.push(`v.check((val) => {
+      for (const key of Object.keys(val)) {
+        const result = v.safeParse(${keySchema}, key);
+        if (!result.success) return false;
+      }
+      return true;
+    }, "Invalid property name")`);
+	}
+
 	allActions.push(...renderObjectConstraintsActions(node));
 	allActions.push(...renderDependenciesActions(node));
 
