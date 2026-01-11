@@ -1,0 +1,126 @@
+{
+  "project": "xschema adapters optimization",
+  "description": "optimize @xschemadev/core parsing/ir and each ts adapter to maximize multi-draft json schema test-suite compliance while staying idiomatic, readable, and performant; document widening limitations accurately",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "create persistent discovery output format",
+      "description": "as a maintainer, i want a standard place/format for discovery outputs so that future ralph iterations can continue work without memory.",
+      "acceptanceCriteria": [
+        "create folder `tasks/adapters-optimization/`",
+        "add `tasks/adapters-optimization/DISCOVERY_TEMPLATE.md` describing required sections: baseline summary per draft, failing tests list (keyword/group/test), categorized failures (core-missing/adapter-native/forced-emulation/not-supported), expected regressions list, proposed follow-up tasks with dependencies",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "zod adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand zod compliance failures and which ones are idiomatic to fix so that we improve without forced emulation.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/zod/`",
+        "write `tasks/adapters-optimization/zod-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "valibot adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand valibot compliance failures and which ones are idiomatic to fix so that we improve without forced emulation.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/valibot/`",
+        "write `tasks/adapters-optimization/valibot-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "typebox adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand typebox compliance failures, separating expressible schemas vs runtime-enforced behavior.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/typebox/`",
+        "write `tasks/adapters-optimization/typebox-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "explicitly flag any mismatches between typebox schema expressibility and runtime enforcement",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "effect adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand effect schema compliance failures and which ones are solvable using effect-native options.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/effect/`",
+        "write `tasks/adapters-optimization/effect-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "call out failures likely caused by validation options (missing keys / excess properties / exactness) vs missing feature support",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "arktype adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand arktype compliance failures and keep the adapter idiomatic.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/arktype/`",
+        "write `tasks/adapters-optimization/arktype-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "typescript (type-only) adapter discovery + baseline",
+      "description": "as a maintainer, i want to understand typescript adapter compliance behavior and identify readability simplifications that are worth it.",
+      "acceptanceCriteria": [
+        "run `bun run compliance` in `typescript/packages/adapters/typescript/`",
+        "write `tasks/adapters-optimization/typescript-discovery.md` following `DISCOVERY_TEMPLATE.md`",
+        "explicitly note which failures are expected due to type-only/skipped validation",
+        "include baseline per draft and full failing tests list for each draft as `(keyword, group, test)`",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "core/ir discovery: lossless parsing + version semantics",
+      "description": "as a maintainer, i want a concrete plan to make core parsing total (no keyword throws) and preserve unknown keywords so adapters can decide what to do.",
+      "acceptanceCriteria": [
+        "review current core parser/ir behavior for keyword-based throws and keyword loss",
+        "write `tasks/adapters-optimization/core-discovery.md` following `DISCOVERY_TEMPLATE.md`, including proposed ir shape changes and minimal migration strategy for adapters",
+        "include a short list of candidate cross-adapter helpers that improve readability/perf without forcing emulation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "generate follow-up execution plan from discoveries",
+      "description": "as a maintainer, i want a precise, right-sized follow-up prd.jsonc that ralph can execute to implement core + adapter improvements safely.",
+      "acceptanceCriteria": [
+        "create `tasks/prd-adapters-optimization-followup.jsonc`",
+        "each story in the follow-up plan is one-iteration sized and references the relevant discovery doc",
+        "order stories by dependencies (core ir/parser first, then adapter updates, then readme limitations updates)",
+        "require for every implementation story: run `bun run compliance` in the adapter folder and produce a per-draft diff vs the discovery baseline; new failures allowed only if pre-declared as expected regressions",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
