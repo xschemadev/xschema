@@ -245,3 +245,17 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - circular `$ref` still degrades metaschema validation (see zod README known limitations)
 ---
 
+## 2026-01-11 - US-002 (zod renderer cleanliness)
+- audited zod renderer for non-idiomatic patterns
+- cleaned up object property syntax: uses direct `key:` for valid identifiers, computed `["key"]:` only for special chars/reserved words
+- removed redundant required superRefine: now only added when required props use z.any() (which accepts undefined)
+- verified string length uses Intl.Segmenter for JSON Schema grapheme counting compliance (intentional, not changed)
+- verified tuple uses array+superRefine for JSON Schema semantics (arrays shorter than prefix are valid, z.tuple enforces exact length)
+- compliance unchanged: draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- Files changed: `typescript/packages/adapters/zod/src/renderer.ts`, `progress.txt`
+- **Learnings for future iterations:**
+  - z.tuple() has different semantics than JSON Schema prefixItems (enforces min length, JSON Schema doesn't)
+  - z.any() accepts undefined, so required props with z.any() schema need explicit hasOwn check
+  - JS reserved words (class, function, etc) and special chars require computed property syntax
+---
+

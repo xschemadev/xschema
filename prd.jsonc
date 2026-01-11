@@ -28,8 +28,8 @@
 				"run `bun run compliance` in `typescript/packages/adapters/zod/` and confirm results are not worse than US-001 baseline",
 				"update root `progress.txt` with a brief summary"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "cleaned up property syntax (direct vs computed), removed redundant required superRefine; kept Intl.Segmenter for string length (spec compliance) and array+superRefine for tuples (JSON Schema semantics differ from z.tuple)"
 		},
 		{
 			"id": "US-003",
