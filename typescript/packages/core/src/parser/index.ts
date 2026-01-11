@@ -340,11 +340,13 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	const guards: TypeGuard[] = [];
 
 	// Check for object keywords
+	// Note: required as boolean (draft3 property-level) should NOT trigger object detection
+	// Only array-style required (draft4+) indicates schema-level object constraints
 	const hasObjectKeywords =
 		schema.properties !== undefined ||
 		schema.additionalProperties !== undefined ||
 		schema.patternProperties !== undefined ||
-		schema.required !== undefined ||
+		(Array.isArray(schema.required) && schema.required.length > 0) ||
 		schema.propertyNames !== undefined ||
 		schema.minProperties !== undefined ||
 		schema.maxProperties !== undefined ||

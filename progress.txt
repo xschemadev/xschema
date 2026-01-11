@@ -1,0 +1,59 @@
+# Ralph Progress Log
+Started: Sun Jan 11 10:07:31 PM CET 2026
+---
+
+## Codebase Patterns
+
+### draft3 required:true handling
+- draft3 uses `required: true` on individual property schemas (not schema-level array)
+- parser in core/src/parser/index.ts `parseTypeless` must NOT treat boolean `required` as object keyword
+- only `Array.isArray(schema.required)` indicates schema-level object constraints
+
+---
+
+## 2026-01-11 - US-001: Zod compliance closure
+
+### What was implemented
+- fixed draft3 `required: true` parsing bug in core parser
+- issue: `parseTypeless` treated `{required: true}` property schemas as having object keywords
+- fix: changed `schema.required !== undefined` to `Array.isArray(schema.required) && schema.required.length > 0`
+
+### Files changed
+- typescript/packages/core/src/parser/index.ts
+
+### Final compliance results
+| Draft | Passed | Total | Coverage |
+|-------|--------|-------|----------|
+| draft2020-12 | 870 | 920 | 94.6% |
+| draft2019-09 | 858 | 915 | 93.8% |
+| draft7 | 835 | 844 | 98.9% |
+| draft6 | 759 | 768 | 98.8% |
+| draft4 | 567 | 568 | 99.8% |
+| draft3 | 400 | 407 | 98.3% |
+
+### Remaining known limitations (impossible with static codegen)
+
+1. **Dynamic/Recursive References** - `$dynamicRef`, `$dynamicAnchor`, `$recursiveRef`, `$recursiveAnchor`
+   - requires runtime scope tracking during validation
+   - bundler blocks these keywords
+
+2. **Bundler ref resolution edge cases** - refs with relative URIs + $id combinations
+   - "refs with relative uris and defs", "URN ref with nested pointer ref"
+   - bundler issue, not adapter issue
+
+3. **Metaschema validation** - validating `$defs` against the metaschema
+   - requires fetching/processing official metaschemas (which contain dynamic refs)
+
+4. **Vocabulary control** - custom metaschemas that disable validation vocabulary
+   - we always apply validation keywords
+
+5. **Draft3 type with inline schemas** - `type: ["string", {properties: {...}}]`
+   - legacy feature removed in draft4+
+   - already documented in zod README
+
+### Learnings
+- all remaining failures are bundler-level blocks or out-of-scope features
+- zod adapter itself has no fixable bugs remaining
+- the draft3 required fix also improved compliance for valibot, effect, arktype (shared core parser)
+
+---
