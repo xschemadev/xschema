@@ -13,6 +13,7 @@
       "dependencies": {
         "@xschemadev/arktype": "workspace:*",
         "@xschemadev/client": "workspace:*",
+        "@xschemadev/typescript": "workspace:",
         "@xschemadev/zod": "workspace:*",
         "arktype": "^2.1.29",
         "zod": "^3.24.0",
