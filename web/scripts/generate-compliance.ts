@@ -360,7 +360,7 @@ function generateComplianceMdx(info: AdapterInfo): string {
   );
   lines.push("");
 
-  // Type-only adapter callout - skip summary and coverage for these
+  // Type-only adapter callout - nothing else to show
   const typeOnly = isTypeOnlyAdapter(info.drafts);
   if (typeOnly) {
     lines.push('<Callout type="info" title="Type-Only Adapter">');
@@ -370,99 +370,100 @@ function generateComplianceMdx(info: AdapterInfo): string {
     );
     lines.push("</Callout>");
     lines.push("");
+    return lines.join("\n");
+  }
+
+  // Summary section
+  lines.push("## Summary");
+  lines.push("");
+
+  // Check if any draft has known issues to decide on table format
+  const hasKnownIssues = info.drafts.some(
+    (d) => d.summary.knownIssues && d.summary.knownIssues.count > 0,
+  );
+
+  if (hasKnownIssues) {
+    lines.push("| Draft | Passed | Failed | Known | Coverage |");
+    lines.push("| ----- | ------ | ------ | ----- | -------- |");
   } else {
-    // Summary section
-    lines.push("## Summary");
-    lines.push("");
+    lines.push("| Draft | Passed | Failed | Coverage |");
+    lines.push("| ----- | ------ | ------ | -------- |");
+  }
 
-    // Check if any draft has known issues to decide on table format
-    const hasKnownIssues = info.drafts.some(
-      (d) => d.summary.knownIssues && d.summary.knownIssues.count > 0,
-    );
-
+  for (const draft of info.drafts) {
+    const { passed, failed, percentage, knownIssues } = draft.summary;
+    const knownCount = knownIssues?.count ?? 0;
+    const coverageEmoji =
+      percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
     if (hasKnownIssues) {
-      lines.push("| Draft | Passed | Failed | Known | Coverage |");
-      lines.push("| ----- | ------ | ------ | ----- | -------- |");
+      lines.push(
+        `| ${draft.draft} | ${passed} | ${failed} | ${knownCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+      );
     } else {
-      lines.push("| Draft | Passed | Failed | Coverage |");
-      lines.push("| ----- | ------ | ------ | -------- |");
+      lines.push(
+        `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+      );
     }
+  }
+  lines.push("");
 
-    for (const draft of info.drafts) {
-      const { passed, failed, percentage, knownIssues } = draft.summary;
-      const knownCount = knownIssues?.count ?? 0;
-      const coverageEmoji =
-        percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
-      if (hasKnownIssues) {
-        lines.push(
-          `| ${draft.draft} | ${passed} | ${failed} | ${knownCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
-        );
-      } else {
-        lines.push(
-          `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
-        );
-      }
-    }
-    lines.push("");
+  // Coverage by Draft - using tabs
+  lines.push("## Coverage by Draft");
+  lines.push("");
+  lines.push(
+    "<Tabs items={[" +
+      info.drafts.map((d) => `"${d.draft}"`).join(", ") +
+      "]}>",
+  );
+  lines.push("");
 
-    // Coverage by Draft - using tabs
-    lines.push("## Coverage by Draft");
+  for (const draft of info.drafts) {
+    lines.push(`<Tab value="${draft.draft}">`);
     lines.push("");
     lines.push(
-      "<Tabs items={[" +
-        info.drafts.map((d) => `"${d.draft}"`).join(", ") +
-        "]}>",
+      `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
     );
     lines.push("");
 
-    for (const draft of info.drafts) {
-      lines.push(`<Tab value="${draft.draft}">`);
+    // Only show keywords with issues, or a success message
+    const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
+    const passingKeywords = draft.keywords.filter(
+      (kw) => kw.total > 0 && kw.failed === 0,
+    );
+
+    if (failingKeywords.length > 0) {
+      lines.push("**Keywords with issues:**");
       lines.push("");
-      lines.push(
-        `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
-      );
-      lines.push("");
-
-      // Only show keywords with issues, or a success message
-      const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
-      const passingKeywords = draft.keywords.filter(
-        (kw) => kw.total > 0 && kw.failed === 0,
-      );
-
-      if (failingKeywords.length > 0) {
-        lines.push("**Keywords with issues:**");
-        lines.push("");
-        lines.push("| Keyword | Status | Pass Rate |");
-        lines.push("| ------- | ------ | --------- |");
-        for (const kw of failingKeywords) {
-          const rate = formatPercentage((kw.passed / kw.total) * 100);
-          lines.push(
-            `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
-          );
-        }
-        lines.push("");
-      }
-
-      if (passingKeywords.length > 0) {
-        lines.push("<Accordions>");
+      lines.push("| Keyword | Status | Pass Rate |");
+      lines.push("| ------- | ------ | --------- |");
+      for (const kw of failingKeywords) {
+        const rate = formatPercentage((kw.passed / kw.total) * 100);
         lines.push(
-          `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+          `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
         );
-        lines.push("");
-        lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
-        lines.push("");
-        lines.push("</Accordion>");
-        lines.push("</Accordions>");
-        lines.push("");
       }
-
-      lines.push("</Tab>");
       lines.push("");
     }
 
-    lines.push("</Tabs>");
+    if (passingKeywords.length > 0) {
+      lines.push("<Accordions>");
+      lines.push(
+        `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+      );
+      lines.push("");
+      lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
+      lines.push("");
+      lines.push("</Accordion>");
+      lines.push("</Accordions>");
+      lines.push("");
+    }
+
+    lines.push("</Tab>");
     lines.push("");
   }
+
+  lines.push("</Tabs>");
+  lines.push("");
 
   // Known Behaviors section - grouped by reason from knownIssues
   const knownBehaviors = groupKnownIssuesByReason(info.drafts);
