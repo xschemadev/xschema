@@ -74,3 +74,15 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - ParseContext still exists for internal state (refs cache, processing set, version)
   - now that bundler validates refs, parser can throw on resolution failure
 ---
+
+## 2026-01-11 - US-005
+- ran zod compliance tests: draft2020-12 92.8%, draft2019-09 92.1%, draft7 97.2%, draft6 96.9%, draft4 97.2%, draft3 95.9%
+- wrote `tasks/adapters-optimization/zod-discovery.md` with full failing test list and categorized failures
+- added 3 bundler improvement stories (US-006, US-007, US-008) and renumbered subsequent stories
+- Files changed: `tasks/adapters-optimization/zod-discovery.md`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - zod adapter is solid; most failures (~100 of 220) are bundler ref-handling issues
+  - draft3/4 boolean exclusiveMax/Min failures are version-detection bugs: compliance tests lack `$schema`, parser defaults to draft-2020-12
+  - bundler needs: $schema injection, URI-decoded pointer segments, $anchor fragment resolution
+  - dynamic/recursive refs intentionally unsupported (us-004, us-011 decisions)
+---
