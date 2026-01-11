@@ -86,6 +86,11 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 		}
 	}
 
+	// Validate all internal refs point to valid JSON pointer targets
+	if err := validateInternalRefs(result); err != nil {
+		return nil, err
+	}
+
 	return json.Marshal(result)
 }
 
@@ -137,8 +142,18 @@ func (b *bundleContext) processNode(node any, baseURI string) (any, error) {
 	}
 }
 
+// forbiddenKeywords are keywords that require evaluation semantics we can't provide
+var forbiddenKeywords = []string{"$dynamicRef", "$dynamicAnchor", "$recursiveRef", "$recursiveAnchor"}
+
 // processObject handles object nodes, looking for $ref
 func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, error) {
+	// Reject forbidden keywords (dynamic/recursive refs)
+	for _, kw := range forbiddenKeywords {
+		if _, exists := obj[kw]; exists {
+			return nil, fmt.Errorf("unsupported keyword %q: dynamic and recursive references are not supported", kw)
+		}
+	}
+
 	// Check for $id (draft6+) or id (draft4/draft3) and update baseURI for this scope
 	id, ok := obj["$id"].(string)
 	if !ok {
@@ -190,13 +205,21 @@ func (b *bundleContext) processArray(arr []any, baseURI string) (any, error) {
 
 // processRef handles a $ref, resolving external refs
 func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI string) (any, error) {
-	// Local ref - nothing to do
+	// Local ref - nothing to do (validation happens after bundling)
 	if strings.HasPrefix(ref, "#") {
 		return obj, nil
 	}
 
 	// Parse the ref URI
 	refURI, fragment := splitFragment(ref)
+
+	// Check if this is an external ref with no usable base URI
+	// A relative file ref without a base URI would resolve against cwd, which is not allowed
+	refURL, _ := url.Parse(refURI)
+	isRelative := refURL == nil || !refURL.IsAbs()
+	if isRelative && baseURI == "" {
+		return nil, fmt.Errorf("external $ref %q requires a base URI: relative file refs cannot resolve against cwd", ref)
+	}
 
 	// Resolve relative URI against base
 	resolvedURI, err := resolveURI(refURI, baseURI)
@@ -405,4 +428,81 @@ func copyObject(obj map[string]any) map[string]any {
 		result[k] = v
 	}
 	return result
+}
+
+// validateInternalRefs validates that all internal $refs (starting with #) point to valid targets
+func validateInternalRefs(root any) error {
+	return validateInternalRefsRecursive(root, root)
+}
+
+func validateInternalRefsRecursive(node, root any) error {
+	switch v := node.(type) {
+	case map[string]any:
+		if ref, ok := v["$ref"].(string); ok && strings.HasPrefix(ref, "#") {
+			if err := validateJSONPointer(ref, root); err != nil {
+				return err
+			}
+		}
+		for _, val := range v {
+			if err := validateInternalRefsRecursive(val, root); err != nil {
+				return err
+			}
+		}
+	case []any:
+		for _, val := range v {
+			if err := validateInternalRefsRecursive(val, root); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// validateJSONPointer checks that a JSON pointer ref resolves to a valid target in the schema
+func validateJSONPointer(ref string, root any) error {
+	// Strip the leading #
+	pointer := strings.TrimPrefix(ref, "#")
+
+	// Empty pointer (#) refers to root, always valid
+	if pointer == "" {
+		return nil
+	}
+
+	// Must start with /
+	if !strings.HasPrefix(pointer, "/") {
+		return fmt.Errorf("invalid JSON pointer in $ref %q: must start with /", ref)
+	}
+
+	// Split into path segments
+	segments := strings.Split(pointer[1:], "/")
+	current := root
+
+	for _, segment := range segments {
+		// Unescape JSON pointer escapes: ~1 → /, ~0 → ~
+		segment = strings.ReplaceAll(segment, "~1", "/")
+		segment = strings.ReplaceAll(segment, "~0", "~")
+
+		switch v := current.(type) {
+		case map[string]any:
+			next, exists := v[segment]
+			if !exists {
+				return fmt.Errorf("$ref %q points to missing target: key %q not found", ref, segment)
+			}
+			current = next
+		case []any:
+			// Parse array index
+			var idx int
+			if _, err := fmt.Sscanf(segment, "%d", &idx); err != nil {
+				return fmt.Errorf("$ref %q points to missing target: %q is not a valid array index", ref, segment)
+			}
+			if idx < 0 || idx >= len(v) {
+				return fmt.Errorf("$ref %q points to missing target: array index %d out of bounds", ref, idx)
+			}
+			current = v[idx]
+		default:
+			return fmt.Errorf("$ref %q points to missing target: cannot traverse into %T", ref, current)
+		}
+	}
+
+	return nil
 }

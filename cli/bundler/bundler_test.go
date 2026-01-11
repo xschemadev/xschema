@@ -409,3 +409,164 @@ func TestBundlePreservesExistingDefs(t *testing.T) {
 		t.Errorf("expected at least 2 defs, got %d", len(defs))
 	}
 }
+
+func TestBundleRejectsMissingInternalRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "#/$defs/NonExistent" }
+		}
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for missing internal ref")
+	}
+	if !strings.Contains(err.Error(), "missing target") {
+		t.Errorf("expected 'missing target' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsDynamicRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$dynamicRef": "#foo"
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for $dynamicRef")
+	}
+	if !strings.Contains(err.Error(), "$dynamicRef") {
+		t.Errorf("expected '$dynamicRef' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsDynamicAnchor(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$dynamicAnchor": "foo"
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for $dynamicAnchor")
+	}
+	if !strings.Contains(err.Error(), "$dynamicAnchor") {
+		t.Errorf("expected '$dynamicAnchor' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsRecursiveRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$recursiveRef": "#"
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for $recursiveRef")
+	}
+	if !strings.Contains(err.Error(), "$recursiveRef") {
+		t.Errorf("expected '$recursiveRef' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsRecursiveAnchor(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$recursiveAnchor": true
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for $recursiveAnchor")
+	}
+	if !strings.Contains(err.Error(), "$recursiveAnchor") {
+		t.Errorf("expected '$recursiveAnchor' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsExternalRefWithoutBaseURI(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "other.json" }
+		}
+	}`
+
+	// No BaseURI set
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for external ref without base URI")
+	}
+	if !strings.Contains(err.Error(), "requires a base URI") {
+		t.Errorf("expected 'requires a base URI' in error, got: %v", err)
+	}
+}
+
+func TestBundleAllowsAbsoluteExternalRefWithoutBaseURI(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel immediately so we don't actually fetch
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	// No BaseURI set but ref is absolute
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	// Should fail with fetch error (context cancelled), not base URI error
+	if err == nil {
+		t.Error("expected error (context cancelled)")
+	}
+	if strings.Contains(err.Error(), "requires a base URI") {
+		t.Errorf("should not require base URI for absolute refs, got: %v", err)
+	}
+}
+
+func TestValidateJSONPointer(t *testing.T) {
+	root := map[string]any{
+		"type": "object",
+		"$defs": map[string]any{
+			"User": map[string]any{
+				"type": "object",
+			},
+		},
+		"properties": map[string]any{
+			"name": map[string]any{"type": "string"},
+		},
+	}
+
+	tests := []struct {
+		ref     string
+		wantErr bool
+	}{
+		{"#", false},                        // root ref
+		{"#/$defs/User", false},             // valid path
+		{"#/properties/name", false},        // valid nested path
+		{"#/$defs/NonExistent", true},       // missing key
+		{"#/properties/name/foo", true},     // traverse into primitive
+		{"#/$defs/User/properties/x", true}, // path doesn't exist
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.ref, func(t *testing.T) {
+			err := validateJSONPointer(tt.ref, root)
+			if tt.wantErr && err == nil {
+				t.Error("expected error")
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}
