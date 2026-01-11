@@ -62,3 +62,15 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - forbiddenKeywords check happens in processObject before any recursion
   - base uri check happens in processRef for non-absolute refs
 ---
+
+## 2026-01-11 - US-012
+- reverted parse() to return SchemaNode directly (removed ParseResult wrapper)
+- removed ParseIssue type entirely (bundler handles ref validation now)
+- simplified parseRef to let resolution errors throw (bundler catches these)
+- updated all 6 adapters to use `const ir = parse(schema as JSONSchema)`
+- Files changed: `typescript/packages/core/src/parser/context.ts`, `typescript/packages/core/src/parser/index.ts`, `typescript/packages/core/src/index.ts`, `typescript/packages/adapters/*/src/index.ts`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - api simplification was possible because us-011 moved ref validation to bundler
+  - ParseContext still exists for internal state (refs cache, processing set, version)
+  - now that bundler validates refs, parser can throw on resolution failure
+---

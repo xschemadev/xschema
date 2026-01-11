@@ -154,7 +154,7 @@
 				"update all adapters/callers back to `const ir = parse(schema as JSONSchema)`",
 				"Typecheck passes (`bun run build` + `bun run typecheck` from `typescript/`)"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": "depends on us-011"
 		}
 	]
