@@ -57,13 +57,9 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Handle unsupported features (best-effort)
+	// Fail on unsupported keywords that require evaluation semantics
 	if (schema.unevaluatedItems !== undefined) {
-		ctx.addIssue({
-			code: "unsupported_keyword",
-			keyword: "unevaluatedItems",
-			message: "unevaluatedItems is not supported",
-		});
+		throw new Error("unevaluatedItems is not supported");
 	}
 	if (schema.unevaluatedProperties !== undefined) {
 		const hasApplicators =
@@ -75,12 +71,21 @@ export function parseSchema(
 			schema.dependentSchemas ||
 			schema.not;
 		if (hasApplicators) {
-			ctx.addIssue({
-				code: "unsupported_keyword",
-				keyword: "unevaluatedProperties",
-				message: "unevaluatedProperties with applicators is not supported",
-			});
+			throw new Error("unevaluatedProperties with applicators is not supported");
 		}
+	}
+	// Fail on dynamic/recursive ref keywords
+	if (schema.$dynamicRef !== undefined) {
+		throw new Error("$dynamicRef is not supported");
+	}
+	if (schema.$dynamicAnchor !== undefined) {
+		throw new Error("$dynamicAnchor is not supported");
+	}
+	if (schema.$recursiveRef !== undefined) {
+		throw new Error("$recursiveRef is not supported");
+	}
+	if (schema.$recursiveAnchor !== undefined) {
+		throw new Error("$recursiveAnchor is not supported");
 	}
 
 	// Handle $ref

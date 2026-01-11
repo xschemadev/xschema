@@ -6,10 +6,9 @@ import type { SchemaNode } from "../ir/nodes.js";
 import type { JSONSchema, JSONSchemaVersion } from "../schema/json-schema.js";
 
 export interface ParseIssue {
-	code: "unsupported_keyword" | "ref_resolution_failed";
+	code: "ref_resolution_failed";
 	message: string;
-	keyword?: string;
-	ref?: string;
+	ref: string;
 }
 
 export interface ParseContext {
