@@ -1,0 +1,89 @@
+{
+  "project": "xschema-adapters",
+  "description": "Compliance Known Issues System - Exclude intentionally unsupported features from compliance metrics",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Known issues file structure",
+      "description": "As a maintainer, I want a JSON file per adapter listing known issues so that I can document expected failures with explanations.",
+      "acceptanceCriteria": [
+        "File location: {adapter}/compliance/known-issues.json",
+        "Schema: array of groups, each with 'reason' (string) and 'tests' (array of test paths)",
+        "Test path format: {draft}/{keyword}/{group}/{test}",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Skip known tests during execution",
+      "description": "As a developer, I want known-failing tests skipped during compliance runs so that execution is faster and output is cleaner.",
+      "acceptanceCriteria": [
+        "Runner loads known-issues.json before test execution",
+        "Tests matching known issue paths are not executed",
+        "Skipped known tests don't appear in pass/fail/skip counts",
+        "Log message indicates how many tests were skipped as known issues",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Separate known issues in JSON results",
+      "description": "As a developer, I want JSON results to track known issues separately so that percentages reflect actual compliance.",
+      "acceptanceCriteria": [
+        "Add knownIssues field to draft results (count + list)",
+        "summary.total excludes known issue tests",
+        "summary.percentage calculated without known issues",
+        "Each known issue entry includes: test path, reason",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Update dev report output",
+      "description": "As a developer, I want the CLI dev report to show known issues separately so I can see true compliance at a glance.",
+      "acceptanceCriteria": [
+        "Summary line shows: 'X passed, Y failed, Z skipped, W known issues'",
+        "Percentage excludes known issues from denominator",
+        "Known issues section lists reasons with test counts",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Update web compliance page generation",
+      "description": "As a user viewing docs, I want the compliance page to clearly separate known limitations from unexpected failures.",
+      "acceptanceCriteria": [
+        "'Known Behaviors' section displays known issues grouped by reason",
+        "Each reason shows its test list",
+        "'Issues' section only shows unexpected failures",
+        "Summary table percentages exclude known issues",
+        "Coverage stats reflect true compliance (known issues excluded)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Update REPORT.md generation",
+      "description": "As a developer, I want the markdown report to reflect the new known issues separation.",
+      "acceptanceCriteria": [
+        "Summary table shows known issues count per draft",
+        "Percentages exclude known issues",
+        "'Known Issues' section renamed/split: 'Known Behaviors' (from file) vs 'Unexpected Failures'",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

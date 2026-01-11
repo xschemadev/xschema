@@ -6,7 +6,7 @@
 | ----- | ------ | ------ | ------- | -------- |
 | draft2019-09 | 848 | 67 | 0 | 92.7% |
 | draft2020-12 | 860 | 60 | 0 | 93.5% |
-| draft3 | 399 | 8 | 0 | 98.0% |
+| draft3 | 400 | 7 | 0 | 98.3% |
 | draft4 | 557 | 11 | 0 | 98.1% |
 | draft6 | 749 | 19 | 0 | 97.5% |
 | draft7 | 825 | 19 | 0 | 97.7% |
@@ -15,7 +15,7 @@
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-92.7%25-yellow)
 ![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-93.5%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-98.0%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-98.1%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-97.5%25-brightgreen)
 ![draft7](https://img.shields.io/badge/draft7%20compliance-97.7%25-brightgreen)
@@ -629,20 +629,11 @@
 | properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
-| required | ⚠️ | 3/4 |
+| required | ✅ | 4/4 |
 | type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
 ### Failures
-
-<details>
-<summary>required - 1 failure</summary>
-
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>type - 7 failures</summary>
