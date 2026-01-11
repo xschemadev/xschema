@@ -348,7 +348,8 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 			result.Summary.Failed += localSummary.Failed
 			result.Summary.Skipped += localSummary.Skipped
 			result.Summary.Total += localSummary.Total
-			result.Summary.KnownIssues += localSummary.KnownIssues
+			result.Summary.KnownIssues.Count += localSummary.KnownIssues.Count
+			result.Summary.KnownIssues.Items = append(result.Summary.KnownIssues.Items, localSummary.KnownIssues.Items...)
 			mu.Unlock()
 		}()
 	}
@@ -382,22 +383,22 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 
 	// Pre-filter: identify which tests are known issues and which groups can be skipped entirely
 	type groupFilter struct {
-		allKnown         bool
-		knownCount       int
-		filteredTests    []TestCase
-		filteredIndices  []int
+		allKnown        bool
+		knownItems      []KnownIssueItem
+		filteredTests   []TestCase
+		filteredIndices []int
 	}
 	groupFilters := make([]groupFilter, len(groups))
 
 	for i, group := range groups {
 		var filteredTests []TestCase
 		var filteredIndices []int
-		knownCount := 0
+		var knownItems []KnownIssueItem
 
 		for j, tc := range group.Tests {
 			testPath := fmt.Sprintf("%s/%s/%s/%s", opts.draft, keywordResult.Keyword, group.Description, tc.Description)
-			if isKnown, _ := opts.knownIssues.Contains(testPath); isKnown {
-				knownCount++
+			if isKnown, reason := opts.knownIssues.Contains(testPath); isKnown {
+				knownItems = append(knownItems, KnownIssueItem{Path: testPath, Reason: reason})
 				continue
 			}
 			filteredTests = append(filteredTests, tc)
@@ -405,15 +406,16 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 
 		groupFilters[i] = groupFilter{
-			allKnown:        len(filteredTests) == 0 && knownCount > 0,
-			knownCount:      knownCount,
+			allKnown:        len(filteredTests) == 0 && len(knownItems) > 0,
+			knownItems:      knownItems,
 			filteredTests:   filteredTests,
 			filteredIndices: filteredIndices,
 		}
 
-		// Count known issues for groups we're skipping entirely
+		// Add known issues for groups we're skipping entirely
 		if groupFilters[i].allKnown {
-			summary.KnownIssues += knownCount
+			summary.KnownIssues.Count += len(knownItems)
+			summary.KnownIssues.Items = append(summary.KnownIssues.Items, knownItems...)
 		}
 	}
 
@@ -505,9 +507,10 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 
 		gf := groupFilters[i]
 
-		// Count known issues for this group (mixed groups with some known, some not)
-		if gf.knownCount > 0 && !gf.allKnown {
-			summary.KnownIssues += gf.knownCount
+		// Add known issues for this group (mixed groups with some known, some not)
+		if len(gf.knownItems) > 0 && !gf.allKnown {
+			summary.KnownIssues.Count += len(gf.knownItems)
+			summary.KnownIssues.Items = append(summary.KnownIssues.Items, gf.knownItems...)
 		}
 
 		// Skip if no tests remain after filtering

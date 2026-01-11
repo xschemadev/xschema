@@ -70,14 +70,26 @@ type DraftResult struct {
 	Summary  DraftSummary    `json:"summary"`
 }
 
+// KnownIssueItem represents a single known issue test with its reason
+type KnownIssueItem struct {
+	Path   string `json:"path"`
+	Reason string `json:"reason"`
+}
+
+// KnownIssuesSummary contains known issues data for JSON output
+type KnownIssuesSummary struct {
+	Count int              `json:"count"`
+	Items []KnownIssueItem `json:"items"`
+}
+
 // DraftSummary contains aggregate statistics for a draft
 type DraftSummary struct {
-	Passed      int     `json:"passed"`
-	Failed      int     `json:"failed"`
-	Skipped     int     `json:"skipped"`
-	Total       int     `json:"total"`
-	Percentage  float64 `json:"percentage"`
-	KnownIssues int     `json:"knownIssues"`
+	Passed      int                `json:"passed"`
+	Failed      int                `json:"failed"`
+	Skipped     int                `json:"skipped"`
+	Total       int                `json:"total"`
+	Percentage  float64            `json:"percentage"`
+	KnownIssues KnownIssuesSummary `json:"knownIssues"`
 }
 
 // ComplianceReport is the complete report for an adapter

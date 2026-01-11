@@ -113,3 +113,39 @@ Started: Sun Jan 11 10:07:31 PM CET 2026
 - harness result indices need mapping back to original test indices after filtering
 
 ---
+
+## 2026-01-11 - US-003: JSON results track known issues separately
+
+### What was implemented
+- added KnownIssueItem type with Path/Reason fields
+- added KnownIssuesSummary type with Count/Items fields
+- changed DraftSummary.KnownIssues from int to KnownIssuesSummary
+- updated processKeyword to collect known issue items with path+reason
+- updated parallel aggregation to merge KnownIssues.Items slices
+- updated CLI to use KnownIssues.Count
+
+### Files changed
+- cli/compliance/types.go (KnownIssueItem, KnownIssuesSummary, DraftSummary)
+- cli/compliance/runner.go (groupFilter.knownItems, summary aggregation)
+- cli/cmd/compliance.go (summary.KnownIssues.Count)
+
+### JSON output structure
+```json
+{
+  "summary": {
+    "passed": 870,
+    "total": 870,
+    "percentage": 100,
+    "knownIssues": {
+      "count": 50,
+      "items": [{"path": "...", "reason": "..."}]
+    }
+  }
+}
+```
+
+### Learnings
+- DraftSummary.KnownIssues was already int, changing to struct required updates in 3 places
+- parallel path needs to append Items slices with mutex protection
+
+---

@@ -225,8 +225,8 @@ func formatDraftResult(summary compliance.DraftSummary) (status, coverage string
 		status = ui.Warning.Render("!")
 	}
 	coverage = fmt.Sprintf("%d/%d (%.1f%%)", summary.Passed, summary.Total, summary.Percentage)
-	if summary.KnownIssues > 0 {
-		coverage += fmt.Sprintf(", %d known", summary.KnownIssues)
+	if summary.KnownIssues.Count > 0 {
+		coverage += fmt.Sprintf(", %d known", summary.KnownIssues.Count)
 	}
 	return status, coverage
 }

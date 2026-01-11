@@ -42,8 +42,8 @@
         "Each known issue entry includes test path and reason from JSON file",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added KnownIssueItem/KnownIssuesSummary types. JSON now includes {count, items: [{path, reason}]}."
     },
     {
       "id": "US-004",
