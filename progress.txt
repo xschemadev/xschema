@@ -283,3 +283,16 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - valibot has internal lookup issues with JS prototype property names
 ---
 
+## 2026-01-11 - US-004 (valibot renderer cleanliness)
+- audited valibot renderer for non-idiomatic patterns
+- cleaned up object property syntax: uses direct `key:` for valid identifiers, computed `["key"]:` only for special chars/reserved words
+- cleaned up nullable detection: union of [T, null] now renders as v.nullable(T) instead of v.union([T, v.null_()])
+- verified string length uses Intl.Segmenter for JSON Schema grapheme counting compliance (unchanged, intentional)
+- verified tuple uses array+check for JSON Schema semantics (arrays shorter than prefix are valid, v.tuple enforces min length)
+- compliance unchanged: draft2020-12 93.5%, draft2019-09 92.7%, draft7 97.7%, draft6 97.5%, draft4 98.1%, draft3 98.0%
+- Files changed: `typescript/packages/adapters/valibot/src/renderer.ts`, `progress.txt`
+- **Learnings for future iterations:**
+  - valibot v.nullable(T) is idiomatic for T | null patterns, but only binary unions
+  - JS reserved words (class, function, etc) and special chars require computed property syntax
+---
+

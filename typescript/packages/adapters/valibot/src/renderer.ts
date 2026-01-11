@@ -24,6 +24,27 @@ import type {
 } from "@xschemadev/core";
 import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
 
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string): string {
+	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
+}
+
 /**
  * Render a SchemaNode to Valibot code
  */
@@ -223,7 +244,7 @@ function renderObject(node: ObjectNode): string {
 		if (!prop.required) {
 			propCode = `v.optional(${propCode})`;
 		}
-		return `${escapeString(key)}: ${propCode}`;
+		return `${formatPropertyKey(key)}: ${propCode}`;
 	});
 
 	let result = "";
@@ -599,6 +620,15 @@ function renderUnion(node: UnionNode): string {
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "v.never()";
 	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Detect nullable pattern: union of [T, null] -> v.nullable(T)
+	if (filtered.length === 2) {
+		const nullIndex = filtered.findIndex((v) => v.kind === "null");
+		if (nullIndex !== -1) {
+			const otherIndex = nullIndex === 0 ? 1 : 0;
+			return `v.nullable(${render(filtered[otherIndex]!)})`;
+		}
+	}
 
 	const schemas = filtered.map((v) => render(v));
 	return `v.union([${schemas.join(", ")}])`;
