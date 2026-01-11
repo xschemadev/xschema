@@ -72,8 +72,8 @@
 				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
 				"update `typescript/packages/adapters/effect/README.md` with a known limitations section"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "fixed type:object array rejection (S.Struct accepts arrays), heterogeneous enum comparison, required validation for S.Unknown, additionalProperties:false enforcement, JS prototype properties, pattern+additionalProperties interaction; remaining failures are bundler limitations ($dynamicRef/$recursiveRef, relative $id scoping, metaschema with $recursiveAnchor)"
 		},
 		{
 			"id": "US-006",

@@ -296,3 +296,30 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - JS reserved words (class, function, etc) and special chars require computed property syntax
 ---
 
+## 2026-01-11 - US-005 (effect compliance closure)
+- baseline: draft2020-12 90.7%, draft2019-09 89.8%, draft7 95.1%, draft6 94.7%, draft4 94.2%, draft3 95.1%
+- fixed type:object array rejection: S.Struct accepts arrays, need explicit filter
+  - switched all objects to use custom S.Unknown.pipe(S.filter(...)) validation
+- fixed heterogeneous enum comparison: single-stringify (not double) for consistent comparison
+- fixed required validation for S.Unknown schemas
+  - S.Unknown/S.optional accepts undefined, need explicit Object.hasOwn check
+- fixed additionalProperties:false enforcement: S.Struct doesn't enforce this, need explicit filter
+- fixed JS prototype property handling (__proto__, constructor, toString)
+  - uses hasProtoProps check to trigger full custom validation path
+- fixed pattern properties + additionalProperties interaction
+  - renderObjectWithPatternProps handles all complex object cases now
+- final: draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- remaining failures categorized:
+  - bundler limitation: $recursiveRef/$dynamicRef (cannot be statically resolved)
+  - bundler limitation: unevaluatedProperties/unevaluatedItems with applicators
+  - bundler limitation: relative uri ref resolution with $id scoping
+  - bundler limitation: remote refs to metaschemas with $recursiveAnchor
+- Files changed: `typescript/packages/adapters/effect/src/renderer.ts`, `typescript/packages/adapters/effect/compliance/results/*`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - S.Struct accepts arrays unlike JSON Schema object type; need explicit array rejection
+  - S.Unknown accepts undefined like z.any()/v.any(); required props need hasOwn check
+  - S.Struct + pipe cannot pre-filter (Struct is a class constructor); use S.Unknown.pipe(filter, filter, ...)
+  - Effect Schema's S.decodeUnknownEither returns Either with _tag: "Right"/"Left"
+  - formatPropertyKey helper needed for valid identifier vs computed syntax
+---
+
