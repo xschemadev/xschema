@@ -175,6 +175,11 @@ No test framework - validation via `bun run typecheck` and `bun run build`
 3. **Generator**: calls adapter CLIs via stdin/stdout with schema batches
 4. **Injector**: writes generated code using language templates
 
+### Bundler vs Adapters (responsibilities)
+
+- **Bundler** blocks "wrong" schemas early (e.g. invalid/unresolvable refs, forbidden ref mechanisms), so adapters don't need to defend against broken inputs.
+- **Adapters** decide what to do with the remaining valid bundled schemas based on what the target library can express idiomatically; adapter-specific gaps become documented adapter limitations or bugs to fix.
+
 ### Adapter Protocol
 
 Adapters receive JSON array via stdin, output JSON array via stdout:
