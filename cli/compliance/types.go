@@ -143,3 +143,42 @@ type BatchTestData struct {
 	GroupID string     `json:"groupId"`
 	Tests   []TestCase `json:"tests"`
 }
+
+// KnownIssueGroup represents a group of tests with a common reason for being known issues
+type KnownIssueGroup struct {
+	Reason string   `json:"reason"`
+	Tests  []string `json:"tests"`
+}
+
+// KnownIssues is a list of known issue groups loaded from known-issues.json
+type KnownIssues []KnownIssueGroup
+
+// Contains checks if a test path is in the known issues list
+func (ki KnownIssues) Contains(testPath string) (bool, string) {
+	for _, group := range ki {
+		for _, test := range group.Tests {
+			if test == testPath {
+				return true, group.Reason
+			}
+		}
+	}
+	return false, ""
+}
+
+// TestPaths returns all test paths as a flat list
+func (ki KnownIssues) TestPaths() []string {
+	var paths []string
+	for _, group := range ki {
+		paths = append(paths, group.Tests...)
+	}
+	return paths
+}
+
+// Count returns the total number of known issue tests
+func (ki KnownIssues) Count() int {
+	count := 0
+	for _, group := range ki {
+		count += len(group.Tests)
+	}
+	return count
+}

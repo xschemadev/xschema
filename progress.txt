@@ -57,3 +57,21 @@ Started: Sun Jan 11 10:07:31 PM CET 2026
 - the draft3 required fix also improved compliance for valibot, effect, arktype (shared core parser)
 
 ---
+
+## 2026-01-11 - US-001: Known issues file structure
+
+### What was implemented
+- defined known-issues.json schema: array of {reason: string, tests: string[]}
+- created known-issues.json for zod adapter with 107 known issue tests
+- added Go types: KnownIssueGroup, KnownIssues with helper methods
+
+### Files changed
+- typescript/packages/adapters/zod/compliance/known-issues.json (new)
+- cli/compliance/types.go
+
+### Learnings
+- test path format: {draft}/{keyword}/{group}/{test}
+- group names and test names come directly from the failures in compliance results JSON
+- KnownIssues.Contains(path) returns (bool, reason) for lookup
+
+---

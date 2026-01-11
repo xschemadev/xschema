@@ -12,7 +12,7 @@
         "Test path format: {draft}/{keyword}/{group}/{test}",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
