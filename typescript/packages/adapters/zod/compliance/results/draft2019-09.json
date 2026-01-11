@@ -334,16 +334,16 @@
       "count": 57,
       "items": [
         {
+          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
+          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
+        },
+        {
           "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
           "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
         },
         {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
@@ -482,22 +482,6 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
           "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
@@ -544,6 +528,22 @@
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",

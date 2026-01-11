@@ -149,3 +149,36 @@ Started: Sun Jan 11 10:07:31 PM CET 2026
 - parallel path needs to append Items slices with mutex protection
 
 ---
+
+## 2026-01-11 - US-006: REPORT.md generation with known issues
+
+### What was implemented
+- added Known column to summary table
+- added Known Behaviors section per draft, grouped by reason
+- renamed "Failures" section to "Unexpected Failures"
+- added groupKnownIssuesByReason helper to group and sort items
+
+### Files changed
+- cli/compliance/report.go (summary table, Known Behaviors section, Unexpected Failures rename)
+
+### REPORT.md structure
+```markdown
+## Summary
+| Draft | Passed | Failed | Skipped | Known | Coverage |
+
+## draft2020-12
+### Known Behaviors
+<details><summary>Reason (N tests)</summary>
+- test paths...
+</details>
+
+### Unexpected Failures
+<details>...
+</details>
+```
+
+### Learnings
+- items need to be sorted by reason and path for deterministic output
+- each draft gets its own Known Behaviors section (not global)
+
+---

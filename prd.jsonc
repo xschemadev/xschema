@@ -84,8 +84,8 @@
         "'Unexpected Failures' section lists actual bugs",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Known column to summary table, Known Behaviors section per draft grouped by reason, renamed Failures to Unexpected Failures."
     },
     {
       "id": "US-007",

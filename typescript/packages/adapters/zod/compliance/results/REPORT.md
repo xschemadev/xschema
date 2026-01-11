@@ -2,14 +2,14 @@
 
 ## Summary
 
-| Draft | Passed | Failed | Skipped | Coverage |
-| ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 858 | 0 | 0 | 100.0% |
-| draft2020-12 | 870 | 0 | 0 | 100.0% |
-| draft3 | 400 | 0 | 0 | 100.0% |
-| draft4 | 567 | 1 | 0 | 99.8% |
-| draft6 | 759 | 9 | 0 | 98.8% |
-| draft7 | 835 | 9 | 0 | 98.9% |
+| Draft | Passed | Failed | Skipped | Known | Coverage |
+| ----- | ------ | ------ | ------- | ----- | -------- |
+| draft2019-09 | 858 | 0 | 0 | 57 | 100.0% |
+| draft2020-12 | 870 | 0 | 0 | 50 | 100.0% |
+| draft3 | 400 | 0 | 0 | 7 | 100.0% |
+| draft4 | 567 | 1 | 0 | 0 | 99.8% |
+| draft6 | 759 | 9 | 0 | 0 | 98.8% |
+| draft7 | 835 | 9 | 0 | 0 | 98.9% |
 
 ## Badges
 
@@ -71,6 +71,91 @@
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 4/4 |
 
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>Bundler limitation: relative URIs with $id combinations (12 tests)</summary>
+
+- `draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid`
+- `draft2019-09/ref/URN ref with nested pointer ref/a string is valid`
+- `draft2019-09/ref/refs with relative uris and defs/invalid on inner field`
+- `draft2019-09/ref/refs with relative uris and defs/invalid on outer field`
+- `draft2019-09/ref/refs with relative uris and defs/valid on both fields`
+- `draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field`
+- `draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field`
+- `draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields`
+- `draft2019-09/refRemote/anchor within remote ref/remote anchor invalid`
+- `draft2019-09/refRemote/anchor within remote ref/remote anchor valid`
+- `draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
+- `draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
+
+</details>
+
+<details>
+<summary>Metaschema validation requires fetching schemas containing dynamic refs (4 tests)</summary>
+
+- `draft2019-09/defs/validate definition against metaschema/invalid definition schema`
+- `draft2019-09/defs/validate definition against metaschema/valid definition schema`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
+
+<details>
+<summary>Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (40 tests)</summary>
+
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/two levels, integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/integer now matches as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/two levels, properties match with $recursiveRef`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node does not match: recursion uses the inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node does not match; no recursion`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node matches: recursion uses the inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node does not match: recursion only uses inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node does not match; no recursion`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node matches: recursion only uses inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/two levels, integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/mismatch`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive match`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive mismatch`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/two levels, no match`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/dynamic $recursiveRef destination (not predictable at schema compile time)/integer node`
+- `draft2019-09/recursiveRef/dynamic $recursiveRef destination (not predictable at schema compile time)/numeric node`
+- `draft2019-09/recursiveRef/multiple dynamic paths to the $recursiveRef keyword/recurse to anyLeafNode - floats are allowed`
+- `draft2019-09/recursiveRef/multiple dynamic paths to the $recursiveRef keyword/recurse to integerNode - floats are not allowed`
+- `draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays`
+- `draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties`
+
+</details>
+
+<details>
+<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
+
+- `draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+
+</details>
+
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -122,6 +207,84 @@
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 4/4 |
 
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>Bundler limitation: relative URIs with $id combinations (12 tests)</summary>
+
+- `draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid`
+- `draft2020-12/ref/URN ref with nested pointer ref/a string is valid`
+- `draft2020-12/ref/refs with relative uris and defs/invalid on inner field`
+- `draft2020-12/ref/refs with relative uris and defs/invalid on outer field`
+- `draft2020-12/ref/refs with relative uris and defs/valid on both fields`
+- `draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field`
+- `draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field`
+- `draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields`
+- `draft2020-12/refRemote/anchor within remote ref/remote anchor invalid`
+- `draft2020-12/refRemote/anchor within remote ref/remote anchor valid`
+- `draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
+- `draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
+
+</details>
+
+<details>
+<summary>Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (33 tests)</summary>
+
+- `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema`
+- `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema`
+- `draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes`
+- `draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema`
+- `draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid`
+- `draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is not valid against the root`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor/The recursive part doesn't need to validate against the root`
+- `draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
+- `draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with number values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with string values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with number values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with string values`
+- `draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field`
+- `draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with misspelled field`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect extended schema`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema`
+
+</details>
+
+<details>
+<summary>Metaschema validation requires fetching schemas containing dynamic refs (4 tests)</summary>
+
+- `draft2020-12/defs/validate definition against metaschema/invalid definition schema`
+- `draft2020-12/defs/validate definition against metaschema/valid definition schema`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
+
+<details>
+<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
+
+- `draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+
+</details>
+
 ## draft3
 
 | Keyword | Status | Pass/Total |
@@ -151,6 +314,23 @@
 | required | ✅ | 4/4 |
 | type | ✅ | 73/73 |
 | uniqueItems | ✅ | 62/62 |
+
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>Draft3 type with inline schemas is legacy feature removed in draft4+ (7 tests)</summary>
+
+- `draft3/type/applies a nested schema/an object is invalid otherwise`
+- `draft3/type/types can include schemas/a boolean is invalid`
+- `draft3/type/types can include schemas/a float is invalid`
+- `draft3/type/types can include schemas/a string is invalid`
+- `draft3/type/types can include schemas/an integer is invalid`
+- `draft3/type/types can include schemas/null is invalid`
+- `draft3/type/types from separate schemas are merged/an integer is invalid`
+
+</details>
 
 ## draft4
 
@@ -187,7 +367,7 @@
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
-### Failures
+### Unexpected Failures
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -239,7 +419,7 @@
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Failures
+### Unexpected Failures
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -328,7 +508,7 @@
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Failures
+### Unexpected Failures
 
 <details>
 <summary>definitions - 1 failure</summary>
