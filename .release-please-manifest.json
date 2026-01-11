@@ -2,7 +2,7 @@
   "typescript/packages/adapters/zod": "0.2.1",
   "cli": "0.2.1",
   "typescript/packages/adapters/arktype": "0.1.2",
-  "typescript/packages/core": "0.1.0",
+  "typescript/packages/core": "0.1.1",
   "typescript/packages/client": "0.0.4",
   "typescript/packages/adapters/effect": "0.1.0",
   "typescript/packages/adapters/typebox": "0.1.0",
