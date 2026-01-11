@@ -232,21 +232,14 @@
     },
     {
       "keyword": "type",
-      "passed": 72,
-      "failed": 8,
+      "passed": 73,
+      "failed": 7,
       "skipped": 0,
       "total": 80,
       "failures": [
         {
           "group": "applies a nested schema",
           "test": "an object is invalid otherwise",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -320,10 +313,10 @@
     }
   ],
   "summary": {
-    "passed": 389,
-    "failed": 18,
+    "passed": 390,
+    "failed": 17,
     "skipped": 0,
     "total": 407,
-    "percentage": 95.57739557739558
+    "percentage": 95.82309582309583
   }
 }

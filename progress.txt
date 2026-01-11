@@ -175,3 +175,23 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - zod adapter correctly renders type guards; valibot was missing this logic
   - remaining failures: bundler limitations, JS prototype props bug, tuple handling, propertyNames, type:object accepts arrays
 ---
+
+## 2026-01-11 - US-011
+- fixed valibot type:object to reject arrays per JSON Schema spec
+- valibot's object schemas (looseObject, strictObject) coerce arrays to empty objects
+- solution: add v.rawCheck() BEFORE the object schema to reject arrays early
+- added ARRAY_REJECTION_CHECK constant to all object rendering paths
+- Files changed: `typescript/packages/adapters/valibot/src/renderer.ts`, compliance results, `prd.jsonc`
+- **Results:**
+  - draft2020-12: 90.0% → 90.1% (+1 test)
+  - draft2019-09: 89.2% → 89.3% (+1 test)
+  - draft7: 94.1% → 94.2% (+1 test)
+  - draft6: 93.5% → 93.6% (+1 test)
+  - draft4: 94.0% → 94.2% (+1 test)
+  - draft3: 95.6% → 95.8% (+1 test)
+  - total: 6 tests fixed
+- **Learnings for future iterations:**
+  - valibot object schemas coerce arrays before validation runs; checks AFTER the schema see empty objects
+  - must use v.pipe(v.unknown(), v.rawCheck(...), objectSchema) to check input before coercion
+  - remaining valibot failures: propertyNames not enforced, JS prototype props bug, tuple handling, bundler limitations
+---

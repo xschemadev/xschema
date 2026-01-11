@@ -444,19 +444,10 @@
     },
     {
       "keyword": "type",
-      "passed": 78,
-      "failed": 1,
+      "passed": 79,
+      "failed": 0,
       "skipped": 0,
-      "total": 79,
-      "failures": [
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 79
     },
     {
       "keyword": "uniqueItems",
@@ -483,10 +474,10 @@
     }
   ],
   "summary": {
-    "passed": 534,
-    "failed": 34,
+    "passed": 535,
+    "failed": 33,
     "skipped": 0,
     "total": 568,
-    "percentage": 94.01408450704226
+    "percentage": 94.19014084507043
   }
 }

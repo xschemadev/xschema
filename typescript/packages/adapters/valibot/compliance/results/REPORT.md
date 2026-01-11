@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 816 | 99 | 0 | 89.2% |
-| draft2020-12 | 828 | 92 | 0 | 90.0% |
-| draft3 | 389 | 18 | 0 | 95.6% |
-| draft4 | 534 | 34 | 0 | 94.0% |
-| draft6 | 718 | 50 | 0 | 93.5% |
-| draft7 | 794 | 50 | 0 | 94.1% |
+| draft2019-09 | 817 | 98 | 0 | 89.3% |
+| draft2020-12 | 829 | 91 | 0 | 90.1% |
+| draft3 | 390 | 17 | 0 | 95.8% |
+| draft4 | 535 | 33 | 0 | 94.2% |
+| draft6 | 719 | 49 | 0 | 93.6% |
+| draft7 | 795 | 49 | 0 | 94.2% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.2%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.0%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-95.6%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-94.0%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-93.5%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-94.1%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.3%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.1%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-95.8%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-94.2%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-93.6%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-94.2%25-yellow)
 
 ## draft2019-09
 
@@ -65,7 +65,7 @@
 | ref | ❌ | 0/12 |
 | refRemote | ❌ | 0/4 |
 | required | ⚠️ | 9/16 |
-| type | ⚠️ | 79/80 |
+| type | ✅ | 80/80 |
 | unevaluatedItems | ❌ | 0/2 |
 | unevaluatedProperties | ❌ | 0/2 |
 | uniqueItems | ⚠️ | 67/69 |
@@ -425,15 +425,6 @@
 </details>
 
 <details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>unevaluatedItems - 2 failures</summary>
 
 - **unevaluatedItems with $recursiveRef**
@@ -523,7 +514,7 @@
 | ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
 | required | ⚠️ | 9/16 |
-| type | ⚠️ | 79/80 |
+| type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ⚠️ | 67/69 |
@@ -874,15 +865,6 @@
 </details>
 
 <details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>uniqueItems - 2 failures</summary>
 
 - **uniqueItems with an array of items and additionalItems=false**
@@ -930,7 +912,7 @@
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
 | required | ⚠️ | 3/4 |
-| type | ⚠️ | 72/80 |
+| type | ⚠️ | 73/80 |
 | uniqueItems | ⚠️ | 60/62 |
 
 ### Failures
@@ -996,13 +978,10 @@
 </details>
 
 <details>
-<summary>type - 8 failures</summary>
+<summary>type - 7 failures</summary>
 
 - **applies a nested schema**
   - Test: an object is invalid otherwise
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
   - Expected: `invalid`, Got: `true`
 - **types can include schemas**
   - Test: a boolean is invalid
@@ -1069,7 +1048,7 @@
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 17/17 |
 | required | ⚠️ | 8/15 |
-| type | ⚠️ | 78/79 |
+| type | ✅ | 79/79 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
@@ -1222,15 +1201,6 @@
 </details>
 
 <details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>uniqueItems - 2 failures</summary>
 
 - **uniqueItems with an array of items and additionalItems=false**
@@ -1280,7 +1250,7 @@
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 9/16 |
-| type | ⚠️ | 79/80 |
+| type | ✅ | 80/80 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
@@ -1494,15 +1464,6 @@
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1558,7 +1519,7 @@
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
 | required | ⚠️ | 9/16 |
-| type | ⚠️ | 79/80 |
+| type | ✅ | 80/80 |
 | uniqueItems | ⚠️ | 67/69 |
 
 ### Failures
@@ -1772,15 +1733,6 @@
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>

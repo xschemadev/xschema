@@ -138,8 +138,8 @@
 				"'an array is not an object' tests pass across all drafts",
 				"bun run build + bun run typecheck pass from typescript/"
 			],
-			"passes": false,
-			"notes": "derived from US-009. fixes 6 tests."
+			"passes": true,
+			"notes": "derived from US-009. fixed 6 tests via rawCheck before object schema. draft2020-12: 90.0%→90.1%, draft2019-09: 89.2%→89.3%, draft7: 94.1%→94.2%, draft6: 93.5%→93.6%, draft4: 94.0%→94.2%, draft3: 95.6%→95.8%."
 		},
 		{
 			"id": "US-012",

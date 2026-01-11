@@ -189,6 +189,10 @@ function renderNumber(node: NumberNode): string {
 	return `v.pipe(v.number(), ${actions.join(", ")})`;
 }
 
+// JSON Schema: type:object excludes arrays (unlike JS where typeof [] === 'object')
+// Must use rawCheck BEFORE the object schema, since valibot's object schemas coerce arrays
+const ARRAY_REJECTION_CHECK = `v.rawCheck((ctx) => { if (Array.isArray(ctx.dataset.value)) ctx.addIssue({ message: "Expected object, not array" }); })`;
+
 function renderObject(node: ObjectNode): string {
 	const propKeys = Array.from(node.properties.keys());
 	const hasPatternProps = node.patternProperties.length > 0;
@@ -206,12 +210,10 @@ function renderObject(node: ObjectNode): string {
 		node.additionalProperties.kind !== "any"
 	) {
 		const valueSchema = render(node.additionalProperties);
-		let result = `v.record(v.string(), ${valueSchema})`;
+		const record = `v.record(v.string(), ${valueSchema})`;
 		const actions = renderObjectConstraintsActions(node);
-		if (actions.length > 0) {
-			result = `v.pipe(${result}, ${actions.join(", ")})`;
-		}
-		return result;
+		// Always wrap with array rejection check
+		return `v.pipe(v.unknown(), ${ARRAY_REJECTION_CHECK}, ${record}${actions.length > 0 ? ", " + actions.join(", ") : ""})`;
 	}
 
 	// Build shape
@@ -251,18 +253,18 @@ function renderObject(node: ObjectNode): string {
 				: "v.looseObject({})";
 	}
 
-	// Collect all validation actions
-	const actions: string[] = [];
+	// Collect all validation actions (run AFTER the object schema)
+	const postActions: string[] = [];
 
 	// Pattern properties validation
 	if (hasPatternProps) {
-		actions.push(...renderPatternPropsActions(node, propKeys));
+		postActions.push(...renderPatternPropsActions(node, propKeys));
 	}
 
 	// Property names validation
 	if (node.propertyNames) {
 		const keySchema = render(node.propertyNames);
-		actions.push(`v.check((val) => {
+		postActions.push(`v.check((val) => {
       for (const key of Object.keys(val)) {
         const result = v.safeParse(${keySchema}, key);
         if (!result.success) return false;
@@ -272,17 +274,14 @@ function renderObject(node: ObjectNode): string {
 	}
 
 	// Min/max properties
-	actions.push(...renderObjectConstraintsActions(node));
+	postActions.push(...renderObjectConstraintsActions(node));
 
 	// Dependencies
-	actions.push(...renderDependenciesActions(node));
+	postActions.push(...renderDependenciesActions(node));
 
-	// Apply all actions in single pipe
-	if (actions.length > 0) {
-		result = `v.pipe(${result}, ${actions.join(", ")})`;
-	}
-
-	return result;
+	// Always wrap with array rejection check BEFORE the object schema
+	const parts = ["v.unknown()", ARRAY_REJECTION_CHECK, result, ...postActions];
+	return `v.pipe(${parts.join(", ")})`;
 }
 
 function renderObjectWithPatternProps(node: ObjectNode): string {
@@ -339,7 +338,8 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 	allActions.push(...renderObjectConstraintsActions(node));
 	allActions.push(...renderDependenciesActions(node));
 
-	return `v.pipe(v.looseObject({}), ${allActions.join(", ")})`;
+	// Wrap with array rejection check BEFORE the object schema
+	return `v.pipe(v.unknown(), ${ARRAY_REJECTION_CHECK}, v.looseObject({}), ${allActions.join(", ")})`;
 }
 
 function renderPatternPropsActions(

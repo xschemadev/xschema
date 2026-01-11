@@ -991,19 +991,10 @@
     },
     {
       "keyword": "type",
-      "passed": 79,
-      "failed": 1,
+      "passed": 80,
+      "failed": 0,
       "skipped": 0,
-      "total": 80,
-      "failures": [
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 80
     },
     {
       "keyword": "unevaluatedItems",
@@ -1060,10 +1051,10 @@
     }
   ],
   "summary": {
-    "passed": 828,
-    "failed": 92,
+    "passed": 829,
+    "failed": 91,
     "skipped": 0,
     "total": 920,
-    "percentage": 90
+    "percentage": 90.1086956521739
   }
 }
