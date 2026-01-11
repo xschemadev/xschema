@@ -47,6 +47,25 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
+// LoadKnownIssues loads known-issues.json from the adapter's compliance directory
+func LoadKnownIssues(adapterPath string) (KnownIssues, error) {
+	knownIssuesPath := filepath.Join(adapterPath, "compliance", "known-issues.json")
+	data, err := os.ReadFile(knownIssuesPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil // no known issues file is valid
+		}
+		return nil, fmt.Errorf("failed to read known-issues.json: %w", err)
+	}
+
+	var issues KnownIssues
+	if err := json.Unmarshal(data, &issues); err != nil {
+		return nil, fmt.Errorf("failed to parse known-issues.json: %w", err)
+	}
+
+	return issues, nil
+}
+
 // Run executes compliance tests for an adapter
 func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	// Determine which drafts to test
@@ -70,6 +89,12 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	adapterBin := opts.AdapterCLIPath(opts.AdapterPath)
 	if _, err := os.Stat(adapterBin); os.IsNotExist(err) {
 		return nil, fmt.Errorf("adapter CLI not found at %s\nMake sure the adapter is built", adapterBin)
+	}
+
+	// Load known issues
+	knownIssues, err := LoadKnownIssues(opts.AdapterPath)
+	if err != nil {
+		return nil, err
 	}
 
 	report := ComplianceReport{
@@ -110,6 +135,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			outputFunc:   opts.OutputFunc,
 			progressFunc: opts.ProgressFunc,
 			timing:       opts.Timing,
+			knownIssues:  knownIssues,
 		})
 
 		if draftResult != nil {
@@ -147,6 +173,7 @@ type runDraftOptions struct {
 	outputFunc   func(string)
 	progressFunc func(ProgressUpdate)
 	timing       *TimingSummary
+	knownIssues  KnownIssues
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -321,6 +348,7 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 			result.Summary.Failed += localSummary.Failed
 			result.Summary.Skipped += localSummary.Skipped
 			result.Summary.Total += localSummary.Total
+			result.Summary.KnownIssues += localSummary.KnownIssues
 			mu.Unlock()
 		}()
 	}
@@ -352,9 +380,55 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		return nil
 	}
 
-	// Phase 1: Bundle all schemas
+	// Pre-filter: identify which tests are known issues and which groups can be skipped entirely
+	type groupFilter struct {
+		allKnown         bool
+		knownCount       int
+		filteredTests    []TestCase
+		filteredIndices  []int
+	}
+	groupFilters := make([]groupFilter, len(groups))
+
+	for i, group := range groups {
+		var filteredTests []TestCase
+		var filteredIndices []int
+		knownCount := 0
+
+		for j, tc := range group.Tests {
+			testPath := fmt.Sprintf("%s/%s/%s/%s", opts.draft, keywordResult.Keyword, group.Description, tc.Description)
+			if isKnown, _ := opts.knownIssues.Contains(testPath); isKnown {
+				knownCount++
+				continue
+			}
+			filteredTests = append(filteredTests, tc)
+			filteredIndices = append(filteredIndices, j)
+		}
+
+		groupFilters[i] = groupFilter{
+			allKnown:        len(filteredTests) == 0 && knownCount > 0,
+			knownCount:      knownCount,
+			filteredTests:   filteredTests,
+			filteredIndices: filteredIndices,
+		}
+
+		// Count known issues for groups we're skipping entirely
+		if groupFilters[i].allKnown {
+			summary.KnownIssues += knownCount
+		}
+	}
+
+	// Phase 1: Bundle schemas (skip groups where all tests are known issues)
 	bundled := make([]bundledGroup, len(groups))
 	for i, group := range groups {
+		// Skip groups where all tests are known issues
+		if groupFilters[i].allKnown {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("skipped: all tests are known issues"),
+			}
+			continue
+		}
+
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -372,11 +446,10 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 	}
 
-	// Mark bundle errors as failed first
+	// Mark bundle errors as failed (but not known issue groups)
 	for i, bg := range bundled {
-		if bg.bundleErr != nil {
+		if bg.bundleErr != nil && !groupFilters[i].allKnown {
 			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
-			bundled[i].bundleErr = bg.bundleErr // keep marked
 		}
 	}
 
@@ -414,12 +487,14 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	// Phase 3: Build harness items and execute single batch harness
+	// Use pre-computed filters for known issues
 	var harnessItems []HarnessItem
-	groupByID := make(map[string]*TestGroup) // for result processing
+	groupByID := make(map[string]*TestGroup)       // for result processing
+	filteredTestsByGroup := make(map[string][]int) // maps groupID to original test indices
 
 	for i, bg := range bundled {
 		if bg.bundleErr != nil {
-			continue // already marked as failed
+			continue // already handled (either known issue skip or error)
 		}
 
 		adapterOutput := adapterOutputByGroup[i]
@@ -428,13 +503,26 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 			continue
 		}
 
+		gf := groupFilters[i]
+
+		// Count known issues for this group (mixed groups with some known, some not)
+		if gf.knownCount > 0 && !gf.allKnown {
+			summary.KnownIssues += gf.knownCount
+		}
+
+		// Skip if no tests remain after filtering
+		if len(gf.filteredTests) == 0 {
+			continue
+		}
+
 		groupID := fmt.Sprintf("group_%d", i)
 		harnessItems = append(harnessItems, HarnessItem{
 			GroupID:       groupID,
 			AdapterOutput: adapterOutput,
-			Tests:         bg.group.Tests,
+			Tests:         gf.filteredTests,
 		})
 		groupByID[groupID] = &bg.group
+		filteredTestsByGroup[groupID] = gf.filteredIndices
 	}
 
 	if len(harnessItems) == 0 {
@@ -475,7 +563,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	// Process results by groupId
-	processHarnessResults(harnessResults, groupByID, keywordResult, summary)
+	processHarnessResults(harnessResults, groupByID, filteredTestsByGroup, keywordResult, summary)
 	return nil
 }
 
@@ -510,17 +598,23 @@ func normalizeErrorPath(errorMsg string) string {
 	return errorMsg
 }
 
-func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
+func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, filteredTestsByGroup map[string][]int, keywordResult *KeywordResult, summary *DraftSummary) {
 	for _, hr := range harnessResults {
 		group := groupByID[hr.GroupID]
 		if group == nil {
 			continue // unknown group, skip
 		}
 
-		if hr.Index >= len(group.Tests) {
+		// Map filtered index back to original index
+		filteredIndices := filteredTestsByGroup[hr.GroupID]
+		if hr.Index >= len(filteredIndices) {
 			continue // invalid index, skip
 		}
-		tc := group.Tests[hr.Index]
+		originalIdx := filteredIndices[hr.Index]
+		if originalIdx >= len(group.Tests) {
+			continue // invalid original index, skip
+		}
+		tc := group.Tests[originalIdx]
 
 		keywordResult.Total++
 		summary.Total++

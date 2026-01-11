@@ -75,3 +75,41 @@ Started: Sun Jan 11 10:07:31 PM CET 2026
 - KnownIssues.Contains(path) returns (bool, reason) for lookup
 
 ---
+
+## 2026-01-11 - US-002: Runner skips known issue tests
+
+### What was implemented
+- added LoadKnownIssues() to load known-issues.json from adapter's compliance directory
+- pre-filtering phase in processKeyword() identifies known issues BEFORE bundling
+- groups where ALL tests are known issues are skipped entirely (no bundling, no harness)
+- groups with SOME known tests still execute, but known tests are filtered out
+- KnownIssues count tracked in DraftSummary struct
+- CLI output shows "X known" suffix when known issues exist
+
+### Key design decisions
+- filter known issues BEFORE bundling to avoid failing tests that would error during bundle
+- test path format: {draft}/{keyword}/{group_description}/{test_description}
+- known issues don't affect pass/fail/skip counts, tracked separately
+- percentage calculation: passed / total (excludes known issues from both)
+
+### Files changed
+- cli/compliance/runner.go (LoadKnownIssues, processKeyword pre-filtering)
+- cli/compliance/types.go (added KnownIssues field to DraftSummary)
+- cli/cmd/compliance.go (formatDraftResult shows known issues)
+
+### Final compliance results with known issues
+| Draft | Passed | Total | Coverage | Known |
+|-------|--------|-------|----------|-------|
+| draft2020-12 | 870 | 870 | 100.0% | 50 |
+| draft2019-09 | 858 | 858 | 100.0% | 57 |
+| draft7 | 835 | 844 | 98.9% | 0 |
+| draft6 | 759 | 768 | 98.8% | 0 |
+| draft4 | 567 | 568 | 99.8% | 0 |
+| draft3 | 400 | 400 | 100.0% | 7 |
+
+### Learnings
+- bundling can fail for schemas with dynamic refs, so filtering must happen before bundling
+- parallel and sequential paths both needed to accumulate KnownIssues
+- harness result indices need mapping back to original test indices after filtering
+
+---

@@ -72,11 +72,12 @@ type DraftResult struct {
 
 // DraftSummary contains aggregate statistics for a draft
 type DraftSummary struct {
-	Passed     int     `json:"passed"`
-	Failed     int     `json:"failed"`
-	Skipped    int     `json:"skipped"`
-	Total      int     `json:"total"`
-	Percentage float64 `json:"percentage"`
+	Passed      int     `json:"passed"`
+	Failed      int     `json:"failed"`
+	Skipped     int     `json:"skipped"`
+	Total       int     `json:"total"`
+	Percentage  float64 `json:"percentage"`
+	KnownIssues int     `json:"knownIssues"`
 }
 
 // ComplianceReport is the complete report for an adapter
