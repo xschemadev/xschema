@@ -1,3 +1,14 @@
 # Ralph Progress Log
 Started: Sun Jan 11 03:05:49 PM CET 2026
 ---
+
+## 2026-01-11 - US-001
+- Verified bootstrap discovery workflow was already implemented
+- folder `tasks/adapters-optimization/` exists
+- README.md has required sections (discovery doc locations, required sections, the rule for adding stories)
+- typecheck passes
+- Files changed: prd.jsonc (marked passes: true)
+- **Learnings for future iterations:**
+  - US-001 was done in prior commit c13f8b4, just needed verification
+  - discovery workflow README defines clear categories: core-missing, adapter-native, forced-emulation, not-supported
+---
