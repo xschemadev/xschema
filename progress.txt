@@ -195,3 +195,20 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - must use v.pipe(v.unknown(), v.rawCheck(...), objectSchema) to check input before coercion
   - remaining valibot failures: propertyNames not enforced, JS prototype props bug, tuple handling, bundler limitations
 ---
+
+## 2026-01-11 - US-012
+- fixed valibot propertyNames validation in renderObjectWithPatternProps
+- when object has no properties but has propertyNames/patternProperties, it took pattern props path which skipped propertyNames check
+- added propertyNames validation to match regular renderObject path
+- Files changed: `typescript/packages/adapters/valibot/src/renderer.ts`, compliance results, `prd.jsonc`, `progress.txt`
+- **Results:**
+  - draft2020-12: 90.1% → 90.7% (+5 tests)
+  - draft2019-09: 89.3% → 89.8% (+5 tests)
+  - draft7: 94.2% → 94.8% (+5 tests)
+  - draft6: 93.6% → 94.3% (+5 tests)
+  - total: 20 tests fixed
+- **Learnings for future iterations:**
+  - renderObject and renderObjectWithPatternProps have different paths; propertyNames was only in the former
+  - need to check both rendering paths when adding object validation features
+  - remaining valibot failures: bundler limitations, JS prototype props bug, tuple handling, oneOf/required issues
+---

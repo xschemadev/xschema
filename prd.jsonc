@@ -150,8 +150,8 @@
 				"propertyNames validation tests pass",
 				"bun run build + bun run typecheck pass from typescript/"
 			],
-			"passes": false,
-			"notes": "derived from US-009. fixes ~5 tests per draft that supports propertyNames."
+			"passes": true,
+			"notes": "derived from US-009. fixed 20 tests (5 per draft6/7/2019-09/2020-12). draft2020-12: 90.1%→90.7%, draft2019-09: 89.3%→89.8%, draft7: 94.2%→94.8%, draft6: 93.6%→94.3%."
 		},
 		{
 			"id": "US-013",
