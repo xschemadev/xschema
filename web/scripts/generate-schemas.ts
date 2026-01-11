@@ -1,37 +1,92 @@
-#!/usr/bin/env bun
 /**
  * Schema Generation Script
  *
- * Discovers languages and adapters from the repository structure and generates
- * JSON Schema files that IDEs can use for config file validation.
+ * Generates JSON Schema files that IDEs can use for xschema config validation.
  *
- * Languages are directories at the repo root that contain `packages/adapters/`.
- * Adapters are subdirectories of `{lang}/packages/adapters/`.
+ * Languages are directories at the repo root that contain packages/adapters/.
+ * Adapters are discovered from {lang}/packages/adapters/<adapter>/xschema.adapter.json.
  */
 
 import {
 	existsSync,
 	mkdirSync,
 	readdirSync,
+	readFileSync,
 	statSync,
 	writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const REPO_ROOT = join(import.meta.dirname, "..", "..");
-const PUBLIC_DIR = join(import.meta.dirname, "..", "public");
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(SCRIPT_DIR, "..", "..");
+const PUBLIC_DIR = join(SCRIPT_DIR, "..", "public");
 const BASE_URL = "https://xschema.dev/schemas";
 
 export interface LanguageInfo {
-	name: string; // directory name, e.g., "ts"
-	adapters: string[]; // adapter names, e.g., ["zod"]
+	name: string; // directory name, e.g., "typescript"
+	adapters: string[]; // adapter refs, e.g., ["@xschemadev/zod"]
+}
+
+interface AdapterMetadata {
+	ref: string;
+}
+
+function parseAdapterMetadata(metadataPath: string): AdapterMetadata {
+	let raw: string;
+	try {
+		raw = readFileSync(metadataPath, "utf8");
+	} catch (error) {
+		throw new Error(
+			`[generate-schemas] failed reading adapter metadata: ${metadataPath}: ${String(error)}`,
+		);
+	}
+
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(raw);
+	} catch (error) {
+		throw new Error(
+			`[generate-schemas] invalid json in adapter metadata: ${metadataPath}: ${String(error)}`,
+		);
+	}
+
+	if (!parsed || typeof parsed !== "object") {
+		throw new Error(
+			`[generate-schemas] adapter metadata must be an object: ${metadataPath}`,
+		);
+	}
+
+	const ref = (parsed as Record<string, unknown>).ref;
+	if (typeof ref !== "string" || ref.trim().length === 0) {
+		throw new Error(
+			`[generate-schemas] adapter metadata missing string "ref": ${metadataPath}`,
+		);
+	}
+
+	return { ref };
+}
+
+function readAdapterRef(adapterDir: string): string {
+	const metadataPath = join(adapterDir, "xschema.adapter.json");
+	if (!existsSync(metadataPath)) {
+		throw new Error(
+			`[generate-schemas] missing xschema.adapter.json for adapter: ${adapterDir}`,
+		);
+	}
+
+	return parseAdapterMetadata(metadataPath).ref;
 }
 
 /**
- * Discover adapters by listing subdirectories
+ * Discover adapters by listing subdirectories and reading `xschema.adapter.json`.
  */
-export function discoverAdapters(adaptersPath: string): string[] {
-	const adapters: string[] = [];
+export function discoverAdapters(
+	adaptersPath: string,
+	globalRefToAdapterDir?: Map<string, string>,
+): string[] {
+	const refs: string[] = [];
+	const refsInLanguage = new Map<string, string>();
 
 	const entries = readdirSync(adaptersPath, { withFileTypes: true });
 
@@ -39,19 +94,42 @@ export function discoverAdapters(adaptersPath: string): string[] {
 		if (!entry.isDirectory()) continue;
 		if (entry.name.startsWith(".")) continue;
 
-		adapters.push(entry.name);
+		const adapterDir = join(adaptersPath, entry.name);
+		const ref = readAdapterRef(adapterDir);
+
+		const existingInLanguage = refsInLanguage.get(ref);
+		if (existingInLanguage) {
+			throw new Error(
+				`[generate-schemas] duplicate adapter ref "${ref}": ${existingInLanguage} and ${adapterDir}`,
+			);
+		}
+		refsInLanguage.set(ref, adapterDir);
+
+		if (globalRefToAdapterDir) {
+			const existingGlobal = globalRefToAdapterDir.get(ref);
+			if (existingGlobal) {
+				throw new Error(
+					`[generate-schemas] duplicate adapter ref "${ref}": ${existingGlobal} and ${adapterDir}`,
+				);
+			}
+			globalRefToAdapterDir.set(ref, adapterDir);
+		}
+
+		refs.push(ref);
 	}
 
-	return adapters;
+	refs.sort();
+	return refs;
 }
 
 /**
- * Discover languages by finding directories with packages/adapters/ subdirectory
+ * Discover languages by finding directories with `packages/adapters/` subdirectory.
  */
 export function discoverLanguages(
 	repoRoot: string = REPO_ROOT,
 ): LanguageInfo[] {
 	const languages: LanguageInfo[] = [];
+	const globalRefToAdapterDir = new Map<string, string>();
 
 	const entries = readdirSync(repoRoot, { withFileTypes: true });
 
@@ -62,7 +140,7 @@ export function discoverLanguages(
 		const adaptersPath = join(repoRoot, entry.name, "packages", "adapters");
 
 		if (existsSync(adaptersPath) && statSync(adaptersPath).isDirectory()) {
-			const adapters = discoverAdapters(adaptersPath);
+			const adapters = discoverAdapters(adaptersPath, globalRefToAdapterDir);
 			if (adapters.length > 0) {
 				languages.push({
 					name: entry.name,
@@ -72,16 +150,19 @@ export function discoverLanguages(
 		}
 	}
 
+	languages.sort((a, b) => a.name.localeCompare(b.name));
 	return languages;
 }
 
 /**
- * Get display name for a language
+ * Get display name for a language.
  */
 export function getLanguageDisplayName(lang: string): string {
 	const names: Record<string, string> = {
 		ts: "TypeScript",
+		typescript: "TypeScript",
 		py: "Python",
+		python: "Python",
 	};
 	return names[lang] || lang;
 }
@@ -103,13 +184,14 @@ function createConditional(
 }
 
 /**
- * Generate JSON Schema for a language
+ * Generate JSON Schema for a language.
  */
 export function generateSchema(
 	lang: LanguageInfo,
 	baseUrl: string = BASE_URL,
 ): Record<string, unknown> {
 	const displayName = getLanguageDisplayName(lang.name);
+	const adapters = [...lang.adapters].sort();
 
 	// Build conditional validation rules for source field
 	const urlFileCondition = createConditional(
@@ -189,8 +271,8 @@ export function generateSchema(
 						},
 						adapter: {
 							type: "string",
-							enum: lang.adapters,
-							description: `The validation library adapter to use for code generation. Available adapters: ${lang.adapters.join(", ")}.`,
+							enum: adapters,
+							description: `The validation library adapter to use for code generation. Available adapters: ${adapters.join(", ")}.`,
 						},
 					},
 					required: ["id", "sourceType", "source", "adapter"],
@@ -203,7 +285,7 @@ export function generateSchema(
 }
 
 /**
- * Write schema to file
+ * Write schema to file.
  */
 export function writeSchema(path: string, schema: object): void {
 	const dir = dirname(path);
@@ -214,24 +296,24 @@ export function writeSchema(path: string, schema: object): void {
 }
 
 /**
- * Main
+ * Main.
  */
 function main(): void {
-	console.log("Discovering languages and adapters...");
+	console.log("discovering languages and adapters...");
 
 	const languages = discoverLanguages();
 
 	if (languages.length === 0) {
-		console.log("No languages found with adapters.");
+		console.log("no languages found with adapters");
 		return;
 	}
 
-	console.log(`Found ${languages.length} language(s):`);
+	console.log(`found ${languages.length} language(s):`);
 	for (const lang of languages) {
 		console.log(`  - ${lang.name}: ${lang.adapters.join(", ")}`);
 	}
 
-	console.log("\nGenerating schemas...");
+	console.log("\ngenerating schemas...");
 
 	for (const lang of languages) {
 		const schema = generateSchema(lang);
@@ -239,15 +321,15 @@ function main(): void {
 		// Write versioned schema
 		const v1Path = join(PUBLIC_DIR, "schemas", "v1", `${lang.name}.jsonc`);
 		writeSchema(v1Path, schema);
-		console.log(`  Created: ${v1Path}`);
+		console.log(`  created: ${v1Path}`);
 
 		// Write unversioned schema (copy of latest)
 		const latestPath = join(PUBLIC_DIR, "schemas", `${lang.name}.jsonc`);
 		writeSchema(latestPath, schema);
-		console.log(`  Created: ${latestPath}`);
+		console.log(`  created: ${latestPath}`);
 	}
 
-	console.log("\nSchema generation complete!");
+	console.log("\nschema generation complete");
 }
 
 // Only run main when executed directly

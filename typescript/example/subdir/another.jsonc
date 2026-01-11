@@ -7,7 +7,42 @@
 			"id": "TSConfig",
 			"sourceType": "url",
 			"source": "https://json.schemastore.org/tsconfig.json",
-			"adapter": "zod"
+			"adapter": "@xschemadev/zod"
+		},
+		{
+			"id": "TSConfigNative",
+			"sourceType": "url",
+			"source": "https://json.schemastore.org/tsconfig.json",
+			"adapter": "@xschemadev/typescript"
+		},
+		{
+			"id": "Native",
+			"sourceType": "json",
+			"source": {
+				"type": "object",
+				"properties": {
+					"fruits": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["apple", "orange", "pear"]
+						}
+					},
+					"vegetables": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"veggieName": { "type": "string" },
+								"veggieLike": { "type": "boolean" }
+							},
+							"required": ["veggieName", "veggieLike"]
+						}
+					}
+				},
+				"required": ["fruits", "vegetables"]
+			},
+			"adapter": "@xschemadev/typescript"
 		}
 	]
 }

@@ -5,6 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/xschemadev/xschema/language"
+	langs "github.com/xschemadev/xschema/language/langs"
 )
 
 func TestParseConfigFile(t *testing.T) {
@@ -233,25 +236,44 @@ func TestParseDuplicateIDError(t *testing.T) {
 func TestParseMultipleLanguagesError(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// One TypeScript, one Python config
+	language.ResetForTests()
+	if err := langs.RegisterBuiltins(); err != nil {
+		t.Fatalf("failed to register built-in languages: %v", err)
+	}
+	t.Cleanup(func() {
+		language.ResetForTests()
+		if err := langs.RegisterBuiltins(); err != nil {
+			t.Fatalf("failed to restore built-in languages: %v", err)
+		}
+	})
+
+	if err := language.Register(language.Language{
+		Name:       "fake",
+		SchemaURL:  language.XSchemaBaseURL + "fake.jsonc",
+		Extensions: []string{".fake"},
+	}); err != nil {
+		t.Fatalf("failed to register fake language: %v", err)
+	}
+
+	// One TypeScript, one fake language config
 	tsConfig := `{
 		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
-	pyConfig := `{
-		"$schema": "https://xschema.dev/schemas/py.jsonc",
+	fakeConfig := `{
+		"$schema": "https://xschema.dev/schemas/fake.jsonc",
 		"schemas": [
-			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "xschema-pydantic"}
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "fake"}
 		]
 	}`
 
 	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
 		t.Fatalf("failed to write ts config: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(tmpDir, "py.jsonc"), []byte(pyConfig), 0644); err != nil {
-		t.Fatalf("failed to write py config: %v", err)
+	if err := os.WriteFile(filepath.Join(tmpDir, "fake.jsonc"), []byte(fakeConfig), 0644); err != nil {
+		t.Fatalf("failed to write fake config: %v", err)
 	}
 
 	ctx := context.Background()
@@ -264,25 +286,44 @@ func TestParseMultipleLanguagesError(t *testing.T) {
 func TestParseWithLanguageFilter(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// One TypeScript, one Python config
+	language.ResetForTests()
+	if err := langs.RegisterBuiltins(); err != nil {
+		t.Fatalf("failed to register built-in languages: %v", err)
+	}
+	t.Cleanup(func() {
+		language.ResetForTests()
+		if err := langs.RegisterBuiltins(); err != nil {
+			t.Fatalf("failed to restore built-in languages: %v", err)
+		}
+	})
+
+	if err := language.Register(language.Language{
+		Name:       "fake",
+		SchemaURL:  language.XSchemaBaseURL + "fake.jsonc",
+		Extensions: []string{".fake"},
+	}); err != nil {
+		t.Fatalf("failed to register fake language: %v", err)
+	}
+
+	// One TypeScript, one fake language config
 	tsConfig := `{
 		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
 		"schemas": [
 			{"id": "User", "sourceType": "url", "source": "https://example.com/user.json", "adapter": "zod"}
 		]
 	}`
-	pyConfig := `{
-		"$schema": "https://xschema.dev/schemas/py.jsonc",
+	fakeConfig := `{
+		"$schema": "https://xschema.dev/schemas/fake.jsonc",
 		"schemas": [
-			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "xschema-pydantic"}
+			{"id": "Post", "sourceType": "url", "source": "https://example.com/post.json", "adapter": "fake"}
 		]
 	}`
 
 	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
 		t.Fatalf("failed to write ts config: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(tmpDir, "py.jsonc"), []byte(pyConfig), 0644); err != nil {
-		t.Fatalf("failed to write py config: %v", err)
+	if err := os.WriteFile(filepath.Join(tmpDir, "fake.jsonc"), []byte(fakeConfig), 0644); err != nil {
+		t.Fatalf("failed to write fake config: %v", err)
 	}
 
 	ctx := context.Background()

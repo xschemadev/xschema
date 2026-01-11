@@ -2,10 +2,12 @@ package injector
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -15,9 +17,9 @@ import (
 )
 
 type InjectInput struct {
-	Language string                 `json:"language"` // typescript, python, go
+	Language string                  `json:"language"` // typescript
 	Outputs  []adapter.ConvertResult `json:"outputs"`
-	OutDir   string                 `json:"outDir"` // default .xschema
+	OutDir   string                  `json:"outDir"` // default .xschema
 }
 
 // TemplateData is passed to the language template
@@ -28,7 +30,218 @@ type TemplateData struct {
 	Footer  string                 // language-specific footer
 }
 
-// Inject writes generated code to output directory
+const manifestFileName = "xschema.manifest.json"
+
+type manifest struct {
+	Files []string `json:"files"`
+}
+
+// WriteGeneratedFiles writes generated files under the output root.
+// Each GeneratedFile.Path is interpreted as a relative path.
+//
+// It also writes a manifest (xschema.manifest.json) and removes stale files from the previous manifest.
+func WriteGeneratedFiles(outDir string, files []language.GeneratedFile) error {
+	if strings.TrimSpace(outDir) == "" {
+		return fmt.Errorf("outDir is required")
+	}
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+
+	normalized := make([]language.GeneratedFile, len(files))
+	for i, file := range files {
+		path, err := language.NormalizeRelativePath(file.Path)
+		if err != nil {
+			return fmt.Errorf("invalid generated file path %q: %w", file.Path, err)
+		}
+		normalized[i] = language.GeneratedFile{Path: path, Contents: file.Contents}
+	}
+
+	language.SortGeneratedFiles(normalized)
+	if err := language.ValidateGeneratedFiles(normalized); err != nil {
+		return fmt.Errorf("invalid generated files: %w", err)
+	}
+
+	newPathsOrdered := make([]string, len(normalized))
+	newPathSet := make(map[string]struct{}, len(normalized))
+	for i, file := range normalized {
+		newPathsOrdered[i] = file.Path
+		newPathSet[file.Path] = struct{}{}
+	}
+
+	manifestPath := filepath.Join(outDir, manifestFileName)
+	previousPaths, err := loadManifest(manifestPath)
+	if err != nil {
+		return err
+	}
+
+	var stalePaths []string
+	for _, previousPath := range previousPaths {
+		if _, ok := newPathSet[previousPath]; ok {
+			continue
+		}
+		stalePaths = append(stalePaths, previousPath)
+	}
+
+	if err := deleteStaleFiles(outDir, stalePaths); err != nil {
+		return err
+	}
+
+	for _, file := range normalized {
+		outPath := filepath.Join(outDir, filepath.FromSlash(file.Path))
+		if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
+			return fmt.Errorf("failed to create output directory: %w", err)
+		}
+		if err := os.WriteFile(outPath, []byte(file.Contents), 0644); err != nil {
+			return fmt.Errorf("failed to write output file: %w", err)
+		}
+	}
+
+	if err := writeManifestAtomic(outDir, newPathsOrdered); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func loadManifest(manifestPath string) ([]string, error) {
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to read manifest %q: %w", manifestPath, err)
+	}
+
+	var m manifest
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, fmt.Errorf("failed to parse manifest %q: %w", manifestPath, err)
+	}
+
+	seen := make(map[string]struct{}, len(m.Files))
+	paths := make([]string, 0, len(m.Files))
+	for _, path := range m.Files {
+		if strings.TrimSpace(path) == "" {
+			return nil, fmt.Errorf("manifest %q contains empty path", manifestPath)
+		}
+		if path == manifestFileName {
+			continue
+		}
+		normalized, err := language.NormalizeRelativePath(path)
+		if err != nil {
+			return nil, fmt.Errorf("manifest %q contains invalid path %q: %w", manifestPath, path, err)
+		}
+		if _, ok := seen[normalized]; ok {
+			continue
+		}
+		seen[normalized] = struct{}{}
+		paths = append(paths, normalized)
+	}
+
+	sort.Strings(paths)
+	return paths, nil
+}
+
+func writeManifestAtomic(outDir string, paths []string) error {
+	manifestPath := filepath.Join(outDir, manifestFileName)
+	m := manifest{Files: paths}
+
+	data, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal manifest: %w", err)
+	}
+	data = append(data, '\n')
+
+	tmp, err := os.CreateTemp(outDir, manifestFileName+".tmp-*")
+	if err != nil {
+		return fmt.Errorf("failed to create manifest temp file: %w", err)
+	}
+	tmpName := tmp.Name()
+
+	writeErr := func() error {
+		if _, err := tmp.Write(data); err != nil {
+			return fmt.Errorf("failed to write manifest temp file: %w", err)
+		}
+		if err := tmp.Close(); err != nil {
+			return fmt.Errorf("failed to close manifest temp file: %w", err)
+		}
+		if err := os.Chmod(tmpName, 0644); err != nil {
+			return fmt.Errorf("failed to set manifest permissions: %w", err)
+		}
+		if err := os.Rename(tmpName, manifestPath); err != nil {
+			return fmt.Errorf("failed to write manifest %q: %w", manifestPath, err)
+		}
+		return nil
+	}()
+	if writeErr != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmpName)
+		return writeErr
+	}
+
+	return nil
+}
+
+func deleteStaleFiles(outDir string, paths []string) error {
+	if len(paths) == 0 {
+		return nil
+	}
+
+	absOutDir, err := filepath.Abs(outDir)
+	if err != nil {
+		return fmt.Errorf("failed to resolve output directory: %w", err)
+	}
+
+	for _, path := range paths {
+		normalized, err := language.NormalizeRelativePath(path)
+		if err != nil {
+			return fmt.Errorf("invalid stale path %q: %w", path, err)
+		}
+
+		absPath := filepath.Join(absOutDir, filepath.FromSlash(normalized))
+		rel, err := filepath.Rel(absOutDir, absPath)
+		if err != nil {
+			return fmt.Errorf("failed to resolve stale path %q: %w", normalized, err)
+		}
+		if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			return fmt.Errorf("refusing to delete stale path outside output directory: %q", normalized)
+		}
+
+		if err := os.Remove(absPath); err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			return fmt.Errorf("failed to remove stale file %q: %w", normalized, err)
+		}
+
+		cleanupEmptyParents(absOutDir, filepath.Dir(absPath))
+	}
+
+	return nil
+}
+
+func cleanupEmptyParents(outRoot, dir string) {
+	for {
+		if dir == outRoot {
+			return
+		}
+		if len(dir) < len(outRoot) {
+			return
+		}
+
+		err := os.Remove(dir)
+		if err != nil {
+			if os.IsNotExist(err) {
+				dir = filepath.Dir(dir)
+				continue
+			}
+			return
+		}
+		dir = filepath.Dir(dir)
+	}
+}
+
+// Inject writes generated code to output directory.
 func Inject(input InjectInput) error {
 	lang := language.ByName(input.Language)
 	if lang == nil {
@@ -63,20 +276,17 @@ func Inject(input InjectInput) error {
 
 	ui.Verbosef("template execution successful: %d bytes", buf.Len())
 
-	// Ensure output directory exists
-	if err := os.MkdirAll(input.OutDir, 0755); err != nil {
-		ui.Verbosef("failed to create output directory: %s", input.OutDir)
-		return fmt.Errorf("failed to create output directory: %w", err)
+	files := []language.GeneratedFile{{
+		Path:     lang.OutputFile,
+		Contents: buf.String(),
+	}}
+
+	if err := WriteGeneratedFiles(input.OutDir, files); err != nil {
+		ui.Verbosef("failed to write generated files: outDir=%s", input.OutDir)
+		return err
 	}
 
-	// Write output file
-	outPath := filepath.Join(input.OutDir, lang.OutputFile)
-	if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
-		ui.Verbosef("failed to write output file: %s", outPath)
-		return fmt.Errorf("failed to write output file: %w", err)
-	}
-
-	ui.Verbosef("successfully injected schemas: path=%s, bytes=%d", outPath, buf.Len())
+	ui.Verbosef("successfully injected schemas: files=%d, outDir=%s", len(files), input.OutDir)
 	return nil
 }
 

@@ -58,7 +58,7 @@ func init() {
 
 	complianceCmd.Flags().StringVarP(&complianceDraft, "draft", "d", "", "specific draft to test (e.g., draft2020-12)")
 	complianceCmd.Flags().StringVarP(&complianceKeyword, "keyword", "k", "", "specific keyword to test (e.g., additionalProperties)")
-	complianceCmd.Flags().StringVarP(&complianceLang, "lang", "l", "typescript", "language (typescript, python)")
+	complianceCmd.Flags().StringVarP(&complianceLang, "lang", "l", "typescript", "language (typescript)")
 	complianceCmd.Flags().BoolVar(&complianceDevReport, "dev-report", false, "write results to compliance/results/ (for adapter developers)")
 	complianceCmd.Flags().BoolVarP(&complianceVerbose, "verbose", "v", false, "show verbose output")
 	complianceCmd.Flags().BoolVar(&complianceProfile, "profile", false, "print timing breakdown summary")

@@ -1,7 +1,6 @@
 package language
 
 import (
-	"os/exec"
 	"strings"
 )
 
@@ -31,6 +30,7 @@ type Language struct {
 	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
 	DetectRunner     func() (cmd string, args []string, err error)
+	AdapterInvoker   AdapterInvoker // resolves adapter refs to a runnable command
 
 	// Client injection (after generation)
 	BuildSchemasImport   func(importPath string) string    // build import statement for schemas
@@ -57,103 +57,24 @@ type Language struct {
 	HarnessTemplate     string                                                  // Go template for generating harness files
 }
 
-var Languages = []Language{
-	typescript,
-	python,
-}
-
-// languageBySchemaExt maps schema extensions to languages
-var languageBySchemaExt map[string]*Language
-
-func init() {
-	languageBySchemaExt = make(map[string]*Language)
-	for i := range Languages {
-		languageBySchemaExt[Languages[i].SchemaExt] = &Languages[i]
-	}
-}
-
 // BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/typescript.jsonc"
 // Returns nil if URL doesn't match xschema.dev pattern
 func BySchemaURL(url string) *Language {
-	if !strings.HasPrefix(url, XSchemaBaseURL) {
-		return nil
-	}
-	ext := strings.TrimPrefix(url, XSchemaBaseURL)
-	return languageBySchemaExt[ext]
+	return defaultRegistry.BySchemaURL(url)
 }
 
 // ByName returns the language config by name
 func ByName(name string) *Language {
-	for i, lang := range Languages {
-		if lang.Name == name {
-			return &Languages[i]
-		}
-	}
-	return nil
+	return defaultRegistry.ByName(name)
 }
 
 // AllIgnoreDirs returns a combined set of all ignore dirs from all languages
 // Used when walking directories before language detection
 func AllIgnoreDirs() map[string]bool {
-	dirs := make(map[string]bool)
-	for _, lang := range Languages {
-		for _, dir := range lang.IgnoreDirs {
-			dirs[dir] = true
-		}
-	}
-	return dirs
+	return defaultRegistry.AllIgnoreDirs()
 }
 
 // IsXSchemaURL checks if a URL is an xschema.dev schema URL
 func IsXSchemaURL(url string) bool {
 	return strings.HasPrefix(url, XSchemaBaseURL)
-}
-
-// commandExists checks if a command is available in PATH
-func commandExists(cmd string) bool {
-	_, err := exec.LookPath(cmd)
-	return err == nil
-}
-
-// buildVarNameUnderscore builds a variable name using underscore separator: namespace_id
-func buildVarNameUnderscore(namespace, id string) string {
-	return namespace + "_" + id
-}
-
-// injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS/Python dict)
-func injectSchemasKeyBrace(configContent string) string {
-	// Find first { and insert after it
-	openIdx := strings.Index(configContent, "{")
-	if openIdx == -1 {
-		return configContent
-	}
-
-	// Check length to avoid panic
-	if len(configContent) < openIdx+2 {
-		return "{ schemas }"
-	}
-
-	// Check if schemas already exists (shorthand {schemas} or pair {schemas: schemas})
-	inner := configContent[openIdx+1 : len(configContent)-1]
-	innerTrimmed := strings.TrimSpace(inner)
-
-	// Check for shorthand: {schemas, ...}
-	if strings.HasPrefix(innerTrimmed, "schemas") && (len(innerTrimmed) == 7 || strings.HasPrefix(innerTrimmed[7:], ",") || strings.HasPrefix(innerTrimmed[7:], "}")) {
-		return configContent
-	}
-
-	// Check for pair: {schemas: schemas, ...}
-	if strings.HasPrefix(innerTrimmed, "schemas:") {
-		return configContent
-	}
-
-	// Check for quoted pair: {"schemas": schemas, ...}
-	if strings.HasPrefix(innerTrimmed, `"schemas":`) || strings.HasPrefix(innerTrimmed, `'schemas':`) {
-		return configContent
-	}
-
-	if innerTrimmed == "" {
-		return "{ schemas }"
-	}
-	return "{ schemas, " + inner + " }"
 }

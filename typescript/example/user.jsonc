@@ -8,14 +8,14 @@
 			"id": "Calendar",
 			"sourceType": "file",
 			"source": "./calendar.json",
-			"adapter": "zod"
+			"adapter": "@xschemadev/zod"
 		},
 		{
 			// Schema from a local file using ArkType adapter
 			"id": "User",
 			"sourceType": "file",
 			"source": "./source.json",
-			"adapter": "arktype"
+			"adapter": "@xschemadev/arktype"
 		}
 	]
 }

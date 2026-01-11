@@ -35,9 +35,9 @@ Each step is independent and can be understood separately, but they form a cohes
    - Skips non-xschema JSON files
 
 3. **Detects language** from schema URL
-   - `ts.jsonc` → TypeScript
-   - `py.jsonc` → Python
+   - `typescript.jsonc` → TypeScript
    - Errors if multiple languages detected (unless `--lang` flag)
+   - Currently TypeScript-only
 
 4. **Extracts schema declarations** from each config
    - Each `schemas` array entry becomes a declaration
@@ -112,17 +112,17 @@ func Parse(ctx context.Context, projectRoot string, langFilter string) (*ParseRe
       "id": "User",
       "sourceType": "url",
       "source": "https://json.schemastore.org/package.json",
-      "adapter": "zod"
+      "adapter": "@xschemadev/zod"
     },
-    
+
     // File-based schema (relative to config file)
     {
       "id": "Calendar",
       "sourceType": "file",
       "source": "./schemas/calendar.json",
-      "adapter": "zod"
+      "adapter": "@xschemadev/zod"
     },
-    
+
     // Inline JSON schema
     {
       "id": "Event",
@@ -135,7 +135,7 @@ func Parse(ctx context.Context, projectRoot string, langFilter string) (*ParseRe
         },
         "required": ["name", "startDate"]
       },
-      "adapter": "zod"
+      "adapter": "@xschemadev/zod"
     }
   ]
 }
@@ -333,19 +333,21 @@ func DefaultOptions() Options {
 
 **Package:** `cli/generator/`
 
-**Input:** Retrieved schemas, language name
+**Input:** Retrieved schemas, language, project root
 
 **Output:** Generated code from adapters
 
 ### What Generator Does
 
-1. **Groups schemas by adapter**
+1. **Groups schemas by adapter ref**
    - Schemas using same adapter are batched together
-   - Example: 3 schemas with `"adapter": "zod"` → one batch
+   - Example: 3 schemas with `"adapter": "@xschemadev/zod"` → one batch
 
 2. **For each adapter batch:**
-   - Detects package manager/runner
-   - Constructs adapter command
+   - Invokes `AdapterInvoker.BuildAdapterCommand()` to get a `CommandSpec`
+   - Validates the adapter ref (must be scoped npm package like `@xschemadev/zod`)
+   - Detects package manager/runner in project root
+   - Derives binary name from ref (e.g., `@xschemadev/zod` → `xschema-zod`)
    - Sends schemas via stdin
    - Reads generated code from stdout
 
@@ -353,42 +355,51 @@ func DefaultOptions() Options {
 
 ### Adapter Invocation
 
-**Code Flow:**
+The generator delegates adapter resolution to the language's `AdapterInvoker`:
 
 ```go
 func Generate(ctx context.Context, input GenerateBatchInput) ([]GenerateOutput, error) {
     // 1. Get language config
     lang := language.ByName(input.Language)
-    
-    // 2. Detect runner
-    runner, args, err := lang.DetectRunner()  // "bunx", [], nil
-    
-    // 3. Build adapter binary name
-    binName := lang.AdapterBinPrefix + input.Adapter  // "xschema-zod"
-    
-    // 4. Execute: runner [args] binName
-    cmdArgs := append(args, binName)
-    cmd := exec.CommandContext(ctx, runner, cmdArgs...)
-    
-    // 5. Pipe schemas as JSON to stdin
+
+    // 2. Build adapter command via language invoker
+    cmdSpec, err := lang.AdapterInvoker.BuildAdapterCommand(ctx, language.AdapterCommandInput{
+        ProjectRoot: input.ProjectRoot,
+        AdapterRef:  input.Adapter,  // e.g., "@xschemadev/zod"
+    })
+    // cmdSpec = {Cmd: "bunx", Args: ["xschema-zod"], Dir: "/project"}
+
+    // 3. Execute command
+    cmd := exec.CommandContext(ctx, cmdSpec.Cmd, cmdSpec.Args...)
+    cmd.Dir = cmdSpec.Dir
+
+    // 4. Pipe schemas as JSON to stdin
     stdinData := json.Marshal(input.Schemas)
     cmd.Stdin = stdinData
-    
-    // 6. Capture stdout
+
+    // 5. Capture stdout
     stdout := cmd.Output()
-    
-    // 7. Parse outputs
+
+    // 6. Parse outputs
     var outputs []GenerateOutput
     json.Unmarshal(stdout, &outputs)
-    
+
     return outputs, nil
 }
 ```
 
+**Adapter Ref Validation (TypeScript):**
+- Must be scoped npm package: `@xschemadev/zod`
+- Legacy refs like `"zod"` error with migration guidance:
+  ```
+  invalid typescript adapter ref "zod": expected scoped npm package ref like "@xschemadev/zod"
+  (migration: change adapter to "@xschemadev/zod")
+  ```
+
 **Example Execution:**
 
 ```bash
-# For TypeScript with bun.lock
+# For TypeScript with bun.lock, adapter ref "@xschemadev/zod"
 bunx xschema-zod
 
 # Input (stdin):
@@ -414,16 +425,17 @@ Schemas are automatically grouped for efficiency:
 
 ```go
 groups := GroupByAdapter(schemas)
-// Result: { "zod": [schema1, schema2], "yup": [schema3] }
+// Result: { "@xschemadev/zod": [schema1, schema2], "@xschemadev/valibot": [schema3] }
 
 adapters := SortedAdapters(groups)  // Deterministic order
 
 for _, adapter := range adapters {
     schemas := groups[adapter]
     outputs := Generate(ctx, GenerateBatchInput{
-        Adapter:  adapter,
-        Language: langName,
-        Schemas:  schemas,  // Multiple schemas in one call
+        Adapter:     adapter,
+        Language:    langName,
+        ProjectRoot: projectRoot,
+        Schemas:     schemas,  // Multiple schemas in one call
     })
 }
 ```
@@ -460,12 +472,12 @@ type GenerateBatchInput struct {
 
 **Input:** Generated outputs, language, output directory
 
-**Output:** Written files (e.g., `.xschema/xschema.gen.ts`)
+**Output:** Written files (e.g., `.xschema/xschema.gen.ts`) + manifest
 
 ### What Injector Does
 
 1. **Merges imports** (deduplicates)
-   - Language-specific merging (handles TS vs Python syntax)
+   - Language-specific merging
    - Deduplicates identical imports
    - Maintains import order
 
@@ -476,7 +488,50 @@ type GenerateBatchInput struct {
 
 3. **Executes template** using Go `text/template`
 
-4. **Writes output file** to disk
+4. **Writes files** via `WriteGeneratedFiles()`
+   - Normalizes and validates all paths
+   - Sorts files deterministically
+   - Deletes stale files from previous manifest
+   - Writes all files under output directory
+   - Writes manifest atomically (temp + rename)
+
+### Multi-File Outputs
+
+The injector supports multi-file outputs via `WriteGeneratedFiles()`:
+
+```go
+files := []language.GeneratedFile{
+    {Path: "xschema.gen.ts", Contents: "..."},
+    {Path: "types/user.ts", Contents: "..."},
+}
+err := injector.WriteGeneratedFiles(outDir, files)
+```
+
+**Path Requirements:**
+- Must be relative (no absolute paths)
+- No `..` segments allowed
+- Normalized to forward slashes internally
+- No duplicate paths after normalization
+
+### Manifest-Based Cleanup
+
+A manifest file (`xschema.manifest.json`) tracks generated files:
+
+```json
+{
+  "files": [
+    "xschema.gen.ts",
+    "types/user.ts"
+  ]
+}
+```
+
+On subsequent runs:
+1. Load previous manifest
+2. Compare with new file list
+3. Delete files in old manifest but not in new (stale files)
+4. Write new files
+5. Write new manifest atomically
 
 ### Template Data
 
@@ -501,10 +556,10 @@ type SchemaEntry struct {
 
 ### TypeScript Template
 
-**Location:** `cli/language/templates.go`
+**Location:** `cli/language/langs/typescript/typescript.go`
 
 ```go
-const TSTemplate = `// Generated by xschema - DO NOT EDIT
+const outputTemplate = `// Generated by xschema - DO NOT EDIT
 // https://xschema.dev/docs
 {{.Imports}}
 
@@ -569,63 +624,22 @@ declare module '@xschemadev/client' {
 }
 ```
 
-### Python Template
-
-**Location:** `cli/language/templates.go`
-
-```go
-const PyTemplate = `# Generated by xschema - DO NOT EDIT
-# https://xschema.dev/docs
-from typing import Literal, overload
-{{.Imports}}
-from xschema import XSchemaBase, XSchemaAdapter
-
-{{range .Schemas}}
-{{.Code}}
-{{end}}
-
-_schemas: dict[str, type] = {
-{{- range .Schemas}}
-  "{{.Key}}": {{.VarName}},
-{{- end}}
-}
-
-class xschema(XSchemaBase):
-{{- range .Schemas}}
-    {{.VarName}} = {{.VarName}}
-{{- end}}
-
-{{.Footer}}
-`
-```
-
 ### Import Merging
 
-Language-specific deduplication and formatting:
-
-#### TypeScript Import Merging
+TypeScript import deduplication and formatting:
 
 ```go
-func MergeTSImports(imports []string) string {
+func MergeImports(imports []string) string {
     // Input: ["import { z } from \"zod\"", "import { z } from \"zod\""]
     // Output: "import { z } from \"zod\""
-    
+
     // Groups imports by source:
     // "zod" -> ["z"]
     // "zod-extensions" -> ["refine"]
-    
+
     // Merges multiple imports from same source:
     // [import { z }, import { refine }] from "zod"
     // -> import { z, refine } from "zod"
-}
-```
-
-#### Python Import Merging
-
-```go
-func MergePyImports(imports []string) string {
-    // Input: ["from pydantic import BaseModel", "from pydantic import Field"]
-    // Output: "from pydantic import BaseModel, Field"
 }
 ```
 
@@ -636,28 +650,35 @@ func MergePyImports(imports []string) string {
 ```go
 func Inject(input InjectInput) error {
     lang := language.ByName(input.Language)
-    
+
     // Build template data
     data := buildTemplateData(input, lang)
-    
+
     // Parse and execute template
     tmpl := template.New("inject").Parse(lang.Template)
     buf := tmpl.Execute(data)
-    
-    // Create output directory
-    os.MkdirAll(input.OutDir, 0755)
-    
-    // Write file
-    outPath := filepath.Join(input.OutDir, lang.OutputFile)
-    os.WriteFile(outPath, buf.Bytes(), 0644)
-    
-    return nil
+
+    // Write files with manifest cleanup
+    files := []language.GeneratedFile{{
+        Path:     lang.OutputFile,
+        Contents: buf.String(),
+    }}
+    return WriteGeneratedFiles(input.OutDir, files)
+}
+
+func WriteGeneratedFiles(outDir string, files []language.GeneratedFile) error {
+    // Normalize and validate paths
+    // Sort files deterministically
+    // Load previous manifest
+    // Delete stale files
+    // Write new files
+    // Write manifest atomically
 }
 ```
 
 **Default output locations:**
 - TypeScript: `.xschema/xschema.gen.ts`
-- Python: `.xschema/__init__.py`
+- Manifest: `.xschema/xschema.manifest.json`
 
 ## CLI Entry Point
 
@@ -715,10 +736,9 @@ With `--dry-run` flag, the CLI shows what would be generated without writing fil
 $ xschema generate --dry-run
 
 Schemas that would be generated:
-  zod
+  @xschemadev/zod
     • user:Profile
     • user:Settings
-  pydantic
     • product:Item
 ```
 
@@ -728,8 +748,8 @@ Each step has specific error handling:
 
 1. **Parse errors:** Missing files, invalid JSON, language conflicts
 2. **Retrieve errors:** HTTP failures, file not found, invalid schemas
-3. **Generate errors:** Adapter not found, adapter crash, invalid output
-4. **Inject errors:** Can't write files, template execution failure
+3. **Generate errors:** Invalid adapter ref, adapter not found, adapter crash, invalid output
+4. **Inject errors:** Can't write files, template execution failure, invalid paths
 
 All errors include context about which operation failed.
 
@@ -749,11 +769,11 @@ my-project/
 ```
 Found configs:
   • user.jsonc (namespace: user)
-    - User (adapter: zod, source: url)
-    - Settings (adapter: zod, source: url)
+    - User (adapter: @xschemadev/zod, source: url)
+    - Settings (adapter: @xschemadev/zod, source: url)
   • product.jsonc (namespace: product)
-    - Item (adapter: zod, source: url)
-    - Cart (adapter: zod, source: url)
+    - Item (adapter: @xschemadev/zod, source: url)
+    - Cart (adapter: @xschemadev/zod, source: url)
 
 Detected language: typescript
 ```
@@ -771,8 +791,8 @@ All schemas fetched successfully
 
 **Step 3: Generate**
 ```
-Grouped by adapter:
-  • zod (4 schemas)
+Grouped by adapter ref:
+  • @xschemadev/zod (4 schemas)
 
 Running: bunx xschema-zod
   ✓ Generated 4 validators
@@ -780,16 +800,15 @@ Running: bunx xschema-zod
 
 **Step 4: Inject**
 ```
-Writing: .xschema/xschema.gen.ts
+Writing to .xschema/:
+  - xschema.gen.ts (4 validators)
+  - xschema.manifest.json (file tracking)
 
-Output file contains:
-  - 4 validators (user_User, user_Settings, product_Item, product_Cart)
-  - 2 import statements (zod)
-  - 1 const export (schemas)
-  - 1 type export (SchemaTypes)
+Deleted 0 stale files from previous run
 ```
 
 **Result:**
 ```
-.xschema/xschema.gen.ts created with 500 bytes
+.xschema/xschema.gen.ts created
+.xschema/xschema.manifest.json updated
 ```

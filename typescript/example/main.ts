@@ -25,75 +25,40 @@ export const xschema = createXSchemaClient({
 // Type extraction using XSchemaType helper
 // ============================================
 
-// XSchemaType requires full "namespace:id" keys (no shorthand)
+// "namespace:id"
 export type CalendarType = XSchemaType<"user:Calendar">;
-export type ProfileType = XSchemaType<"user:Profile">;
 export type TSConfigType = XSchemaType<"another:TSConfig">;
 export type UserType = XSchemaType<"user:User">;
 
+// Native ts converter
+export type TSConfigNativeTS = XSchemaType<"another:TSConfigNative">;
+
 // ============================================
-// Schema lookup - explicit namespace
+// Zod schema
 // ============================================
 
 // Use full "namespace:id" to get schemas from any namespace
 const tsConfigSchema = xschema("another:TSConfig");
 const calendarSchema = xschema("user:Calendar");
 
-// ============================================
-// Schema lookup - with default namespace
-// ============================================
-
 // When defaultNamespace is set, you can omit it for that namespace
 const calendar = xschema("Calendar"); // Same as xschema("user:Calendar")
-const profile = xschema("Profile"); // Same as xschema("user:Profile")
-
-// ============================================
-// Using the schemas - full Zod API available
-// ============================================
-
-// Parse data (throws on invalid)
 const validCalendar = calendar.parse({
   dtstart: "2024-01-01",
   summary: "New Year's Day",
 });
-
-// Safe parse (returns result object)
 const result = calendar.safeParse({ invalid: "data" });
-if (!result.success) {
-  console.log("Validation errors:", result.error.issues);
-}
-
-// Type inference works automatically
 type InferredCalendar = typeof validCalendar;
-//   ^? { startDate?: string, endDate?: string, summary: string, ... }
 
 // ============================================
-// ArkType schemas - different adapter, different API
+// ArkType schema
 // ============================================
 
 // The User schema uses ArkType adapter (see user.jsonc)
 const user = xschema("User");
-
-// ArkType schemas are called as functions - returns data or ArkErrors
 const validUser = user({
   id: "123",
   email: "alice@example.com",
   name: "Alice",
   age: 30,
 });
-
-// ArkType returns errors differently - check with instanceof type.errors
-const userResult = user({ invalid: "data" });
-if (userResult instanceof type.errors) {
-  console.log("ArkType validation errors:", userResult.summary);
-} else {
-  // userResult is the validated data
-  console.log("Valid user:", userResult);
-}
-
-// Type inference works the same way
-type InferredUser = typeof user.infer;
-//   ^? { id: string, email: string, name?: string, age?: number }
-
-console.log("XSchema example running successfully!");
-console.log("Available schemas:", Object.keys(schemas));

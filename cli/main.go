@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/xschemadev/xschema/cmd"
+	_ "github.com/xschemadev/xschema/language/langs"
 )
 
 func main() {

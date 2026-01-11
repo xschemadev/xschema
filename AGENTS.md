@@ -77,6 +77,17 @@ bun run typecheck                       # type check all packages
 bunx tsc --noEmit                       # type check single package (in pkg dir)
 ```
 
+### Web (run from `web/` directory)
+
+```bash
+bun install                             # install deps
+bun test                                # run bun tests
+bun run types:check                     # run tsc (requires fumadocs-mdx)
+bun run generate:schemas                # regenerate web json schemas
+```
+
+Note: `web/tsconfig.json` pins `compilerOptions.types`, so include both `bun` and `node` when scripts/tests import `bun:test` or `node:*`.
+
 ### Root (commitlint/husky)
 
 ```bash
@@ -187,6 +198,7 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Language detected from `$schema` URL: `ts.jsonc` -> ts, `py.jsonc` -> py
 - Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec
 - Always run `bun run build` from typescript/ dir before testing adapters
+- Language registry is global; tests that register languages must call `language.ResetForTests()` (and `t.Cleanup(language.ResetForTests)`)
 
 ## Key File Locations
 
