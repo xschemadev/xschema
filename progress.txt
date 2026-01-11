@@ -259,3 +259,27 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - JS reserved words (class, function, etc) and special chars require computed property syntax
 ---
 
+## 2026-01-11 - US-003 (valibot compliance closure)
+- baseline: draft2020-12 90.8%, draft2019-09 89.9%, draft7 94.9%, draft6 94.4%, draft4 94.4%, draft3 96.3%
+- fixed tuple/prefixItems: JSON Schema allows empty/incomplete arrays, valibot's v.tuple enforces min length
+  - solution: use v.array(v.any()) + v.check with per-index validation like zod approach
+- fixed additionalProperties + patternProperties interaction
+  - strictObject rejects pattern-matched keys; use looseObject + separate pattern check
+- fixed required validation for v.any() schemas
+  - v.any() accepts undefined, need explicit Object.hasOwn check for required props with any schema
+- fixed heterogeneous enum validation
+  - must double-stringify enum values so comparison uses strings consistently
+- documented JS prototype property names bug (valibot internal lookup fails on __proto__, constructor, toString)
+- final: draft2020-12 93.5%, draft2019-09 92.7%, draft7 97.7%, draft6 97.5%, draft4 98.1%, draft3 98.0%
+- remaining failures categorized:
+  - bundler limitation: $recursiveRef/$dynamicRef, relative $id scoping, URN refs, metaschema validation
+  - valibot bug: JS prototype property names cause runtime errors
+  - core parser limitation: draft3 type-schemas (inline schemas in type array)
+- Files changed: `typescript/packages/adapters/valibot/src/renderer.ts`, `typescript/packages/adapters/valibot/README.md`, `typescript/packages/adapters/valibot/compliance/results/*`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - valibot and zod both have tuple semantics that differ from JSON Schema (enforce min length)
+  - v.any() like z.any() accepts undefined, breaking required semantics
+  - double JSON.stringify needed for heterogeneous enum comparison
+  - valibot has internal lookup issues with JS prototype property names
+---
+

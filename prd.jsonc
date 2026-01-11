@@ -43,8 +43,8 @@
 				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
 				"update `typescript/packages/adapters/valibot/README.md` with a known limitations section"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "fixed tuple/prefixItems (empty arrays valid), additionalProperties+patternProperties interaction, required validation for v.any() schemas, heterogeneous enum; remaining failures are bundler limitations ($recursiveRef/$dynamicRef, relative $id scoping), valibot bug (JS prototype property names), and core parser limitation (draft3 type-schemas)"
 		},
 		{
 			"id": "US-004",
