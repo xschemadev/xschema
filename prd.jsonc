@@ -142,7 +142,7 @@
 				"add go tests covering: missing internal ref, dynamic/recursive keywords present, and relative external ref with empty base uri",
 				"go build + go test ./... pass"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

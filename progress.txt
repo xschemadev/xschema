@@ -50,3 +50,15 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - ParseResult still exists: `{ node, issues }` where issues are only ref resolution failures now
   - bundler (US-011) will enforce ref validation pre-adapter
 ---
+
+## 2026-01-11 - US-011
+- cli bundler now validates schemas before passing to adapters
+- rejects $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor at bundle time
+- validates all internal refs (#...) resolve to valid json pointer targets
+- errors on external $ref without base uri (relative file refs can't resolve against cwd)
+- Files changed: `cli/bundler/bundler.go`, `cli/bundler/bundler_test.go`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - json pointer validation happens after bundling (embedded refs get rewritten first)
+  - forbiddenKeywords check happens in processObject before any recursion
+  - base uri check happens in processRef for non-absolute refs
+---
