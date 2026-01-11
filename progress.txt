@@ -2,6 +2,11 @@
 Started: Sun Jan 11 03:05:49 PM CET 2026
 ---
 
+## Codebase Patterns
+- core parser hard-fails are discoverable via `throw new Error` / `is not supported` searches in `typescript/packages/core/src/parser/` and `typescript/packages/core/src/utils/json-pointer.ts`
+- keyword behavior is split between `normalizeDeep` (legacy rewrites) and the parser; check both before assuming a keyword is "ignored"
+---
+
 ## 2026-01-11 - US-001
 - Verified bootstrap discovery workflow was already implemented
 - folder `tasks/adapters-optimization/` exists
@@ -11,4 +16,14 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
 - **Learnings for future iterations:**
   - US-001 was done in prior commit c13f8b4, just needed verification
   - discovery workflow README defines clear categories: core-missing, adapter-native, forced-emulation, not-supported
+---
+
+## 2026-01-11 15:31:08 CET - US-002
+- Implemented `tasks/adapters-optimization/core-discovery.md` (baseline behavior, throw list, preservation proposal, migration notes)
+- Inserted 2 follow-up implementation stories derived from discovery, renumbered subsequent story ids
+- Files changed: `tasks/adapters-optimization/core-discovery.md`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - current core non-total points: `unevaluatedItems`, `unevaluatedProperties`+applicators, external `$ref`, missing pointer targets
+  - `unevaluatedProperties` is partially handled in normalizer (rewritten to `additionalProperties` only in simple cases)
+  - adapters call `parse()` directly today, so avoid breaking that api; prefer additive `parseWithIssues`
 ---

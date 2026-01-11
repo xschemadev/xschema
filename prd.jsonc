@@ -24,11 +24,37 @@
 				"edit `prd.jsonc` to insert new one-iteration implementation stories (dependencies first) derived from `core-discovery.md`, directly after this story; renumber story ids to remain sequential",
 				"Typecheck passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
 			"id": "US-003",
+			"title": "core: make parsing total (no throws)",
+			"description": "as a maintainer, i want core parsing to never throw on supported inputs so that compliances can run end-to-end and adapters can choose how to handle unsupported keywords.",
+			"acceptanceCriteria": [
+				"add a new API `parseWithIssues` that returns `{ node, issues }`",
+				"replace current throws for `unevaluatedItems`, `unevaluatedProperties`+applicators, and `$ref` resolution with captured issues + best-effort nodes",
+				"keep existing `parse()` API working (no signature break)",
+				"Typecheck passes"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-004",
+			"title": "core: preserve unknown keywords in ir",
+			"description": "as a maintainer, i want the ir to carry unknown/unsupported keywords (raw) with draft context so adapters can decide what to do without losing information.",
+			"acceptanceCriteria": [
+				"extend `SchemaNode` with an optional payload for unknown keywords + draft context",
+				"populate that payload during parsing (including a stable schema path)",
+				"do not break adapter switches over `kind`",
+				"Typecheck passes"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-005",
 			"title": "zod adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand zod compliance failures and which ones are idiomatic to fix so that we improve without forced emulation.",
 			"acceptanceCriteria": [
@@ -41,7 +67,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-004",
+			"id": "US-006",
 			"title": "valibot adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand valibot compliance failures and which ones are idiomatic to fix so that we improve without forced emulation.",
 			"acceptanceCriteria": [
@@ -54,7 +80,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-005",
+			"id": "US-007",
 			"title": "typebox adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typebox compliance failures, separating expressible schemas vs runtime-enforced behavior.",
 			"acceptanceCriteria": [
@@ -67,7 +93,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-006",
+			"id": "US-008",
 			"title": "effect adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand effect schema compliance failures and which ones are solvable using effect-native options.",
 			"acceptanceCriteria": [
@@ -80,7 +106,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-007",
+			"id": "US-009",
 			"title": "arktype adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand arktype compliance failures and keep the adapter idiomatic.",
 			"acceptanceCriteria": [
@@ -93,7 +119,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-008",
+			"id": "US-010",
 			"title": "typescript (type-only) adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typescript adapter compliance behavior and identify readability simplifications that are worth it.",
 			"acceptanceCriteria": [
