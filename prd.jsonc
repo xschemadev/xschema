@@ -101,8 +101,8 @@
 				"location-independent identifier tests pass across drafts",
 				"go build + go test ./... pass"
 			],
-			"passes": false,
-			"notes": "derived from US-005 zod-discovery. fixes ~20 tests across all drafts."
+			"passes": true,
+			"notes": "derived from US-005 zod-discovery. fixed 10 tests: draft7 +4 (98.8%), draft6 +4 (98.7%), draft4 +2 (99.6%). all 'Location-independent identifier' tests now pass."
 		},
 		{
 			"id": "US-009",

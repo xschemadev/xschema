@@ -119,3 +119,20 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - draftToSchemaURI map covers draft3 through draft2020-12
   - ts core parser uses $schema to determine exclusiveMin/Max boolean vs number behavior
 ---
+
+## 2026-01-11 - US-008
+- bundler now resolves $anchor fragment refs (location-independent identifiers)
+- collects $anchor declarations and fragment-only $id/#foo during first pass
+- rewrites anchor refs like #foo to their JSON pointer paths before validation
+- handles both $anchor (draft2019-09+) and fragment $id (draft4/6/7)
+- Files changed: `cli/bundler/bundler.go`, `cli/bundler/bundler_test.go`, `prd.jsonc`, `progress.txt`
+- **Results:**
+  - draft7: 98.1% → 98.8% (+4 tests)
+  - draft6: 97.9% → 98.7% (+4 tests)
+  - draft4: 98.9% → 99.6% (+2 tests)
+  - total: 10 tests fixed
+- **Learnings for future iterations:**
+  - in draft4/6/7, `$id: "#foo"` works same as `$anchor: "foo"` in draft2019-09+
+  - anchors map stores anchor name → JSON pointer path
+  - remaining refRemote failures are $id scoping issues (separate bundler limitation)
+---

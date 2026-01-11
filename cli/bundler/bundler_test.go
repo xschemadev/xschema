@@ -701,3 +701,196 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 		})
 	}
 }
+
+func TestBundleAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with $anchor and $ref to that anchor
+	schema := `{
+		"$ref": "#foo",
+		"$defs": {
+			"A": {
+				"$anchor": "foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	ref := result["$ref"].(string)
+	if ref != "#/$defs/A" {
+		t.Errorf("expected $ref to be rewritten to #/$defs/A, got %s", ref)
+	}
+}
+
+func TestBundleNestedAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with nested $anchor
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "#bar" }
+		},
+		"$defs": {
+			"outer": {
+				"$defs": {
+					"inner": {
+						"$anchor": "bar",
+						"type": "string"
+					}
+				}
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to the nested JSON pointer
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+	if ref != "#/$defs/outer/$defs/inner" {
+		t.Errorf("expected $ref to be rewritten to #/$defs/outer/$defs/inner, got %s", ref)
+	}
+}
+
+func TestBundleMissingAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with $ref to non-existent anchor
+	schema := `{
+		"$ref": "#nonexistent"
+	}`
+
+	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err == nil {
+		t.Error("expected error for missing anchor ref")
+	}
+	// Should fail validation (anchor not found, so ref stays as #nonexistent which isn't a valid JSON pointer)
+}
+
+func TestBundleMultipleAnchors(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with multiple anchors
+	schema := `{
+		"oneOf": [
+			{ "$ref": "#first" },
+			{ "$ref": "#second" }
+		],
+		"$defs": {
+			"A": {
+				"$anchor": "first",
+				"type": "string"
+			},
+			"B": {
+				"$anchor": "second",
+				"type": "number"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	oneOf := result["oneOf"].([]any)
+	firstRef := oneOf[0].(map[string]any)["$ref"].(string)
+	secondRef := oneOf[1].(map[string]any)["$ref"].(string)
+
+	if firstRef != "#/$defs/A" {
+		t.Errorf("expected first ref to be #/$defs/A, got %s", firstRef)
+	}
+	if secondRef != "#/$defs/B" {
+		t.Errorf("expected second ref to be #/$defs/B, got %s", secondRef)
+	}
+}
+
+func TestBundleFragmentIDAsAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema using draft4/6/7 style fragment $id as location-independent identifier
+	schema := `{
+		"allOf": [{ "$ref": "#foo" }],
+		"definitions": {
+			"A": {
+				"$id": "#foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	allOf := result["allOf"].([]any)
+	ref := allOf[0].(map[string]any)["$ref"].(string)
+	if ref != "#/definitions/A" {
+		t.Errorf("expected $ref to be rewritten to #/definitions/A, got %s", ref)
+	}
+}
+
+func TestBundleLegacyIDAsAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema using draft4 style "id" (not "$id") with fragment
+	schema := `{
+		"allOf": [{ "$ref": "#bar" }],
+		"definitions": {
+			"B": {
+				"id": "#bar",
+				"type": "string"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	allOf := result["allOf"].([]any)
+	ref := allOf[0].(map[string]any)["$ref"].(string)
+	if ref != "#/definitions/B" {
+		t.Errorf("expected $ref to be rewritten to #/definitions/B, got %s", ref)
+	}
+}

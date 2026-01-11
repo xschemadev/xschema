@@ -246,26 +246,10 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 8,
+      "failed": 6,
       "skipped": 0,
-      "total": 8,
+      "total": 6,
       "failures": [
-        {
-          "group": "Location-independent identifier",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
         {
           "group": "refs with relative uris and defs",
           "test": "invalid on inner field",
@@ -318,43 +302,11 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
-      "failed": 6,
+      "passed": 21,
+      "failed": 2,
       "skipped": 0,
       "total": 23,
       "failures": [
-        {
-          "group": "$ref to $ref finds location-independent $id",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
-        },
-        {
-          "group": "$ref to $ref finds location-independent $id",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
         {
           "group": "retrieved nested refs resolve relative to their URI not $id",
           "test": "number is invalid",
@@ -396,10 +348,10 @@
     }
   ],
   "summary": {
-    "passed": 830,
-    "failed": 16,
+    "passed": 834,
+    "failed": 10,
     "skipped": 0,
-    "total": 846,
-    "percentage": 98.10874704491725
+    "total": 844,
+    "percentage": 98.81516587677726
   }
 }

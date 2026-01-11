@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 857 | 66 | 0 | 92.8% |
-| draft2020-12 | 869 | 59 | 0 | 93.6% |
+| draft2019-09 | 857 | 58 | 0 | 93.7% |
+| draft2020-12 | 869 | 51 | 0 | 94.5% |
 | draft3 | 398 | 9 | 0 | 97.8% |
-| draft4 | 564 | 6 | 0 | 98.9% |
-| draft6 | 754 | 16 | 0 | 97.9% |
-| draft7 | 830 | 16 | 0 | 98.1% |
+| draft4 | 566 | 2 | 0 | 99.6% |
+| draft6 | 758 | 10 | 0 | 98.7% |
+| draft7 | 834 | 10 | 0 | 98.8% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-92.8%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-93.6%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-93.7%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-94.5%25-yellow)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-97.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.9%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-97.9%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.1%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.6%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.7%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.8%25-brightgreen)
 
 ## draft2019-09
 
@@ -27,7 +27,7 @@
 | additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 20/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ❌ | 0/2 |
+| anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -62,8 +62,8 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ❌ | 0/34 |
-| ref | ❌ | 0/14 |
-| refRemote | ❌ | 0/8 |
+| ref | ❌ | 0/12 |
+| refRemote | ❌ | 0/4 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ❌ | 0/2 |
@@ -79,18 +79,6 @@
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>anchor - 2 failures</summary>
-
-- **Location-independent identifier**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 
 </details>
 
@@ -215,7 +203,7 @@
 </details>
 
 <details>
-<summary>ref - 14 failures</summary>
+<summary>ref - 12 failures</summary>
 
 - **$ref with $recursiveAnchor**
   - Test: extra items allowed for inner arrays
@@ -229,12 +217,6 @@
 - **URN ref with nested pointer ref**
   - Test: a string is valid
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is invalid against first definition
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#bigint": must start with /`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#bigint": must start with /`
 - **refs with relative uris and defs**
   - Test: invalid on inner field
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
@@ -263,20 +245,8 @@
 </details>
 
 <details>
-<summary>refRemote - 8 failures</summary>
+<summary>refRemote - 4 failures</summary>
 
-- **$ref to $ref finds detached $anchor**
-  - Test: non-number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **$ref to $ref finds detached $anchor**
-  - Test: number is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: integer is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **anchor within remote ref**
   - Test: remote anchor invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
@@ -331,7 +301,7 @@
 | ------- | ------ | ---------- |
 | additionalProperties | ⚠️ | 20/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ❌ | 0/2 |
+| anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -367,8 +337,8 @@
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/12 |
-| refRemote | ❌ | 0/8 |
+| ref | ❌ | 0/10 |
+| refRemote | ❌ | 0/4 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
@@ -384,18 +354,6 @@
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>anchor - 2 failures</summary>
-
-- **Location-independent identifier**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 
 </details>
 
@@ -517,7 +475,7 @@
 </details>
 
 <details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **URN ref with nested pointer ref**
   - Test: a non-string is invalid
@@ -525,12 +483,6 @@
 - **URN ref with nested pointer ref**
   - Test: a string is valid
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is invalid against first definition
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#bigint": must start with /`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#bigint": must start with /`
 - **refs with relative uris and defs**
   - Test: invalid on inner field
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
@@ -559,20 +511,8 @@
 </details>
 
 <details>
-<summary>refRemote - 8 failures</summary>
+<summary>refRemote - 4 failures</summary>
 
-- **$ref to $ref finds detached $anchor**
-  - Test: non-number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **$ref to $ref finds detached $anchor**
-  - Test: number is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: integer is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **anchor within remote ref**
   - Test: remote anchor invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
@@ -703,8 +643,8 @@
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ❌ | 0/2 |
-| refRemote | ⚠️ | 15/17 |
+| ref | ✅ | 0/0 |
+| refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
@@ -726,30 +666,6 @@
 - **validate definition against metaschema**
   - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 2 failures</summary>
-
-- **Location-independent identifier**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-
-</details>
-
-<details>
-<summary>refRemote - 2 failures</summary>
-
-- **Location-independent identifier in remote ref**
-  - Test: integer is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 
 </details>
 
@@ -788,8 +704,8 @@
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/8 |
-| refRemote | ⚠️ | 17/23 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
@@ -815,14 +731,8 @@
 </details>
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 6 failures</summary>
 
-- **Location-independent identifier**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **refs with relative uris and defs**
   - Test: invalid on inner field
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
@@ -845,20 +755,8 @@
 </details>
 
 <details>
-<summary>refRemote - 6 failures</summary>
+<summary>refRemote - 2 failures</summary>
 
-- **$ref to $ref finds location-independent $id**
-  - Test: non-number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **$ref to $ref finds location-independent $id**
-  - Test: number is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: integer is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
@@ -904,8 +802,8 @@
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/8 |
-| refRemote | ⚠️ | 17/23 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
@@ -931,14 +829,8 @@
 </details>
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 6 failures</summary>
 
-- **Location-independent identifier**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **refs with relative uris and defs**
   - Test: invalid on inner field
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
@@ -961,20 +853,8 @@
 </details>
 
 <details>
-<summary>refRemote - 6 failures</summary>
+<summary>refRemote - 2 failures</summary>
 
-- **$ref to $ref finds location-independent $id**
-  - Test: non-number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **$ref to $ref finds location-independent $id**
-  - Test: number is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#detached": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: integer is valid
-  - Expected: `valid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
-- **Location-independent identifier in remote ref**
-  - Test: string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: invalid JSON pointer in $ref "#foo": must start with /`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`

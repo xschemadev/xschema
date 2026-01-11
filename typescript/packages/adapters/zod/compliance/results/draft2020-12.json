@@ -27,27 +27,9 @@
     {
       "keyword": "anchor",
       "passed": 0,
-      "failed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "Location-independent identifier",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "anyOf",
@@ -581,9 +563,9 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 12,
+      "failed": 10,
       "skipped": 0,
-      "total": 12,
+      "total": 10,
       "failures": [
         {
           "group": "URN ref with nested pointer ref",
@@ -600,22 +582,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is invalid against first definition",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#bigint\": must start with /"
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#bigint\": must start with /"
         },
         {
           "group": "refs with relative uris and defs",
@@ -686,42 +652,10 @@
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 8,
+      "failed": 4,
       "skipped": 0,
-      "total": 8,
+      "total": 4,
       "failures": [
-        {
-          "group": "$ref to $ref finds detached $anchor",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
-        },
-        {
-          "group": "$ref to $ref finds detached $anchor",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
-        },
         {
           "group": "anchor within remote ref",
           "test": "remote anchor invalid",
@@ -810,9 +744,9 @@
   ],
   "summary": {
     "passed": 869,
-    "failed": 59,
+    "failed": 51,
     "skipped": 0,
-    "total": 928,
-    "percentage": 93.64224137931035
+    "total": 920,
+    "percentage": 94.45652173913044
   }
 }

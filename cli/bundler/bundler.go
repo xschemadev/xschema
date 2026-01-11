@@ -39,10 +39,11 @@ func DefaultOptions() Options {
 // bundleContext holds state during bundling
 type bundleContext struct {
 	opts       Options
-	cache      map[string]any  // normalized URI → parsed schema (to avoid refetching)
-	defs       map[string]any  // key → embedded schema (collected $defs)
-	processing map[string]bool // URIs currently being processed (circular ref detection)
-	localIDs   map[string]bool // $id values declared in the schema (to skip local refs)
+	cache      map[string]any    // normalized URI → parsed schema (to avoid refetching)
+	defs       map[string]any    // key → embedded schema (collected $defs)
+	processing map[string]bool   // URIs currently being processed (circular ref detection)
+	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
+	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
 	ctx        context.Context
 }
 
@@ -81,11 +82,12 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 		defs:       make(map[string]any),
 		processing: make(map[string]bool),
 		localIDs:   make(map[string]bool),
+		anchors:    make(map[string]string),
 		ctx:        ctx,
 	}
 
-	// First pass: collect all $id declarations in the schema (with resolved URIs)
-	bctx.collectIDs(parsed, opts.BaseURI)
+	// First pass: collect all $id and $anchor declarations in the schema
+	bctx.collectIDsAndAnchors(parsed, opts.BaseURI, "")
 
 	result, err := bctx.processNode(parsed, opts.BaseURI)
 	if err != nil {
@@ -116,39 +118,64 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 	return json.Marshal(result)
 }
 
-// collectIDs recursively collects all $id declarations in the schema,
-// resolving them against the current base URI
-func (b *bundleContext) collectIDs(node any, baseURI string) {
+// collectIDsAndAnchors recursively collects all $id and $anchor declarations in the schema,
+// resolving them against the current base URI and tracking their JSON pointer paths
+func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path string) {
 	switch v := node.(type) {
 	case map[string]any:
-		// Check for $id (draft6+) or id (draft4/draft3) and resolve it against current base
+		// Check for $id (draft6+) or id (draft4/draft3)
 		id, ok := v["$id"].(string)
 		if !ok {
 			id, ok = v["id"].(string)
 		}
 		if ok {
-			// Resolve relative $id against base URI
-			resolved, err := resolveURI(id, baseURI)
-			if err == nil && resolved != "" {
-				// Store without fragment
-				resolvedBase, _ := splitFragment(resolved)
-				if resolvedBase != "" {
-					b.localIDs[resolvedBase] = true
-					ui.Verbosef("bundler: found local $id: %s (resolved from %s)", resolvedBase, id)
-					// Update base URI for children
-					baseURI = resolvedBase
+			// Check if $id is fragment-only (e.g., "#foo") - this is a location-independent identifier
+			// In draft4/6/7, $id: "#foo" serves the same purpose as $anchor: "foo" in draft2019-09+
+			if strings.HasPrefix(id, "#") && len(id) > 1 {
+				anchor := id[1:] // strip the #
+				b.anchors[anchor] = path
+				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, path)
+			} else {
+				// Resolve relative $id against base URI
+				resolved, err := resolveURI(id, baseURI)
+				if err == nil && resolved != "" {
+					// Store without fragment
+					resolvedBase, _ := splitFragment(resolved)
+					if resolvedBase != "" {
+						b.localIDs[resolvedBase] = true
+						ui.Verbosef("bundler: found local $id: %s (resolved from %s)", resolvedBase, id)
+						// Update base URI for children
+						baseURI = resolvedBase
+					}
 				}
 			}
 		}
-		// Recurse into all values with updated base URI
-		for _, val := range v {
-			b.collectIDs(val, baseURI)
+
+		// Check for $anchor (draft2019-09+)
+		if anchor, ok := v["$anchor"].(string); ok {
+			b.anchors[anchor] = path
+			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, path)
+		}
+
+		// Recurse into all values with updated base URI and paths
+		for key, val := range v {
+			childPath := path + "/" + escapeJSONPointer(key)
+			b.collectIDsAndAnchors(val, baseURI, childPath)
 		}
 	case []any:
-		for _, val := range v {
-			b.collectIDs(val, baseURI)
+		for i, val := range v {
+			childPath := fmt.Sprintf("%s/%d", path, i)
+			b.collectIDsAndAnchors(val, baseURI, childPath)
 		}
 	}
+}
+
+// escapeJSONPointer escapes a key for use in a JSON pointer (RFC 6901)
+func escapeJSONPointer(key string) string {
+	// ~ must be escaped first (as ~0), then / (as ~1)
+	key = strings.ReplaceAll(key, "~", "~0")
+	key = strings.ReplaceAll(key, "/", "~1")
+	return key
 }
 
 // processNode recursively processes a schema node, resolving external refs
@@ -225,10 +252,27 @@ func (b *bundleContext) processArray(arr []any, baseURI string) (any, error) {
 	return result, nil
 }
 
-// processRef handles a $ref, resolving external refs
+// processRef handles a $ref, resolving external refs and anchor refs
 func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI string) (any, error) {
-	// Local ref - nothing to do (validation happens after bundling)
+	// Local ref - check if it's an anchor ref that needs rewriting
 	if strings.HasPrefix(ref, "#") {
+		fragment := ref[1:] // strip the #
+
+		// If fragment is empty or starts with /, it's a JSON pointer - pass through
+		if fragment == "" || strings.HasPrefix(fragment, "/") {
+			return obj, nil
+		}
+
+		// Fragment is an anchor reference (e.g., "#foo")
+		// Look up the anchor and rewrite to its JSON pointer path
+		if path, ok := b.anchors[fragment]; ok {
+			result := copyObject(obj)
+			result["$ref"] = "#" + path
+			ui.Verbosef("bundler: rewriting anchor ref #%s → #%s", fragment, path)
+			return result, nil
+		}
+
+		// Anchor not found - will fail validation later
 		return obj, nil
 	}
 
@@ -288,8 +332,8 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			return nil, fmt.Errorf("failed to parse schema from %q: %w", resolvedURI, err)
 		}
 
-		// Collect $id declarations from the fetched schema (so we don't try to fetch local refs)
-		b.collectIDs(parsed, resolvedURI)
+		// Collect $id and $anchor declarations from the fetched schema
+		b.collectIDsAndAnchors(parsed, resolvedURI, "")
 
 		// Recursively bundle the fetched schema (it may have its own external refs)
 		bundled, err := b.processNode(parsed, resolvedURI)
