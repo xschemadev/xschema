@@ -10,6 +10,7 @@ import (
 
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
+	_ "github.com/xschemadev/xschema/language/langs"
 )
 
 func TestGenerateHarness(t *testing.T) {
@@ -305,7 +306,12 @@ func TestGenerateHarness_FilenamePattern(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
+	lang := language.ByName("typescript")
+	if lang == nil {
+		t.Fatal("expected typescript language to be registered")
+	}
+
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -363,7 +369,12 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
+	lang := language.ByName("typescript")
+	if lang == nil {
+		t.Fatal("expected typescript language to be registered")
+	}
+
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -412,7 +423,12 @@ func TestTSHarnessTemplate_TypeOnly(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
+	lang := language.ByName("typescript")
+	if lang == nil {
+		t.Fatal("expected typescript language to be registered")
+	}
+
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}
@@ -453,7 +469,12 @@ func TestTSHarnessTemplate_MultipleImports(t *testing.T) {
 }
 
 func TestTSHarnessTemplate_EscapedTestData(t *testing.T) {
-	tmpl, err := template.New("harness").Parse(language.TSHarnessTemplate)
+	lang := language.ByName("typescript")
+	if lang == nil {
+		t.Fatal("expected typescript language to be registered")
+	}
+
+	tmpl, err := template.New("harness").Parse(lang.HarnessTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse template: %v", err)
 	}

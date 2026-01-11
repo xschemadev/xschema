@@ -10,7 +10,7 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
 - Use `CallAdapterBatch` to batch adapter invocations per (draft, keyword); each input needs a unique `ID` for deterministic output mapping.
 - Use `harness.batch.ts` templates for batch harness execution; placeholders: `{{BATCH_SCHEMAS}}` (object mapping groupId to schema code), `{{BATCH_TEST_DATA}}` (JSON string of test data).
 - Web `tsconfig.json` uses explicit `compilerOptions.types`: include `bun` and `node` for `bun:test` and `node:*` imports.
-- Language registry lives in `cli/language/registry.go`; tests should call `language.ResetForTests()` and `t.Cleanup(language.ResetForTests)` to avoid global state leaks.
+- Language registry lives in `cli/language/registry.go`; built-ins register by importing `cli/language/langs` and tests that call `language.ResetForTests()` should call `langs.RegisterBuiltins()` to restore built-ins.
 - For multi-language tests, register a fake `language.Language` with `SchemaURL` under `language.XSchemaBaseURL` (reset + cleanup).
 - Language spec primitives live in `cli/language/spec.go` (e.g. `GeneratedFile`, `CommandSpec`, `AdapterInvoker`, `OutputEmitter`).
 - Use `language.NormalizeRelativePath`, `language.SortGeneratedFiles`, and `language.ValidateGeneratedFiles` for safe + deterministic emitted paths.
@@ -167,5 +167,15 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Patterns discovered: for multi-language tests, register a fake `language.Language` with schema under `language.XSchemaBaseURL`.
   - Gotchas encountered: leaving incomplete language stubs breaks the whole cli build (even if not used).
   - Useful context: extend `TestInject_UnsupportedLanguage` to cover removed languages like `py`.
+---
+
+## 2026-01-11 01:24 CET - US-005
+- Moved TypeScript language implementation into `cli/language/langs/typescript` and switched to self-registration via the language registry.
+- Ensured cli/runtime loads built-in languages by importing `github.com/xschemadev/xschema/language/langs` from `cli/main.go`.
+- Files changed: `cli/main.go`, `cli/language/language.go`, `cli/language/registry.go`, `cli/language/registry_test.go`, `cli/language/typescript.go`, `cli/language/templates.go`, `cli/language/imports.go`, `cli/language/typescript_harness_template.go`, `cli/language/imports_test.go`, `cli/language/langs/langs.go`, `cli/language/langs/typescript/typescript.go`, `cli/language/langs/typescript/imports_test.go`, `cli/parser/parser_test.go`, `cli/generator/generator_test.go`, `cli/compliance/harness_test.go`, `cli/injector/injector_test.go`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: when splitting languages into subpackages, avoid import cycles by making languages register themselves (and have the cli import a single `language/langs` package).
+  - Gotchas encountered: `language.ResetForTests()` now clears the registry; tests that expect built-ins must call `langs.RegisterBuiltins()` (and ideally restore built-ins in `t.Cleanup`).
+  - Useful context: keep harness/template tests reading `lang.HarnessTemplate` from the registry instead of importing language-specific constants.
 ---
 

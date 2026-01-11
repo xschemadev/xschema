@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/xschemadev/xschema/adapter"
+	_ "github.com/xschemadev/xschema/language/langs"
 	"github.com/xschemadev/xschema/retriever"
 )
 

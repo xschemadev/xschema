@@ -213,4 +213,5 @@ for adapter, decls := range byAdapter {
 - `json.RawMessage` must not be re-marshaled for inline schemas
 - File paths in configs are relative to config file dir, not cwd
 - Multiple languages require `--lang` flag
+- Built-in languages register via `github.com/xschemadev/xschema/language/langs`; tests that call `language.ResetForTests()` should call `langs.RegisterBuiltins()` to restore built-ins
 - Context cancellation should be checked in loops

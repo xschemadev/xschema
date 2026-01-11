@@ -118,23 +118,10 @@ func (r *Registry) SupportedLanguages() []string {
 
 var defaultRegistry = NewRegistry()
 
-func init() {
-	for _, lang := range Languages {
-		if err := defaultRegistry.Register(lang); err != nil {
-			panic(fmt.Sprintf("language registry init failed: %v", err))
-		}
-	}
-}
-
-// ResetForTests resets the registry state to built-in languages.
+// ResetForTests resets the registry state to empty.
 // Used to prevent global registry leakage between tests.
 func ResetForTests() {
 	defaultRegistry = NewRegistry()
-	for _, lang := range Languages {
-		if err := defaultRegistry.Register(lang); err != nil {
-			panic(fmt.Sprintf("language registry reset failed: %v", err))
-		}
-	}
 }
 
 func Register(lang Language) error {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/language"
+	_ "github.com/xschemadev/xschema/language/langs"
 )
 
 func TestInject_TypeScript(t *testing.T) {

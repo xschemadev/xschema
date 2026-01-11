@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/xschemadev/xschema/language"
+	langs "github.com/xschemadev/xschema/language/langs"
 )
 
 func TestParseConfigFile(t *testing.T) {
@@ -236,7 +237,15 @@ func TestParseMultipleLanguagesError(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	language.ResetForTests()
-	t.Cleanup(language.ResetForTests)
+	if err := langs.RegisterBuiltins(); err != nil {
+		t.Fatalf("failed to register built-in languages: %v", err)
+	}
+	t.Cleanup(func() {
+		language.ResetForTests()
+		if err := langs.RegisterBuiltins(); err != nil {
+			t.Fatalf("failed to restore built-in languages: %v", err)
+		}
+	})
 
 	if err := language.Register(language.Language{
 		Name:       "fake",
@@ -278,7 +287,15 @@ func TestParseWithLanguageFilter(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	language.ResetForTests()
-	t.Cleanup(language.ResetForTests)
+	if err := langs.RegisterBuiltins(); err != nil {
+		t.Fatalf("failed to register built-in languages: %v", err)
+	}
+	t.Cleanup(func() {
+		language.ResetForTests()
+		if err := langs.RegisterBuiltins(); err != nil {
+			t.Fatalf("failed to restore built-in languages: %v", err)
+		}
+	})
 
 	if err := language.Register(language.Language{
 		Name:       "fake",

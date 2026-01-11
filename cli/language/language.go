@@ -58,10 +58,6 @@ type Language struct {
 	HarnessTemplate     string                                                  // Go template for generating harness files
 }
 
-var Languages = []Language{
-	typescript,
-}
-
 // BySchemaURL returns the language for a $schema URL like "https://xschema.dev/schemas/typescript.jsonc"
 // Returns nil if URL doesn't match xschema.dev pattern
 func BySchemaURL(url string) *Language {
