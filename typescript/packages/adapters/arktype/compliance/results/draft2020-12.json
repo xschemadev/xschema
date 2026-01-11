@@ -478,22 +478,6 @@
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
           "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
@@ -531,6 +515,22 @@
         },
         {
           "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         }
       ]

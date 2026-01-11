@@ -256,51 +256,9 @@
     {
       "keyword": "properties",
       "passed": 23,
-      "failed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "__proto__ not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "constructor not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 23
     },
     {
       "keyword": "propertyNames",
@@ -326,51 +284,9 @@
     {
       "keyword": "required",
       "passed": 11,
-      "failed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "all present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 11
     },
     {
       "keyword": "type",
@@ -410,80 +326,16 @@
   ],
   "summary": {
     "passed": 860,
-    "failed": 10,
+    "failed": 0,
     "skipped": 0,
-    "total": 870,
-    "percentage": 98.85057471264368,
+    "total": 860,
+    "percentage": 100,
     "knownIssues": {
-      "count": 50,
+      "count": 60,
       "items": [
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
         {
           "path": "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
           "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
@@ -616,6 +468,110 @@
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/properties/properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/properties/properties whose names are Javascript object property names/__proto__ not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/properties/properties whose names are Javascript object property names/toString not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/properties/properties whose names are Javascript object property names/constructor not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/properties/properties whose names are Javascript object property names/all present and valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/__proto__ present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/toString present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/constructor present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/all present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         }
       ]
     }

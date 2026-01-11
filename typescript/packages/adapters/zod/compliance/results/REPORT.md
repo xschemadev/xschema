@@ -7,18 +7,18 @@
 | draft2019-09 | 858 | 0 | 0 | 57 | 100.0% |
 | draft2020-12 | 870 | 0 | 0 | 50 | 100.0% |
 | draft3 | 400 | 0 | 0 | 7 | 100.0% |
-| draft4 | 567 | 1 | 0 | 0 | 99.8% |
-| draft6 | 759 | 9 | 0 | 0 | 98.8% |
-| draft7 | 835 | 9 | 0 | 0 | 98.9% |
+| draft4 | 567 | 0 | 0 | 1 | 100.0% |
+| draft6 | 759 | 0 | 0 | 9 | 100.0% |
+| draft7 | 835 | 0 | 0 | 9 | 100.0% |
 
 ## Badges
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-100.0%25-brightgreen)
 ![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-100.0%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-100.0%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-100.0%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-100.0%25-brightgreen)
 
 ## draft2019-09
 
@@ -341,7 +341,7 @@ These tests are intentionally excluded due to documented limitations.
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 1/1 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -367,14 +367,14 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft4/definitions/validate definition against metaschema/invalid definition schema`
 
 </details>
 
@@ -390,7 +390,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 1/1 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -413,56 +413,34 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/6 |
-| refRemote | ⚠️ | 21/23 |
+| ref | ✅ | 0/0 |
+| refRemote | ✅ | 21/21 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>Bundler limitation: relative URIs with $id combinations (8 tests)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft6/ref/refs with relative uris and defs/invalid on inner field`
+- `draft6/ref/refs with relative uris and defs/invalid on outer field`
+- `draft6/ref/refs with relative uris and defs/valid on both fields`
+- `draft6/ref/relative refs with absolute uris and defs/invalid on inner field`
+- `draft6/ref/relative refs with absolute uris and defs/invalid on outer field`
+- `draft6/ref/relative refs with absolute uris and defs/valid on both fields`
+- `draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
+- `draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
 
 </details>
 
 <details>
-<summary>ref - 6 failures</summary>
+<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
 
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-
-</details>
-
-<details>
-<summary>refRemote - 2 failures</summary>
-
-- **retrieved nested refs resolve relative to their URI not $id**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
-- **retrieved nested refs resolve relative to their URI not $id**
-  - Test: string is valid
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- `draft6/definitions/validate definition against metaschema/invalid definition schema`
 
 </details>
 
@@ -478,7 +456,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 1/1 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -502,56 +480,34 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/6 |
-| refRemote | ⚠️ | 21/23 |
+| ref | ✅ | 0/0 |
+| refRemote | ✅ | 21/21 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Known Behaviors
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>Bundler limitation: relative URIs with $id combinations (8 tests)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft7/ref/refs with relative uris and defs/invalid on inner field`
+- `draft7/ref/refs with relative uris and defs/invalid on outer field`
+- `draft7/ref/refs with relative uris and defs/valid on both fields`
+- `draft7/ref/relative refs with absolute uris and defs/invalid on inner field`
+- `draft7/ref/relative refs with absolute uris and defs/invalid on outer field`
+- `draft7/ref/relative refs with absolute uris and defs/valid on both fields`
+- `draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
+- `draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
 
 </details>
 
 <details>
-<summary>ref - 6 failures</summary>
+<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
 
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
-
-</details>
-
-<details>
-<summary>refRemote - 2 failures</summary>
-
-- **retrieved nested refs resolve relative to their URI not $id**
-  - Test: number is invalid
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
-- **retrieved nested refs resolve relative to their URI not $id**
-  - Test: string is valid
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- `draft7/definitions/validate definition against metaschema/invalid definition schema`
 
 </details>
 

@@ -92,7 +92,10 @@
       "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
       "draft2019-09/defs/validate definition against metaschema/valid definition schema",
       "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
-      "draft2019-09/ref/remote ref, containing refs itself/remote ref valid"
+      "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
+      "draft7/definitions/validate definition against metaschema/invalid definition schema",
+      "draft6/definitions/validate definition against metaschema/invalid definition schema",
+      "draft4/definitions/validate definition against metaschema/invalid definition schema"
     ]
   },
   {
@@ -121,7 +124,23 @@
       "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
       "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
       "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-      "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid"
+      "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+      "draft7/ref/refs with relative uris and defs/invalid on inner field",
+      "draft7/ref/refs with relative uris and defs/invalid on outer field",
+      "draft7/ref/refs with relative uris and defs/valid on both fields",
+      "draft7/ref/relative refs with absolute uris and defs/invalid on inner field",
+      "draft7/ref/relative refs with absolute uris and defs/invalid on outer field",
+      "draft7/ref/relative refs with absolute uris and defs/valid on both fields",
+      "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+      "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+      "draft6/ref/refs with relative uris and defs/invalid on inner field",
+      "draft6/ref/refs with relative uris and defs/invalid on outer field",
+      "draft6/ref/refs with relative uris and defs/valid on both fields",
+      "draft6/ref/relative refs with absolute uris and defs/invalid on inner field",
+      "draft6/ref/relative refs with absolute uris and defs/invalid on outer field",
+      "draft6/ref/relative refs with absolute uris and defs/valid on both fields",
+      "draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+      "draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid"
     ]
   },
   {

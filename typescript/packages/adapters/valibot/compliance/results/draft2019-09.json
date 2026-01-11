@@ -249,51 +249,9 @@
     {
       "keyword": "properties",
       "passed": 23,
-      "failed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "__proto__ not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "constructor not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 23
     },
     {
       "keyword": "propertyNames",
@@ -326,51 +284,9 @@
     {
       "keyword": "required",
       "passed": 11,
-      "failed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "all present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 11
     },
     {
       "keyword": "type",
@@ -410,17 +326,13 @@
   ],
   "summary": {
     "passed": 848,
-    "failed": 10,
+    "failed": 0,
     "skipped": 0,
-    "total": 858,
-    "percentage": 98.83449883449883,
+    "total": 848,
+    "percentage": 100,
     "knownIssues": {
-      "count": 57,
+      "count": 67,
       "items": [
-        {
-          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
-        },
         {
           "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
@@ -428,6 +340,10 @@
         {
           "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
+          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
         },
         {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
@@ -630,6 +546,26 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
+          "path": "draft2019-09/properties/properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/properties/properties whose names are Javascript object property names/__proto__ not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/properties/properties whose names are Javascript object property names/toString not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/properties/properties whose names are Javascript object property names/constructor not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/properties/properties whose names are Javascript object property names/all present and valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
@@ -644,6 +580,26 @@
         {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/required/required properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/required/required properties whose names are Javascript object property names/__proto__ present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/required/required properties whose names are Javascript object property names/toString present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/required/required properties whose names are Javascript object property names/constructor present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2019-09/required/required properties whose names are Javascript object property names/all present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         }
       ]
     }
