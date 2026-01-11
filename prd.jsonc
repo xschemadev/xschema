@@ -55,8 +55,8 @@
         "Known issues section lists reasons with test counts per reason",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Per-draft line now shows 'X passed, Y failed, Z known (%)'. Known Issues section at end shows breakdown by reason."
     },
     {
       "id": "US-005",

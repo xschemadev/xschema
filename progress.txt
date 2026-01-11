@@ -182,3 +182,25 @@ Started: Sun Jan 11 10:07:31 PM CET 2026
 - each draft gets its own Known Behaviors section (not global)
 
 ---
+
+## 2026-01-11 - US-004: CLI dev report shows known issues
+
+### What was implemented
+- changed per-draft summary format from "X/Y (Z%)" to "X passed, Y failed, Z known (%)"
+- added printKnownIssuesSummary function to show breakdown by reason at end of run
+- aggregates known issues across all drafts and displays count per reason
+
+### Files changed
+- cli/cmd/compliance.go (formatDraftResult, printKnownIssuesSummary)
+
+### CLI output example
+```
+✓ draft2020-12: 870 passed, 50 known (100.0%)
+
+Known Issues:
+  24 Bundler limitation: relative URIs with $id combinations
+  33 Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking
+  ...
+```
+
+---

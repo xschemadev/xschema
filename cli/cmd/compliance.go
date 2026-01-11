@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 
@@ -207,6 +208,9 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		printTimingSummary(timing)
 	}
 
+	// Print known issues summary if any
+	printKnownIssuesSummary(report)
+
 	ui.Println()
 	ui.SuccessMsg(fmt.Sprintf("Compliance testing complete (%s)", ui.FormatDuration(time.Since(start))))
 
@@ -224,10 +228,19 @@ func formatDraftResult(summary compliance.DraftSummary) (status, coverage string
 	} else if summary.Percentage < 95 {
 		status = ui.Warning.Render("!")
 	}
-	coverage = fmt.Sprintf("%d/%d (%.1f%%)", summary.Passed, summary.Total, summary.Percentage)
-	if summary.KnownIssues.Count > 0 {
-		coverage += fmt.Sprintf(", %d known", summary.KnownIssues.Count)
+
+	// Format: X passed, Y failed, Z skipped, W known
+	parts := []string{fmt.Sprintf("%d passed", summary.Passed)}
+	if summary.Failed > 0 {
+		parts = append(parts, fmt.Sprintf("%d failed", summary.Failed))
 	}
+	if summary.Skipped > 0 {
+		parts = append(parts, fmt.Sprintf("%d skipped", summary.Skipped))
+	}
+	if summary.KnownIssues.Count > 0 {
+		parts = append(parts, fmt.Sprintf("%d known", summary.KnownIssues.Count))
+	}
+	coverage = strings.Join(parts, ", ") + fmt.Sprintf(" (%.1f%%)", summary.Percentage)
 	return status, coverage
 }
 
@@ -243,6 +256,38 @@ func printTimingSummary(timing *compliance.TimingSummary) {
 	ui.Printf("  Adapter invocation: %s\n", ui.FormatDuration(timing.AdapterInvocation))
 	ui.Printf("  Harness generation: %s\n", ui.FormatDuration(timing.HarnessGeneration))
 	ui.Printf("  Harness execution: %s\n", ui.FormatDuration(timing.HarnessExecution))
+}
+
+func printKnownIssuesSummary(report *compliance.ComplianceReport) {
+	if report == nil {
+		return
+	}
+
+	// Collect all known issues across drafts, grouped by reason
+	byReason := make(map[string]int)
+	for _, draft := range report.Drafts {
+		for _, item := range draft.Summary.KnownIssues.Items {
+			byReason[item.Reason]++
+		}
+	}
+
+	if len(byReason) == 0 {
+		return
+	}
+
+	// Sort reasons for deterministic output
+	var reasons []string
+	for reason := range byReason {
+		reasons = append(reasons, reason)
+	}
+	sort.Strings(reasons)
+
+	ui.Println()
+	ui.Println(ui.Bold.Render("Known Issues:"))
+	for _, reason := range reasons {
+		count := byReason[reason]
+		ui.Printf("  %d %s\n", count, reason)
+	}
 }
 
 func formatDraftList(drafts []string) string {
