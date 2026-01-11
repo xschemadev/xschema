@@ -37,7 +37,7 @@
 				"update all adapters/callers to the new `parse()` signature",
 				"Typecheck passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

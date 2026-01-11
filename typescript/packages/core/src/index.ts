@@ -55,7 +55,13 @@ export type {
 } from "./ir/index.js";
 
 // Parser
-export { parse, parseSchema, type ParseContext } from "./parser/index.js";
+export {
+  parse,
+  parseSchema,
+  type ParseContext,
+  type ParseIssue,
+  type ParseResult,
+} from "./parser/index.js";
 
 // Utilities
 export {

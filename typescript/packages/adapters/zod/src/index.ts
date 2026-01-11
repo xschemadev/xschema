@@ -4,7 +4,7 @@ import { render } from "./renderer.js";
 
 export function convert(input: ConvertInput): ConvertResult {
 	const { namespace, id, varName, schema } = input;
-	const ir = parse(schema as JSONSchema);
+	const { node: ir } = parse(schema as JSONSchema);
 	const schemaCode = render(ir);
 
 	return {

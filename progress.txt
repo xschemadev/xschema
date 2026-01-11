@@ -5,6 +5,7 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
 ## Codebase Patterns
 - core parser hard-fails are discoverable via `throw new Error` / `is not supported` searches in `typescript/packages/core/src/parser/` and `typescript/packages/core/src/utils/json-pointer.ts`
 - keyword behavior is split between `normalizeDeep` (legacy rewrites) and the parser; check both before assuming a keyword is "ignored"
+- workspace packages resolve `@xschemadev/core` via built `dist`, so run `bun run build` after core api/type changes
 ---
 
 ## 2026-01-11 - US-001
@@ -26,4 +27,15 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - current core non-total points: `unevaluatedItems`, `unevaluatedProperties`+applicators, external `$ref`, missing pointer targets
   - `unevaluatedProperties` is partially handled in normalizer (rewritten to `additionalProperties` only in simple cases)
   - adapters call `parse()` directly today, so avoid breaking that api; prefer additive `parseWithIssues`
+---
+
+## 2026-01-11 15:41:37 CET - US-003
+- Implemented total core parsing: `parse()` now returns `{ node, issues }` and never throws
+- Captured non-fatal issues for `unevaluatedItems`, `unevaluatedProperties`+applicators, and `$ref` resolution failures
+- Updated all TS adapters to consume `parse().node`
+- Files changed: `typescript/packages/core/src/parser/context.ts`, `typescript/packages/core/src/parser/index.ts`, `typescript/packages/core/src/index.ts`, `typescript/packages/adapters/*/src/index.ts`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - `ParseIssue` currently carries `code`, `message`, plus optional `keyword`/`ref` (no schema path yet)
+  - `$ref` failures are cached as `any` to avoid repeated throws
+  - workspace packages resolve `@xschemadev/core` from built `dist`
 ---
