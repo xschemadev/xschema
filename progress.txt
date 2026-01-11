@@ -86,3 +86,22 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - bundler needs: $schema injection, URI-decoded pointer segments, $anchor fragment resolution
   - dynamic/recursive refs intentionally unsupported (us-004, us-011 decisions)
 ---
+
+## 2026-01-11 - US-007
+- bundler now URI-decodes JSON pointer segments per RFC 6901 §6
+- added url.PathUnescape before JSON pointer escape processing (~1,~0)
+- added tests for percent/slash/tilde/quote/space encoded refs
+- Files changed: `cli/bundler/bundler.go`, `cli/bundler/bundler_test.go`, `prd.jsonc`, `progress.txt`
+- **Results:**
+  - draft2020-12: 92.8% → 93.6% (+8 tests)
+  - draft2019-09: 92.1% → 92.8% (+8 tests)
+  - draft7: 97.2% → 98.1% (+8 tests)
+  - draft6: 96.9% → 97.9% (+8 tests)
+  - draft4: 97.2% → 98.6% (+8 tests)
+  - draft3: 95.9% → 97.3% (+6 tests)
+  - total: 46 tests fixed (more than estimated 30)
+- **Learnings for future iterations:**
+  - URI encoding applies to fragment (after #), JSON pointer escapes (~0,~1) apply after URI decoding
+  - refs with quotes (%22) also fixed by same mechanism
+  - remaining ref failures are: $anchor resolution (US-008), relative URI with $id scoping, URN refs
+---

@@ -570,3 +570,47 @@ func TestValidateJSONPointer(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateJSONPointerURIEncoded(t *testing.T) {
+	// Schema with keys that need URI encoding in refs
+	root := map[string]any{
+		"$defs": map[string]any{
+			"percent%field": map[string]any{"type": "string"},
+			"slash/field":   map[string]any{"type": "number"},
+			"tilde~field":   map[string]any{"type": "boolean"},
+			"quote\"field":  map[string]any{"type": "integer"},
+			"space field":   map[string]any{"type": "array"},
+		},
+	}
+
+	tests := []struct {
+		name    string
+		ref     string
+		wantErr bool
+	}{
+		// URI-encoded percent: %25 → %
+		{"percent encoded", "#/$defs/percent%25field", false},
+		// URI-encoded slash: %2F → / (also needs ~1 for JSON pointer)
+		{"slash encoded", "#/$defs/slash~1field", false},
+		// URI-encoded tilde: %7E → ~ (but JSON pointer uses ~0)
+		{"tilde via json pointer", "#/$defs/tilde~0field", false},
+		// URI-encoded quote: %22 → "
+		{"quote encoded", "#/$defs/quote%22field", false},
+		// URI-encoded space: %20 → space
+		{"space encoded", "#/$defs/space%20field", false},
+		// Direct keys (not encoded) should also work
+		{"direct percent - should fail", "#/$defs/percent%field", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateJSONPointer(tt.ref, root)
+			if tt.wantErr && err == nil {
+				t.Error("expected error")
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}

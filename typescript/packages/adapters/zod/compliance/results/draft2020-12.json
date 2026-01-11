@@ -27,9 +27,27 @@
     {
       "keyword": "anchor",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "Location-independent identifier",
+          "test": "match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        },
+        {
+          "group": "Location-independent identifier",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        }
+      ]
     },
     {
       "keyword": "anyOf",
@@ -76,9 +94,27 @@
     {
       "keyword": "defs",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "validate definition against metaschema",
+          "test": "valid definition schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "dependentRequired",
@@ -97,9 +133,275 @@
     {
       "keyword": "dynamicRef",
       "passed": 0,
-      "failed": 0,
+      "failed": 33,
       "skipped": 0,
-      "total": 0
+      "total": 33,
+      "failures": [
+        {
+          "group": "$dynamicRef points to a boolean schema",
+          "test": "follow $dynamicRef to a false schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$dynamicRef points to a boolean schema",
+          "test": "follow $dynamicRef to a true schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$dynamicRef skips over intermediate resources - direct reference",
+          "test": "integer property passes",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$dynamicRef skips over intermediate resources - direct reference",
+          "test": "string property fails",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
+          "test": "correct extended schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $defs first",
+          "test": "incorrect parent schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
+          "test": "correct extended schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref and $dynamicAnchor are independent of order - $ref first",
+          "test": "incorrect parent schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref to $dynamicRef finds detached $dynamicAnchor",
+          "test": "non-number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/detached-dynamicref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref to $dynamicRef finds detached $dynamicAnchor",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/detached-dynamicref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope",
+          "test": "The recursive part is not valid against the root",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope",
+          "test": "The recursive part is valid against the root",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor",
+          "test": "The recursive part doesn't need to validate against the root",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array of strings is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array of strings is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array containing non-strings is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+          "test": "An array of strings is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "after leaving a dynamic scope, it is not used by a $dynamicRef",
+          "test": "/then/$defs/thingy is the final stop for the $dynamicRef",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "after leaving a dynamic scope, it is not used by a $dynamicRef",
+          "test": "first_scope is not in dynamic scope for the $dynamicRef",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "after leaving a dynamic scope, it is not used by a $dynamicRef",
+          "test": "string matches /$defs/thingy, but the $dynamicRef does not stop here",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $dynamicRef keyword",
+          "test": "number list with number values",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $dynamicRef keyword",
+          "test": "number list with string values",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $dynamicRef keyword",
+          "test": "string list with number values",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $dynamicRef keyword",
+          "test": "string list with string values",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "strict-tree schema, guards against misspelled properties",
+          "test": "instance with correct field",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "strict-tree schema, guards against misspelled properties",
+          "test": "instance with misspelled field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "tests for implementation dynamic anchor and reference link",
+          "test": "correct extended schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "tests for implementation dynamic anchor and reference link",
+          "test": "incorrect extended schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "tests for implementation dynamic anchor and reference link",
+          "test": "incorrect parent schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"http://localhost:1234/draft2020-12/extendible-dynamic-ref.json\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "enum",
@@ -279,16 +581,180 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 12,
       "skipped": 0,
-      "total": 0
+      "total": 12,
+      "failures": [
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "order of evaluation: $id and $anchor and $ref",
+          "test": "data is invalid against first definition",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#bigint\": must start with /"
+        },
+        {
+          "group": "order of evaluation: $id and $anchor and $ref",
+          "test": "data is valid against first definition",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#bigint\": must start with /"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 0,
+      "failed": 8,
       "skipped": 0,
-      "total": 0
+      "total": 8,
+      "failures": [
+        {
+          "group": "$ref to $ref finds detached $anchor",
+          "test": "non-number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
+        },
+        {
+          "group": "$ref to $ref finds detached $anchor",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#detached\": must start with /"
+        },
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "integer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        },
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        },
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "required",
@@ -344,9 +810,9 @@
   ],
   "summary": {
     "passed": 869,
-    "failed": 2,
+    "failed": 59,
     "skipped": 0,
-    "total": 871,
-    "percentage": 99.77037887485649
+    "total": 928,
+    "percentage": 93.64224137931035
   }
 }

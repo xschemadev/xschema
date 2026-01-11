@@ -88,8 +88,8 @@
 				"escaped pointer ref tests pass (percent, slash, tilde, quote characters)",
 				"go build + go test ./... pass"
 			],
-			"passes": false,
-			"notes": "derived from US-005 zod-discovery. fixes ~30 tests across all drafts."
+			"passes": true,
+			"notes": "derived from US-005 zod-discovery. fixed 46 tests across all drafts (more than estimated 30 due to quote tests also passing)."
 		},
 		{
 			"id": "US-008",

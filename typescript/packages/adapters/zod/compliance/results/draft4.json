@@ -215,16 +215,52 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "Location-independent identifier",
+          "test": "match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        },
+        {
+          "group": "Location-independent identifier",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
-      "failed": 0,
+      "passed": 15,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 17,
+      "failures": [
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "integer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        },
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: invalid JSON pointer in $ref \"#foo\": must start with /"
+        }
+      ]
     },
     {
       "keyword": "required",
@@ -249,10 +285,10 @@
     }
   ],
   "summary": {
-    "passed": 547,
-    "failed": 4,
+    "passed": 562,
+    "failed": 8,
     "skipped": 0,
-    "total": 551,
-    "percentage": 99.27404718693285
+    "total": 570,
+    "percentage": 98.59649122807016
   }
 }

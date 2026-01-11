@@ -478,7 +478,14 @@ func validateJSONPointer(ref string, root any) error {
 	current := root
 
 	for _, segment := range segments {
-		// Unescape JSON pointer escapes: ~1 → /, ~0 → ~
+		// URI-decode first (RFC 6901 §6: URI fragment encoding)
+		decoded, err := url.PathUnescape(segment)
+		if err != nil {
+			return fmt.Errorf("invalid URI encoding in $ref %q: %w", ref, err)
+		}
+		segment = decoded
+
+		// Then unescape JSON pointer escapes: ~1 → /, ~0 → ~
 		segment = strings.ReplaceAll(segment, "~1", "/")
 		segment = strings.ReplaceAll(segment, "~0", "~")
 
