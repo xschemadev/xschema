@@ -3,49 +3,17 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 12,
-      "failed": 2,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "heterogeneous invalid instance",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "additional items are not permitted",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "additionalProperties",
-      "passed": 14,
-      "failed": 2,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "patternProperties are not additional properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in extends are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "default",
@@ -56,19 +24,10 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 17,
-      "failed": 1,
+      "passed": 18,
+      "failed": 0,
       "skipped": 0,
-      "total": 18,
-      "failures": [
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 18
     },
     {
       "keyword": "disallow",
@@ -86,19 +45,10 @@
     },
     {
       "keyword": "enum",
-      "passed": 15,
-      "failed": 1,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "extends",
@@ -186,19 +136,10 @@
     },
     {
       "keyword": "properties",
-      "passed": 14,
-      "failed": 1,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "ref",
@@ -290,33 +231,17 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 60,
-      "failed": 2,
+      "passed": 62,
+      "failed": 0,
       "skipped": 0,
-      "total": 62,
-      "failures": [
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 62
     }
   ],
   "summary": {
-    "passed": 390,
-    "failed": 17,
+    "passed": 399,
+    "failed": 8,
     "skipped": 0,
     "total": 407,
-    "percentage": 95.82309582309583
+    "percentage": 98.03439803439802
   }
 }

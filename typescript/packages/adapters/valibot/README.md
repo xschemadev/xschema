@@ -72,6 +72,22 @@ The following draft3-only features have limited support:
 
 **Recommendation:** Upgrade schemas to draft4+ for best compatibility.
 
+#### JavaScript Prototype Property Names (Valibot Bug)
+
+Properties named `__proto__`, `constructor`, or `toString` cause runtime errors in Valibot's object validation. This is a known bug in Valibot's internal property lookup mechanism.
+
+```json
+{
+  "properties": {
+    "__proto__": { "type": "string" },
+    "constructor": { "type": "string" }
+  }
+}
+// Error: this.entries[key]._run is not a function
+```
+
+**Workaround:** Avoid using JS prototype property names in schemas, or use `additionalProperties` with pattern validation instead.
+
 #### Valibot-Specific Considerations
 
 Valibot's functional API differs from Zod's chaining approach in several ways:

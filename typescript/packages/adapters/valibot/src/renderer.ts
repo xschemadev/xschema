@@ -229,24 +229,26 @@ function renderObject(node: ObjectNode): string {
 	let result = "";
 
 	// Choose object type based on additionalProperties
-	if (node.additionalProperties === false) {
-		// Strict mode - no additional properties
+	// When patternProperties exist, we can't use strictObject (it would reject pattern-matched keys)
+	if (node.additionalProperties === false && !hasPatternProps) {
+		// Strict mode - no additional properties (only when no pattern props)
 		result =
 			shape.length > 0
 				? `v.strictObject({ ${shape.join(", ")} })`
 				: "v.strictObject({})";
 	} else if (
 		typeof node.additionalProperties === "object" &&
-		node.additionalProperties.kind !== "any"
+		node.additionalProperties.kind !== "any" &&
+		!hasPatternProps
 	) {
-		// Validate additional properties against schema
+		// Validate additional properties against schema (only when no pattern props)
 		const restSchema = render(node.additionalProperties);
 		result =
 			shape.length > 0
 				? `v.objectWithRest({ ${shape.join(", ")} }, ${restSchema})`
 				: `v.record(v.string(), ${restSchema})`;
 	} else {
-		// Allow additional properties (loose mode)
+		// Allow additional properties (loose mode) - pattern props handling is done separately
 		result =
 			shape.length > 0
 				? `v.looseObject({ ${shape.join(", ")} })`
@@ -256,9 +258,9 @@ function renderObject(node: ObjectNode): string {
 	// Collect all validation actions (run AFTER the object schema)
 	const postActions: string[] = [];
 
-	// Pattern properties validation
+	// Pattern properties validation + additionalProperties check when both are present
 	if (hasPatternProps) {
-		postActions.push(...renderPatternPropsActions(node, propKeys));
+		postActions.push(...renderPatternPropsActionsWithAdditional(node, propKeys));
 	}
 
 	// Property names validation
@@ -271,6 +273,24 @@ function renderObject(node: ObjectNode): string {
       }
       return true;
     }, "Invalid property name")`);
+	}
+
+	// Required properties validation - only needed when v.any() props exist (which accept undefined)
+	const requiredAnyProps: string[] = [];
+	for (const key of propKeys) {
+		const prop = node.properties.get(key)!;
+		if (prop.required && (prop.schema as SchemaNode).kind === "any") {
+			requiredAnyProps.push(key);
+		}
+	}
+	if (requiredAnyProps.length > 0) {
+		const requiredJson = JSON.stringify(requiredAnyProps);
+		postActions.push(`v.check((val) => {
+      for (const key of ${requiredJson}) {
+        if (!Object.hasOwn(val, key)) return false;
+      }
+      return true;
+    }, "Required property missing")`);
 	}
 
 	// Min/max properties
@@ -355,11 +375,12 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 	return `v.pipe(v.unknown(), ${ARRAY_REJECTION_CHECK}, v.looseObject({}), ${allActions.join(", ")})`;
 }
 
-function renderPatternPropsActions(
+function renderPatternPropsActionsWithAdditional(
 	node: ObjectNode,
 	propKeys: string[],
 ): string[] {
 	const patterns = node.patternProperties;
+	const definedProps = JSON.stringify(propKeys);
 
 	let checks: string[] = [];
 
@@ -376,9 +397,37 @@ function renderPatternPropsActions(
       }`);
 	});
 
+	// Handle additionalProperties when pattern props are present
+	if (node.additionalProperties === false) {
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const key of Object.keys(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) return false;
+      }`);
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const additionalSchema = render(node.additionalProperties);
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const [key, value] of Object.entries(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) {
+          const result = v.safeParse(${additionalSchema}, value);
+          if (!result.success) return false;
+        }
+      }`);
+	}
+
 	return [`v.check((val) => {${checks.join("")}
       return true;
-    }, "Pattern property validation failed")`];
+    }, "Object validation failed")`];
 }
 
 function renderObjectConstraintsActions(node: ObjectNode): string[] {
@@ -436,26 +485,54 @@ function renderArray(node: ArrayNode): string {
 }
 
 function renderTuple(node: TupleNode): string {
+	// JSON Schema semantics: prefixItems only validates items at positions IF they exist
+	// Empty arrays and incomplete arrays (fewer items than prefixItems) are valid
+	// valibot's v.tuple/v.tupleWithRest enforce minimum length, so we use v.array with custom validation
 	const tupleSchemas = node.prefixItems.map((item) => render(item));
+	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
-	let result = "";
+	let result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      return true;
+    }, "Tuple items validation failed"))`;
 
 	// Rest items handling
 	if (node.restItems === false) {
-		// Strict tuple - no additional items
-		result = `v.tuple([${tupleSchemas.join(", ")}])`;
+		// No additional items allowed beyond prefix
+		result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      return val.length <= schemas.length;
+    }, "Tuple validation failed"))`;
 	} else if (node.restItems.kind !== "any") {
-		// Tuple with rest items
+		// Rest items must match schema
 		const restSchema = render(node.restItems);
-		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], ${restSchema})`;
-	} else {
-		// Tuple allowing any rest items
-		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], v.any())`;
+		result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      const restSchema = ${restSchema};
+      for (let i = schemas.length; i < val.length; i++) {
+        const itemResult = v.safeParse(restSchema, val[i]);
+        if (!itemResult.success) return false;
+      }
+      return true;
+    }, "Tuple validation failed"))`;
 	}
 
 	const constraints = renderArrayConstraints(node.constraints);
 	if (constraints) {
-		result = `v.pipe(${result}${constraints})`;
+		// Remove the outer v.pipe and add constraints to it
+		result = result.replace(/^v\.pipe\(/, "v.pipe(").replace(/\)$/, constraints + ")");
 	}
 	return result;
 }
@@ -605,16 +682,19 @@ function renderEnum(node: EnumNode): string {
 		return `v.picklist([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
 	}
 
-	// Check for complex values
+	// Check for complex values (objects/arrays)
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
+		// Stringify all values for comparison (sorted keys for objects)
 		const sortedValues = values.map((v) =>
 			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v as object).sort()
-					: undefined,
+				JSON.stringify(
+					v,
+					v != null && typeof v === "object"
+						? Object.keys(v as object).sort()
+						: undefined,
+				),
 			),
 		);
 		return `v.pipe(v.any(), v.check((val) => {

@@ -4,28 +4,28 @@
 
 | Draft | Passed | Failed | Skipped | Coverage |
 | ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 822 | 93 | 0 | 89.8% |
-| draft2020-12 | 834 | 86 | 0 | 90.7% |
-| draft3 | 390 | 17 | 0 | 95.8% |
-| draft4 | 535 | 33 | 0 | 94.2% |
-| draft6 | 724 | 44 | 0 | 94.3% |
-| draft7 | 800 | 44 | 0 | 94.8% |
+| draft2019-09 | 848 | 67 | 0 | 92.7% |
+| draft2020-12 | 860 | 60 | 0 | 93.5% |
+| draft3 | 399 | 8 | 0 | 98.0% |
+| draft4 | 557 | 11 | 0 | 98.1% |
+| draft6 | 749 | 19 | 0 | 97.5% |
+| draft7 | 825 | 19 | 0 | 97.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.8%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-90.7%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-95.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-94.2%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-94.3%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-94.8%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-92.7%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-93.5%25-yellow)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.0%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.1%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-97.5%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.7%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 17/19 |
-| additionalProperties | ⚠️ | 19/21 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -36,14 +36,14 @@
 | default | ✅ | 7/7 |
 | defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
-| dependentSchemas | ⚠️ | 18/20 |
-| enum | ⚠️ | 43/45 |
+| dependentSchemas | ✅ | 20/20 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 19/28 |
+| items | ✅ | 28/28 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -56,46 +56,22 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 22/28 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ❌ | 0/34 |
 | ref | ❌ | 0/12 |
 | refRemote | ❌ | 0/4 |
-| required | ⚠️ | 9/16 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ❌ | 0/2 |
 | unevaluatedProperties | ❌ | 0/2 |
-| uniqueItems | ⚠️ | 67/69 |
+| uniqueItems | ✅ | 69/69 |
 | vocabulary | ⚠️ | 4/5 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 2 failures</summary>
-
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>defs - 2 failures</summary>
@@ -110,82 +86,7 @@
 </details>
 
 <details>
-<summary>dependentSchemas - 2 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 9 failures</summary>
-
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 6 failures</summary>
+<summary>properties - 5 failures</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
@@ -202,9 +103,6 @@
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -377,7 +275,7 @@
 </details>
 
 <details>
-<summary>required - 7 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -394,12 +292,6 @@
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -428,18 +320,6 @@
 </details>
 
 <details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>vocabulary - 1 failure</summary>
 
 - **schema that uses custom metaschema with with no validation vocabulary**
@@ -452,7 +332,7 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 19/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -463,15 +343,15 @@
 | default | ✅ | 7/7 |
 | defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
-| dependentSchemas | ⚠️ | 18/20 |
+| dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ❌ | 0/33 |
-| enum | ⚠️ | 43/45 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 22/29 |
+| items | ✅ | 29/29 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -484,34 +364,22 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 7/11 |
-| properties | ⚠️ | 22/28 |
+| prefixItems | ✅ | 11/11 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
-| required | ⚠️ | 9/16 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
-| uniqueItems | ⚠️ | 67/69 |
+| uniqueItems | ✅ | 69/69 |
 | vocabulary | ⚠️ | 4/5 |
 
 ### Failures
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>defs - 2 failures</summary>
@@ -522,18 +390,6 @@
 - **validate definition against metaschema**
   - Test: valid definition schema
   - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 2 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -643,82 +499,7 @@
 </details>
 
 <details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 7 failures</summary>
-
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **prefixItems with no additional items allowed**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>prefixItems - 4 failures</summary>
-
-- **a schema given for prefixItems**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 6 failures</summary>
+<summary>properties - 5 failures</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
@@ -735,9 +516,6 @@
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -796,7 +574,7 @@
 </details>
 
 <details>
-<summary>required - 7 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -813,24 +591,6 @@
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -847,13 +607,13 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 12/14 |
-| additionalProperties | ⚠️ | 14/16 |
+| additionalItems | ✅ | 14/14 |
+| additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 17/18 |
+| dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
 | divisibleBy | ✅ | 8/8 |
-| enum | ⚠️ | 15/16 |
+| enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
 | infinite-loop-detection | ✅ | 2/2 |
@@ -866,65 +626,14 @@
 | minimum | ✅ | 13/13 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
-| properties | ⚠️ | 14/15 |
+| properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
 | required | ⚠️ | 3/4 |
 | type | ⚠️ | 73/80 |
-| uniqueItems | ⚠️ | 60/62 |
+| uniqueItems | ✅ | 62/62 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 2 failures</summary>
-
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 1 failure</summary>
-
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-
-</details>
 
 <details>
 <summary>required - 1 failure</summary>
@@ -962,33 +671,21 @@
 
 </details>
 
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
 ## draft4
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 15/17 |
-| additionalProperties | ⚠️ | 14/16 |
+| additionalItems | ✅ | 17/17 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 28/29 |
-| enum | ⚠️ | 47/49 |
+| dependencies | ✅ | 29/29 |
+| enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 15/21 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -999,41 +696,17 @@
 | minimum | ✅ | 17/17 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
-| oneOf | ⚠️ | 19/23 |
+| oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ⚠️ | 18/24 |
+| properties | ⚠️ | 19/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 17/17 |
-| required | ⚠️ | 8/15 |
+| required | ⚠️ | 10/15 |
 | type | ✅ | 79/79 |
-| uniqueItems | ⚠️ | 67/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 2 failures</summary>
-
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -1045,70 +718,7 @@
 </details>
 
 <details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 6 failures</summary>
-
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 6 failures</summary>
+<summary>properties - 5 failures</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
@@ -1125,14 +735,11 @@
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>required - 7 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1149,24 +756,6 @@
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1174,8 +763,8 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 17/19 |
-| additionalProperties | ⚠️ | 14/16 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -1183,13 +772,13 @@
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 35/36 |
-| enum | ⚠️ | 43/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 19/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -1200,42 +789,18 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 22/28 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
-| required | ⚠️ | 9/16 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 67/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 2 failures</summary>
-
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -1247,79 +812,7 @@
 </details>
 
 <details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 9 failures</summary>
-
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 6 failures</summary>
+<summary>properties - 5 failures</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
@@ -1336,9 +829,6 @@
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1379,7 +869,7 @@
 </details>
 
 <details>
-<summary>required - 7 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1396,24 +886,6 @@
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1421,8 +893,8 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 17/19 |
-| additionalProperties | ⚠️ | 14/16 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -1430,14 +902,14 @@
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
 | definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 35/36 |
-| enum | ⚠️ | 43/45 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 19/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -1448,42 +920,18 @@
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 22/28 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
 | refRemote | ⚠️ | 21/23 |
-| required | ⚠️ | 9/16 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 67/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Failures
-
-<details>
-<summary>additionalItems - 2 failures</summary>
-
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 2 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>definitions - 1 failure</summary>
@@ -1495,79 +943,7 @@
 </details>
 
 <details>
-<summary>dependencies - 1 failure</summary>
-
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 9 failures</summary>
-
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 6 failures</summary>
+<summary>properties - 5 failures</summary>
 
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
@@ -1584,9 +960,6 @@
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1627,7 +1000,7 @@
 </details>
 
 <details>
-<summary>required - 7 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1644,24 +1017,6 @@
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 

@@ -3,49 +3,17 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 15,
-      "failed": 2,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "heterogeneous invalid instance",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "additional items are not permitted",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "additionalProperties",
-      "passed": 14,
-      "failed": 2,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "patternProperties are not additional properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "allOf",
@@ -86,42 +54,17 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 28,
-      "failed": 1,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 3",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "enum",
-      "passed": 47,
-      "failed": 2,
+      "passed": 49,
+      "failed": 0,
       "skipped": 0,
-      "total": 49,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "heterogeneous enum validation",
-          "test": "valid object matches",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 49
     },
     {
       "keyword": "format",
@@ -139,54 +82,10 @@
     },
     {
       "keyword": "items",
-      "passed": 15,
-      "failed": 6,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "incomplete array of items",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "too many items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "too many sub-items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "items and subitems",
-          "test": "wrong sub-item",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "maxItems",
@@ -260,40 +159,10 @@
     },
     {
       "keyword": "oneOf",
-      "passed": 19,
-      "failed": 4,
+      "passed": 23,
+      "failed": 0,
       "skipped": 0,
-      "total": 23,
-      "failures": [
-        {
-          "group": "oneOf with missing optional property",
-          "test": "first oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "second oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "first valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "second valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 23
     },
     {
       "keyword": "pattern",
@@ -311,8 +180,8 @@
     },
     {
       "keyword": "properties",
-      "passed": 18,
-      "failed": 6,
+      "passed": 19,
+      "failed": 5,
       "skipped": 0,
       "total": 24,
       "failures": [
@@ -355,13 +224,6 @@
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         }
       ]
     },
@@ -381,8 +243,8 @@
     },
     {
       "keyword": "required",
-      "passed": 8,
-      "failed": 7,
+      "passed": 10,
+      "failed": 5,
       "skipped": 0,
       "total": 15,
       "failures": [
@@ -425,20 +287,6 @@
           "actual": "error",
           "passed": false,
           "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         }
       ]
     },
@@ -451,33 +299,17 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 67,
-      "failed": 2,
+      "passed": 69,
+      "failed": 0,
       "skipped": 0,
-      "total": 69,
-      "failures": [
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 69
     }
   ],
   "summary": {
-    "passed": 535,
-    "failed": 33,
+    "passed": 557,
+    "failed": 11,
     "skipped": 0,
     "total": 568,
-    "percentage": 94.19014084507043
+    "percentage": 98.06338028169014
   }
 }
