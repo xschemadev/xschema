@@ -163,11 +163,25 @@
 				"edit `prd.jsonc` to insert new one-iteration implementation stories derived from `typebox-discovery.md` (dependencies first), directly after this story; renumber story ids to remain sequential",
 				"Typecheck passes"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "baseline: draft2020-12 38.7%, draft2019-09 36.8%, draft7 42.1%, draft6 38.9%, draft4 35.7%, draft3 39.6%. root cause: Value.Check cannot validate Type.Unsafe schemas (oneOf, if/then/else, etc). ~500 tests fail with 'Unknown type' error."
 		},
 		{
 			"id": "US-014",
+			"title": "typebox adapter: switch validation to ajv",
+			"description": "as a maintainer, i want typebox validation to use ajv instead of Value.Check, so that all JSON Schema constructs expressed via Type.Unsafe are properly validated.",
+			"acceptanceCriteria": [
+				"change validate function from Value.Check to ajv.compile().validate",
+				"add ajv-formats for format keyword support",
+				"update imports in generated code",
+				"~500 'Unknown type' tests pass",
+				"bun run build + bun run typecheck pass from typescript/"
+			],
+			"passes": false,
+			"notes": "derived from US-013. single highest-impact fix - enables validation of oneOf, if/then/else, dependentSchemas, etc."
+		},
+		{
+			"id": "US-015",
 			"title": "effect adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand effect schema compliance failures and which ones are solvable using effect-native options.",
 			"acceptanceCriteria": [
@@ -180,7 +194,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-015",
+			"id": "US-016",
 			"title": "arktype adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand arktype compliance failures and keep the adapter idiomatic.",
 			"acceptanceCriteria": [
@@ -193,7 +207,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-016",
+			"id": "US-017",
 			"title": "typescript (type-only) adapter discovery + baseline",
 			"description": "as a maintainer, i want to understand typescript adapter compliance behavior and identify readability simplifications that are worth it.",
 			"acceptanceCriteria": [
@@ -206,7 +220,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-017",
+			"id": "US-018",
 			"title": "cli bundler: strict internal refs + reject dynamic refs",
 			"description": "as a maintainer, i want the go bundler to guarantee schemas passed to adapters have valid internal $refs and do not use dynamic/recursive refs, so adapters only handle a stable, self-contained subset.",
 			"acceptanceCriteria": [
@@ -220,7 +234,7 @@
 			"notes": ""
 		},
 		{
-			"id": "US-018",
+			"id": "US-019",
 			"title": "ts core: revert parse() to return SchemaNode",
 			"description": "as a maintainer, i want core parse() to return SchemaNode (no issues payload) and rely on cli bundling for strict $ref validation, so adapters stay simple and api stays stable.",
 			"acceptanceCriteria": [
@@ -229,7 +243,7 @@
 				"Typecheck passes (`bun run build` + `bun run typecheck` from `typescript/`)"
 			],
 			"passes": true,
-			"notes": "depends on us-017"
+			"notes": "depends on us-018"
 		}
 	]
 }

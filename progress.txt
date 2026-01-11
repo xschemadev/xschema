@@ -212,3 +212,22 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - need to check both rendering paths when adding object validation features
   - remaining valibot failures: bundler limitations, JS prototype props bug, tuple handling, oneOf/required issues
 ---
+
+## 2026-01-11 - US-013
+- ran typebox compliance tests: draft2020-12 38.7%, draft2019-09 36.8%, draft7 42.1%, draft6 38.9%, draft4 35.7%, draft3 39.6%
+- wrote `tasks/adapters-optimization/typebox-discovery.md` with full analysis
+- root cause: Value.Check cannot validate Type.Unsafe schemas (oneOf, if/then/else, etc)
+- added US-014 (typebox: switch validation to ajv) and renumbered subsequent stories
+- Files changed: `tasks/adapters-optimization/typebox-discovery.md`, `prd.jsonc`, `progress.txt`
+- **Results:**
+  - baseline is 37-42% vs zod's 93-99% and valibot's 90-95%
+  - ~500 tests fail with 'Unknown type' error from TypeBox's Value.Check
+  - TypeBox generates valid JSON Schema via Type.Unsafe but Value.Check can't process it
+- **Learnings for future iterations:**
+  - TypeBox's Value.Check only validates native TypeBox type kinds (Type.String, Type.Object, etc)
+  - Type.Unsafe<T>({...}) generates JSON Schema but Value.Check throws "Unknown type" for non-native constructs
+  - Solution: use Ajv to validate TypeBox schemas since they ARE valid JSON Schema
+  - TypeBox supports: minLength/maxLength, min/max, pattern, uniqueItems, contains, additionalProperties natively
+  - TypeBox does NOT support via Value.Check: oneOf, if/then/else, dependentSchemas, propertyNames, patternProperties (as option)
+  - Format validation requires FormatRegistry setup - unregistered formats cause all values to fail
+---
