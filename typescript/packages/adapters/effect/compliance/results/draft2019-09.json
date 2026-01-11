@@ -346,51 +346,27 @@
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
-          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on inner field",
+          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on outer field",
+          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/ref/refs with relative uris and defs/valid on both fields",
+          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field",
+          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/URN ref with nested pointer ref/a string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
@@ -530,27 +506,51 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
+          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on inner field",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
+          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on outer field",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "path": "draft2019-09/ref/refs with relative uris and defs/valid on both fields",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
+          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/ref/URN ref with nested pointer ref/a string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
+          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {

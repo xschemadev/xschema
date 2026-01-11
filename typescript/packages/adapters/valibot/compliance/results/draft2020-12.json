@@ -334,8 +334,92 @@
       "count": 60,
       "items": [
         {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
           "path": "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
           "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/__proto__ present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/toString present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/constructor present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/required/required properties whose names are Javascript object property names/all present",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
@@ -487,90 +571,6 @@
         },
         {
           "path": "draft2020-12/properties/properties whose names are Javascript object property names/all present and valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/required/required properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2020-12/required/required properties whose names are Javascript object property names/__proto__ present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2020-12/required/required properties whose names are Javascript object property names/toString present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2020-12/required/required properties whose names are Javascript object property names/constructor present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2020-12/required/required properties whose names are Javascript object property names/all present",
           "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         }
       ]

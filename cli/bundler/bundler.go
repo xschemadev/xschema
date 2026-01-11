@@ -403,7 +403,7 @@ func (b *bundleContext) fetch(uri string) (json.RawMessage, error) {
 	if b.opts.RemotesPath != "" && strings.HasPrefix(uri, "http://localhost:1234/") {
 		localPath := filepath.Join(b.opts.RemotesPath, strings.TrimPrefix(uri, "http://localhost:1234/"))
 		ui.Verbosef("bundler: mapping localhost URL to local file: %s → %s", uri, localPath)
-		return retriever.RetrieveFromFilePath(b.ctx, localPath)
+		return retriever.RetrieveFromFilePath(b.ctx, localPath, b.opts.Draft)
 	}
 
 	// Check if it's a file path or URL
@@ -412,11 +412,11 @@ func (b *bundleContext) fetch(uri string) (json.RawMessage, error) {
 			HTTPTimeout: b.opts.HTTPTimeout,
 			Retries:     b.opts.Retries,
 		}
-		return retriever.RetrieveFromURL(b.ctx, uri, opts)
+		return retriever.RetrieveFromURL(b.ctx, uri, opts, b.opts.Draft)
 	}
 
 	// Assume it's a file path
-	return retriever.RetrieveFromFilePath(b.ctx, uri)
+	return retriever.RetrieveFromFilePath(b.ctx, uri, b.opts.Draft)
 }
 
 // uriToKey converts a URI to a valid $defs key

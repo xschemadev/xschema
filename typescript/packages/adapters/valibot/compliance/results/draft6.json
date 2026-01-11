@@ -264,6 +264,10 @@
       "count": 19,
       "items": [
         {
+          "path": "draft6/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
           "path": "draft6/properties/properties whose names are Javascript object property names/none of the properties mentioned",
           "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         },
@@ -282,30 +286,6 @@
         {
           "path": "draft6/properties/properties whose names are Javascript object property names/all present and valid",
           "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft6/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft6/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft6/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft6/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft6/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft6/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
           "path": "draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
@@ -336,8 +316,28 @@
           "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         },
         {
-          "path": "draft6/definitions/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+          "path": "draft6/ref/refs with relative uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft6/ref/refs with relative uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft6/ref/refs with relative uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft6/ref/relative refs with absolute uris and defs/invalid on inner field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft6/ref/relative refs with absolute uris and defs/invalid on outer field",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft6/ref/relative refs with absolute uris and defs/valid on both fields",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
         }
       ]
     }

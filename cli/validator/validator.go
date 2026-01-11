@@ -17,6 +17,15 @@ func (noopLoader) Load(url string) (any, error) {
 	return nil, fmt.Errorf("external ref %s (will be resolved by bundler)", url)
 }
 
+// draftNames maps draft string names to jsonschema draft constants
+var draftNames = map[string]*jsonschema.Draft{
+	"draft4":       jsonschema.Draft4,
+	"draft6":       jsonschema.Draft6,
+	"draft7":       jsonschema.Draft7,
+	"draft2019-09": jsonschema.Draft2019,
+	"draft2020-12": jsonschema.Draft2020,
+}
+
 // draftURLs maps $schema URLs to jsonschema draft constants
 var draftURLs = map[string]*jsonschema.Draft{
 	"https://json-schema.org/draft/2020-12/schema": jsonschema.Draft2020,
@@ -69,8 +78,18 @@ func detectDraft(data []byte) *jsonschema.Draft {
 // ValidateSchema validates that the given JSON bytes represent a valid JSON Schema.
 // Returns nil if valid, error with details if invalid.
 // External $ref loading errors are ignored (handled by bundler later).
-func ValidateSchema(data []byte) error {
-	draft := detectDraft(data)
+// If draftHint is provided and schema has no $schema field, it will be used instead of defaulting to draft2020-12.
+func ValidateSchema(data []byte, draftHint ...string) error {
+	var draft *jsonschema.Draft
+	if len(draftHint) > 0 && draftHint[0] != "" {
+		if d, ok := draftNames[draftHint[0]]; ok {
+			draft = d
+		} else {
+			draft = detectDraft(data)
+		}
+	} else {
+		draft = detectDraft(data)
+	}
 
 	// Parse JSON first using library's unmarshaler
 	doc, err := jsonschema.UnmarshalJSON(strings.NewReader(string(data)))

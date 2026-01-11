@@ -342,6 +342,10 @@
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
+          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
+          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
+        },
+        {
           "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
@@ -540,10 +544,6 @@
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
         },
         {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",

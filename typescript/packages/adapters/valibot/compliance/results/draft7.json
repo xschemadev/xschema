@@ -275,26 +275,6 @@
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
-          "path": "draft7/properties/properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft7/properties/properties whose names are Javascript object property names/__proto__ not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft7/properties/properties whose names are Javascript object property names/toString not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft7/properties/properties whose names are Javascript object property names/constructor not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft7/properties/properties whose names are Javascript object property names/all present and valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
           "path": "draft7/ref/refs with relative uris and defs/invalid on inner field",
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
@@ -317,6 +297,26 @@
         {
           "path": "draft7/ref/relative refs with absolute uris and defs/valid on both fields",
           "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft7/properties/properties whose names are Javascript object property names/none of the properties mentioned",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft7/properties/properties whose names are Javascript object property names/__proto__ not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft7/properties/properties whose names are Javascript object property names/toString not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft7/properties/properties whose names are Javascript object property names/constructor not valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
+        },
+        {
+          "path": "draft7/properties/properties whose names are Javascript object property names/all present and valid",
+          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         },
         {
           "path": "draft7/required/required properties whose names are Javascript object property names/none of the properties mentioned",

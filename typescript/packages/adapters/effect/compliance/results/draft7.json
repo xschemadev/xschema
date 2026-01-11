@@ -271,8 +271,12 @@
       "count": 9,
       "items": [
         {
-          "path": "draft7/definitions/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
+        },
+        {
+          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
+          "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
           "path": "draft7/ref/refs with relative uris and defs/invalid on inner field",
@@ -299,12 +303,8 @@
           "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
-          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
+          "path": "draft7/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         }
       ]
     }
