@@ -179,3 +179,13 @@ Started: Sat Jan 10 03:42:30 PM CET 2026
   - Useful context: keep harness/template tests reading `lang.HarnessTemplate` from the registry instead of importing language-specific constants.
 ---
 
+## 2026-01-11 02:10 CET - US-010
+- Fixed broken references in `docs/INDEX.md` (removed `language-support.md` link, fixed `release-process.md` -> `RELEASING.md`).
+- Rewrote `cli/language/README.md` for new registry + per-language folder model (removed tree-sitter references).
+- Updated `docs/cli-pipeline.md` for: typescript-only, adapter refs (`@xschemadev/zod`), multi-file outputs, manifest cleanup.
+- Files changed: `docs/INDEX.md`, `cli/language/README.md`, `docs/cli-pipeline.md`, `prd.jsonc`, `progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: docs should reference code files directly (e.g., `cli/language/langs/typescript/typescript.go`) for accurate paths.
+  - Gotchas encountered: keep document count in INDEX.md in sync when removing docs.
+---
+

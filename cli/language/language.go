@@ -1,7 +1,6 @@
 package language
 
 import (
-	"os/exec"
 	"strings"
 )
 
@@ -78,53 +77,4 @@ func AllIgnoreDirs() map[string]bool {
 // IsXSchemaURL checks if a URL is an xschema.dev schema URL
 func IsXSchemaURL(url string) bool {
 	return strings.HasPrefix(url, XSchemaBaseURL)
-}
-
-// commandExists checks if a command is available in PATH
-func commandExists(cmd string) bool {
-	_, err := exec.LookPath(cmd)
-	return err == nil
-}
-
-// buildVarNameUnderscore builds a variable name using underscore separator: namespace_id
-func buildVarNameUnderscore(namespace, id string) string {
-	return namespace + "_" + id
-}
-
-// injectSchemasKeyBrace injects "schemas" into a brace-delimited config (JS/TS object)
-func injectSchemasKeyBrace(configContent string) string {
-	// Find first { and insert after it
-	openIdx := strings.Index(configContent, "{")
-	if openIdx == -1 {
-		return configContent
-	}
-
-	// Check length to avoid panic
-	if len(configContent) < openIdx+2 {
-		return "{ schemas }"
-	}
-
-	// Check if schemas already exists (shorthand {schemas} or pair {schemas: schemas})
-	inner := configContent[openIdx+1 : len(configContent)-1]
-	innerTrimmed := strings.TrimSpace(inner)
-
-	// Check for shorthand: {schemas, ...}
-	if strings.HasPrefix(innerTrimmed, "schemas") && (len(innerTrimmed) == 7 || strings.HasPrefix(innerTrimmed[7:], ",") || strings.HasPrefix(innerTrimmed[7:], "}")) {
-		return configContent
-	}
-
-	// Check for pair: {schemas: schemas, ...}
-	if strings.HasPrefix(innerTrimmed, "schemas:") {
-		return configContent
-	}
-
-	// Check for quoted pair: {"schemas": schemas, ...}
-	if strings.HasPrefix(innerTrimmed, `"schemas":`) || strings.HasPrefix(innerTrimmed, `'schemas':`) {
-		return configContent
-	}
-
-	if innerTrimmed == "" {
-		return "{ schemas }"
-	}
-	return "{ schemas, " + inner + " }"
 }

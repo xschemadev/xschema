@@ -131,7 +131,7 @@
     {
       "id": "US-010",
       "title": "docs cleanup for language system and adapter refs",
-      "description": "As a contributor, I want documentation to match the actual language system so adding a language doesn’t require reading outdated notes.",
+      "description": "As a contributor, I want documentation to match the actual language system so adding a language doesn't require reading outdated notes.",
       "acceptanceCriteria": [
         "Fix broken references in `docs/INDEX.md` (remove or add missing language docs pages; correct release doc link)",
         "Rewrite or replace `cli/language/README.md` to describe the new registry + per-language folder model (no tree-sitter drift)",
@@ -139,7 +139,7 @@
         "Go checks pass: `go test ./...` and `go vet ./...` (from `cli/`)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

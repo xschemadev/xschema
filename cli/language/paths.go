@@ -29,8 +29,8 @@ func NormalizeRelativePath(path string) (string, error) {
 	}
 
 	normalized := strings.ReplaceAll(trimmed, "\\", "/")
-	parts := strings.Split(normalized, "/")
-	for _, part := range parts {
+	parts := strings.SplitSeq(normalized, "/")
+	for part := range parts {
 		if part == "" {
 			return "", fmt.Errorf("path contains empty segment: %q", path)
 		}
