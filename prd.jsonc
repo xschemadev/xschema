@@ -42,12 +42,12 @@
 		},
 		{
 			"id": "US-004",
-			"title": "core: preserve unknown keywords in ir",
-			"description": "as a maintainer, i want the ir to carry unknown/unsupported keywords (raw) with draft context so adapters can decide what to do without losing information.",
+			"title": "core: fail on unsupported keywords",
+			"description": "as a maintainer, i want the core parser to fail on keywords that require evaluation semantics we can't provide (unevaluatedItems, unevaluatedProperties+applicators), since the bundler handles ref validation and adapters should not receive broken schemas.",
 			"acceptanceCriteria": [
-				"extend `SchemaNode` with an optional payload for unknown keywords + draft context",
-				"populate that payload during parsing (including a stable schema path)",
-				"do not break adapter switches over `kind`",
+				"change core parse() to throw on unevaluatedItems presence",
+				"change core parse() to throw on unevaluatedProperties when applicators are present",
+				"change core parse() to throw on $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor",
 				"Typecheck passes"
 			],
 			"passes": false,
@@ -130,6 +130,32 @@
 			],
 			"passes": false,
 			"notes": ""
+		},
+		{
+			"id": "US-011",
+			"title": "cli bundler: strict internal refs + reject dynamic refs",
+			"description": "as a maintainer, i want the go bundler to guarantee schemas passed to adapters have valid internal $refs and do not use dynamic/recursive refs, so adapters only handle a stable, self-contained subset.",
+			"acceptanceCriteria": [
+				"bundler errors if any $ref with a '#' fragment points to a missing JSON pointer target in the bundled root schema",
+				"bundler errors if schema contains any of: $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor",
+				"bundler errors if schema contains external $ref but no usable base uri (relative file refs must not resolve against cwd)",
+				"add go tests covering: missing internal ref, dynamic/recursive keywords present, and relative external ref with empty base uri",
+				"go build + go test ./... pass"
+			],
+			"passes": false,
+			"notes": ""
+		},
+		{
+			"id": "US-012",
+			"title": "ts core: revert parse() to return SchemaNode",
+			"description": "as a maintainer, i want core parse() to return SchemaNode (no issues payload) and rely on cli bundling for strict $ref validation, so adapters stay simple and api stays stable.",
+			"acceptanceCriteria": [
+				"change core parse() back to return SchemaNode (remove ParseResult/ParseIssue surface)",
+				"update all adapters/callers back to `const ir = parse(schema as JSONSchema)`",
+				"Typecheck passes (`bun run build` + `bun run typecheck` from `typescript/`)"
+			],
+			"passes": false,
+			"notes": "depends on us-011"
 		}
 	]
 }
