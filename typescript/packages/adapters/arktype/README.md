@@ -54,6 +54,35 @@ When a schema contains circular references (e.g., `$ref: "#"`), the recursive pa
 
 **Workaround:** Limit recursion depth in your application logic, or validate recursive structures separately.
 
+#### Relative URI `$id` Scoping
+
+When a schema uses nested `$id` to create a new base URI scope, refs within that scope may fail to resolve correctly. The bundler currently resolves all refs against the root schema.
+
+```json
+{
+  "$id": "http://example.com/root",
+  "$defs": {
+    "nested": {
+      "$id": "nested/",
+      "properties": {
+        "x": { "$ref": "#/$defs/inner" }
+      }
+    }
+  }
+}
+// The $ref should resolve relative to "nested/" but resolves against root
+```
+
+**Workaround:** Use absolute refs or avoid nested `$id` scoping.
+
+#### URN Identifiers
+
+Schemas using URN-style identifiers (e.g., `urn:uuid:...`) with nested pointer refs are not fully supported.
+
+#### Metaschema Validation
+
+Validating schemas against the JSON Schema metaschema is not performed at code generation time. The `definitions`/`$defs` keyword tests that expect metaschema validation will not catch invalid definition schemas.
+
 #### Draft Version Detection
 
 The adapter detects the JSON Schema draft version from the `$schema` keyword. If `$schema` is not present, it defaults to **draft2020-12 behavior**. This affects:

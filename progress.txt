@@ -338,3 +338,24 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - JS reserved words (class, function, etc) and special chars require bracket syntax
 ---
 
+## 2026-01-11 - US-007 (arktype compliance closure)
+- baseline: draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- analyzed all 133 failing tests across drafts
+- all failures categorized as static-codegen limitations (no fixable adapter bugs):
+  - bundler limitation: $dynamicRef/$dynamicAnchor (33 tests draft2020-12)
+  - bundler limitation: $recursiveRef/$recursiveAnchor (34 tests draft2019-09)
+  - bundler limitation: relative URI $id scoping (ref/refRemote tests across drafts)
+  - bundler limitation: URN identifiers with nested pointer refs
+  - bundler limitation: remote metaschema refs (use $dynamicAnchor/$recursiveAnchor)
+  - core parser limitation: draft3 type-schemas (7 tests)
+  - intentional: vocabulary "no validation" test (we always validate)
+  - intentional: metaschema validation not performed at codegen time
+- updated README.md known limitations with: relative URI $id scoping, URN identifiers, metaschema validation
+- final (unchanged): draft2020-12 94.6%, draft2019-09 93.8%, draft7 98.9%, draft6 98.8%, draft4 99.8%, draft3 98.3%
+- Files changed: `typescript/packages/adapters/arktype/README.md`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - arktype adapter is at compliance ceiling for static codegen
+  - remaining failures match pattern of other adapters (zod, valibot, effect)
+  - bundler would need full URI resolution with $id scope tracking to fix relative ref failures
+---
+

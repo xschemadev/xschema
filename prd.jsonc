@@ -101,8 +101,8 @@
 				"update root `progress.txt` with baseline, fixes, and final known limitations summary",
 				"update `typescript/packages/adapters/arktype/README.md` with a known limitations section"
 			],
-			"passes": false,
-			"notes": ""
+			"passes": true,
+			"notes": "baseline already at ceiling (94-99%); all 133 failures are bundler limitations ($dynamicRef/$recursiveRef, relative $id scoping, URN refs, metaschema refs) or core parser limitations (draft3 type-schemas); no fixable adapter bugs"
 		},
 		{
 			"id": "US-008",

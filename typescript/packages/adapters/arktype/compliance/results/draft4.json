@@ -10,19 +10,10 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 15,
-      "failed": 1,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "allOf",
@@ -119,19 +110,10 @@
     },
     {
       "keyword": "maximum",
-      "passed": 13,
-      "failed": 1,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
@@ -156,19 +138,10 @@
     },
     {
       "keyword": "minimum",
-      "passed": 16,
-      "failed": 1,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "multipleOf",
@@ -221,10 +194,10 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
+      "passed": 17,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 17
     },
     {
       "keyword": "required",
@@ -249,10 +222,10 @@
     }
   ],
   "summary": {
-    "passed": 547,
-    "failed": 4,
+    "passed": 567,
+    "failed": 1,
     "skipped": 0,
-    "total": 551,
-    "percentage": 99.27404718693285
+    "total": 568,
+    "percentage": 99.82394366197182
   }
 }

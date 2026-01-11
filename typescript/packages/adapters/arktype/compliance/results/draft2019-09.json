@@ -10,19 +10,10 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 20,
-      "failed": 1,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "allOf",
@@ -83,9 +74,27 @@
     {
       "keyword": "defs",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "validate definition against metaschema",
+          "test": "valid definition schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "dependentRequired",
@@ -272,23 +281,429 @@
     {
       "keyword": "recursiveRef",
       "passed": 0,
-      "failed": 0,
+      "failed": 34,
       "skipped": 0,
-      "total": 0
+      "total": 34,
+      "failures": [
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "integer matches at the outer level",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "single level match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with $recursiveAnchor: false works like $ref",
+          "test": "two levels, properties match with inner definition",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with nesting",
+          "test": "integer matches at the outer level",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with nesting",
+          "test": "integer now matches as a property value",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with nesting",
+          "test": "single level match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with nesting",
+          "test": "two levels, properties match with $recursiveRef",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with nesting",
+          "test": "two levels, properties match with inner definition",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node does not match: recursion uses the inner schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node does not match; no recursion",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the initial target schema resource",
+          "test": "leaf node matches: recursion uses the inner schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node does not match: recursion only uses inner schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node does not match; no recursion",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor in the outer schema resource",
+          "test": "leaf node matches: recursion only uses inner schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "integer matches at the outer level",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "single level match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "two levels, integer does not match as a property value",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef with no $recursiveAnchor works like $ref",
+          "test": "two levels, properties match with inner definition",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "recursive match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without $recursiveAnchor works like $ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveRef\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "integer does not match as a property value",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "integer matches at the outer level",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "single level match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "two levels, no match",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$recursiveRef without using nesting",
+          "test": "two levels, properties match with inner definition",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "dynamic $recursiveRef destination (not predictable at schema compile time)",
+          "test": "integer node",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "dynamic $recursiveRef destination (not predictable at schema compile time)",
+          "test": "numeric node",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $recursiveRef keyword",
+          "test": "recurse to anyLeafNode - floats are allowed",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "multiple dynamic paths to the $recursiveRef keyword",
+          "test": "recurse to integerNode - floats are not allowed",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 12,
       "skipped": 0,
-      "total": 0
+      "total": 12,
+      "failures": [
+        {
+          "group": "$ref with $recursiveAnchor",
+          "test": "extra items allowed for inner arrays",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "$ref with $recursiveAnchor",
+          "test": "extra items disallowed for root",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 0,
+      "failed": 4,
       "skipped": 0,
-      "total": 0
+      "total": 4,
+      "failures": [
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "required",
@@ -307,16 +722,52 @@
     {
       "keyword": "unevaluatedItems",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "unevaluatedItems with $recursiveRef",
+          "test": "with no unevaluated items",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "unevaluatedItems with $recursiveRef",
+          "test": "with unevaluated items",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "unevaluatedProperties",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "unevaluatedProperties with $recursiveRef",
+          "test": "with no unevaluated properties",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "unevaluatedProperties with $recursiveRef",
+          "test": "with unevaluated properties",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "uniqueItems",
@@ -343,10 +794,10 @@
     }
   ],
   "summary": {
-    "passed": 857,
-    "failed": 2,
+    "passed": 858,
+    "failed": 57,
     "skipped": 0,
-    "total": 859,
-    "percentage": 99.76717112922002
+    "total": 915,
+    "percentage": 93.77049180327869
   }
 }
