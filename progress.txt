@@ -39,3 +39,14 @@ Started: Sun Jan 11 03:05:49 PM CET 2026
   - `$ref` failures are cached as `any` to avoid repeated throws
   - workspace packages resolve `@xschemadev/core` from built `dist`
 ---
+
+## 2026-01-11 - US-004
+- Reverted core parser to throw on unsupported keywords (after US-003 made it total)
+- Added throws for: unevaluatedItems, unevaluatedProperties+applicators, $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor
+- Simplified ParseIssue to only `ref_resolution_failed` (no more `unsupported_keyword`)
+- Files changed: `typescript/packages/core/src/parser/context.ts`, `typescript/packages/core/src/parser/index.ts`, `prd.jsonc`, `progress.txt`
+- **Learnings for future iterations:**
+  - US-003 made parsing total, US-004 intentionally re-adds throws for keywords with evaluation semantics
+  - ParseResult still exists: `{ node, issues }` where issues are only ref resolution failures now
+  - bundler (US-011) will enforce ref validation pre-adapter
+---

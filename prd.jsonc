@@ -50,7 +50,7 @@
 				"change core parse() to throw on $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor",
 				"Typecheck passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
