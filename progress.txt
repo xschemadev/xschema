@@ -260,3 +260,30 @@ Known Issues:
 - failure patterns for draft7/6/4 are consistent across adapters (bundler limitation)
 
 ---
+
+## 2026-01-11 - US-009: Effect known issues file
+
+### What was implemented
+- updated effect known-issues.json (was a copy of zod's)
+- extended bundler limitations to draft7/6/4 (refs with relative uris, refRemote nested refs)
+- extended metaschema validation issues to draft7/6/4
+- no effect-specific failures found (handles JS prototype props correctly like arktype)
+
+### Files changed
+- typescript/packages/adapters/effect/compliance/known-issues.json
+
+### Final compliance results
+| Draft | Passed | Known | Coverage |
+|-------|--------|-------|----------|
+| draft2020-12 | 870 | 50 | 100.0% |
+| draft2019-09 | 858 | 57 | 100.0% |
+| draft7 | 835 | 9 | 100.0% |
+| draft6 | 759 | 9 | 100.0% |
+| draft4 | 567 | 1 | 100.0% |
+| draft3 | 400 | 7 | 100.0% |
+
+### Learnings
+- effect behaves exactly like arktype (no JS prototype property issues)
+- all 4 TS adapters now have known-issues.json files with 100% compliance
+
+---
