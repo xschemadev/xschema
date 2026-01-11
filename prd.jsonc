@@ -11,7 +11,7 @@
 				"create `tasks/adapters-optimization/README.md` with: where discovery docs live, required discovery sections (baseline per draft + failing tests list), and the rule: after every discovery story, add 1–3 new one-iteration implementation stories into `prd.jsonc` directly after the discovery story, renumbering ids to stay sequential",
 				"Typecheck passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
