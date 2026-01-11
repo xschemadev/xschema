@@ -215,10 +215,20 @@ func parseConfigFile(path string) (*ConfigFile, error) {
 	// Derive namespace from filename or use explicit override
 	namespace := raw.Namespace
 	if namespace == "" {
-		// Use filename without extension
 		base := filepath.Base(path)
-		ext := filepath.Ext(base)
-		namespace = strings.TrimSuffix(base, ext)
+
+		// Support configs named like "user.xschema.json".
+		// In that case, the namespace should be "user", not "user.xschema".
+		switch {
+		case strings.HasSuffix(base, ".xschema.json"):
+			namespace = strings.TrimSuffix(base, ".xschema.json")
+		case strings.HasSuffix(base, ".xschema.jsonc"):
+			namespace = strings.TrimSuffix(base, ".xschema.jsonc")
+		default:
+			// Use filename without extension
+			ext := filepath.Ext(base)
+			namespace = strings.TrimSuffix(base, ext)
+		}
 	}
 
 	return &ConfigFile{

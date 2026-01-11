@@ -67,6 +67,40 @@ func TestParseConfigFile(t *testing.T) {
 	}
 }
 
+func TestParseConfigFileWithXSchemaSuffixNamespace(t *testing.T) {
+	// Create a temp directory with a test config file
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+		"schemas": [
+			{
+				"id": "User",
+				"sourceType": "url",
+				"source": "https://example.com/user.json",
+				"adapter": "zod"
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "user.xschema.json")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	config, err := parseConfigFile(configPath)
+	if err != nil {
+		t.Fatalf("parseConfigFile: %v", err)
+	}
+
+	if config == nil {
+		t.Fatal("expected config, got nil")
+	}
+	if config.Namespace != "user" {
+		t.Errorf("expected namespace 'user', got %q", config.Namespace)
+	}
+}
+
 func TestParseConfigFileWithNamespaceOverride(t *testing.T) {
 	tmpDir := t.TempDir()
 
