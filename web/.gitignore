@@ -20,4 +20,4 @@ node_modules
 # Generated at build time
 /public/schemas
 /content/docs/**/compliance.mdx
-/content/docs/compliance/known-issues.mdx
+/content/docs/compliance/unsupported-features.mdx

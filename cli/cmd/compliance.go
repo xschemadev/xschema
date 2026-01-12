@@ -208,8 +208,8 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		printTimingSummary(timing)
 	}
 
-	// Print known issues summary if any
-	printKnownIssuesSummary(report)
+	// Print unsupported features summary if any
+	printUnsupportedFeaturesSummary(report)
 
 	ui.Println()
 	ui.SuccessMsg(fmt.Sprintf("Compliance testing complete (%s)", ui.FormatDuration(time.Since(start))))
@@ -229,7 +229,7 @@ func formatDraftResult(summary compliance.DraftSummary) (status, coverage string
 		status = ui.Warning.Render("!")
 	}
 
-	// Format: X passed, Y failed, Z skipped, W known
+	// Format: X passed, Y failed, Z skipped, W unsupported
 	parts := []string{fmt.Sprintf("%d passed", summary.Passed)}
 	if summary.Failed > 0 {
 		parts = append(parts, fmt.Sprintf("%d failed", summary.Failed))
@@ -237,8 +237,8 @@ func formatDraftResult(summary compliance.DraftSummary) (status, coverage string
 	if summary.Skipped > 0 {
 		parts = append(parts, fmt.Sprintf("%d skipped", summary.Skipped))
 	}
-	if summary.KnownIssues.Count > 0 {
-		parts = append(parts, fmt.Sprintf("%d known", summary.KnownIssues.Count))
+	if summary.UnsupportedFeatures.Count > 0 {
+		parts = append(parts, fmt.Sprintf("%d unsupported", summary.UnsupportedFeatures.Count))
 	}
 	coverage = strings.Join(parts, ", ") + fmt.Sprintf(" (%.1f%%)", summary.Percentage)
 	return status, coverage
@@ -258,15 +258,15 @@ func printTimingSummary(timing *compliance.TimingSummary) {
 	ui.Printf("  Harness execution: %s\n", ui.FormatDuration(timing.HarnessExecution))
 }
 
-func printKnownIssuesSummary(report *compliance.ComplianceReport) {
+func printUnsupportedFeaturesSummary(report *compliance.ComplianceReport) {
 	if report == nil {
 		return
 	}
 
-	// Collect all known issues across drafts, grouped by reason
+	// Collect all unsupported features across drafts, grouped by reason
 	byReason := make(map[string]int)
 	for _, draft := range report.Drafts {
-		for _, item := range draft.Summary.KnownIssues.Items {
+		for _, item := range draft.Summary.UnsupportedFeatures.Items {
 			byReason[item.Reason]++
 		}
 	}
@@ -283,7 +283,7 @@ func printKnownIssuesSummary(report *compliance.ComplianceReport) {
 	sort.Strings(reasons)
 
 	ui.Println()
-	ui.Println(ui.Bold.Render("Known Issues:"))
+	ui.Println(ui.Bold.Render("Unsupported Features:"))
 	for _, reason := range reasons {
 		count := byReason[reason]
 		ui.Printf("  %d %s\n", count, reason)

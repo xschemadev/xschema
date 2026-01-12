@@ -83,30 +83,5 @@
       "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
       "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties"
     ]
-  },
-  {
-    "name": "metaschema-validation",
-    "reason": "Metaschema validation requires fetching schemas containing dynamic refs",
-    "tests": [
-      "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
-      "draft2020-12/defs/validate definition against metaschema/valid definition schema",
-      "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
-      "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
-      "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
-      "draft2019-09/defs/validate definition against metaschema/valid definition schema",
-      "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
-      "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
-      "draft7/definitions/validate definition against metaschema/invalid definition schema",
-      "draft6/definitions/validate definition against metaschema/invalid definition schema",
-      "draft4/definitions/validate definition against metaschema/invalid definition schema"
-    ]
-  },
-  {
-    "name": "vocabulary-control",
-    "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported",
-    "tests": [
-      "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-      "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates"
-    ]
   }
 ]

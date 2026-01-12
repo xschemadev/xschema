@@ -19,8 +19,8 @@ import (
 	"github.com/xschemadev/xschema/language"
 )
 
-//go:embed known-issues.json
-var knownIssuesData []byte
+//go:embed unsupported-features.json
+var unsupportedFeaturesData []byte
 
 // ProgressUpdate contains info about current test progress
 type ProgressUpdate struct {
@@ -51,14 +51,14 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
-// LoadKnownIssues loads known-issues from the embedded global known-issues.json
-func LoadKnownIssues() (KnownIssues, error) {
-	var issues KnownIssues
-	if err := json.Unmarshal(knownIssuesData, &issues); err != nil {
-		return nil, fmt.Errorf("failed to parse known-issues.json: %w", err)
+// LoadUnsupportedFeatures loads unsupported features from the embedded global unsupported-features.json
+func LoadUnsupportedFeatures() (UnsupportedFeatures, error) {
+	var features UnsupportedFeatures
+	if err := json.Unmarshal(unsupportedFeaturesData, &features); err != nil {
+		return nil, fmt.Errorf("failed to parse unsupported-features.json: %w", err)
 	}
 
-	return issues, nil
+	return features, nil
 }
 
 // Run executes compliance tests for an adapter
@@ -86,8 +86,8 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 		return nil, fmt.Errorf("adapter CLI not found at %s\nMake sure the adapter is built", adapterBin)
 	}
 
-	// Load known issues
-	knownIssues, err := LoadKnownIssues()
+	// Load unsupported features
+	unsupportedFeatures, err := LoadUnsupportedFeatures()
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			outputFunc:   opts.OutputFunc,
 			progressFunc: opts.ProgressFunc,
 			timing:       opts.Timing,
-			knownIssues:  knownIssues,
+			unsupportedFeatures: unsupportedFeatures,
 		})
 
 		if draftResult != nil {
@@ -167,8 +167,8 @@ type runDraftOptions struct {
 	jobs         int // parallel keyword processing (default 1)
 	outputFunc   func(string)
 	progressFunc func(ProgressUpdate)
-	timing       *TimingSummary
-	knownIssues  KnownIssues
+	timing              *TimingSummary
+	unsupportedFeatures UnsupportedFeatures
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -343,8 +343,8 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 			result.Summary.Failed += localSummary.Failed
 			result.Summary.Skipped += localSummary.Skipped
 			result.Summary.Total += localSummary.Total
-			result.Summary.KnownIssues.Count += localSummary.KnownIssues.Count
-			result.Summary.KnownIssues.Items = append(result.Summary.KnownIssues.Items, localSummary.KnownIssues.Items...)
+			result.Summary.UnsupportedFeatures.Count += localSummary.UnsupportedFeatures.Count
+			result.Summary.UnsupportedFeatures.Items = append(result.Summary.UnsupportedFeatures.Items, localSummary.UnsupportedFeatures.Items...)
 			mu.Unlock()
 		}()
 	}
@@ -379,7 +379,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	// Pre-filter: identify which tests are known issues and which groups can be skipped entirely
 	type groupFilter struct {
 		allKnown        bool
-		knownItems      []KnownIssueItem
+		unsupportedItems      []UnsupportedFeatureItem
 		filteredTests   []TestCase
 		filteredIndices []int
 	}
@@ -388,12 +388,12 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	for i, group := range groups {
 		var filteredTests []TestCase
 		var filteredIndices []int
-		var knownItems []KnownIssueItem
+		var unsupportedItems []UnsupportedFeatureItem
 
 		for j, tc := range group.Tests {
 			testPath := fmt.Sprintf("%s/%s/%s/%s", opts.draft, keywordResult.Keyword, group.Description, tc.Description)
-			if isKnown, reason := opts.knownIssues.Contains(testPath); isKnown {
-				knownItems = append(knownItems, KnownIssueItem{Path: testPath, Reason: reason})
+			if isUnsupported, reason := opts.unsupportedFeatures.Contains(testPath); isUnsupported {
+				unsupportedItems = append(unsupportedItems, UnsupportedFeatureItem{Path: testPath, Reason: reason})
 				continue
 			}
 			filteredTests = append(filteredTests, tc)
@@ -401,16 +401,16 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 
 		groupFilters[i] = groupFilter{
-			allKnown:        len(filteredTests) == 0 && len(knownItems) > 0,
-			knownItems:      knownItems,
+			allKnown:        len(filteredTests) == 0 && len(unsupportedItems) > 0,
+			unsupportedItems:      unsupportedItems,
 			filteredTests:   filteredTests,
 			filteredIndices: filteredIndices,
 		}
 
 		// Add known issues for groups we're skipping entirely
 		if groupFilters[i].allKnown {
-			summary.KnownIssues.Count += len(knownItems)
-			summary.KnownIssues.Items = append(summary.KnownIssues.Items, knownItems...)
+			summary.UnsupportedFeatures.Count += len(unsupportedItems)
+			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, unsupportedItems...)
 		}
 	}
 
@@ -503,9 +503,9 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		gf := groupFilters[i]
 
 		// Add known issues for this group (mixed groups with some known, some not)
-		if len(gf.knownItems) > 0 && !gf.allKnown {
-			summary.KnownIssues.Count += len(gf.knownItems)
-			summary.KnownIssues.Items = append(summary.KnownIssues.Items, gf.knownItems...)
+		if len(gf.unsupportedItems) > 0 && !gf.allKnown {
+			summary.UnsupportedFeatures.Count += len(gf.unsupportedItems)
+			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, gf.unsupportedItems...)
 		}
 
 		// Skip if no tests remain after filtering

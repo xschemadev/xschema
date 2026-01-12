@@ -29,8 +29,8 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 
 	// Summary table
 	sb.WriteString("## Summary\n\n")
-	sb.WriteString("| Draft | Passed | Failed | Skipped | Known | Coverage |\n")
-	sb.WriteString("| ----- | ------ | ------ | ------- | ----- | -------- |\n")
+	sb.WriteString("| Draft | Passed | Failed | Skipped | Unsupported | Coverage |\n")
+	sb.WriteString("| ----- | ------ | ------ | ------- | ----------- | -------- |\n")
 
 	for _, draft := range sortedReport.Drafts {
 		coverage := "N/A (type-only)"
@@ -42,7 +42,7 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 			draft.Summary.Passed,
 			draft.Summary.Failed,
 			draft.Summary.Skipped,
-			draft.Summary.KnownIssues.Count,
+			draft.Summary.UnsupportedFeatures.Count,
 			coverage)
 	}
 	sb.WriteString("\n")
@@ -70,12 +70,12 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		}
 		sb.WriteString("\n")
 
-		// Known Behaviors section (grouped by reason)
-		if draft.Summary.KnownIssues.Count > 0 {
-			sb.WriteString("### Known Behaviors\n\n")
+		// Unsupported Features section (grouped by reason)
+		if draft.Summary.UnsupportedFeatures.Count > 0 {
+			sb.WriteString("### Unsupported Features\n\n")
 			sb.WriteString("These tests are intentionally excluded due to documented limitations.\n\n")
 
-			byReason := groupKnownIssuesByReason(draft.Summary.KnownIssues.Items)
+			byReason := groupUnsupportedFeaturesByReason(draft.Summary.UnsupportedFeatures.Items)
 			for _, group := range byReason {
 				fmt.Fprintf(&sb, "<details>\n<summary>%s (%d test%s)</summary>\n\n",
 					group.Reason, len(group.Tests), pluralize(len(group.Tests)))
@@ -227,14 +227,14 @@ func pluralize(n int) string {
 	return "s"
 }
 
-// reasonGroup holds known issue paths grouped by reason
+// reasonGroup holds unsupported feature paths grouped by reason
 type reasonGroup struct {
 	Reason string
 	Tests  []string
 }
 
-// groupKnownIssuesByReason groups known issue items by their reason
-func groupKnownIssuesByReason(items []KnownIssueItem) []reasonGroup {
+// groupUnsupportedFeaturesByReason groups unsupported feature items by their reason
+func groupUnsupportedFeaturesByReason(items []UnsupportedFeatureItem) []reasonGroup {
 	byReason := make(map[string][]string)
 	var order []string
 

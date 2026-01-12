@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 /**
- * Known Issues MDX Generation Script
+ * Unsupported Features MDX Generation Script
  *
- * Generates the known-issues.mdx page from cli/compliance/known-issues.json.
+ * Generates the unsupported-features.mdx page from cli/compliance/unsupported-features.json.
  * Each limitation group is displayed as an accordion with:
  * - Header: name and count of affected tests
  * - Body: reason explanation and list of test names
  *
- * Output: content/docs/compliance/known-issues.mdx
+ * Output: content/docs/compliance/unsupported-features.mdx
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -15,24 +15,24 @@ import { dirname, join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 const CONTENT_DIR = join(import.meta.dirname, "..", "content", "docs");
-const KNOWN_ISSUES_PATH = join(REPO_ROOT, "cli", "compliance", "known-issues.json");
+const UNSUPPORTED_FEATURES_PATH = join(REPO_ROOT, "cli", "compliance", "unsupported-features.json");
 
-interface KnownIssueGroup {
+interface UnsupportedFeatureGroup {
   name: string;
   reason: string;
   tests: string[];
 }
 
-function loadKnownIssues(): KnownIssueGroup[] {
-  if (!existsSync(KNOWN_ISSUES_PATH)) {
+function loadUnsupportedFeatures(): UnsupportedFeatureGroup[] {
+  if (!existsSync(UNSUPPORTED_FEATURES_PATH)) {
     throw new Error(
-      `Known issues file not found at: ${KNOWN_ISSUES_PATH}\n` +
-        "Ensure cli/compliance/known-issues.json exists.",
+      `Unsupported features file not found at: ${UNSUPPORTED_FEATURES_PATH}\n` +
+        "Ensure cli/compliance/unsupported-features.json exists.",
     );
   }
 
-  const content = readFileSync(KNOWN_ISSUES_PATH, "utf-8");
-  return JSON.parse(content) as KnownIssueGroup[];
+  const content = readFileSync(UNSUPPORTED_FEATURES_PATH, "utf-8");
+  return JSON.parse(content) as UnsupportedFeatureGroup[];
 }
 
 /**
@@ -42,12 +42,12 @@ function escapeMdx(str: string): string {
   return str.replace(/\{/g, "\\{").replace(/\}/g, "\\}");
 }
 
-function generateKnownIssuesMdx(groups: KnownIssueGroup[]): string {
+function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): string {
   const lines: string[] = [];
 
   // Frontmatter
   lines.push("---");
-  lines.push("title: Known Issues");
+  lines.push("title: Unsupported Features");
   lines.push(
     "description: Fundamental limitations of static JSON Schema code generation",
   );
@@ -122,17 +122,17 @@ function writeMdx(path: string, content: string): void {
 }
 
 function main(): void {
-  console.log("Loading known issues from CLI...");
-  const groups = loadKnownIssues();
+  console.log("Loading unsupported features from CLI...");
+  const groups = loadUnsupportedFeatures();
   console.log(`  Found ${groups.length} limitation group(s)`);
 
-  console.log("\nGenerating known-issues MDX...");
-  const mdxContent = generateKnownIssuesMdx(groups);
-  const outputPath = join(CONTENT_DIR, "compliance", "known-issues.mdx");
+  console.log("\nGenerating unsupported-features MDX...");
+  const mdxContent = generateUnsupportedFeaturesMdx(groups);
+  const outputPath = join(CONTENT_DIR, "compliance", "unsupported-features.mdx");
   writeMdx(outputPath, mdxContent);
   console.log(`  Created: ${outputPath}`);
 
-  console.log("\nKnown issues MDX generation complete!");
+  console.log("\nUnsupported features MDX generation complete!");
 }
 
 main();

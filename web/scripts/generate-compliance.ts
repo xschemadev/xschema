@@ -52,7 +52,7 @@ interface DraftResult {
     skipped: number;
     total: number;
     percentage: number;
-    knownIssues?: {
+    unsupportedFeatures?: {
       count: number;
     };
   };
@@ -341,27 +341,27 @@ function generateComplianceMdx(info: AdapterInfo): string {
   lines.push("## Summary");
   lines.push("");
 
-  // Check if any draft has known issues to decide on table format
-  const hasKnownIssues = info.drafts.some(
-    (d) => d.summary.knownIssues && d.summary.knownIssues.count > 0,
+  // Check if any draft has unsupported features to decide on table format
+  const hasUnsupportedFeatures = info.drafts.some(
+    (d) => d.summary.unsupportedFeatures && d.summary.unsupportedFeatures.count > 0,
   );
 
-  if (hasKnownIssues) {
-    lines.push("| Draft | Passed | Failed | Known | Coverage |");
-    lines.push("| ----- | ------ | ------ | ----- | -------- |");
+  if (hasUnsupportedFeatures) {
+    lines.push("| Draft | Passed | Failed | Unsupported | Coverage |");
+    lines.push("| ----- | ------ | ------ | ----------- | -------- |");
   } else {
     lines.push("| Draft | Passed | Failed | Coverage |");
     lines.push("| ----- | ------ | ------ | -------- |");
   }
 
   for (const draft of info.drafts) {
-    const { passed, failed, percentage, knownIssues } = draft.summary;
-    const knownCount = knownIssues?.count ?? 0;
+    const { passed, failed, percentage, unsupportedFeatures } = draft.summary;
+    const unsupportedCount = unsupportedFeatures?.count ?? 0;
     const coverageEmoji =
       percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
-    if (hasKnownIssues) {
+    if (hasUnsupportedFeatures) {
       lines.push(
-        `| ${draft.draft} | ${passed} | ${failed} | ${knownCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+        `| ${draft.draft} | ${passed} | ${failed} | ${unsupportedCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
       );
     } else {
       lines.push(
@@ -475,12 +475,12 @@ function generateComplianceMdx(info: AdapterInfo): string {
     lines.push("");
   }
 
-  // Link to global known issues
-  lines.push("## Known Limitations");
+  // Link to global unsupported features
+  lines.push("## Unsupported Features");
   lines.push("");
   lines.push(
     "Some tests are excluded from compliance percentages due to fundamental limitations " +
-      "of static code generation. See [Known Issues](/docs/compliance/known-issues) for details.",
+      "of static code generation. See [Unsupported Features](/docs/compliance/unsupported-features) for details.",
   );
   lines.push("");
 

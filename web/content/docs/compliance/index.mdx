@@ -27,11 +27,11 @@ Unlike runtime validators that interpret schemas on-the-fly, XSchema generates s
 - **Performance**: No schema parsing at runtime
 - **Bundle size**: Only include the validation code you need
 
-However, static generation cannot support certain dynamic JSON Schema features that require runtime evaluation. See [Known Issues](/docs/compliance/known-issues) for these limitations.
+However, static generation cannot support certain dynamic JSON Schema features that require runtime evaluation. See [Unsupported Features](/docs/compliance/unsupported-features) for these limitations.
 
 ## Adapter compliance
 
-Each adapter is tested across multiple JSON Schema drafts. Coverage percentages exclude known issues that are fundamental to static generation.
+Each adapter is tested across multiple JSON Schema drafts. Coverage percentages exclude unsupported features that are fundamental to static generation.
 
 <Cards>
   <Card title="Zod" href="/docs/typescript/adapters/zod/compliance" />
@@ -48,7 +48,7 @@ Each adapter's compliance report shows:
 | ---- | ------- |
 | **Passed** | Tests where the generated validator produces correct results |
 | **Failed** | Tests with unexpected behavior (potential bugs) |
-| **Known** | Tests excluded due to fundamental limitations |
-| **Coverage** | Pass rate excluding known issues |
+| **Unsupported** | Tests excluded due to fundamental limitations |
+| **Coverage** | Pass rate excluding unsupported features |
 
 A coverage of 98%+ means the adapter handles nearly all practical JSON Schema use cases correctly.
