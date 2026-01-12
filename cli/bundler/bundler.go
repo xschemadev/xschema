@@ -356,9 +356,9 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			return nil, fmt.Errorf("failed to bundle schema from %q: %w", resolvedURI, err)
 		}
 
-		// Rewrite internal refs in the bundled schema
+		// Flatten nested $defs/definitions and rewrite internal refs
 		key := b.uriToKey(resolvedURI)
-		bundled = b.rewriteInternalRefs(bundled, key)
+		bundled = b.flattenDefs(bundled, key)
 
 		// Cache and add to defs
 		b.cache[resolvedURI] = bundled
@@ -368,13 +368,156 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	// Rewrite the ref to point to $defs
 	key := b.uriToKey(resolvedURI)
 	localRef := "#/$defs/" + key
+
+	// If fragment points to $defs/X or definitions/X, rewrite to flattened location
 	if fragment != "" {
-		localRef += fragment
+		if defName, ok := parseDefFragment(fragment); ok {
+			// Fragment points to a definition - rewrite to flattened key
+			localRef = "#/$defs/" + key + "__" + defName
+			ui.Verbosef("bundler: rewriting def fragment %s → %s", fragment, localRef)
+		} else {
+			// Not a definition fragment - append the path to the embedded schema
+			localRef += fragment
+		}
 	}
 
 	result := copyObject(obj)
 	result["$ref"] = localRef
 	return result, nil
+}
+
+// parseDefFragment checks if a fragment points to a definition and returns the def name.
+// It handles patterns like /$defs/Name, /definitions/Name, etc.
+func parseDefFragment(fragment string) (string, bool) {
+	// Try /$defs/Name pattern
+	if strings.HasPrefix(fragment, "/$defs/") {
+		rest := fragment[len("/$defs/"):]
+		// Extract just the definition name (stop at next / if any)
+		if idx := strings.Index(rest, "/"); idx >= 0 {
+			return rest[:idx], true
+		}
+		return rest, true
+	}
+	// Try /definitions/Name pattern
+	if strings.HasPrefix(fragment, "/definitions/") {
+		rest := fragment[len("/definitions/"):]
+		if idx := strings.Index(rest, "/"); idx >= 0 {
+			return rest[:idx], true
+		}
+		return rest, true
+	}
+	return "", false
+}
+
+// flattenDefs extracts $defs/definitions from an embedded schema and adds them
+// to bctx.defs with prefixed keys. It rewrites refs in both the embedded schema
+// and extracted defs to point to the flattened locations.
+func (b *bundleContext) flattenDefs(node any, parentKey string) any {
+	obj, ok := node.(map[string]any)
+	if !ok {
+		return node
+	}
+
+	// Look for $defs or definitions in the embedded schema
+	var defsKey string
+	var defs map[string]any
+	if d, ok := obj["$defs"].(map[string]any); ok {
+		defsKey = "$defs"
+		defs = d
+	} else if d, ok := obj["definitions"].(map[string]any); ok {
+		defsKey = "definitions"
+		defs = d
+	}
+
+	if defs == nil {
+		// No nested defs, still need to rewrite refs for the parent key
+		return b.rewriteInternalRefs(node, parentKey)
+	}
+
+	// Build the ref rewrite map: #/$defs/X or #/definitions/X → #/$defs/parentKey__X
+	refRewrites := make(map[string]string)
+	for defName := range defs {
+		oldRef := "#/" + defsKey + "/" + defName
+		newKey := parentKey + "__" + defName
+		newRef := "#/$defs/" + newKey
+		refRewrites[oldRef] = newRef
+	}
+
+	// Extract and flatten each definition
+	for defName, defSchema := range defs {
+		newKey := parentKey + "__" + defName
+		// Recursively flatten (in case nested defs have their own $defs)
+		flattened := b.flattenDefs(defSchema, newKey)
+		// Rewrite refs in the flattened schema using our rewrite map
+		rewritten := b.rewriteNestedRefs(flattened, refRewrites, parentKey)
+		b.defs[newKey] = rewritten
+		ui.Verbosef("bundler: flattened %s/%s → $defs/%s", defsKey, defName, newKey)
+	}
+
+	// Remove $defs/definitions from the embedded schema
+	result := make(map[string]any, len(obj)-1)
+	for k, v := range obj {
+		if k == "$defs" || k == "definitions" {
+			continue
+		}
+		result[k] = v
+	}
+
+	// Rewrite refs in the embedded schema (now without $defs/definitions)
+	// First apply nested ref rewrites, then the parent key rewrites
+	rewritten := b.rewriteNestedRefs(result, refRewrites, parentKey)
+	return rewritten
+}
+
+// rewriteNestedRefs rewrites refs according to a rewrite map, and also handles
+// root-relative refs that should point to the parent def
+func (b *bundleContext) rewriteNestedRefs(node any, rewrites map[string]string, parentKey string) any {
+	switch v := node.(type) {
+	case map[string]any:
+		result := make(map[string]any, len(v))
+		for k, val := range v {
+			if k == "$ref" {
+				if ref, ok := val.(string); ok {
+					// Check for exact matches in rewrite map
+					if newRef, ok := rewrites[ref]; ok {
+						result[k] = newRef
+						continue
+					}
+					// Check for refs with sub-paths (e.g., #/$defs/X/properties/foo)
+					for oldPrefix, newPrefix := range rewrites {
+						if strings.HasPrefix(ref, oldPrefix+"/") {
+							suffix := ref[len(oldPrefix):]
+							result[k] = newPrefix + suffix
+							continue
+						}
+					}
+					// Handle root refs
+					if ref == "#" {
+						result[k] = "#/$defs/" + parentKey
+						continue
+					}
+					// Handle other root-relative refs (not in rewrites)
+					if strings.HasPrefix(ref, "#/") {
+						// Check if this is a ref to $defs or definitions that we already handled
+						if !strings.HasPrefix(ref, "#/$defs/") && !strings.HasPrefix(ref, "#/definitions/") {
+							result[k] = "#/$defs/" + parentKey + ref[1:]
+							continue
+						}
+					}
+				}
+			}
+			result[k] = b.rewriteNestedRefs(val, rewrites, parentKey)
+		}
+		return result
+	case []any:
+		result := make([]any, len(v))
+		for i, val := range v {
+			result[i] = b.rewriteNestedRefs(val, rewrites, parentKey)
+		}
+		return result
+	default:
+		return node
+	}
 }
 
 // rewriteInternalRefs rewrites root-relative refs (e.g., #/definitions/Foo)

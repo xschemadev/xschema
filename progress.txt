@@ -1,7 +1,13 @@
 # Ralph Progress Log
 Started: Mon Jan 12 02:12:14 AM CET 2026
----
 
+## Codebase Patterns
+
+- **Bundler architecture**: processNode → processObject → processRef for external refs. After fetching a remote schema, flattenDefs() extracts nested $defs/definitions and adds them to bctx.defs with prefixed keys.
+- **Def flattening**: Nested definitions are flattened using `__` separator (e.g., `remote__Address`). Both internal refs and external fragment refs are rewritten to the flattened location.
+- **Ref rewriting flow**: flattenDefs → rewriteNestedRefs (for flattened defs) + parseDefFragment (for external fragments pointing to defs)
+
+---
 ## 2026-01-12 - US-001
 - Implemented metaschema bundling skip
 - Files changed: cli/bundler/bundler.go
@@ -9,4 +15,18 @@ Started: Mon Jan 12 02:12:14 AM CET 2026
   - Metaschema URLs follow pattern: http(s)://json-schema.org/draft-*/... or https://json-schema.org/draft/*/...
   - Metaschemas use $recursiveAnchor which is in forbiddenKeywords - this is why they fail
   - Simple approach: detect early in processRef() and return obj unchanged
+---
+
+## 2026-01-12 - US-002 & US-004
+- Implemented nested definition flattening and fragment ref rewriting
+- Files changed: cli/bundler/bundler.go, cli/bundler/bundler_test.go
+- **What was implemented:**
+  - `flattenDefs()` - extracts $defs/definitions from embedded schemas, prefixes keys with parent key using `__`
+  - `rewriteNestedRefs()` - rewrites refs in flattened defs to point to new locations
+  - `parseDefFragment()` - detects `/definitions/X` or `/$defs/X` fragments and extracts the def name
+  - Fragment refs like `foo.json#/definitions/Bar` now rewritten to `#/$defs/foo_key__Bar`
+- **Learnings:**
+  - US-002 and US-004 are tightly coupled - can't flatten defs without also fixing fragment refs
+  - Tests needed updating to expect flattened structure instead of nested paths
+  - Recursive flattening handles defs with their own nested defs
 ---

@@ -27,7 +27,7 @@
         "Add extracted defs to bctx.defs with prefixed keys",
         "go build ./... passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -53,8 +53,8 @@
         "Non-definition fragments still work (e.g., #/properties/foo → #/$defs/key/properties/foo)",
         "go build ./... passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented as part of US-002 since tightly coupled"
     },
     {
       "id": "US-005",

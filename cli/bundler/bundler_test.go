@@ -143,14 +143,27 @@ func TestBundleFragmentRef(t *testing.T) {
 		t.Fatalf("failed to parse result: %v", err)
 	}
 
-	// The ref should include the fragment
+	// The ref should point to the flattened definition
 	props := result["properties"].(map[string]any)
 	addressProp := props["address"].(map[string]any)
 	ref := addressProp["$ref"].(string)
 
-	// Should be something like #/$defs/key/definitions/Address
-	if !strings.Contains(ref, "/definitions/Address") {
-		t.Errorf("expected ref to contain /definitions/Address, got %s", ref)
+	// Definitions are flattened: #/$defs/key__Address (not #/$defs/key/definitions/Address)
+	if !strings.Contains(ref, "__Address") {
+		t.Errorf("expected ref to contain flattened __Address, got %s", ref)
+	}
+
+	// Verify the flattened definition exists in $defs
+	defs := result["$defs"].(map[string]any)
+	var foundFlattenedAddress bool
+	for key := range defs {
+		if strings.HasSuffix(key, "__Address") {
+			foundFlattenedAddress = true
+			break
+		}
+	}
+	if !foundFlattenedAddress {
+		t.Error("expected flattened Address definition in $defs")
 	}
 }
 
@@ -226,23 +239,40 @@ func TestBundleInternalRefRewriting(t *testing.T) {
 		t.Fatalf("failed to parse result: %v", err)
 	}
 
-	// The internal refs in the embedded schema should be rewritten
+	// The internal refs in the embedded schema should be rewritten to flattened location
 	defs := result["$defs"].(map[string]any)
-	for _, def := range defs {
+
+	// With flattening, the Address definition should be at $defs/key__Address
+	// and the ref in the user schema should point there
+	var foundUserSchema bool
+	for key, def := range defs {
 		defObj := def.(map[string]any)
 		if props, ok := defObj["properties"].(map[string]any); ok {
 			if addr, ok := props["address"].(map[string]any); ok {
+				foundUserSchema = true
 				ref := addr["$ref"].(string)
 				// The internal ref #/definitions/Address should be rewritten
-				// to #/$defs/key/definitions/Address
+				// to #/$defs/key__Address (flattened)
 				if !strings.HasPrefix(ref, "#/$defs/") {
 					t.Errorf("internal ref should be rewritten, got %s", ref)
 				}
-				if !strings.Contains(ref, "/definitions/Address") {
-					t.Errorf("internal ref should preserve path, got %s", ref)
+				if !strings.Contains(ref, "__Address") {
+					t.Errorf("internal ref should point to flattened Address, got %s", ref)
+				}
+				// The flattened key should exist
+				expectedDefKey := key + "__Address"
+				if _, ok := defs[expectedDefKey]; !ok {
+					// The ref might use a different key format, just check it exists
+					refKey := strings.TrimPrefix(ref, "#/$defs/")
+					if _, ok := defs[refKey]; !ok {
+						t.Errorf("flattened Address def should exist, ref points to %s", refKey)
+					}
 				}
 			}
 		}
+	}
+	if !foundUserSchema {
+		t.Error("embedded user schema not found in $defs")
 	}
 }
 
