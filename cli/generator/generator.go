@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/bundler"
@@ -92,8 +93,17 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 	for i, s := range input.Schemas {
 		schema := s.Schema
 		if s.SourceURI != "" {
-			bundled, err := bundler.Bundle(ctx, s.Schema, bundler.Options{
-				BaseURI: s.SourceURI,
+			// Create a fetcher that uses retriever for HTTP/file fetching
+			fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
+				if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
+					return retriever.RetrieveFromURL(ctx, uri, retriever.DefaultOptions())
+				}
+				return retriever.RetrieveFromFilePath(ctx, uri)
+			})
+			bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
+				Schema:    s.Schema,
+				SourceURI: s.SourceURI,
+				Fetcher:   fetcher,
 			})
 			if err != nil {
 				ui.Verbosef("failed to bundle schema %s: %v", s.Key(), err)

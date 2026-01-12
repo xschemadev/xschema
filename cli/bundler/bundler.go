@@ -10,35 +10,38 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
 
-	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 )
+
+// Fetcher retrieves schemas by URI. Implementations may fetch from network, filesystem, or cache.
+type Fetcher interface {
+	Fetch(uri string) (json.RawMessage, error)
+}
+
+// BundleInput contains all inputs needed to bundle a schema.
+type BundleInput struct {
+	Schema    json.RawMessage // the schema to bundle
+	SourceURI string          // base URI for resolving relative refs (empty if schema has no source)
+	Fetcher   Fetcher         // fetcher for external refs (nil means external refs will error)
+	Draft     string          // JSON Schema draft for $schema injection if missing
+}
+
+// FetchFunc is an adapter to allow ordinary functions to be used as Fetchers.
+type FetchFunc func(uri string) (json.RawMessage, error)
+
+// Fetch implements the Fetcher interface.
+func (f FetchFunc) Fetch(uri string) (json.RawMessage, error) {
+	return f(uri)
+}
 
 // keyInvalidChars matches characters not allowed in $defs keys
 var keyInvalidChars = regexp.MustCompile(`[^a-zA-Z0-9_]`)
 
-// Options configures bundling behavior
-type Options struct {
-	BaseURI     string        // base URI for resolving relative refs
-	RemotesPath string        // path to remotes/ folder for localhost:1234 mapping
-	HTTPTimeout time.Duration // timeout for HTTP requests
-	Retries     int           // number of retries for HTTP requests
-	Draft       string        // JSON Schema draft (e.g., "draft4", "draft7") for $schema injection
-}
-
-// DefaultOptions returns sensible defaults
-func DefaultOptions() Options {
-	return Options{
-		HTTPTimeout: 30 * time.Second,
-		Retries:     3,
-	}
-}
-
 // bundleContext holds state during bundling
 type bundleContext struct {
-	opts       Options
+	sourceURI  string            // base URI for resolving relative refs
+	fetcher    Fetcher           // fetcher for external schemas (nil = no external refs allowed)
 	cache      map[string]any    // normalized URI → parsed schema (to avoid refetching)
 	defs       map[string]any    // key → embedded schema (collected $defs)
 	processing map[string]bool   // URIs currently being processed (circular ref detection)
@@ -58,18 +61,18 @@ var draftToSchemaURI = map[string]string{
 }
 
 // Bundle resolves all external $refs in a schema, returning a self-contained schema.
-// External refs are fetched, bundled recursively, and embedded in $defs.
-func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.RawMessage, error) {
+// External refs are fetched via the Fetcher, bundled recursively, and embedded in $defs.
+func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 	var parsed any
-	if err := json.Unmarshal(schema, &parsed); err != nil {
+	if err := json.Unmarshal(input.Schema, &parsed); err != nil {
 		return nil, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
 	// Inject $schema if missing and draft is specified
-	if opts.Draft != "" {
+	if input.Draft != "" {
 		if obj, ok := parsed.(map[string]any); ok {
 			if _, hasSchema := obj["$schema"]; !hasSchema {
-				if schemaURI, known := draftToSchemaURI[opts.Draft]; known {
+				if schemaURI, known := draftToSchemaURI[input.Draft]; known {
 					obj["$schema"] = schemaURI
 				}
 			}
@@ -77,7 +80,8 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 	}
 
 	bctx := &bundleContext{
-		opts:       opts,
+		sourceURI:  input.SourceURI,
+		fetcher:    input.Fetcher,
 		cache:      make(map[string]any),
 		defs:       make(map[string]any),
 		processing: make(map[string]bool),
@@ -87,9 +91,9 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 	}
 
 	// First pass: collect all $id and $anchor declarations in the schema
-	bctx.collectIDsAndAnchors(parsed, opts.BaseURI, "", "")
+	bctx.collectIDsAndAnchors(parsed, input.SourceURI, "", "")
 
-	result, err := bctx.processNode(parsed, opts.BaseURI, "")
+	result, err := bctx.processNode(parsed, input.SourceURI, "")
 	if err != nil {
 		return nil, err
 	}
@@ -701,26 +705,12 @@ func (b *bundleContext) rewriteInternalRefs(node any, defsKey string) any {
 	}
 }
 
-// fetch retrieves a schema from a URI, handling localhost mapping
+// fetch retrieves a schema from a URI using the configured Fetcher
 func (b *bundleContext) fetch(uri string) (json.RawMessage, error) {
-	// Handle localhost:1234 mapping for JSON Schema Test Suite
-	if b.opts.RemotesPath != "" && strings.HasPrefix(uri, "http://localhost:1234/") {
-		localPath := filepath.Join(b.opts.RemotesPath, strings.TrimPrefix(uri, "http://localhost:1234/"))
-		ui.Verbosef("bundler: mapping localhost URL to local file: %s → %s", uri, localPath)
-		return retriever.RetrieveFromFilePath(b.ctx, localPath, b.opts.Draft)
+	if b.fetcher == nil {
+		return nil, fmt.Errorf("no fetcher configured: cannot fetch %q", uri)
 	}
-
-	// Check if it's a file path or URL
-	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
-		opts := retriever.Options{
-			HTTPTimeout: b.opts.HTTPTimeout,
-			Retries:     b.opts.Retries,
-		}
-		return retriever.RetrieveFromURL(b.ctx, uri, opts, b.opts.Draft)
-	}
-
-	// Assume it's a file path
-	return retriever.RetrieveFromFilePath(b.ctx, uri, b.opts.Draft)
+	return b.fetcher.Fetch(uri)
 }
 
 // uriToKey converts a URI to a valid $defs key

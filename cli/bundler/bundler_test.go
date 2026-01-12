@@ -25,11 +25,33 @@ func readTestFile(t *testing.T, name string) json.RawMessage {
 	return json.RawMessage(data)
 }
 
+// testFileFetcher creates a fetcher that reads files relative to the testdata directory
+// and also maps localhost:1234 URLs to the remotes/ subdirectory
+func testFileFetcher() Fetcher {
+	return FetchFunc(func(uri string) (json.RawMessage, error) {
+		// Handle localhost:1234 URLs (for JSON Schema Test Suite compatibility)
+		if strings.HasPrefix(uri, "http://localhost:1234/") {
+			localPath := filepath.Join(testdataPath("remotes"), strings.TrimPrefix(uri, "http://localhost:1234/"))
+			data, err := os.ReadFile(localPath)
+			if err != nil {
+				return nil, err
+			}
+			return json.RawMessage(data), nil
+		}
+		// Otherwise read from filesystem
+		data, err := os.ReadFile(uri)
+		if err != nil {
+			return nil, err
+		}
+		return json.RawMessage(data), nil
+	})
+}
+
 func TestBundleSimpleSchema(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "simple.json")
 
-	bundled, err := Bundle(ctx, schema, DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: schema})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -54,7 +76,7 @@ func TestBundleLocalRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "local-ref.json")
 
-	bundled, err := Bundle(ctx, schema, DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: schema})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -76,11 +98,11 @@ func TestBundleFileRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-file-ref.json")
 
-	opts := Options{
-		BaseURI: testdataPath("with-file-ref.json"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-file-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -129,11 +151,11 @@ func TestBundleFragmentRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-fragment-ref.json")
 
-	opts := Options{
-		BaseURI: testdataPath("with-fragment-ref.json"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-fragment-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -171,12 +193,11 @@ func TestBundleLocalhostMapping(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-localhost-ref.json")
 
-	opts := Options{
-		BaseURI:     testdataPath("with-localhost-ref.json"),
-		RemotesPath: testdataPath("remotes"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-localhost-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -225,11 +246,11 @@ func TestBundleInternalRefRewriting(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schemaWithInternalRefs), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schemaWithInternalRefs),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -280,11 +301,11 @@ func TestBundleMissingFile(t *testing.T) {
 	ctx := context.Background()
 	schema := `{"$ref": "nonexistent.json"}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	_, err := Bundle(ctx, json.RawMessage(schema), opts)
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err == nil {
 		t.Error("expected error for missing file")
 	}
@@ -294,7 +315,7 @@ func TestBundleInvalidJSON(t *testing.T) {
 	ctx := context.Background()
 	schema := `{not valid json}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for invalid JSON")
 	}
@@ -305,11 +326,17 @@ func TestBundleContextCancellation(t *testing.T) {
 	cancel() // Cancel immediately
 
 	schema := `{"$ref": "http://example.com/schema.json"}`
-	opts := Options{
-		BaseURI: "http://example.com/base.json",
-	}
 
-	_, err := Bundle(ctx, json.RawMessage(schema), opts)
+	// Create a fetcher that checks for context cancellation
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return nil, ctx.Err()
+	})
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
 	if err == nil {
 		t.Error("expected error for cancelled context")
 	}
@@ -414,11 +441,11 @@ func TestBundlePreservesExistingDefs(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -449,7 +476,7 @@ func TestBundleRejectsMissingInternalRef(t *testing.T) {
 		}
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for missing internal ref")
 	}
@@ -465,7 +492,7 @@ func TestBundleRejectsDynamicRef(t *testing.T) {
 		"$dynamicRef": "#foo"
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for $dynamicRef")
 	}
@@ -481,7 +508,7 @@ func TestBundleRejectsDynamicAnchor(t *testing.T) {
 		"$dynamicAnchor": "foo"
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for $dynamicAnchor")
 	}
@@ -497,7 +524,7 @@ func TestBundleRejectsRecursiveRef(t *testing.T) {
 		"$recursiveRef": "#"
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for $recursiveRef")
 	}
@@ -513,7 +540,7 @@ func TestBundleRejectsRecursiveAnchor(t *testing.T) {
 		"$recursiveAnchor": true
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for $recursiveAnchor")
 	}
@@ -531,8 +558,8 @@ func TestBundleRejectsExternalRefWithoutBaseURI(t *testing.T) {
 		}
 	}`
 
-	// No BaseURI set
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	// No SourceURI and no Fetcher - external ref should error
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for external ref without base URI")
 	}
@@ -543,7 +570,7 @@ func TestBundleRejectsExternalRefWithoutBaseURI(t *testing.T) {
 
 func TestBundleAllowsAbsoluteExternalRefWithoutBaseURI(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel() // Cancel immediately so we don't actually fetch
+	cancel() // Cancel immediately
 
 	schema := `{
 		"type": "object",
@@ -552,8 +579,14 @@ func TestBundleAllowsAbsoluteExternalRefWithoutBaseURI(t *testing.T) {
 		}
 	}`
 
-	// No BaseURI set but ref is absolute
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	// No SourceURI but ref is absolute - needs a fetcher though
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return nil, ctx.Err()
+	})
+	_, err := Bundle(ctx, BundleInput{
+		Schema:  json.RawMessage(schema),
+		Fetcher: fetcher,
+	})
 	// Should fail with fetch error (context cancelled), not base URI error
 	if err == nil {
 		t.Error("expected error (context cancelled)")
@@ -619,9 +652,11 @@ func TestBundleInjectsSchemaForDraft(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.draft, func(t *testing.T) {
 			schema := `{"type": "string"}`
-			opts := Options{Draft: tt.draft}
 
-			bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+			bundled, err := Bundle(ctx, BundleInput{
+				Schema: json.RawMessage(schema),
+				Draft:  tt.draft,
+			})
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -647,9 +682,11 @@ func TestBundlePreservesExistingSchema(t *testing.T) {
 
 	// Schema already has $schema - should NOT be overwritten
 	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
-	opts := Options{Draft: "draft4"} // trying to inject draft4
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema: json.RawMessage(schema),
+		Draft:  "draft4", // trying to inject draft4
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -671,9 +708,8 @@ func TestBundleNoDraftNoInjection(t *testing.T) {
 
 	// No draft specified - should not inject $schema
 	schema := `{"type": "string"}`
-	opts := DefaultOptions() // no Draft set
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -746,7 +782,7 @@ func TestBundleAnchorRef(t *testing.T) {
 		}
 	}`
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -784,7 +820,7 @@ func TestBundleNestedAnchorRef(t *testing.T) {
 		}
 	}`
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -811,7 +847,7 @@ func TestBundleMissingAnchorRef(t *testing.T) {
 		"$ref": "#nonexistent"
 	}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for missing anchor ref")
 	}
@@ -839,7 +875,7 @@ func TestBundleMultipleAnchors(t *testing.T) {
 		}
 	}`
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -875,7 +911,7 @@ func TestBundleFragmentIDAsAnchor(t *testing.T) {
 		}
 	}`
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -907,7 +943,7 @@ func TestBundleLegacyIDAsAnchor(t *testing.T) {
 		}
 	}`
 
-	bundled, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -936,11 +972,11 @@ func TestBundleRemoteSchemaWithAnchor(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -1000,11 +1036,11 @@ func TestBundleExternalAnchorRef(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

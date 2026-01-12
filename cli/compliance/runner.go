@@ -683,12 +683,26 @@ func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string
 		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
 	}
 
-	bundleOpts := bundler.Options{
-		RemotesPath: filepath.Join(suitePath, "remotes"),
-		Draft:       draft,
-	}
+	remotesPath := filepath.Join(suitePath, "remotes")
 
-	bundled, err := bundler.Bundle(ctx, schemaJSON, bundleOpts)
+	// Create a LocalhostFetcher that maps localhost:1234 URLs to local remotes/ files
+	fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
+		if strings.HasPrefix(uri, "http://localhost:1234/") {
+			localPath := filepath.Join(remotesPath, strings.TrimPrefix(uri, "http://localhost:1234/"))
+			data, err := os.ReadFile(localPath)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read remote schema %s: %w", localPath, err)
+			}
+			return json.RawMessage(data), nil
+		}
+		return nil, fmt.Errorf("unsupported URI for compliance testing: %s (only localhost:1234 URLs supported)", uri)
+	})
+
+	bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
+		Schema:  schemaJSON,
+		Fetcher: fetcher,
+		Draft:   draft,
+	})
 	if err != nil {
 		return RawSchema{}, err
 	}

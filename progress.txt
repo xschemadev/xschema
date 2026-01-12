@@ -1,0 +1,25 @@
+# Ralph Progress Log
+Started: Mon Jan 12 04:23:40 PM CET 2026
+
+## Codebase Patterns
+
+- Bundler uses `Fetcher` interface for external schema resolution - no direct I/O
+- `BundleInput` struct groups all bundle parameters (Schema, SourceURI, Fetcher, Draft)
+- `FetchFunc` adapter allows ordinary functions to implement `Fetcher`
+- Test files should use `testFileFetcher()` helper for bundler tests
+
+---
+
+## 2026-01-12 - US-003
+- Implemented: Fetcher interface to make bundler pure (no direct I/O)
+- Files changed:
+  - cli/bundler/bundler.go - Added Fetcher interface, BundleInput struct, FetchFunc adapter; changed Bundle() signature
+  - cli/bundler/bundler_test.go - Added testFileFetcher helper; updated all tests to use BundleInput
+  - cli/generator/generator.go - Updated to create FetchFunc using retriever for HTTP/file fetching
+  - cli/compliance/runner.go - Updated to create LocalhostFetcher for compliance testing
+- **Learnings:**
+  - Bundler previously did I/O via retriever package directly - now delegates to Fetcher
+  - Generator creates fetcher that wraps retriever.RetrieveFromURL/RetrieveFromFilePath
+  - Compliance uses simpler fetcher that only handles localhost:1234 URLs mapped to local files
+  - Options struct replaced by BundleInput with Schema, SourceURI, Fetcher, Draft fields
+---

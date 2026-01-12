@@ -44,7 +44,7 @@
         "Remove direct retriever/network calls from bundler",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
