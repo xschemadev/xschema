@@ -924,3 +924,113 @@ func TestBundleLegacyIDAsAnchor(t *testing.T) {
 		t.Errorf("expected $ref to be rewritten to #/definitions/B, got %s", ref)
 	}
 }
+
+func TestBundleRemoteSchemaWithAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs a remote schema, and the remote schema uses anchors internally
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "schema-with-anchor.json" }
+		}
+	}`
+
+	opts := Options{
+		BaseURI: testdataPath("test.json"),
+	}
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The remote schema is embedded in $defs. Its internal anchor ref (#myAnchor)
+	// should be rewritten to point to the correct flattened location.
+	defs := result["$defs"].(map[string]any)
+
+	// Find the embedded schema (should have properties.value.$ref)
+	var embeddedRef string
+	for _, def := range defs {
+		defObj, ok := def.(map[string]any)
+		if !ok {
+			continue
+		}
+		props, ok := defObj["properties"].(map[string]any)
+		if !ok {
+			continue
+		}
+		valueProp, ok := props["value"].(map[string]any)
+		if !ok {
+			continue
+		}
+		if ref, ok := valueProp["$ref"].(string); ok {
+			embeddedRef = ref
+			break
+		}
+	}
+
+	if embeddedRef == "" {
+		t.Fatal("could not find embedded schema with properties.value.$ref")
+	}
+
+	// The anchor should be resolved to point to flattened location
+	// #myAnchor → #/$defs/schema_with_anchor_json__Target (flattened)
+	if !strings.HasPrefix(embeddedRef, "#/$defs/") {
+		t.Errorf("expected anchor ref to be rewritten to #/$defs/..., got %s", embeddedRef)
+	}
+	if !strings.Contains(embeddedRef, "__Target") {
+		t.Errorf("expected anchor ref to point to flattened Target def, got %s", embeddedRef)
+	}
+}
+
+func TestBundleExternalAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs an anchor in a remote schema directly: remote.json#anchor
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "schema-with-anchor.json#myAnchor" }
+		}
+	}`
+
+	opts := Options{
+		BaseURI: testdataPath("test.json"),
+	}
+
+	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The ref should point directly to the flattened Target def
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+
+	// Should be #/$defs/key__Target (flattened location)
+	if !strings.HasPrefix(ref, "#/$defs/") {
+		t.Errorf("expected ref to be #/$defs/..., got %s", ref)
+	}
+	if !strings.Contains(ref, "__Target") {
+		t.Errorf("expected ref to point to flattened Target def, got %s", ref)
+	}
+
+	// The flattened Target def should exist
+	defs := result["$defs"].(map[string]any)
+	refKey := strings.TrimPrefix(ref, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened Target def %s not found in $defs", refKey)
+	}
+}

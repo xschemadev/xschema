@@ -87,7 +87,7 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 	}
 
 	// First pass: collect all $id and $anchor declarations in the schema
-	bctx.collectIDsAndAnchors(parsed, opts.BaseURI, "")
+	bctx.collectIDsAndAnchors(parsed, opts.BaseURI, "", "")
 
 	result, err := bctx.processNode(parsed, opts.BaseURI)
 	if err != nil {
@@ -119,8 +119,9 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 }
 
 // collectIDsAndAnchors recursively collects all $id and $anchor declarations in the schema,
-// resolving them against the current base URI and tracking their JSON pointer paths
-func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path string) {
+// resolving them against the current base URI and tracking their JSON pointer paths.
+// pathPrefix is prepended to all collected anchor paths (used when embedding remote schemas).
+func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path string, pathPrefix string) {
 	switch v := node.(type) {
 	case map[string]any:
 		// Check for $id (draft6+) or id (draft4/draft3)
@@ -133,8 +134,9 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 			// In draft4/6/7, $id: "#foo" serves the same purpose as $anchor: "foo" in draft2019-09+
 			if strings.HasPrefix(id, "#") && len(id) > 1 {
 				anchor := id[1:] // strip the #
-				b.anchors[anchor] = path
-				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, path)
+				fullPath := pathPrefix + path
+				b.anchors[anchor] = fullPath
+				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, fullPath)
 			} else {
 				// Resolve relative $id against base URI
 				resolved, err := resolveURI(id, baseURI)
@@ -153,19 +155,20 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 
 		// Check for $anchor (draft2019-09+)
 		if anchor, ok := v["$anchor"].(string); ok {
-			b.anchors[anchor] = path
-			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, path)
+			fullPath := pathPrefix + path
+			b.anchors[anchor] = fullPath
+			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, fullPath)
 		}
 
 		// Recurse into all values with updated base URI and paths
 		for key, val := range v {
 			childPath := path + "/" + escapeJSONPointer(key)
-			b.collectIDsAndAnchors(val, baseURI, childPath)
+			b.collectIDsAndAnchors(val, baseURI, childPath, pathPrefix)
 		}
 	case []any:
 		for i, val := range v {
 			childPath := fmt.Sprintf("%s/%d", path, i)
-			b.collectIDsAndAnchors(val, baseURI, childPath)
+			b.collectIDsAndAnchors(val, baseURI, childPath, pathPrefix)
 		}
 	}
 }
@@ -347,17 +350,19 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			return nil, fmt.Errorf("failed to parse schema from %q: %w", resolvedURI, err)
 		}
 
-		// Collect $id and $anchor declarations from the fetched schema
-		b.collectIDsAndAnchors(parsed, resolvedURI, "")
+		// Flatten nested $defs/definitions and rewrite internal refs
+		key := b.uriToKey(resolvedURI)
+
+		// Collect $id and $anchor declarations from the fetched schema.
+		// We collect without prefix for internal ref resolution during processNode.
+		// External anchor refs (remote.json#anchor) are resolved in the else-if branch below.
+		b.collectIDsAndAnchors(parsed, resolvedURI, "", "")
 
 		// Recursively bundle the fetched schema (it may have its own external refs)
 		bundled, err := b.processNode(parsed, resolvedURI)
 		if err != nil {
 			return nil, fmt.Errorf("failed to bundle schema from %q: %w", resolvedURI, err)
 		}
-
-		// Flatten nested $defs/definitions and rewrite internal refs
-		key := b.uriToKey(resolvedURI)
 		bundled = b.flattenDefs(bundled, key)
 
 		// Cache and add to defs
@@ -369,14 +374,29 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	key := b.uriToKey(resolvedURI)
 	localRef := "#/$defs/" + key
 
-	// If fragment points to $defs/X or definitions/X, rewrite to flattened location
+	// Handle fragment: could be JSON pointer (/path/to/thing), anchor (anchorName), or definition (/$defs/X)
 	if fragment != "" {
 		if defName, ok := parseDefFragment(fragment); ok {
 			// Fragment points to a definition - rewrite to flattened key
 			localRef = "#/$defs/" + key + "__" + defName
 			ui.Verbosef("bundler: rewriting def fragment %s → %s", fragment, localRef)
+		} else if !strings.HasPrefix(fragment, "/") {
+			// Fragment is an anchor reference (e.g., "myAnchor" from remote.json#myAnchor)
+			// Look up the anchor - it was collected relative to the remote schema root.
+			if anchorPath, ok := b.anchors[fragment]; ok {
+				// The anchor path is relative to the remote schema. We need to:
+				// 1. Apply the /$defs/key prefix since that's where the schema is embedded
+				// 2. Check if the location got flattened (/$defs/key/$defs/X → /$defs/key__X)
+				fullPath := "/$defs/" + key + anchorPath
+				localRef = "#" + b.rewriteAnchorPath(fullPath, key)
+				ui.Verbosef("bundler: resolved anchor %s (path %s) → %s", fragment, anchorPath, localRef)
+			} else {
+				// Anchor not found - append as-is (will fail validation later)
+				localRef = "#" + fragment
+				ui.Verbosef("bundler: anchor %s not found, using #%s", fragment, fragment)
+			}
 		} else {
-			// Not a definition fragment - append the path to the embedded schema
+			// JSON pointer fragment - append the path to the embedded schema
 			localRef += fragment
 		}
 	}
@@ -384,6 +404,40 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	result := copyObject(obj)
 	result["$ref"] = localRef
 	return result, nil
+}
+
+// rewriteAnchorPath rewrites an anchor path that may point to a location that got flattened.
+// For example, /$defs/key/$defs/Target → /$defs/key__Target
+func (b *bundleContext) rewriteAnchorPath(anchorPath string, embeddedKey string) string {
+	prefix := "/$defs/" + embeddedKey
+
+	// If path doesn't start with the expected prefix, return as-is
+	if !strings.HasPrefix(anchorPath, prefix) {
+		return anchorPath
+	}
+
+	// Get the part after /$defs/key
+	rest := anchorPath[len(prefix):]
+
+	// Check if rest points to a definition that got flattened
+	if strings.HasPrefix(rest, "/$defs/") {
+		defName := rest[len("/$defs/"):]
+		// Strip any trailing path (e.g., /$defs/Target/properties/foo → Target)
+		if idx := strings.Index(defName, "/"); idx >= 0 {
+			defName = defName[:idx]
+		}
+		return "/$defs/" + embeddedKey + "__" + defName
+	}
+	if strings.HasPrefix(rest, "/definitions/") {
+		defName := rest[len("/definitions/"):]
+		if idx := strings.Index(defName, "/"); idx >= 0 {
+			defName = defName[:idx]
+		}
+		return "/$defs/" + embeddedKey + "__" + defName
+	}
+
+	// Not a flattened location, return original path
+	return anchorPath
 }
 
 // parseDefFragment checks if a fragment points to a definition and returns the def name.

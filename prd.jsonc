@@ -40,8 +40,8 @@
         "Anchor refs resolve to correct embedded location after bundling",
         "go build ./... passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Anchors collected relative to remote schema root, then prefixed during external anchor ref resolution. rewriteAnchorPath() handles flattening."
     },
     {
       "id": "US-004",
