@@ -14,7 +14,7 @@
         "File lives at cli/compliance/known-issues.json",
         "Build passes (go build)"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

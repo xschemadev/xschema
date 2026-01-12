@@ -1,0 +1,15 @@
+# Ralph Progress Log
+Started: Mon Jan 12 01:14:36 AM CET 2026
+---
+
+## 2026-01-12 - US-001
+- Added `name` field to `KnownIssueGroup` struct in cli/compliance/types.go
+- Updated cli/compliance/known-issues.json with name identifiers for each group:
+  - dynamic-refs, recursive-refs, metaschema-validation, vocabulary-control
+- Files changed:
+  - cli/compliance/types.go
+  - cli/compliance/known-issues.json
+- **Learnings:**
+  - Go build must be run from cli/ directory
+  - Format is array of groups, each with name/reason/tests
+---

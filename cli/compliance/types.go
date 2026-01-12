@@ -159,6 +159,7 @@ type BatchTestData struct {
 
 // KnownIssueGroup represents a group of tests with a common reason for being known issues
 type KnownIssueGroup struct {
+	Name   string   `json:"name"`
 	Reason string   `json:"reason"`
 	Tests  []string `json:"tests"`
 }

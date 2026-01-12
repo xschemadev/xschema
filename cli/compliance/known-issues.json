@@ -1,5 +1,6 @@
 [
   {
+    "name": "dynamic-refs",
     "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking",
     "tests": [
       "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
@@ -38,6 +39,7 @@
     ]
   },
   {
+    "name": "recursive-refs",
     "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking",
     "tests": [
       "draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer does not match as a property value",
@@ -83,6 +85,7 @@
     ]
   },
   {
+    "name": "metaschema-validation",
     "reason": "Metaschema validation requires fetching schemas containing dynamic refs",
     "tests": [
       "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
@@ -99,6 +102,7 @@
     ]
   },
   {
+    "name": "vocabulary-control",
     "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported",
     "tests": [
       "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
