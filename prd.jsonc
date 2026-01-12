@@ -1,0 +1,100 @@
+{
+  "project": "xschema-adapters",
+  "description": "Compliance Improvements - Fix $ref bundling and vocabulary support to achieve 100% compliance",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Skip metaschema bundling",
+      "description": "As a schema author, I want refs to official JSON Schema metaschemas to work so that I can validate schemas against metaschemas.",
+      "acceptanceCriteria": [
+        "Add isMetaschema() helper that detects refs to json-schema.org/draft-* URLs",
+        "In processRef(), return obj as-is when ref is a metaschema URL (don't fetch/bundle)",
+        "No more 'unsupported keyword $recursiveAnchor' errors for metaschema refs",
+        "go build ./... passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Flatten nested definitions",
+      "description": "As a schema author, I want remote schemas with their own $defs/definitions to be bundled correctly so that refs to nested definitions resolve.",
+      "acceptanceCriteria": [
+        "Add flattenDefs() function that extracts $defs/definitions from embedded schema",
+        "Prefix extracted def keys with parent key using __ separator (e.g., remote__inner)",
+        "Rewrite all #/$defs/X and #/definitions/X refs to #/$defs/prefix__X",
+        "Remove $defs/definitions from embedded schema after extraction",
+        "Add extracted defs to bctx.defs with prefixed keys",
+        "go build ./... passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Fix anchor paths for embedded schemas",
+      "description": "As a schema author, I want anchors in remote schemas to resolve correctly after embedding so that anchor refs work.",
+      "acceptanceCriteria": [
+        "Modify collectIDsAndAnchors() to accept pathPrefix parameter",
+        "When collecting anchors from fetched schema, use /$defs/key as prefix",
+        "Anchor refs resolve to correct embedded location after bundling",
+        "go build ./... passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Handle fragment refs to flattened definitions",
+      "description": "As a schema author, I want refs like remote.json#/definitions/Foo to work so that I can reference specific definitions in remote schemas.",
+      "acceptanceCriteria": [
+        "In processRef(), detect when fragment points to /$defs/X or /definitions/X",
+        "Rewrite such fragments to flattened location #/$defs/key__X",
+        "Non-definition fragments still work (e.g., #/properties/foo → #/$defs/key/properties/foo)",
+        "go build ./... passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Support $vocabulary disabling validation",
+      "description": "As a schema author using custom metaschemas, I want $vocabulary to be respected so that disabling validation vocabulary works.",
+      "acceptanceCriteria": [
+        "Add $vocabulary?: Record<string, boolean> to JSONSchema interface in json-schema.ts",
+        "Add isValidationDisabled() helper that checks if validation vocabulary URIs are set to false",
+        "In parseSchema(), return { kind: 'any' } when validation is disabled",
+        "bun run build passes in typescript/"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Clean up adapter READMEs",
+      "description": "As a developer, I want READMEs to be concise so that limitations are documented in one place (compliance reports).",
+      "acceptanceCriteria": [
+        "Remove entire 'Known Limitations' section from typescript/packages/adapters/zod/README.md",
+        "Remove entire 'Known Limitations' section from typescript/packages/adapters/effect/README.md",
+        "Remove entire 'Known Limitations' section from typescript/packages/adapters/arktype/README.md",
+        "In typescript/packages/adapters/valibot/README.md, keep ONLY the 'JavaScript Prototype Property Names' subsection under Known Limitations",
+        "All other README content preserved (installation, usage, etc.)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Verify 100% compliance",
+      "description": "As a maintainer, I want to verify all fixes work so that compliance is actually 100%.",
+      "acceptanceCriteria": [
+        "Run xschema compliance --adapter zod - 100% pass rate on supported tests",
+        "Run xschema compliance --adapter effect - 100% pass rate on supported tests",
+        "Run xschema compliance --adapter arktype - 100% pass rate on supported tests",
+        "Valibot passes all tests except JS prototype property name failures"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
