@@ -58,8 +58,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created index.mdx with sections: what is compliance testing, static generation approach, adapter compliance (cards), understanding results (table)"
     },
     {
       "id": "US-005",

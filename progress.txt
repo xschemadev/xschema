@@ -53,3 +53,18 @@ Started: Mon Jan 12 01:14:36 AM CET 2026
   - web dev server is on port 3002 when 3000/3001 are occupied
   - typecheck command is `bun run types:check`
 ---
+
+## 2026-01-12 - US-004
+- Created compliance landing page at web/content/docs/compliance/index.mdx
+- Content includes:
+  - What is compliance testing (test suite explanation, XSchema workflow)
+  - Static generation approach (type safety, performance, bundle size)
+  - Adapter compliance Cards linking to all 4 adapters
+  - Understanding results table (Passed, Failed, Known, Coverage)
+  - Link to Known Issues page
+- Files changed:
+  - web/content/docs/compliance/index.mdx (new)
+- **Learnings:**
+  - fumadocs Cards component works with Card children for link grids
+  - MDX tables need markdown format (pipes)
+---
