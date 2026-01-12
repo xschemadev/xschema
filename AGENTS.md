@@ -7,6 +7,7 @@ JSON Schema to native validators (Zod, Pydantic, etc.) with full type safety.
 Before submitting changes, ensure ALL checks pass:
 
 ### Go CLI (from `cli/` directory)
+
 ```bash
 go build -o xschema .                   # must compile
 go vet ./...                            # must pass (no warnings)
@@ -14,17 +15,22 @@ go test ./...                           # must pass (all tests green)
 ```
 
 ### TypeScript (from `typescript/` directory)
+
 ```bash
 bun run build                           # must compile
 bun run typecheck                       # must pass (no type errors)
 ```
 
 ### Adapter Changes (from adapter directory, e.g. `typescript/packages/adapters/zod/`)
+
 ```bash
 bun run compliance                      # must pass (if adapter code changed)
 ```
 
+When I ask "run compliance on an adapter", that's the command that should be run
+
 ### Commits
+
 ```bash
 bunx commitlint --from HEAD~1 --to HEAD # commit message must be valid
 ```
@@ -100,6 +106,7 @@ bunx commitlint --from HEAD~1 --to HEAD # validate last commit
 ### Go Code
 
 **Imports**: stdlib first, external second, internal third (blank lines between):
+
 ```go
 import (
     "context"
@@ -125,6 +132,7 @@ import (
 ### TypeScript Code
 
 **Imports**: external packages first, then relative (blank line between):
+
 ```typescript
 import type { ConvertInput, ConvertResult } from "@xschemadev/core";
 import { parse } from "@xschemadev/core";
@@ -143,6 +151,7 @@ import { render } from "./renderer.js";
 ## Commit Conventions
 
 Conventional commits with enforced scopes (commitlint + husky):
+
 - `cli` - Go CLI changes
 - `ts` - TypeScript packages
 - `py` - Python packages (future)
@@ -183,6 +192,7 @@ No test framework - validation via `bun run typecheck` and `bun run build`
 ### Adapter Protocol
 
 Adapters receive JSON array via stdin, output JSON array via stdout:
+
 ```typescript
 // Input: [{ namespace: "user", id: "User", schema: {...} }]
 // Output: [{ namespace: "user", id: "User", schema: "z.object(...)", type: "...", imports: [...] }]
