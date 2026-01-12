@@ -1014,3 +1014,66 @@ func TestProcess_VerboseCallback_ReceivesProgressUpdates(t *testing.T) {
 		t.Error("verbose should include bundling message")
 	}
 }
+
+func TestProcess_CustomMetaschema_FetchedViaDollarSchema(t *testing.T) {
+	ctx := context.Background()
+	fetcher := newMockFetcher()
+
+	// Custom metaschema (self-contained, no external refs)
+	fetcher.addResponse("http://example.com/custom-meta.json", `{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$id": "http://example.com/custom-meta.json",
+		"$vocabulary": {
+			"https://json-schema.org/draft/2020-12/vocab/core": true,
+			"https://json-schema.org/draft/2020-12/vocab/applicator": true
+		}
+	}`)
+
+	// Schema using custom metaschema - the $schema URL should be fetched
+	schema := json.RawMessage(`{
+		"$schema": "http://example.com/custom-meta.json",
+		"type": "string",
+		"minLength": 5
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "custom-meta-test",
+			Schema:    schema,
+			Adapter:   "zod",
+			SourceURI: "http://test.com/custom-meta-test.json",
+		},
+	}
+
+	result, err := Process(ctx, schemas, Options{Fetcher: fetcher})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	// Crawl should have fetched the custom metaschema via $schema URL
+	foundMetaschemaFetch := false
+	for _, call := range fetcher.fetchCalls {
+		if call == "http://example.com/custom-meta.json" {
+			foundMetaschemaFetch = true
+			break
+		}
+	}
+	if !foundMetaschemaFetch {
+		t.Errorf("expected fetch for custom metaschema via $schema, got calls: %v", fetcher.fetchCalls)
+	}
+
+	// Verify vocabulary filtering was applied (minLength stripped)
+	var outputSchema map[string]any
+	if err := json.Unmarshal(result[0].Schema, &outputSchema); err != nil {
+		t.Fatalf("failed to parse output schema: %v", err)
+	}
+
+	if _, ok := outputSchema["minLength"]; ok {
+		t.Error("minLength should be stripped when validation vocab is disabled")
+	}
+}

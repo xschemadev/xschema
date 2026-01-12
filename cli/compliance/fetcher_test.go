@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -283,7 +282,11 @@ func TestLocalhostFetcher_FetchesSubdirectoryFile(t *testing.T) {
 	}
 }
 
-func TestLocalhostFetcher_RejectsNonLocalhostURL(t *testing.T) {
+func TestLocalhostFetcher_ReturnsStubForNonLocalhostURL(t *testing.T) {
+	// Non-localhost URLs return stub schemas instead of errors.
+	// This is intentional - the processor's crawl phase extracts all external-looking
+	// refs, but the bundler will check local $ids first. Stubs for unfetchable URLs
+	// are never used if the URL is claimed by a local $id.
 	remotesDir := t.TempDir()
 	fetcher := NewLocalhostFetcher(remotesDir)
 
@@ -295,32 +298,30 @@ func TestLocalhostFetcher_RejectsNonLocalhostURL(t *testing.T) {
 	}
 
 	for _, url := range tests {
-		_, err := fetcher.Fetch(context.Background(), url)
-		if err == nil {
-			t.Errorf("Fetch(%q) expected error for non-localhost URL, got nil", url)
+		data, err := fetcher.Fetch(context.Background(), url)
+		if err != nil {
+			t.Errorf("Fetch(%q) unexpected error: %v", url, err)
 		}
-		if err != nil && !strings.Contains(err.Error(), "unsupported URI") {
-			t.Errorf("Fetch(%q) error = %v, want error containing 'unsupported URI'", url, err)
+		if string(data) != "{}" {
+			t.Errorf("Fetch(%q) = %q, want stub schema {}", url, string(data))
 		}
 	}
 }
 
-func TestLocalhostFetcher_FileNotFound(t *testing.T) {
+func TestLocalhostFetcher_ReturnsStubForMissingFile(t *testing.T) {
+	// Missing localhost files return stub schemas instead of errors.
+	// This handles test schemas that define $id claiming a localhost URL without
+	// a corresponding file - the bundler will resolve via local $id, not the stub.
 	remotesDir := t.TempDir()
 	fetcher := NewLocalhostFetcher(remotesDir)
 
-	_, err := fetcher.Fetch(context.Background(), "http://localhost:1234/nonexistent.json")
-	if err == nil {
-		t.Fatal("Fetch() expected error for nonexistent file, got nil")
+	data, err := fetcher.Fetch(context.Background(), "http://localhost:1234/nonexistent.json")
+	if err != nil {
+		t.Fatalf("Fetch() unexpected error: %v", err)
 	}
 
-	// Error should mention "not found" and include the URI
-	errStr := err.Error()
-	if !strings.Contains(errStr, "not found") {
-		t.Errorf("error = %q, want error containing 'not found'", errStr)
-	}
-	if !strings.Contains(errStr, "nonexistent.json") {
-		t.Errorf("error = %q, want error mentioning the file", errStr)
+	if string(data) != "{}" {
+		t.Errorf("Fetch() = %q, want stub schema {}", string(data))
 	}
 }
 

@@ -85,10 +85,19 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 // validateAll validates all declared schemas and external schemas from cache.
 // Runs after crawlAndFetch to ensure all schemas are valid before bundling.
+// Custom metaschemas from cache are passed to the validator so schemas using
+// custom $schema URIs can be validated.
 func validateAll(schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbose func(string)) error {
+	// Build metaschemas map from cache for custom $schema validation
+	metaschemas := buildMetaschemasMap(schemas, cache)
+
+	opts := &validator.ValidateOptions{
+		Metaschemas: metaschemas,
+	}
+
 	// Validate declared schemas
 	for _, s := range schemas {
-		if err := validator.ValidateSchema(s.Schema); err != nil {
+		if err := validator.ValidateSchemaWithOptions(s.Schema, opts); err != nil {
 			return fmt.Errorf("validation failed for %s: %w", s.SourceURI, err)
 		}
 	}
@@ -97,7 +106,7 @@ func validateAll(schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbo
 
 	// Validate external schemas from cache
 	for uri, data := range cache {
-		if err := validator.ValidateSchema(data); err != nil {
+		if err := validator.ValidateSchemaWithOptions(data, opts); err != nil {
 			return fmt.Errorf("validation failed for external schema %s: %w", uri, err)
 		}
 	}
@@ -105,6 +114,44 @@ func validateAll(schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbo
 	verbose(fmt.Sprintf("processor: validated %d external schemas", len(cache)))
 
 	return nil
+}
+
+// buildMetaschemasMap extracts custom metaschemas from cache for validation.
+// Returns a map of URI → schema data for non-standard $schema references.
+func buildMetaschemasMap(schemas []retriever.RetrievedSchema, cache fetcher.Cache) map[string]json.RawMessage {
+	result := make(map[string]json.RawMessage)
+
+	// Helper to extract and add custom $schema from a schema
+	addMetaschema := func(data json.RawMessage) {
+		var parsed map[string]any
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			return
+		}
+		schemaURI, ok := parsed["$schema"].(string)
+		if !ok || schemaURI == "" {
+			return
+		}
+		if metaschema.IsStandardDraft(schemaURI) {
+			return
+		}
+		// Look up in cache
+		normalized := fetcher.NormalizeURI(schemaURI)
+		if metaData, ok := cache[normalized]; ok {
+			result[schemaURI] = metaData
+		}
+	}
+
+	// Check declared schemas
+	for _, s := range schemas {
+		addMetaschema(s.Schema)
+	}
+
+	// Check cached schemas (in case they reference custom metaschemas too)
+	for _, data := range cache {
+		addMetaschema(data)
+	}
+
+	return result
 }
 
 // bundleAll bundles each declared schema using a cache fetcher.
@@ -306,6 +353,21 @@ func extractRefsFromNode(node any, baseURI string) []string {
 		} else if id, ok := v["id"].(string); ok {
 			if resolved, err := resolveURI(id, baseURI); err == nil {
 				baseURI = resolved
+			}
+		}
+
+		// Check for $schema (custom metaschema needs fetching for validation)
+		if schemaURI, ok := v["$schema"].(string); ok {
+			if isExternalRef(schemaURI) && !metaschema.IsStandardDraft(schemaURI) {
+				resolved, err := resolveURI(schemaURI, baseURI)
+				if err == nil {
+					if idx := strings.Index(resolved, "#"); idx >= 0 {
+						resolved = resolved[:idx]
+					}
+					if resolved != "" {
+						refs = append(refs, resolved)
+					}
+				}
 			}
 		}
 
