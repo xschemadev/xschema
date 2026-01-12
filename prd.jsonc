@@ -74,7 +74,7 @@
         "Fragment refs to definitions work (e.g., `other.json#/$defs/Foo`)",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -89,7 +89,7 @@
         "Test deeply nested ref chain: A→B/$defs/X→C/$defs/Y resolves correctly",
         "`go test ./cli/bundler/...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

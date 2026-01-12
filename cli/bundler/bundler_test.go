@@ -1357,3 +1357,410 @@ func TestFetchFuncAdapter(t *testing.T) {
 		t.Errorf("expected 'unknown uri' in error, got: %v", err)
 	}
 }
+
+// =============================================================================
+// Nested $defs Flattening Tests (US-005, US-006)
+// =============================================================================
+
+func TestBundle3LevelNestedDefs(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with 3-level nesting: $defs/A/$defs/B/$defs/C
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"A": {
+				"type": "object",
+				"$defs": {
+					"B": {
+						"type": "object",
+						"$defs": {
+							"C": {
+								"type": "string"
+							}
+						},
+						"properties": {
+							"c": { "$ref": "#/$defs/A/$defs/B/$defs/C" }
+						}
+					}
+				},
+				"properties": {
+					"b": { "$ref": "#/$defs/A/$defs/B" }
+				}
+			}
+		},
+		"properties": {
+			"a": { "$ref": "#/$defs/A" }
+		}
+	}`
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/nested.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have flattened keys with __ separators
+	// Expected keys: example_com_nested_json, example_com_nested_json__A,
+	//               example_com_nested_json__A__B, example_com_nested_json__A__B__C
+	var foundKeys []string
+	for key := range defs {
+		foundKeys = append(foundKeys, key)
+	}
+
+	// Check all nested defs are flattened to root level
+	var hasA, hasB, hasC bool
+	for key := range defs {
+		if strings.Contains(key, "__A__B__C") {
+			hasC = true
+		} else if strings.Contains(key, "__A__B") && !strings.Contains(key, "__C") {
+			hasB = true
+		} else if strings.Contains(key, "__A") && !strings.Contains(key, "__B") {
+			hasA = true
+		}
+	}
+
+	if !hasA {
+		t.Errorf("expected flattened key containing __A, found: %v", foundKeys)
+	}
+	if !hasB {
+		t.Errorf("expected flattened key containing __A__B, found: %v", foundKeys)
+	}
+	if !hasC {
+		t.Errorf("expected flattened key containing __A__B__C, found: %v", foundKeys)
+	}
+}
+
+func TestBundleMixedDefsAndDefinitions(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with both $defs and definitions (draft-04 style)
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"Modern": {
+				"type": "string"
+			}
+		},
+		"definitions": {
+			"Legacy": {
+				"type": "integer"
+			}
+		},
+		"properties": {
+			"modern": { "$ref": "#/$defs/Modern" },
+			"legacy": { "$ref": "#/definitions/Legacy" }
+		}
+	}`
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/mixed.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Both Modern and Legacy should be flattened to root $defs
+	var foundModern, foundLegacy bool
+	for key := range defs {
+		if strings.HasSuffix(key, "__Modern") {
+			foundModern = true
+		}
+		if strings.HasSuffix(key, "__Legacy") {
+			foundLegacy = true
+		}
+	}
+
+	if !foundModern {
+		t.Error("expected flattened Modern definition in $defs")
+	}
+	if !foundLegacy {
+		t.Error("expected flattened Legacy definition in $defs")
+	}
+}
+
+func TestBundleKeyCollisionWithCounter(t *testing.T) {
+	ctx := context.Background()
+
+	// Two remote schemas with the same def name "Shared"
+	schemaA := `{
+		"type": "object",
+		"$defs": {
+			"Shared": {
+				"type": "string",
+				"description": "from A"
+			}
+		}
+	}`
+
+	schemaB := `{
+		"type": "object",
+		"$defs": {
+			"Shared": {
+				"type": "integer",
+				"description": "from B"
+			}
+		}
+	}`
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		if strings.Contains(uri, "a.json") {
+			return json.RawMessage(schemaA), nil
+		}
+		return json.RawMessage(schemaB), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/a.json" },
+			"b": { "$ref": "http://example.com/b.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Both Shared defs should exist with unique keys (one may have counter suffix)
+	var sharedCount int
+	for key := range defs {
+		if strings.Contains(key, "Shared") {
+			sharedCount++
+		}
+	}
+
+	if sharedCount < 2 {
+		t.Errorf("expected 2 Shared definitions (with unique keys), got %d", sharedCount)
+	}
+
+	// Verify they have different types (string vs integer)
+	var foundString, foundInteger bool
+	for key, def := range defs {
+		if strings.Contains(key, "Shared") {
+			defObj := def.(map[string]any)
+			if defObj["type"] == "string" {
+				foundString = true
+			}
+			if defObj["type"] == "integer" {
+				foundInteger = true
+			}
+		}
+	}
+
+	if !foundString || !foundInteger {
+		t.Error("expected both string and integer Shared definitions to be preserved")
+	}
+}
+
+func TestBundleRefsInFlattenedDefsRewritten(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema where nested def references another nested def
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"Outer": {
+				"$defs": {
+					"Inner": {
+						"type": "string"
+					}
+				},
+				"properties": {
+					"value": { "$ref": "#/$defs/Outer/$defs/Inner" }
+				}
+			}
+		}
+	}`
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/refs.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Find the flattened Outer def and check its internal ref was rewritten
+	var outerKey string
+	for key := range defs {
+		if strings.HasSuffix(key, "__Outer") {
+			outerKey = key
+			break
+		}
+	}
+
+	if outerKey == "" {
+		t.Fatal("expected flattened Outer definition")
+	}
+
+	outerDef := defs[outerKey].(map[string]any)
+	props := outerDef["properties"].(map[string]any)
+	valueRef := props["value"].(map[string]any)["$ref"].(string)
+
+	// The ref should point to the flattened Inner location
+	expectedRef := "#/$defs/" + outerKey + "__Inner"
+	if valueRef != expectedRef {
+		t.Errorf("expected ref to be rewritten to %s, got %s", expectedRef, valueRef)
+	}
+
+	// Verify the flattened Inner def exists
+	innerKey := outerKey + "__Inner"
+	if _, ok := defs[innerKey]; !ok {
+		t.Errorf("expected flattened Inner definition at key %s", innerKey)
+	}
+}
+
+func TestBundleDeeplyNestedRefChain(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema A references B/$defs/X, which references C/$defs/Y
+	schemaC := `{
+		"type": "object",
+		"$defs": {
+			"Y": {
+				"type": "string",
+				"minLength": 1
+			}
+		}
+	}`
+
+	schemaB := `{
+		"type": "object",
+		"$defs": {
+			"X": {
+				"$ref": "http://example.com/c.json#/$defs/Y"
+			}
+		}
+	}`
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		if strings.Contains(uri, "b.json") {
+			return json.RawMessage(schemaB), nil
+		}
+		if strings.Contains(uri, "c.json") {
+			return json.RawMessage(schemaC), nil
+		}
+		return nil, fmt.Errorf("unknown URI: %s", uri)
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "http://example.com/b.json#/$defs/X" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/a.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have both B's X and C's Y flattened
+	var foundX, foundY bool
+	for key := range defs {
+		if strings.Contains(key, "__X") || strings.HasSuffix(key, "_X") {
+			foundX = true
+		}
+		if strings.Contains(key, "__Y") || strings.HasSuffix(key, "_Y") {
+			foundY = true
+		}
+	}
+
+	if !foundX {
+		t.Error("expected flattened X definition from b.json")
+	}
+	if !foundY {
+		t.Error("expected flattened Y definition from c.json")
+	}
+
+	// Verify the ref chain resolves correctly
+	props := result["properties"].(map[string]any)
+	valueRef := props["value"].(map[string]any)["$ref"].(string)
+	if !strings.HasPrefix(valueRef, "#/$defs/") {
+		t.Errorf("expected ref to be rewritten to #/$defs/..., got %s", valueRef)
+	}
+}

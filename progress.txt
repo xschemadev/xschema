@@ -42,3 +42,24 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - All Fetcher acceptance criteria already implemented in US-003, tests confirm behavior
   - Caching happens via bctx.cache map keyed by resolved URI
 ---
+
+## 2026-01-12 - US-005 & US-006
+- Implemented: Nested $defs flattening with recursive extraction and ref rewriting
+- Files changed:
+  - cli/bundler/bundler.go - Rewrote flattenDefs(), added flattenDefsWithRewrites() and uniqueDefKey()
+  - cli/bundler/bundler_test.go - Added 5 new tests for nested defs scenarios
+- **Key changes:**
+  - flattenDefs now handles BOTH $defs and definitions in the same schema
+  - Recursive flattening builds complete rewrite map before applying rewrites
+  - Deeply nested refs (e.g., #/$defs/A/$defs/B/$defs/C) now rewrite correctly
+  - Key collision handling with __2, __3 suffixes via uniqueDefKey()
+- **Tests added:**
+  - TestBundle3LevelNestedDefs - 3-level nesting flattens with __ separators
+  - TestBundleMixedDefsAndDefinitions - both $defs and definitions flatten
+  - TestBundleKeyCollisionWithCounter - duplicate def names get unique keys
+  - TestBundleRefsInFlattenedDefsRewritten - internal refs in flattened defs rewritten
+  - TestBundleDeeplyNestedRefChain - A→B/$defs/X→C/$defs/Y resolves correctly
+- **Learnings:**
+  - The rewrite map must be complete BEFORE applying rewrites to defs
+  - Nested rewrites need to be "lifted" to parent paths (e.g., #/$defs/B becomes #/$defs/A/$defs/B from outside)
+---
