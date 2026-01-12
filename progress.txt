@@ -318,3 +318,26 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Context flows through parser chain: parse() → createContext() → parseString/parseNumber/parseObject/parseArray
   - Careful distinction between validation vs applicator keywords - e.g. `contains` is applicator but `minContains/maxContains` are validation
 ---
+
+## 2026-01-12 - US-022
+- Implemented: Tests for vocabulary-aware keyword skipping in TypeScript parser
+- Files changed:
+  - typescript/packages/core/src/parser/vocabulary.test.ts (new) - 23 tests covering vocabulary scenarios
+  - typescript/packages/core/package.json - Added "test": "bun test" script
+  - typescript/packages/core/tsconfig.json - Excluded *.test.ts from build output
+- **Tests added:**
+  - String validation: minLength, maxLength, pattern ignored when validation disabled; format ignored when format disabled
+  - Number validation: minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf ignored when validation disabled
+  - Object validation: required, minProperties, maxProperties, dependentRequired ignored; dependentSchemas still works
+  - Array validation: minItems, maxItems, uniqueItems ignored; contains (applicator) works, minContains/maxContains ignored
+  - Applicator vocabulary: properties, additionalProperties, items, prefixItems, allOf work regardless of validation
+  - Empty vocabulary: all validation/format constraints undefined, only type structure remains
+  - Partial vocabulary: can disable validation but keep format enabled
+  - Missing vocabulary (undefined): all keywords processed (default enabled)
+  - Type constraints: type still produces correct node kind with no constraints when validation disabled
+  - Typeless schemas: validation-only keywords don't trigger type detection when disabled; applicators still create typeGuarded
+- **Learnings:**
+  - Bun test runner works directly with TypeScript source files (no compilation needed for tests)
+  - Test files should be excluded from tsconfig.json build output to avoid shipping tests in dist
+  - VOCAB constants exported from context.ts provide canonical URIs for vocabulary checking
+---

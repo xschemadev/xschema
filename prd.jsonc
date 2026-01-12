@@ -321,7 +321,7 @@
 				"Test missing $vocabulary: all keywords processed (default enabled)",
 				"`bun test` passes in typescript/packages/core"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
