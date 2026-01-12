@@ -1,100 +1,364 @@
 {
-  "project": "xschema-adapters",
-  "description": "Compliance Improvements - Fix $ref bundling and vocabulary support to achieve 100% compliance",
+  "project": "xschema-adapters-perfect",
+  "description": "Linear Pipeline Architecture & Full Compliance - Refactor CLI to use linear pipeline with Processor layer, pure bundler, and achieve 100% compliance",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Skip metaschema bundling",
-      "description": "As a schema author, I want refs to official JSON Schema metaschemas to work so that I can validate schemas against metaschemas.",
+      "title": "Create Metaschema package",
+      "description": "As a developer, I need a dedicated metaschema package for shared fetching, caching, and vocabulary extraction.",
       "acceptanceCriteria": [
-        "Add isMetaschema() helper that detects refs to json-schema.org/draft-* URLs",
-        "In processRef(), return obj as-is when ref is a metaschema URL (don't fetch/bundle)",
-        "No more 'unsupported keyword $recursiveAnchor' errors for metaschema refs",
-        "go build ./... passes"
+        "Create `cli/metaschema/metaschema.go`",
+        "`Get(uri string) (*Metaschema, error)` fetches and caches metaschemas",
+        "`ExtractVocabulary(schema any) map[string]bool` extracts $vocabulary from metaschema",
+        "`IsStandardDraft(uri string) bool` detects json-schema.org URLs",
+        "`go build ./...` passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-002",
-      "title": "Flatten nested definitions",
-      "description": "As a schema author, I want remote schemas with their own $defs/definitions to be bundled correctly so that refs to nested definitions resolve.",
+      "title": "Tests for Metaschema package",
+      "description": "As a developer, I want comprehensive tests for the metaschema package covering edge cases.",
       "acceptanceCriteria": [
-        "Add flattenDefs() function that extracts $defs/definitions from embedded schema",
-        "Prefix extracted def keys with parent key using __ separator (e.g., remote__inner)",
-        "Rewrite all #/$defs/X and #/definitions/X refs to #/$defs/prefix__X",
-        "Remove $defs/definitions from embedded schema after extraction",
-        "Add extracted defs to bctx.defs with prefixed keys",
-        "go build ./... passes"
+        "Create `cli/metaschema/metaschema_test.go`",
+        "Test ExtractVocabulary with empty $vocabulary → returns map with all false",
+        "Test ExtractVocabulary with missing $vocabulary → returns nil (all enabled)",
+        "Test ExtractVocabulary with partial $vocabulary → only specified keys present",
+        "Test IsStandardDraft: json-schema.org URLs return true",
+        "Test IsStandardDraft: custom URLs return false",
+        "Test Get() caching: second call returns cached result without network",
+        "`go test ./cli/metaschema/...` passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Fix anchor paths for embedded schemas",
-      "description": "As a schema author, I want anchors in remote schemas to resolve correctly after embedding so that anchor refs work.",
+      "title": "Add Fetcher interface to bundler",
+      "description": "As a developer, I want the bundler to accept a Fetcher interface so it becomes pure (no direct I/O).",
       "acceptanceCriteria": [
-        "Modify collectIDsAndAnchors() to accept pathPrefix parameter",
-        "When collecting anchors from fetched schema, use /$defs/key as prefix",
-        "Anchor refs resolve to correct embedded location after bundling",
-        "go build ./... passes"
+        "Create `Fetcher` interface in bundler: `Fetch(uri string) (json.RawMessage, error)`",
+        "Create `BundleInput` struct with Schema, SourceURI, Fetcher fields",
+        "Change `Bundle()` signature to accept `BundleInput` instead of separate params",
+        "Remove direct retriever/network calls from bundler",
+        "`go build ./...` passes"
       ],
-      "passes": true,
-      "notes": "Anchors collected relative to remote schema root, then prefixed during external anchor ref resolution. rewriteAnchorPath() handles flattening."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Handle fragment refs to flattened definitions",
-      "description": "As a schema author, I want refs like remote.json#/definitions/Foo to work so that I can reference specific definitions in remote schemas.",
+      "title": "Tests for bundler Fetcher interface",
+      "description": "As a developer, I want tests verifying the bundler correctly uses the Fetcher interface.",
       "acceptanceCriteria": [
-        "In processRef(), detect when fragment points to /$defs/X or /definitions/X",
-        "Rewrite such fragments to flattened location #/$defs/key__X",
-        "Non-definition fragments still work (e.g., #/properties/foo → #/$defs/key/properties/foo)",
-        "go build ./... passes"
+        "Test bundler calls Fetcher.Fetch() for external refs",
+        "Test Fetcher error is propagated (bundler returns error)",
+        "Test Fetcher returning invalid JSON causes bundler error",
+        "Test nil Fetcher with external ref returns clear error",
+        "Test local refs (#/...) don't call Fetcher",
+        "`go test ./cli/bundler/...` passes"
       ],
-      "passes": true,
-      "notes": "Implemented as part of US-002 since tightly coupled"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Support $vocabulary disabling validation",
-      "description": "As a schema author using custom metaschemas, I want $vocabulary to be respected so that disabling validation vocabulary works.",
+      "title": "Fix bundler nested $defs flattening",
+      "description": "As a schema author, I want refs to nested definitions in remote schemas to resolve correctly.",
       "acceptanceCriteria": [
-        "Add $vocabulary?: Record<string, boolean> to JSONSchema interface in json-schema.ts",
-        "Add isValidationDisabled() helper that checks if validation vocabulary URIs are set to false",
-        "In parseSchema(), return { kind: 'any' } when validation is disabled",
-        "bun run build passes in typescript/"
+        "Recursively extract nested `$defs` AND `definitions` (draft-04) to root level",
+        "Nested defs get prefixed keys using `__` separator: `remote__foo__bar`",
+        "Handle collision: if key exists, append counter: `remote__foo__2`",
+        "Refs inside flattened defs rewritten to point to flattened locations",
+        "Fragment refs to definitions work (e.g., `other.json#/$defs/Foo`)",
+        "`go build ./...` passes"
       ],
-      "passes": true,
-      "notes": "Added $vocabulary to interface, isValidationDisabled() checks for draft-2019-09/2020-12 validation vocab URIs set to false"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Clean up adapter READMEs",
-      "description": "As a developer, I want READMEs to be concise so that limitations are documented in one place (compliance reports).",
+      "title": "Tests for nested $defs flattening",
+      "description": "As a developer, I want tests covering edge cases in nested definition flattening.",
       "acceptanceCriteria": [
-        "Remove entire 'Known Limitations' section from typescript/packages/adapters/zod/README.md",
-        "Remove entire 'Known Limitations' section from typescript/packages/adapters/effect/README.md",
-        "Remove entire 'Known Limitations' section from typescript/packages/adapters/arktype/README.md",
-        "In typescript/packages/adapters/valibot/README.md, keep ONLY the 'JavaScript Prototype Property Names' subsection under Known Limitations",
-        "All other README content preserved (installation, usage, etc.)"
+        "Test 3-level nesting: $defs/A/$defs/B/$defs/C → flattened to root with __ separators",
+        "Test mixed $defs and definitions (draft-04) in same schema both flatten",
+        "Test key collision: two embedded schemas with same def name get unique keys",
+        "Test refs inside flattened defs are rewritten to correct flattened locations",
+        "Test deeply nested ref chain: A→B/$defs/X→C/$defs/Y resolves correctly",
+        "`go test ./cli/bundler/...` passes"
       ],
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Verify 100% compliance",
-      "description": "As a maintainer, I want to verify all fixes work so that compliance is actually 100%.",
+      "title": "Create Processor package with crawlAndFetch",
+      "description": "As a developer, I want a Processor layer that iteratively crawls and fetches external refs until no new URIs found.",
       "acceptanceCriteria": [
-        "Run xschema compliance --adapter zod - 100% pass rate on supported tests",
-        "Run xschema compliance --adapter effect - 100% pass rate on supported tests",
-        "Run xschema compliance --adapter arktype - 100% pass rate on supported tests",
-        "Valibot passes all tests except JS prototype property name failures"
+        "Create `cli/processor/processor.go`",
+        "`Process(ctx, schemas, opts) ([]ProcessedSchema, error)` as main entry point",
+        "ProcessedSchema contains: Namespace, ID, Schema (bundled), Adapter, SourceURI, Vocabulary",
+        "Implement `crawlAndFetch()` - iteratively find $ref URIs and fetch until no new ones",
+        "Track visited URIs to prevent infinite loops with circular refs",
+        "Fail fast on any fetch error",
+        "`go build ./...` passes"
       ],
-      "passes": true,
-      "notes": "All adapters verified at 100% compliance on supported tests. Fixed bundler bugs: (1) refs inside $defs of remote schemas now correctly rewritten via flattenDefs fix, (2) $id scope handling in validation now supports scoped fragment refs, (3) added unsupported features for metaschema vocabulary and draft3 type schemas. Zod/Effect/ArkType: 100% all drafts. Valibot: 100% except known JS prototype property name failures (10 per draft)."
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Tests for Processor crawlAndFetch",
+      "description": "As a developer, I want comprehensive tests for the crawlAndFetch phase covering edge cases.",
+      "acceptanceCriteria": [
+        "Test no external refs → returns empty cache, no iterations",
+        "Test single external ref → one fetch, cache contains it",
+        "Test chained refs (A refs B, B refs C) → 2 iterations, cache has B and C",
+        "Test circular refs (A refs B, B refs A) → terminates without infinite loop",
+        "Test fragment-only refs (#/$defs/X) → no fetch triggered",
+        "Test relative ref resolution respects $id base URI change",
+        "Test fetch error → returns error immediately (fail fast), partial cache not exposed",
+        "Test context cancellation → returns context error",
+        "`go test ./cli/processor/...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Add CacheFetcher for Processor",
+      "description": "As a developer, I want the Processor to provide a CacheFetcher that looks up URIs in the pre-fetched cache.",
+      "acceptanceCriteria": [
+        "Create `CacheFetcher` type implementing Fetcher interface",
+        "Returns schema from cache map, errors if URI not found (indicates crawler bug)",
+        "Processor uses CacheFetcher when calling bundler in phase 3",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Tests for CacheFetcher",
+      "description": "As a developer, I want tests for CacheFetcher covering hit and miss scenarios.",
+      "acceptanceCriteria": [
+        "Test cache hit: URI in cache → returns schema bytes",
+        "Test cache miss: URI not in cache → returns error with descriptive message",
+        "Test empty cache: any URI → returns error",
+        "Test case sensitivity: URIs are matched exactly (http://A vs http://a)",
+        "`go test ./cli/processor/...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Add validation phase to Processor",
+      "description": "As a developer, I want the Processor to validate all schemas (declared + external) just before bundling.",
+      "acceptanceCriteria": [
+        "Implement `validateAll()` phase in Processor",
+        "Validates declared schemas AND all external schemas from cache",
+        "Happens after crawlAndFetch, before bundleAll",
+        "Uses existing validator package",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Add bundleAll phase to Processor",
+      "description": "As a developer, I want the Processor to bundle all schemas using the CacheFetcher.",
+      "acceptanceCriteria": [
+        "Implement `bundleAll()` phase in Processor",
+        "Bundles each declared schema using bundler with CacheFetcher",
+        "No I/O during bundling - all refs resolve from cache",
+        "Returns ProcessedSchema[] ready for Generator",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Tests for Processor full pipeline",
+      "description": "As a developer, I want integration tests for the complete Processor pipeline.",
+      "acceptanceCriteria": [
+        "Test Process() with schema having no refs → returns bundled unchanged",
+        "Test Process() with schema having external refs → returns bundled with refs embedded",
+        "Test Process() with invalid schema → validation error returned",
+        "Test Process() reports vocabulary from custom metaschema",
+        "Test Process() with multiple schemas → all processed correctly",
+        "Test verbose callback receives progress updates",
+        "`go test ./cli/processor/...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Update Validator for metaschema pre-loading",
+      "description": "As a developer, I want the validator to accept pre-loaded metaschemas via AddResource.",
+      "acceptanceCriteria": [
+        "Add `ValidateOptions` with Metaschemas map",
+        "Use `compiler.AddResource()` to pre-load custom metaschemas",
+        "Handle cross-draft schemas (each resource can have different $schema)",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Tests for Validator metaschema pre-loading",
+      "description": "As a developer, I want tests for validator with pre-loaded metaschemas.",
+      "acceptanceCriteria": [
+        "Test schema with custom $schema validates against pre-loaded metaschema",
+        "Test missing pre-loaded metaschema → validation error",
+        "Test cross-draft: draft7 schema referencing draft2020-12 external schema",
+        "Test ValidateOptions with empty Metaschemas map → uses defaults",
+        "`go test ./cli/validator/...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Update Generator to accept ProcessedSchema",
+      "description": "As a developer, I want Generator to accept ProcessedSchema (already bundled) instead of doing bundling itself.",
+      "acceptanceCriteria": [
+        "Change Generator input from `[]RetrievedSchema` to `[]ProcessedSchema`",
+        "Remove bundling logic from Generator (moved to Processor)",
+        "Simplify to: group by adapter → call adapter CLI",
+        "Update all Generator call sites",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Integrate Processor into generate command",
+      "description": "As a developer, I want the generate command to use the new Processor between Retriever and Generator.",
+      "acceptanceCriteria": [
+        "Update `cli/cmd/generate.go` to call Processor after Retriever",
+        "Pass Processor output (ProcessedSchema[]) to Generator",
+        "Pipeline is now: Parser → Retriever → Processor → Generator → Injector",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Update compliance to use LocalhostFetcher",
+      "description": "As a developer, I want the compliance command to provide a LocalhostFetcher for bundler.",
+      "acceptanceCriteria": [
+        "Create `LocalhostFetcher` in compliance package implementing Fetcher",
+        "Maps `http://localhost:1234/*` to local remotes/ directory",
+        "Returns error for any other URL",
+        "Update compliance runner to pass LocalhostFetcher to bundler",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Tests for LocalhostFetcher",
+      "description": "As a developer, I want tests for LocalhostFetcher covering URL mapping and error cases.",
+      "acceptanceCriteria": [
+        "Test localhost:1234/integer.json → reads remotes/integer.json",
+        "Test localhost:1234/subdir/schema.json → reads remotes/subdir/schema.json",
+        "Test non-localhost URL (http://example.com/...) → returns error",
+        "Test file not found in remotes/ → returns descriptive error",
+        "Test URL with query params stripped correctly",
+        "`go test ./cli/compliance/...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Add --verbose flag to generate command",
+      "description": "As a user, I want `--verbose` to show detailed processing steps.",
+      "acceptanceCriteria": [
+        "Add `--verbose` flag to generate command",
+        "Default output stays compact (current behavior)",
+        "Verbose shows: crawl iterations, refs found, schemas fetched, validation results, bundling progress",
+        "Pass OnProgress callback to Processor when verbose",
+        "`go build ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Implement vocabulary-aware keyword skipping in TS parser",
+      "description": "As a schema author, I want the TypeScript parser to skip disabled vocabulary keywords.",
+      "acceptanceCriteria": [
+        "Add vocabulary-to-keywords mapping in parser context",
+        "When vocabulary disabled, omit those keywords from IR (don't add constraints)",
+        "Example: `{ type: \"string\", minLength: 5 }` with validation disabled → `StringNode` with no minLength",
+        "Applicator keywords still work when validation disabled",
+        "`bun run build` passes in typescript/"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Tests for vocabulary-aware keyword skipping",
+      "description": "As a developer, I want tests for vocabulary-aware parsing in TypeScript.",
+      "acceptanceCriteria": [
+        "Test validation vocabulary disabled: minLength, maxLength, pattern, minimum, maximum ignored",
+        "Test validation disabled: type constraint still produces correct base type",
+        "Test applicator vocabulary enabled: properties, items, allOf work normally",
+        "Test empty $vocabulary: produces minimal IR with only structure",
+        "Test partial vocabulary: only specified keywords processed",
+        "Test missing $vocabulary: all keywords processed (default enabled)",
+        "`bun test` passes in typescript/packages/core"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Verify and fix 100% compliance for zod",
+      "description": "As a maintainer, I want to verify zod adapter achieves 100% compliance, fixing any failures found.",
+      "acceptanceCriteria": [
+        "Run `cd typescript/packages/zod && bun run compliance`",
+        "If failures found, debug and fix until 100% pass rate achieved",
+        "Only `dynamic-refs` and `recursive-refs` remain in unsupported-features.json"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Verify and fix 100% compliance for effect",
+      "description": "As a maintainer, I want to verify effect adapter achieves 100% compliance, fixing any failures found.",
+      "acceptanceCriteria": [
+        "Run `cd typescript/packages/effect && bun run compliance`",
+        "If failures found, debug and fix until 100% pass rate achieved",
+        "Only `dynamic-refs` and `recursive-refs` remain in unsupported-features.json"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Verify and fix 100% compliance for arktype",
+      "description": "As a maintainer, I want to verify arktype adapter achieves 100% compliance, fixing any failures found.",
+      "acceptanceCriteria": [
+        "Run `cd typescript/packages/arktype && bun run compliance`",
+        "If failures found, debug and fix until 100% pass rate achieved",
+        "Only `dynamic-refs` and `recursive-refs` remain in unsupported-features.json"
+      ],
+      "passes": false,
+      "notes": ""
     }
   ]
 }
