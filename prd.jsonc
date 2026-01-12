@@ -164,7 +164,7 @@
         "Uses existing validator package",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

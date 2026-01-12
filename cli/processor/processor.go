@@ -13,6 +13,7 @@ import (
 
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
+	"github.com/xschemadev/xschema/validator"
 )
 
 // ProcessedSchema contains a fully processed schema ready for code generation.
@@ -74,7 +75,13 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose(fmt.Sprintf("processor: crawl complete, cache has %d external schemas", len(cache)))
 
-	// Phase 2: validateAll (placeholder - implemented in US-011)
+	// Phase 2: Validate all schemas (declared + external)
+	if err := validateAll(schemas, cache, verbose); err != nil {
+		return nil, err
+	}
+
+	verbose("processor: validation complete")
+
 	// Phase 3: bundleAll (placeholder - implemented in US-012)
 
 	// For now, return schemas as ProcessedSchema without bundling
@@ -96,6 +103,30 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 // externalRefCache maps normalized URI → raw schema bytes
 type externalRefCache map[string]json.RawMessage
+
+// validateAll validates all declared schemas and external schemas from cache.
+// Runs after crawlAndFetch to ensure all schemas are valid before bundling.
+func validateAll(schemas []retriever.RetrievedSchema, cache externalRefCache, verbose func(string)) error {
+	// Validate declared schemas
+	for _, s := range schemas {
+		if err := validator.ValidateSchema(s.Schema); err != nil {
+			return fmt.Errorf("validation failed for %s: %w", s.SourceURI, err)
+		}
+	}
+
+	verbose(fmt.Sprintf("processor: validated %d declared schemas", len(schemas)))
+
+	// Validate external schemas from cache
+	for uri, data := range cache {
+		if err := validator.ValidateSchema(data); err != nil {
+			return fmt.Errorf("validation failed for external schema %s: %w", uri, err)
+		}
+	}
+
+	verbose(fmt.Sprintf("processor: validated %d external schemas", len(cache)))
+
+	return nil
+}
 
 // crawlAndFetch iteratively discovers external $refs in schemas and fetches them.
 // It continues until no new URIs are found, building a complete cache of external schemas.

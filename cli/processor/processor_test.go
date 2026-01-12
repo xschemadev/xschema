@@ -238,6 +238,10 @@ func TestCrawlAndFetch_FragmentOnlyRefs(t *testing.T) {
 			"User": {
 				"$anchor": "User",
 				"type": "object"
+			},
+			"Role": {
+				"$anchor": "Role",
+				"type": "string"
 			}
 		}
 	}`)

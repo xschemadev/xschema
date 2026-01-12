@@ -179,3 +179,19 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - CacheFetcher correctly normalizes URIs before lookup (strips fragments)
   - Case sensitivity ensures crawler stores with exact URI it uses
 ---
+
+## 2026-01-12 - US-011
+- Implemented: validateAll() phase in Processor
+- Files changed:
+  - cli/processor/processor.go - Added validateAll() function and integrated into Process() pipeline
+  - cli/processor/processor_test.go - Fixed TestCrawlAndFetch_FragmentOnlyRefs (schema was missing #Role anchor)
+- **Key implementation:**
+  - `validateAll(schemas, cache, verbose)` validates both declared schemas and cached external schemas
+  - Called after crawlAndFetch phase, before bundleAll (phase 2 of 3)
+  - Uses existing `validator.ValidateSchema()` for each schema
+  - Fail fast: returns error immediately on first invalid schema with clear URI context
+  - Verbose callback shows count of validated schemas for both declared and external
+- **Learnings:**
+  - Adding validation exposed pre-existing test bug: `#Role` anchor ref without corresponding `$anchor: "Role"` definition
+  - Validation phase catches invalid schemas early (before bundling), providing clearer errors
+---
