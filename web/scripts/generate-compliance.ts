@@ -42,10 +42,6 @@ interface KeywordResult {
   }[];
 }
 
-interface KnownIssueItem {
-  path: string;
-  reason: string;
-}
 
 interface DraftResult {
   draft: string;
@@ -58,7 +54,6 @@ interface DraftResult {
     percentage: number;
     knownIssues?: {
       count: number;
-      items: KnownIssueItem[];
     };
   };
 }
@@ -285,37 +280,6 @@ function groupIssuesByKeyword(drafts: DraftResult[]): KeywordIssue[] {
   );
 }
 
-/**
- * Group known issues by reason across all drafts
- */
-interface KnownBehaviorGroup {
-  reason: string;
-  tests: string[];
-}
-
-function groupKnownIssuesByReason(drafts: DraftResult[]): KnownBehaviorGroup[] {
-  const reasonMap = new Map<string, Set<string>>();
-
-  for (const draft of drafts) {
-    const knownIssues = draft.summary.knownIssues;
-    if (!knownIssues || !knownIssues.items) continue;
-
-    for (const item of knownIssues.items) {
-      if (!reasonMap.has(item.reason)) {
-        reasonMap.set(item.reason, new Set());
-      }
-      reasonMap.get(item.reason)!.add(item.path);
-    }
-  }
-
-  // Convert to array and sort by count descending
-  return Array.from(reasonMap.entries())
-    .map(([reason, tests]) => ({
-      reason,
-      tests: Array.from(tests).sort(),
-    }))
-    .sort((a, b) => b.tests.length - a.tests.length);
-}
 
 /**
  * Check if adapter is type-only (no runtime validation).
@@ -465,34 +429,6 @@ function generateComplianceMdx(info: AdapterInfo): string {
   lines.push("</Tabs>");
   lines.push("");
 
-  // Known Behaviors section - grouped by reason from knownIssues
-  const knownBehaviors = groupKnownIssuesByReason(info.drafts);
-
-  if (knownBehaviors.length > 0) {
-    lines.push("## Known Behaviors");
-    lines.push("");
-    lines.push(
-      "The following tests are intentionally excluded from compliance percentages. " +
-        "These represent fundamental limitations of static code generation.",
-    );
-    lines.push("");
-    lines.push("<Accordions>");
-
-    for (const behavior of knownBehaviors) {
-      const title = `${escapeMdx(behavior.reason)} (${behavior.tests.length} tests)`;
-      lines.push(`<Accordion title="${title}">`);
-      lines.push("");
-      for (const test of behavior.tests) {
-        lines.push(`- \`${escapeMdx(test)}\``);
-      }
-      lines.push("");
-      lines.push("</Accordion>");
-    }
-
-    lines.push("</Accordions>");
-    lines.push("");
-  }
-
   // Unexpected Failures section - actual failures grouped by keyword
   const issues = groupIssuesByKeyword(info.drafts);
 
@@ -537,15 +473,16 @@ function generateComplianceMdx(info: AdapterInfo): string {
 
     lines.push("</Accordions>");
     lines.push("");
-  } else if (knownBehaviors.length === 0) {
-    // Only show "no issues" if there are also no known behaviors
-    lines.push("## Test Results");
-    lines.push("");
-    lines.push(
-      "All JSON Schema keywords are fully supported.",
-    );
-    lines.push("");
   }
+
+  // Link to global known issues
+  lines.push("## Known Limitations");
+  lines.push("");
+  lines.push(
+    "Some tests are excluded from compliance percentages due to fundamental limitations " +
+      "of static code generation. See [Known Issues](/docs/compliance/known-issues) for details.",
+  );
+  lines.push("");
 
   return lines.join("\n");
 }
