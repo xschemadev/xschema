@@ -277,7 +277,7 @@
         "Test URL with query params stripped correctly",
         "`go test ./cli/compliance/...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

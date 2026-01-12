@@ -278,3 +278,18 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Previous implementation was inline FetchFunc in bundleSchema - refactored to exported type for testability (US-019)
   - Query param stripping needed per acceptance criteria (strips ?foo=bar from URLs)
 ---
+
+## 2026-01-12 - US-019
+- Implemented: Tests for LocalhostFetcher covering URL mapping and error cases
+- Files changed:
+  - cli/compliance/fetcher_test.go - Added 5 tests for LocalhostFetcher
+- **Tests added:**
+  - TestLocalhostFetcher_FetchesLocalFile - localhost:1234/integer.json → remotes/integer.json
+  - TestLocalhostFetcher_FetchesSubdirectoryFile - localhost:1234/subdir/schema.json → remotes/subdir/schema.json
+  - TestLocalhostFetcher_RejectsNonLocalhostURL - http://example.com, https, different port all rejected
+  - TestLocalhostFetcher_FileNotFound - nonexistent file returns descriptive error
+  - TestLocalhostFetcher_StripsQueryParams - ?foo=bar&baz=qux stripped before file lookup
+- **Learnings:**
+  - Added strings import for strings.Contains in error message checks
+  - Tests use t.TempDir() for isolated file system setup
+---
