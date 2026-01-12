@@ -345,7 +345,7 @@
 				"If failures found, debug and fix until 100% pass rate achieved",
 				"Only `dynamic-refs` and `recursive-refs` remain in unsupported-features.json"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

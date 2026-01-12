@@ -318,25 +318,21 @@
     },
     {
       "keyword": "vocabulary",
-      "passed": 4,
+      "passed": 5,
       "failed": 0,
       "skipped": 0,
-      "total": 4
+      "total": 5
     }
   ],
   "summary": {
-    "passed": 870,
+    "passed": 871,
     "failed": 0,
     "skipped": 0,
-    "total": 870,
+    "total": 871,
     "percentage": 100,
     "unsupportedFeatures": {
-      "count": 34,
+      "count": 33,
       "items": [
-        {
-          "path": "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Custom metaschema vocabulary requires fetching and parsing metaschemas at compile time"
-        },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"

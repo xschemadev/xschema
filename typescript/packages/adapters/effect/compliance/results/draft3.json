@@ -164,10 +164,10 @@
     },
     {
       "keyword": "type",
-      "passed": 72,
+      "passed": 80,
       "failed": 0,
       "skipped": 0,
-      "total": 72
+      "total": 80
     },
     {
       "keyword": "uniqueItems",
@@ -178,47 +178,14 @@
     }
   ],
   "summary": {
-    "passed": 399,
+    "passed": 407,
     "failed": 0,
     "skipped": 0,
-    "total": 399,
+    "total": 407,
     "percentage": 100,
     "unsupportedFeatures": {
-      "count": 8,
-      "items": [
-        {
-          "path": "draft3/type/types can include schemas/an integer is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types can include schemas/a string is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types can include schemas/a float is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types can include schemas/an object is valid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types can include schemas/a boolean is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types can include schemas/null is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/applies a nested schema/an object is invalid otherwise",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        },
-        {
-          "path": "draft3/type/types from separate schemas are merged/an integer is invalid",
-          "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters"
-        }
-      ]
+      "count": 0,
+      "items": null
     }
   }
 }
