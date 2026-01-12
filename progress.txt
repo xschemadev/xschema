@@ -81,3 +81,25 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Bundler already had similar logic in extractMetaschemaVocabulary - this package consolidates it
   - $vocabulary values are booleans indicating if vocabulary is required (not just enabled)
 ---
+
+## 2026-01-12 - US-002
+- Implemented: Tests for metaschema package
+- Files changed:
+  - cli/metaschema/metaschema_test.go (new)
+- **Tests added:**
+  - TestExtractVocabulary_MissingVocabulary - nil returned when no $vocabulary
+  - TestExtractVocabulary_EmptyVocabulary - empty map returned for {}
+  - TestExtractVocabulary_PartialVocabulary - only specified keys in result
+  - TestExtractVocabulary_NonObjectSchema - boolean schemas handled
+  - TestExtractVocabulary_NonBooleanValues - non-bool values ignored
+  - TestIsStandardDraft_JsonSchemaOrg - http/https json-schema.org → true
+  - TestIsStandardDraft_CustomURLs - non json-schema.org → false
+  - TestGet_Caching - second call uses cache (no HTTP)
+  - TestGet_FetchError - 404 returns error
+  - TestGet_InvalidJSON - invalid JSON returns error
+  - TestGet_ExtractsVocabulary - vocabulary extracted on fetch
+  - TestClearCache - cache clearing works
+- **Learnings:**
+  - Use mockRoundTripper with atomic counter to track HTTP calls for caching tests
+  - HTTPClient exported var allows test mocking without interface changes
+---

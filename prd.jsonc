@@ -30,7 +30,7 @@
         "Test Get() caching: second call returns cached result without network",
         "`go test ./cli/metaschema/...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
