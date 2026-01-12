@@ -440,3 +440,26 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Process() full pipeline: crawlAndFetch → validateAll → bundleAll with vocabulary extraction
   - Verbose callback useful for testing pipeline progress visibility
 ---
+
+## 2026-01-12 - US-020
+- Verified: --verbose flag already fully implemented
+- Files changed: none (implementation was done in previous US-017)
+- **Implementation already in place:**
+  - cli/cmd/generate.go:46 - `--verbose` flag defined via cobra
+  - cli/cmd/generate.go:56 - `ui.SetVerbose(verbose)` called at start
+  - cli/cmd/generate.go:129 - `OnVerbose: verboseCallback()` passed to processor
+  - cli/cmd/generate.go:228-236 - `verboseCallback()` returns callback that calls `ui.Verbosef`
+  - cli/processor/processor.go - comprehensive verbose output throughout pipeline
+- **Verbose output covers:**
+  - Starting message with schema count (line 70)
+  - Crawl iterations and refs found (line 250)
+  - Each schema fetch (line 267 via ui.Verbosef)
+  - Crawl completion with cache size (line 78)
+  - Validation counts for declared schemas (line 111)
+  - Validation counts for external schemas (line 120)
+  - Bundling progress per schema (line 140)
+  - Final bundling completion (line 93)
+- **Learnings:**
+  - US-017 integrated Processor which included verbose callback support
+  - Both OnVerbose callback and direct ui.Verbosef calls work since ui.SetVerbose is called
+---

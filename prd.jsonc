@@ -291,7 +291,7 @@
 				"Pass OnProgress callback to Processor when verbose",
 				"`go build ./...` passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
