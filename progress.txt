@@ -23,3 +23,22 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Compliance uses simpler fetcher that only handles localhost:1234 URLs mapped to local files
   - Options struct replaced by BundleInput with Schema, SourceURI, Fetcher, Draft fields
 ---
+
+## 2026-01-12 - US-004
+- Implemented: Tests for bundler Fetcher interface
+- Files changed:
+  - cli/bundler/bundler_test.go - Added 9 new tests covering Fetcher interface behavior
+- **Tests added:**
+  - TestFetcherCalledForExternalRefs - verifies Fetch() called for external refs
+  - TestFetcherCalledForRelativeRefs - verifies relative refs resolved then fetched
+  - TestFetcherErrorPropagated - verifies Fetcher errors bubble up
+  - TestFetcherInvalidJSONError - verifies invalid JSON from Fetcher causes error
+  - TestNilFetcherExternalRefError - verifies nil Fetcher + external ref = clear error
+  - TestLocalRefsDoNotCallFetcher - verifies #/$defs/X refs don't trigger fetch
+  - TestLocalAnchorRefsDoNotCallFetcher - verifies #anchor refs don't trigger fetch
+  - TestFetcherCalledOncePerURI - verifies caching works (same URI fetched once)
+  - TestFetchFuncAdapter - verifies FetchFunc adapter implements Fetcher correctly
+- **Learnings:**
+  - All Fetcher acceptance criteria already implemented in US-003, tests confirm behavior
+  - Caching happens via bctx.cache map keyed by resolved URI
+---

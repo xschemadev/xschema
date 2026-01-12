@@ -3,6 +3,7 @@ package bundler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -1068,5 +1069,291 @@ func TestBundleExternalAnchorRef(t *testing.T) {
 	refKey := strings.TrimPrefix(ref, "#/$defs/")
 	if _, ok := defs[refKey]; !ok {
 		t.Errorf("flattened Target def %s not found in $defs", refKey)
+	}
+}
+
+// =============================================================================
+// Fetcher Interface Tests (US-004)
+// =============================================================================
+
+func TestFetcherCalledForExternalRefs(t *testing.T) {
+	ctx := context.Background()
+
+	var fetchedURIs []string
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		fetchedURIs = append(fetchedURIs, uri)
+		return json.RawMessage(`{"type": "string"}`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(fetchedURIs) != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once, got %d calls", len(fetchedURIs))
+	}
+	if len(fetchedURIs) > 0 && fetchedURIs[0] != "http://example.com/schema.json" {
+		t.Errorf("expected fetch URI http://example.com/schema.json, got %s", fetchedURIs[0])
+	}
+}
+
+func TestFetcherCalledForRelativeRefs(t *testing.T) {
+	ctx := context.Background()
+
+	var fetchedURIs []string
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		fetchedURIs = append(fetchedURIs, uri)
+		return json.RawMessage(`{"type": "integer"}`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "other.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/schemas/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(fetchedURIs) != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once, got %d calls", len(fetchedURIs))
+	}
+	// Relative ref should be resolved against base URI
+	expected := "http://example.com/schemas/other.json"
+	if len(fetchedURIs) > 0 && fetchedURIs[0] != expected {
+		t.Errorf("expected fetch URI %s, got %s", expected, fetchedURIs[0])
+	}
+}
+
+func TestFetcherErrorPropagated(t *testing.T) {
+	ctx := context.Background()
+
+	fetchErr := fmt.Errorf("network error: connection refused")
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return nil, fetchErr
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+
+	if err == nil {
+		t.Fatal("expected error from Fetcher to be propagated")
+	}
+	if !strings.Contains(err.Error(), "network error") {
+		t.Errorf("expected error to contain 'network error', got: %v", err)
+	}
+}
+
+func TestFetcherInvalidJSONError(t *testing.T) {
+	ctx := context.Background()
+
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		return json.RawMessage(`{not valid json`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+
+	if err == nil {
+		t.Fatal("expected error for invalid JSON from Fetcher")
+	}
+	if !strings.Contains(err.Error(), "parse") {
+		t.Errorf("expected error to mention parsing, got: %v", err)
+	}
+}
+
+func TestNilFetcherExternalRefError(t *testing.T) {
+	ctx := context.Background()
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   nil, // explicitly nil
+	})
+
+	if err == nil {
+		t.Fatal("expected error for external ref with nil Fetcher")
+	}
+	if !strings.Contains(err.Error(), "no fetcher") {
+		t.Errorf("expected error to mention 'no fetcher', got: %v", err)
+	}
+}
+
+func TestLocalRefsDoNotCallFetcher(t *testing.T) {
+	ctx := context.Background()
+
+	fetcherCalled := false
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		fetcherCalled = true
+		return nil, fmt.Errorf("fetcher should not be called")
+	})
+
+	// Schema with only local refs
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"User": { "type": "string" }
+		},
+		"properties": {
+			"name": { "$ref": "#/$defs/User" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if fetcherCalled {
+		t.Error("Fetcher should not be called for local refs (#/...)")
+	}
+}
+
+func TestLocalAnchorRefsDoNotCallFetcher(t *testing.T) {
+	ctx := context.Background()
+
+	fetcherCalled := false
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		fetcherCalled = true
+		return nil, fmt.Errorf("fetcher should not be called")
+	})
+
+	// Schema with local anchor refs
+	schema := `{
+		"$ref": "#foo",
+		"$defs": {
+			"A": {
+				"$anchor": "foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if fetcherCalled {
+		t.Error("Fetcher should not be called for local anchor refs (#anchor)")
+	}
+}
+
+func TestFetcherCalledOncePerURI(t *testing.T) {
+	ctx := context.Background()
+
+	fetchCounts := make(map[string]int)
+	fetcher := FetchFunc(func(uri string) (json.RawMessage, error) {
+		fetchCounts[uri]++
+		return json.RawMessage(`{"type": "string"}`), nil
+	})
+
+	// Schema that refs the same external schema multiple times
+	schema := `{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/schema.json" },
+			"b": { "$ref": "http://example.com/schema.json" },
+			"c": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should only fetch once due to caching
+	uri := "http://example.com/schema.json"
+	if fetchCounts[uri] != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once for %s, got %d calls", uri, fetchCounts[uri])
+	}
+}
+
+func TestFetchFuncAdapter(t *testing.T) {
+	// Test that FetchFunc correctly implements Fetcher interface
+	fn := func(uri string) (json.RawMessage, error) {
+		if uri == "test://ok" {
+			return json.RawMessage(`{"type": "number"}`), nil
+		}
+		return nil, fmt.Errorf("unknown uri: %s", uri)
+	}
+
+	var fetcher Fetcher = FetchFunc(fn)
+
+	// Test successful fetch
+	result, err := fetcher.Fetch("test://ok")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(result) != `{"type": "number"}` {
+		t.Errorf("expected `{\"type\": \"number\"}`, got %s", string(result))
+	}
+
+	// Test error case
+	_, err = fetcher.Fetch("test://fail")
+	if err == nil {
+		t.Error("expected error for unknown uri")
+	}
+	if !strings.Contains(err.Error(), "unknown uri") {
+		t.Errorf("expected 'unknown uri' in error, got: %v", err)
 	}
 }

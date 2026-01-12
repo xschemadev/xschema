@@ -59,7 +59,7 @@
         "Test local refs (#/...) don't call Fetcher",
         "`go test ./cli/bundler/...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
