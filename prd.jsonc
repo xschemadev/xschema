@@ -194,7 +194,7 @@
 				"Test verbose callback receives progress updates",
 				"`go test ./cli/processor/...` passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

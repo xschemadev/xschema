@@ -417,3 +417,26 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - All three TS adapters (zod, effect, arktype) share same parser and vocabulary handling
   - unsupported-features.json correctly lists only dynamic-refs and recursive-refs
 ---
+
+## 2026-01-12 - US-013
+- Implemented: Tests for Processor full pipeline
+- Files changed:
+  - cli/processor/processor_test.go - Added 7 tests for Process() full pipeline integration
+  - cli/processor/processor.go - Fixed extractVocabulary() to check embedded $vocabulary before $schema check
+- **Tests added:**
+  - TestProcess_NoRefs_ReturnsBundledUnchanged - schema with no refs bundled correctly
+  - TestProcess_ExternalRefs_BundledWithRefsEmbedded - external refs embedded in $defs
+  - TestProcess_InvalidSchema_ValidationError - invalid schema returns validation error
+  - TestProcess_InvalidExternalSchema_ValidationError - invalid external schema fails validation
+  - TestProcess_CustomMetaschema_ReportsVocabulary - embedded $vocabulary extracted correctly
+  - TestProcess_MultipleSchemas_AllProcessed - multiple schemas all processed with correct metadata
+  - TestProcess_VerboseCallback_ReceivesProgressUpdates - verbose callback receives all progress messages
+- **Bug fix:**
+  - extractVocabulary() checked if $schema was standard draft before checking embedded $vocabulary
+  - Embedded $vocabulary should take precedence (bundler may have embedded it from custom metaschema)
+  - Reordered checks: embedded $vocabulary first, then standard draft check, then fetch metaschema
+- **Learnings:**
+  - Embedded $vocabulary in schema takes precedence over fetching from metaschema
+  - Process() full pipeline: crawlAndFetch → validateAll → bundleAll with vocabulary extraction
+  - Verbose callback useful for testing pipeline progress visibility
+---

@@ -169,12 +169,25 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache e
 	return result, nil
 }
 
-// extractVocabulary extracts $vocabulary from a bundled schema's custom metaschema.
-// Returns nil if schema uses standard draft or metaschema can't be fetched.
+// extractVocabulary extracts $vocabulary from a bundled schema.
+// Checks embedded $vocabulary first, then fetches from custom metaschema if needed.
+// Returns nil if schema uses standard draft without embedded vocabulary.
 func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]bool, error) {
 	var parsed map[string]any
 	if err := json.Unmarshal(schema, &parsed); err != nil {
 		return nil, nil // not an object schema, no vocabulary
+	}
+
+	// Check if vocabulary already embedded in schema (by bundler or test)
+	// This takes precedence over fetching from metaschema
+	if vocab, ok := parsed["$vocabulary"].(map[string]any); ok {
+		result := make(map[string]bool, len(vocab))
+		for uri, val := range vocab {
+			if required, ok := val.(bool); ok {
+				result[uri] = required
+			}
+		}
+		return result, nil
 	}
 
 	schemaURI, ok := parsed["$schema"].(string)
@@ -185,17 +198,6 @@ func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]
 	// Skip standard drafts - they have well-known vocabularies
 	if metaschema.IsStandardDraft(schemaURI) {
 		return nil, nil
-	}
-
-	// Check if vocabulary already embedded in schema (by bundler)
-	if vocab, ok := parsed["$vocabulary"].(map[string]any); ok {
-		result := make(map[string]bool, len(vocab))
-		for uri, val := range vocab {
-			if required, ok := val.(bool); ok {
-				result[uri] = required
-			}
-		}
-		return result, nil
 	}
 
 	// Fetch custom metaschema and extract vocabulary
