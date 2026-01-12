@@ -68,3 +68,20 @@ Started: Mon Jan 12 01:14:36 AM CET 2026
   - fumadocs Cards component works with Card children for link grids
   - MDX tables need markdown format (pipes)
 ---
+
+## 2026-01-12 - US-005
+- Created generate-known-issues.ts script to auto-generate known-issues.mdx
+- Page reads from cli/compliance/known-issues.json at build time
+- Content includes:
+  - Intro explaining static generation limitations
+  - Summary count (4 categories, 86 tests)
+  - Accordions for each limitation group with name/count header
+  - Accordion body shows reason + full test list
+- Updated package.json: added generate:known-issues script to build pipeline
+- Files changed:
+  - web/scripts/generate-known-issues.ts (new)
+  - web/package.json
+- **Learnings:**
+  - fumadocs Accordions/Accordion components work same as in generate-compliance.ts
+  - escapeMdx() needed for test names with curly braces
+---

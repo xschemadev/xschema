@@ -76,8 +76,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created generate-known-issues.ts script, page auto-generated at build time"
     },
     {
       "id": "US-006",
