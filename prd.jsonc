@@ -123,7 +123,7 @@
         "Test context cancellation → returns context error",
         "`go test ./cli/processor/...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

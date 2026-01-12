@@ -124,3 +124,25 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Need to track both declared schema source URIs and fetched external URIs to avoid redundant fetches
   - Iteration count useful for verbose logging to show crawl progress
 ---
+
+## 2026-01-12 - US-008
+- Implemented: Tests for Processor crawlAndFetch phase
+- Files changed:
+  - cli/processor/processor_test.go (new)
+- **Tests added:**
+  - TestCrawlAndFetch_NoExternalRefs - no fetches for schemas with only local refs
+  - TestCrawlAndFetch_SingleExternalRef - single external ref triggers one fetch
+  - TestCrawlAndFetch_ChainedRefs - A→B→C triggers 2 iterations
+  - TestCrawlAndFetch_CircularRefs - A↔B terminates without infinite loop
+  - TestCrawlAndFetch_FragmentOnlyRefs - #/$defs/X and #anchor don't fetch
+  - TestCrawlAndFetch_RelativeRefWithBaseURIChange - $id changes base URI for resolution
+  - TestCrawlAndFetch_FetchError_FailFast - fetch error returns immediately
+  - TestCrawlAndFetch_ContextCancellation - context.Canceled returned on cancel
+  - TestCrawlAndFetch_RefWithFragment_FetchesBaseOnly - same URI with different fragments fetched once
+  - TestProcess_NilFetcher_ReturnsError - nil Fetcher returns clear error
+  - TestFetchFunc_ImplementsFetcher - FetchFunc adapter works correctly
+- **Learnings:**
+  - mockFetcher pattern: track calls in slice, return from maps
+  - Can't reassign struct methods - use FetchFunc wrapper for tests needing custom behavior
+  - OnVerbose callback useful for verifying iteration count
+---
