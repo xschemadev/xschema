@@ -42,3 +42,19 @@ Started: Mon Jan 12 02:12:14 AM CET 2026
   - Validation vocab URIs: draft-2019-09/2020-12 use different vocab URIs
   - Check early in parseSchema before any keyword processing
 ---
+
+## 2026-01-12 - US-006
+- Cleaned up adapter READMEs to remove verbose limitations docs
+- Files changed:
+  - typescript/packages/adapters/zod/README.md
+  - typescript/packages/adapters/effect/README.md
+  - typescript/packages/adapters/arktype/README.md
+  - typescript/packages/adapters/valibot/README.md
+- **What was done:**
+  - Removed entire Known Limitations section from zod, effect, arktype READMEs
+  - Kept only JavaScript Prototype Property Names subsection in valibot README (Valibot-specific bug users need to know)
+  - Preserved all other content (installation, usage examples, etc.)
+- **Learnings:**
+  - Compliance reports are the single source of truth for limitations
+  - READMEs should be concise, point to compliance reports for details
+---

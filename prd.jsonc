@@ -80,7 +80,7 @@
         "In typescript/packages/adapters/valibot/README.md, keep ONLY the 'JavaScript Prototype Property Names' subsection under Known Limitations",
         "All other README content preserved (installation, usage, etc.)"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
