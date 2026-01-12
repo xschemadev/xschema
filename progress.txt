@@ -63,3 +63,21 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - The rewrite map must be complete BEFORE applying rewrites to defs
   - Nested rewrites need to be "lifted" to parent paths (e.g., #/$defs/B becomes #/$defs/A/$defs/B from outside)
 ---
+
+## 2026-01-12 - US-001
+- Implemented: Metaschema package for shared fetching, caching, and vocabulary extraction
+- Files changed:
+  - cli/metaschema/metaschema.go (new) - Created dedicated metaschema package
+- **Key functions:**
+  - `Get(ctx, uri)` - fetches and caches metaschemas by URI
+  - `ExtractVocabulary(schema)` - extracts $vocabulary from metaschema (nil if missing, map if present)
+  - `IsStandardDraft(uri)` - detects json-schema.org URLs
+  - `ClearCache()` - clears cache for testing
+- **Design decisions:**
+  - Uses package-level cache with mutex for thread safety
+  - HTTPClient is exported var for test mocking
+  - ExtractVocabulary returns nil for missing $vocabulary (not empty map) to distinguish "all enabled" vs "none enabled"
+- **Learnings:**
+  - Bundler already had similar logic in extractMetaschemaVocabulary - this package consolidates it
+  - $vocabulary values are booleans indicating if vocabulary is required (not just enabled)
+---

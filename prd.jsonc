@@ -13,7 +13,7 @@
         "`IsStandardDraft(uri string) bool` detects json-schema.org URLs",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
