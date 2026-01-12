@@ -66,8 +66,8 @@
         "In parseSchema(), return { kind: 'any' } when validation is disabled",
         "bun run build passes in typescript/"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added $vocabulary to interface, isValidationDisabled() checks for draft-2019-09/2020-12 validation vocab URIs set to false"
     },
     {
       "id": "US-006",

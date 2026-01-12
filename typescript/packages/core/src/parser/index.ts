@@ -39,6 +39,27 @@ export function parse(schema: JSONSchema | boolean): SchemaNode {
 }
 
 /**
+ * Check if validation vocabulary is disabled via $vocabulary
+ * This applies when a metaschema explicitly sets validation to false
+ */
+function isValidationDisabled(schema: JSONSchema): boolean {
+	const vocab = schema.$vocabulary;
+	if (!vocab) return false;
+
+	// Check if any validation vocabulary URI is explicitly set to false
+	const validationVocabs = [
+		"https://json-schema.org/draft/2019-09/vocab/validation",
+		"https://json-schema.org/draft/2020-12/vocab/validation",
+	];
+
+	for (const uri of validationVocabs) {
+		if (vocab[uri] === false) return true;
+	}
+
+	return false;
+}
+
+/**
  * Internal schema parser - recursive
  */
 export function parseSchema(
@@ -48,6 +69,11 @@ export function parseSchema(
 	// Handle boolean schemas
 	if (typeof schema === "boolean") {
 		return schema ? { kind: "any" } : { kind: "never" };
+	}
+
+	// Handle $vocabulary disabling validation - schema accepts anything
+	if (isValidationDisabled(schema)) {
+		return { kind: "any" };
 	}
 
 	// Fail on unsupported keywords that require evaluation semantics

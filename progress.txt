@@ -30,3 +30,15 @@ Started: Mon Jan 12 02:12:14 AM CET 2026
   - Tests needed updating to expect flattened structure instead of nested paths
   - Recursive flattening handles defs with their own nested defs
 ---
+
+## 2026-01-12 - US-005
+- Implemented $vocabulary support for disabling validation
+- Files changed: typescript/packages/core/src/schema/json-schema.ts, typescript/packages/core/src/parser/index.ts
+- **What was implemented:**
+  - Added `$vocabulary?: Record<string, boolean>` to JSONSchema interface
+  - Added `isValidationDisabled()` helper that checks validation vocab URIs
+  - In `parseSchema()`, returns `{ kind: 'any' }` when validation is disabled
+- **Learnings:**
+  - Validation vocab URIs: draft-2019-09/2020-12 use different vocab URIs
+  - Check early in parseSchema before any keyword processing
+---
