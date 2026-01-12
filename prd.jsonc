@@ -262,7 +262,7 @@
         "Update compliance runner to pass LocalhostFetcher to bundler",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

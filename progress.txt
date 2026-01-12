@@ -263,3 +263,18 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - retrieverFetcher stores context and options, passes context from Fetch() call
   - verbose flag already existed from US-020 acceptance criteria being partially done
 ---
+
+## 2026-01-12 - US-018
+- Implemented: LocalhostFetcher type for compliance testing
+- Files changed:
+  - cli/compliance/runner.go - Added LocalhostFetcher type, NewLocalhostFetcher constructor, Fetch method
+- **Key implementation:**
+  - `LocalhostFetcher` struct with `RemotesPath` field implements `bundler.Fetcher`
+  - `Fetch(uri)` maps localhost:1234 URLs to local files, strips query params, rejects other URLs
+  - `NewLocalhostFetcher(remotesPath)` factory function
+  - Replaced inline FetchFunc with proper type in bundleSchema()
+  - Better error messages: distinguishes "not found" vs other read errors
+- **Learnings:**
+  - Previous implementation was inline FetchFunc in bundleSchema - refactored to exported type for testability (US-019)
+  - Query param stripping needed per acceptance criteria (strips ?foo=bar from URLs)
+---

@@ -677,6 +677,44 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 	return nil
 }
 
+// LocalhostFetcher implements bundler.Fetcher for compliance testing.
+// It maps http://localhost:1234/* URLs to local files in the remotes/ directory.
+type LocalhostFetcher struct {
+	RemotesPath string // path to the remotes directory containing schema files
+}
+
+// NewLocalhostFetcher creates a LocalhostFetcher for the given remotes directory.
+func NewLocalhostFetcher(remotesPath string) *LocalhostFetcher {
+	return &LocalhostFetcher{RemotesPath: remotesPath}
+}
+
+// Fetch implements bundler.Fetcher.
+// It maps localhost:1234 URLs to local files and rejects other URLs.
+func (f *LocalhostFetcher) Fetch(uri string) (json.RawMessage, error) {
+	const localhostPrefix = "http://localhost:1234/"
+
+	if !strings.HasPrefix(uri, localhostPrefix) {
+		return nil, fmt.Errorf("unsupported URI for compliance testing: %s (only localhost:1234 URLs supported)", uri)
+	}
+
+	// Extract path from URI, stripping query params
+	path := strings.TrimPrefix(uri, localhostPrefix)
+	if idx := strings.Index(path, "?"); idx != -1 {
+		path = path[:idx]
+	}
+
+	localPath := filepath.Join(f.RemotesPath, path)
+	data, err := os.ReadFile(localPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("remote schema not found: %s (looked in %s)", uri, localPath)
+		}
+		return nil, fmt.Errorf("failed to read remote schema %s: %w", localPath, err)
+	}
+
+	return json.RawMessage(data), nil
+}
+
 func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string) (RawSchema, error) {
 	schemaJSON, err := json.Marshal(schema)
 	if err != nil {
@@ -684,19 +722,7 @@ func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string
 	}
 
 	remotesPath := filepath.Join(suitePath, "remotes")
-
-	// Create a LocalhostFetcher that maps localhost:1234 URLs to local remotes/ files
-	fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
-		if strings.HasPrefix(uri, "http://localhost:1234/") {
-			localPath := filepath.Join(remotesPath, strings.TrimPrefix(uri, "http://localhost:1234/"))
-			data, err := os.ReadFile(localPath)
-			if err != nil {
-				return nil, fmt.Errorf("failed to read remote schema %s: %w", localPath, err)
-			}
-			return json.RawMessage(data), nil
-		}
-		return nil, fmt.Errorf("unsupported URI for compliance testing: %s (only localhost:1234 URLs supported)", uri)
-	})
+	fetcher := NewLocalhostFetcher(remotesPath)
 
 	bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
 		Schema:  schemaJSON,
