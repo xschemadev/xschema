@@ -3,61 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalProperties",
-      "passed": 14,
-      "failed": 7,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "an additional property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "an additional valid property is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "no additional properties is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "dependentSchemas with additionalProperties",
-          "test": "additionalProperties can't see bar",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependentSchemas with additionalProperties",
-          "test": "additionalProperties can't see bar even when foo2 is present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependentSchemas with additionalProperties",
-          "test": "additionalProperties doesn't consider dependentSchemas",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "allOf",
@@ -131,40 +80,10 @@
     },
     {
       "keyword": "dependentSchemas",
-      "passed": 16,
-      "failed": 4,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "quoted quote invalid under dependent schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "dynamicRef",
@@ -175,26 +94,10 @@
     },
     {
       "keyword": "enum",
-      "passed": 43,
-      "failed": 2,
+      "passed": 45,
+      "failed": 0,
       "skipped": 0,
-      "total": 45,
-      "failures": [
-        {
-          "group": "heterogeneous enum validation",
-          "test": "one of the enum is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "heterogeneous enum validation",
-          "test": "valid object matches",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 45
     },
     {
       "keyword": "exclusiveMaximum",
@@ -233,19 +136,10 @@
     },
     {
       "keyword": "items",
-      "passed": 28,
-      "failed": 1,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "items and subitems",
-          "test": "wrong sub-item",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "maxContains",
@@ -333,40 +227,10 @@
     },
     {
       "keyword": "oneOf",
-      "passed": 23,
-      "failed": 4,
+      "passed": 27,
+      "failed": 0,
       "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "oneOf with missing optional property",
-          "test": "first oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with missing optional property",
-          "test": "second oneOf valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "first valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "second valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 27
     },
     {
       "keyword": "pattern",
@@ -391,40 +255,10 @@
     },
     {
       "keyword": "properties",
-      "passed": 24,
-      "failed": 4,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "__proto__ not valid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty ignores property",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property validates property",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "propertyNames",
@@ -449,126 +283,17 @@
     },
     {
       "keyword": "required",
-      "passed": 10,
-      "failed": 6,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required validation",
-          "test": "non-present required property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "type",
-      "passed": 71,
-      "failed": 9,
+      "passed": 80,
+      "failed": 0,
       "skipped": 0,
-      "total": 80,
-      "failures": [
-        {
-          "group": "object type matches objects",
-          "test": "a boolean is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a float is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a string is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an integer is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array or object",
-          "test": "number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array or object",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array, object or null",
-          "test": "number is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "type: array, object or null",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 80
     },
     {
       "keyword": "unevaluatedItems",
@@ -593,26 +318,154 @@
     },
     {
       "keyword": "vocabulary",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "schema that uses custom metaschema with with no validation vocabulary",
-          "test": "no validation: invalid number, but it still validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     }
   ],
   "summary": {
-    "passed": 833,
-    "failed": 38,
+    "passed": 871,
+    "failed": 0,
     "skipped": 0,
     "total": 871,
-    "percentage": 95.63719862227325
+    "percentage": 100,
+    "unsupportedFeatures": {
+      "count": 33,
+      "items": [
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is not valid against the root",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor/The recursive part doesn't need to validate against the root",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with number values",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with string values",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with number values",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with string values",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with misspelled field",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        }
+      ]
+    }
   }
 }

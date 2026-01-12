@@ -14,6 +14,7 @@ export interface JSONSchema {
 	$anchor?: string;
 	$dynamicRef?: string;
 	$dynamicAnchor?: string;
+	$vocabulary?: Record<string, boolean>;
 
 	// Type
 	type?: string | string[];

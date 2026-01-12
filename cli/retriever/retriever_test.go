@@ -77,7 +77,7 @@ func TestRetrieveFromURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := RetrieveFromURL(ctx, tt.url, nil, opts)
+			result, err := RetrieveFromURL(ctx, tt.url, opts)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error, got nil")

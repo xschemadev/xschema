@@ -30,6 +30,27 @@ import {
 	buildIntersection,
 } from "@xschemadev/core";
 
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string): string {
+	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
+}
+
 /**
  * Render a SchemaNode to Zod code
  */
@@ -205,7 +226,7 @@ function renderObject(node: ObjectNode): string {
 			if (!prop.required) {
 				propCode += ".optional()";
 			}
-			return `[${escapeString(key)}]: ${propCode}`;
+			return `${formatPropertyKey(key)}: ${propCode}`;
 		});
 
 		result =
@@ -251,12 +272,14 @@ function renderObject(node: ObjectNode): string {
     })`;
 	}
 
-	// Required properties validation (for z.any() props)
-	if (requiredKeys.length > 0) {
-		const requiredJson = JSON.stringify(requiredKeys);
+	// Required properties validation - only needed when z.any() props exist (which accept undefined)
+	const requiredAnyProps = requiredKeys.filter(
+		(k) => (node.properties.get(k)!.schema as SchemaNode).kind === "any"
+	);
+	if (requiredAnyProps.length > 0) {
+		const requiredJson = JSON.stringify(requiredAnyProps);
 		result += `.superRefine((val, ctx) => {
-      const required = ${requiredJson};
-      for (const key of required) {
+      for (const key of ${requiredJson}) {
         if (!Object.hasOwn(val, key)) {
           ctx.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Required" });
         }

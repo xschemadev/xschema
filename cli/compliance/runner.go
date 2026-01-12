@@ -2,6 +2,7 @@ package compliance
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,7 +17,11 @@ import (
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/vocabulary"
 )
+
+//go:embed unsupported-features.json
+var unsupportedFeaturesData []byte
 
 // ProgressUpdate contains info about current test progress
 type ProgressUpdate struct {
@@ -47,6 +52,16 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
+// LoadUnsupportedFeatures loads unsupported features from the embedded global unsupported-features.json
+func LoadUnsupportedFeatures() (UnsupportedFeatures, error) {
+	var features UnsupportedFeatures
+	if err := json.Unmarshal(unsupportedFeaturesData, &features); err != nil {
+		return nil, fmt.Errorf("failed to parse unsupported-features.json: %w", err)
+	}
+
+	return features, nil
+}
+
 // Run executes compliance tests for an adapter
 func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	// Determine which drafts to test
@@ -70,6 +85,12 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	adapterBin := opts.AdapterCLIPath(opts.AdapterPath)
 	if _, err := os.Stat(adapterBin); os.IsNotExist(err) {
 		return nil, fmt.Errorf("adapter CLI not found at %s\nMake sure the adapter is built", adapterBin)
+	}
+
+	// Load unsupported features
+	unsupportedFeatures, err := LoadUnsupportedFeatures()
+	if err != nil {
+		return nil, err
 	}
 
 	report := ComplianceReport{
@@ -110,6 +131,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			outputFunc:   opts.OutputFunc,
 			progressFunc: opts.ProgressFunc,
 			timing:       opts.Timing,
+			unsupportedFeatures: unsupportedFeatures,
 		})
 
 		if draftResult != nil {
@@ -146,7 +168,8 @@ type runDraftOptions struct {
 	jobs         int // parallel keyword processing (default 1)
 	outputFunc   func(string)
 	progressFunc func(ProgressUpdate)
-	timing       *TimingSummary
+	timing              *TimingSummary
+	unsupportedFeatures UnsupportedFeatures
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -321,6 +344,8 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 			result.Summary.Failed += localSummary.Failed
 			result.Summary.Skipped += localSummary.Skipped
 			result.Summary.Total += localSummary.Total
+			result.Summary.UnsupportedFeatures.Count += localSummary.UnsupportedFeatures.Count
+			result.Summary.UnsupportedFeatures.Items = append(result.Summary.UnsupportedFeatures.Items, localSummary.UnsupportedFeatures.Items...)
 			mu.Unlock()
 		}()
 	}
@@ -352,9 +377,56 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		return nil
 	}
 
-	// Phase 1: Bundle all schemas
+	// Pre-filter: identify which tests are known issues and which groups can be skipped entirely
+	type groupFilter struct {
+		allKnown        bool
+		unsupportedItems      []UnsupportedFeatureItem
+		filteredTests   []TestCase
+		filteredIndices []int
+	}
+	groupFilters := make([]groupFilter, len(groups))
+
+	for i, group := range groups {
+		var filteredTests []TestCase
+		var filteredIndices []int
+		var unsupportedItems []UnsupportedFeatureItem
+
+		for j, tc := range group.Tests {
+			testPath := fmt.Sprintf("%s/%s/%s/%s", opts.draft, keywordResult.Keyword, group.Description, tc.Description)
+			if isUnsupported, reason := opts.unsupportedFeatures.Contains(testPath); isUnsupported {
+				unsupportedItems = append(unsupportedItems, UnsupportedFeatureItem{Path: testPath, Reason: reason})
+				continue
+			}
+			filteredTests = append(filteredTests, tc)
+			filteredIndices = append(filteredIndices, j)
+		}
+
+		groupFilters[i] = groupFilter{
+			allKnown:        len(filteredTests) == 0 && len(unsupportedItems) > 0,
+			unsupportedItems:      unsupportedItems,
+			filteredTests:   filteredTests,
+			filteredIndices: filteredIndices,
+		}
+
+		// Add known issues for groups we're skipping entirely
+		if groupFilters[i].allKnown {
+			summary.UnsupportedFeatures.Count += len(unsupportedItems)
+			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, unsupportedItems...)
+		}
+	}
+
+	// Phase 1: Bundle schemas (skip groups where all tests are known issues)
 	bundled := make([]bundledGroup, len(groups))
 	for i, group := range groups {
+		// Skip groups where all tests are known issues
+		if groupFilters[i].allKnown {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("skipped: all tests are known issues"),
+			}
+			continue
+		}
+
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -362,8 +434,23 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 
 		bundleStart := time.Now()
-		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath, opts.draft)
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
+
+		// Extract vocabulary from custom metaschema and filter schema
+		if err == nil {
+			remotesPath := filepath.Join(opts.suitePath, "remotes")
+			vocab := extractVocabularyFromSchema(bundledSchema, remotesPath)
+			if vocab != nil {
+				filtered, filterErr := vocabulary.FilterSchema(bundledSchema.Raw(), vocab)
+				if filterErr == nil {
+					var filteredSchema RawSchema
+					if jsonErr := json.Unmarshal(filtered, &filteredSchema); jsonErr == nil {
+						bundledSchema = filteredSchema
+					}
+				}
+			}
+		}
 
 		bundled[i] = bundledGroup{
 			group:         group,
@@ -372,11 +459,10 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 	}
 
-	// Mark bundle errors as failed first
+	// Mark bundle errors as failed (but not known issue groups)
 	for i, bg := range bundled {
-		if bg.bundleErr != nil {
+		if bg.bundleErr != nil && !groupFilters[i].allKnown {
 			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
-			bundled[i].bundleErr = bg.bundleErr // keep marked
 		}
 	}
 
@@ -414,12 +500,14 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	// Phase 3: Build harness items and execute single batch harness
+	// Use pre-computed filters for known issues
 	var harnessItems []HarnessItem
-	groupByID := make(map[string]*TestGroup) // for result processing
+	groupByID := make(map[string]*TestGroup)       // for result processing
+	filteredTestsByGroup := make(map[string][]int) // maps groupID to original test indices
 
 	for i, bg := range bundled {
 		if bg.bundleErr != nil {
-			continue // already marked as failed
+			continue // already handled (either known issue skip or error)
 		}
 
 		adapterOutput := adapterOutputByGroup[i]
@@ -428,13 +516,27 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 			continue
 		}
 
+		gf := groupFilters[i]
+
+		// Add known issues for this group (mixed groups with some known, some not)
+		if len(gf.unsupportedItems) > 0 && !gf.allKnown {
+			summary.UnsupportedFeatures.Count += len(gf.unsupportedItems)
+			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, gf.unsupportedItems...)
+		}
+
+		// Skip if no tests remain after filtering
+		if len(gf.filteredTests) == 0 {
+			continue
+		}
+
 		groupID := fmt.Sprintf("group_%d", i)
 		harnessItems = append(harnessItems, HarnessItem{
 			GroupID:       groupID,
 			AdapterOutput: adapterOutput,
-			Tests:         bg.group.Tests,
+			Tests:         gf.filteredTests,
 		})
 		groupByID[groupID] = &bg.group
+		filteredTestsByGroup[groupID] = gf.filteredIndices
 	}
 
 	if len(harnessItems) == 0 {
@@ -475,7 +577,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	// Process results by groupId
-	processHarnessResults(harnessResults, groupByID, keywordResult, summary)
+	processHarnessResults(harnessResults, groupByID, filteredTestsByGroup, keywordResult, summary)
 	return nil
 }
 
@@ -510,17 +612,23 @@ func normalizeErrorPath(errorMsg string) string {
 	return errorMsg
 }
 
-func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
+func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, filteredTestsByGroup map[string][]int, keywordResult *KeywordResult, summary *DraftSummary) {
 	for _, hr := range harnessResults {
 		group := groupByID[hr.GroupID]
 		if group == nil {
 			continue // unknown group, skip
 		}
 
-		if hr.Index >= len(group.Tests) {
+		// Map filtered index back to original index
+		filteredIndices := filteredTestsByGroup[hr.GroupID]
+		if hr.Index >= len(filteredIndices) {
 			continue // invalid index, skip
 		}
-		tc := group.Tests[hr.Index]
+		originalIdx := filteredIndices[hr.Index]
+		if originalIdx >= len(group.Tests) {
+			continue // invalid original index, skip
+		}
+		tc := group.Tests[originalIdx]
 
 		keywordResult.Total++
 		summary.Total++
@@ -585,17 +693,118 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 	return nil
 }
 
-func bundleSchema(ctx context.Context, schema RawSchema, suitePath string) (RawSchema, error) {
+// LocalhostFetcher implements fetcher.Fetcher for compliance testing.
+// It maps http://localhost:1234/* URLs to local files in the remotes/ directory.
+type LocalhostFetcher struct {
+	RemotesPath string // path to the remotes directory containing schema files
+}
+
+// NewLocalhostFetcher creates a LocalhostFetcher for the given remotes directory.
+func NewLocalhostFetcher(remotesPath string) *LocalhostFetcher {
+	return &LocalhostFetcher{RemotesPath: remotesPath}
+}
+
+// Fetch implements fetcher.Fetcher.
+// It maps localhost:1234 URLs to local files and rejects other URLs.
+func (f *LocalhostFetcher) Fetch(_ context.Context, uri string) (json.RawMessage, error) {
+	const localhostPrefix = "http://localhost:1234/"
+
+	if !strings.HasPrefix(uri, localhostPrefix) {
+		return nil, fmt.Errorf("unsupported URI for compliance testing: %s (only localhost:1234 URLs supported)", uri)
+	}
+
+	// Extract path from URI, stripping query params
+	path := strings.TrimPrefix(uri, localhostPrefix)
+	if idx := strings.Index(path, "?"); idx != -1 {
+		path = path[:idx]
+	}
+
+	localPath := filepath.Join(f.RemotesPath, path)
+	data, err := os.ReadFile(localPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("remote schema not found: %s (looked in %s)", uri, localPath)
+		}
+		return nil, fmt.Errorf("failed to read remote schema %s: %w", localPath, err)
+	}
+
+	return json.RawMessage(data), nil
+}
+
+// extractVocabularyFromSchema extracts $vocabulary from a schema's custom metaschema.
+// If the schema's $schema is a localhost URL, fetches the metaschema from remotes
+// and extracts its $vocabulary. Returns nil for standard drafts or if no $vocabulary.
+func extractVocabularyFromSchema(schema RawSchema, remotesPath string) map[string]bool {
+	// Extract $schema from the schema
+	obj, ok := schema.Value().(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	schemaURI, ok := obj["$schema"].(string)
+	if !ok {
+		return nil
+	}
+
+	// Skip standard JSON Schema drafts
+	if strings.HasPrefix(schemaURI, "http://json-schema.org/") ||
+		strings.HasPrefix(schemaURI, "https://json-schema.org/") {
+		return nil
+	}
+
+	// Only handle localhost URLs for compliance testing
+	const localhostPrefix = "http://localhost:1234/"
+	if !strings.HasPrefix(schemaURI, localhostPrefix) {
+		return nil
+	}
+
+	// Fetch metaschema from remotes directory
+	path := strings.TrimPrefix(schemaURI, localhostPrefix)
+	localPath := filepath.Join(remotesPath, path)
+	data, err := os.ReadFile(localPath)
+	if err != nil {
+		return nil // silently fail - metaschema not available
+	}
+
+	var metaschema map[string]any
+	if err := json.Unmarshal(data, &metaschema); err != nil {
+		return nil
+	}
+
+	// Extract $vocabulary from metaschema
+	vocabRaw, hasVocab := metaschema["$vocabulary"]
+	if !hasVocab {
+		return nil
+	}
+
+	vocabMap, ok := vocabRaw.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	result := make(map[string]bool, len(vocabMap))
+	for uri, val := range vocabMap {
+		if required, ok := val.(bool); ok {
+			result[uri] = required
+		}
+	}
+	return result
+}
+
+func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string) (RawSchema, error) {
 	schemaJSON, err := json.Marshal(schema)
 	if err != nil {
 		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
 	}
 
-	bundleOpts := bundler.Options{
-		RemotesPath: filepath.Join(suitePath, "remotes"),
-	}
+	remotesPath := filepath.Join(suitePath, "remotes")
+	fetcher := NewLocalhostFetcher(remotesPath)
 
-	bundled, err := bundler.Bundle(ctx, schemaJSON, bundleOpts)
+	bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
+		Schema:  schemaJSON,
+		Fetcher: fetcher,
+		Draft:   draft,
+	})
 	if err != nil {
 		return RawSchema{}, err
 	}

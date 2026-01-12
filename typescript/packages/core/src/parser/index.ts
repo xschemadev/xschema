@@ -25,6 +25,7 @@ export type { ParseContext } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
+ * @param schema The JSON Schema to parse
  */
 export function parse(schema: JSONSchema | boolean): SchemaNode {
 	// Handle boolean schemas at root level
@@ -50,7 +51,7 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Handle unsupported features
+	// Fail on unsupported keywords that require evaluation semantics
 	if (schema.unevaluatedItems !== undefined) {
 		throw new Error("unevaluatedItems is not supported");
 	}
@@ -64,10 +65,21 @@ export function parseSchema(
 			schema.dependentSchemas ||
 			schema.not;
 		if (hasApplicators) {
-			throw new Error(
-				"unevaluatedProperties with applicators is not supported",
-			);
+			throw new Error("unevaluatedProperties with applicators is not supported");
 		}
+	}
+	// Fail on dynamic/recursive ref keywords
+	if (schema.$dynamicRef !== undefined) {
+		throw new Error("$dynamicRef is not supported");
+	}
+	if (schema.$dynamicAnchor !== undefined) {
+		throw new Error("$dynamicAnchor is not supported");
+	}
+	if (schema.$recursiveRef !== undefined) {
+		throw new Error("$recursiveRef is not supported");
+	}
+	if (schema.$recursiveAnchor !== undefined) {
+		throw new Error("$recursiveAnchor is not supported");
 	}
 
 	// Handle $ref
@@ -93,16 +105,41 @@ export function parseSchema(
 	const hasAnyOf = schema.anyOf && schema.anyOf.length > 0;
 	const hasOneOf = schema.oneOf && schema.oneOf.length > 0;
 
-	// Check for base schema (type-specific properties)
+	// Check for base schema keywords alongside composition operators.
+	// If we have base constraints (like additionalProperties/dependencies/etc), they must
+	// be intersected with the composition result.
 	const hasBaseSchema =
 		schema.type !== undefined ||
+		// object keywords
 		schema.properties !== undefined ||
+		schema.additionalProperties !== undefined ||
+		schema.patternProperties !== undefined ||
+		schema.required !== undefined ||
+		schema.propertyNames !== undefined ||
+		schema.minProperties !== undefined ||
+		schema.maxProperties !== undefined ||
+		schema.dependentRequired !== undefined ||
+		schema.dependentSchemas !== undefined ||
+		schema.dependencies !== undefined ||
+		// array keywords
 		schema.items !== undefined ||
+		schema.prefixItems !== undefined ||
+		schema.additionalItems !== undefined ||
+		schema.minItems !== undefined ||
+		schema.maxItems !== undefined ||
+		schema.uniqueItems !== undefined ||
+		schema.contains !== undefined ||
+		// primitive keywords
 		schema.minimum !== undefined ||
 		schema.maximum !== undefined ||
+		schema.exclusiveMinimum !== undefined ||
+		schema.exclusiveMaximum !== undefined ||
+		schema.multipleOf !== undefined ||
 		schema.minLength !== undefined ||
 		schema.maxLength !== undefined ||
 		schema.pattern !== undefined ||
+		schema.format !== undefined ||
+		// value keywords
 		schema.enum !== undefined ||
 		schema.const !== undefined;
 
@@ -126,6 +163,10 @@ export function parseSchema(
 	if (Array.isArray(type)) {
 		// Multiple types - create union
 		const variants = type.map((t) => {
+			// Draft3: type array can contain inline schemas
+			if (typeof t === "object" && t !== null) {
+				return parseSchema(t as JSONSchema, ctx);
+			}
 			const typeSchema: JSONSchema = { ...schema, type: t };
 			delete typeSchema.enum;
 			return parseSchema(typeSchema, ctx);
@@ -182,11 +223,12 @@ function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	const refPath = schema.$ref!;
 
 	// Check cache
-	if (ctx.refs.has(refPath)) {
+	const cached = ctx.refs.get(refPath);
+	if (cached) {
 		return {
 			kind: "ref",
 			path: refPath,
-			resolved: ctx.refs.get(refPath)!,
+			resolved: cached,
 		};
 	}
 
@@ -202,6 +244,7 @@ function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 
 	// Resolve and parse
 	ctx.processing.add(refPath);
+
 	const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
 	const parsed = parseSchema(resolved, ctx);
 	ctx.refs.set(refPath, parsed);
@@ -302,11 +345,13 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	const guards: TypeGuard[] = [];
 
 	// Check for object keywords
+	// Note: required as boolean (draft3 property-level) should NOT trigger object detection
+	// Only array-style required (draft4+) indicates schema-level object constraints
 	const hasObjectKeywords =
 		schema.properties !== undefined ||
 		schema.additionalProperties !== undefined ||
 		schema.patternProperties !== undefined ||
-		schema.required !== undefined ||
+		(Array.isArray(schema.required) && schema.required.length > 0) ||
 		schema.propertyNames !== undefined ||
 		schema.minProperties !== undefined ||
 		schema.maxProperties !== undefined ||

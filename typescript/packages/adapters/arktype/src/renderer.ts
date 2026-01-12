@@ -29,6 +29,30 @@ import {
 	hasPrototypeProperties,
 } from "@xschemadev/core";
 
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string, optional: boolean): string {
+	if (optional) {
+		return canUseDirectSyntax(key) ? `"${key}?"` : `${escapeString(key + "?")}`;
+	}
+	return canUseDirectSyntax(key) ? key : escapeString(key);
+}
+
 /**
  * Render a SchemaNode to ArkType code
  */
@@ -241,9 +265,7 @@ function renderObject(node: ObjectNode): string {
 		for (const key of propKeys) {
 			const prop = node.properties.get(key)!;
 			const propCode = render(prop.schema as SchemaNode);
-			const keyStr = prop.required
-				? escapeString(key)
-				: `${escapeString(key + "?")}`;
+			const keyStr = formatPropertyKey(key, !prop.required);
 			shape.push(`${keyStr}: ${propCode}`);
 		}
 

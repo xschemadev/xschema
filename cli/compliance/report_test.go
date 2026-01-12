@@ -39,7 +39,7 @@ func TestGenerateMarkdownReport(t *testing.T) {
 	if !strings.Contains(md, "## Summary") {
 		t.Error("markdown missing summary section")
 	}
-	if !strings.Contains(md, "| draft2020-12 | 15 | 2 | 0 | 88.2% |") {
+	if !strings.Contains(md, "| draft2020-12 | 15 | 2 | 0 | 0 | 88.2% |") {
 		t.Error("markdown missing/incorrect summary row")
 	}
 
@@ -60,7 +60,7 @@ func TestGenerateMarkdownReport(t *testing.T) {
 	}
 
 	// Check failures section
-	if !strings.Contains(md, "### Failures") {
+	if !strings.Contains(md, "### Unexpected Failures") {
 		t.Error("markdown missing failures section")
 	}
 	if !strings.Contains(md, "<details>") {

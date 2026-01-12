@@ -70,13 +70,26 @@ type DraftResult struct {
 	Summary  DraftSummary    `json:"summary"`
 }
 
+// UnsupportedFeatureItem represents a single unsupported feature test with its reason
+type UnsupportedFeatureItem struct {
+	Path   string `json:"path"`
+	Reason string `json:"reason"`
+}
+
+// UnsupportedFeaturesSummary contains unsupported features data for JSON output
+type UnsupportedFeaturesSummary struct {
+	Count int                      `json:"count"`
+	Items []UnsupportedFeatureItem `json:"items"`
+}
+
 // DraftSummary contains aggregate statistics for a draft
 type DraftSummary struct {
-	Passed     int     `json:"passed"`
-	Failed     int     `json:"failed"`
-	Skipped    int     `json:"skipped"`
-	Total      int     `json:"total"`
-	Percentage float64 `json:"percentage"`
+	Passed              int                        `json:"passed"`
+	Failed              int                        `json:"failed"`
+	Skipped             int                        `json:"skipped"`
+	Total               int                        `json:"total"`
+	Percentage          float64                    `json:"percentage"`
+	UnsupportedFeatures UnsupportedFeaturesSummary `json:"unsupportedFeatures"`
 }
 
 // ComplianceReport is the complete report for an adapter
@@ -142,4 +155,44 @@ type HarnessResult struct {
 type BatchTestData struct {
 	GroupID string     `json:"groupId"`
 	Tests   []TestCase `json:"tests"`
+}
+
+// UnsupportedFeatureGroup represents a group of tests with a common reason for being unsupported
+type UnsupportedFeatureGroup struct {
+	Name   string   `json:"name"`
+	Reason string   `json:"reason"`
+	Tests  []string `json:"tests"`
+}
+
+// UnsupportedFeatures is a list of unsupported feature groups loaded from unsupported-features.json
+type UnsupportedFeatures []UnsupportedFeatureGroup
+
+// Contains checks if a test path is in the unsupported features list
+func (uf UnsupportedFeatures) Contains(testPath string) (bool, string) {
+	for _, group := range uf {
+		for _, test := range group.Tests {
+			if test == testPath {
+				return true, group.Reason
+			}
+		}
+	}
+	return false, ""
+}
+
+// TestPaths returns all test paths as a flat list
+func (uf UnsupportedFeatures) TestPaths() []string {
+	var paths []string
+	for _, group := range uf {
+		paths = append(paths, group.Tests...)
+	}
+	return paths
+}
+
+// Count returns the total number of unsupported feature tests
+func (uf UnsupportedFeatures) Count() int {
+	count := 0
+	for _, group := range uf {
+		count += len(group.Tests)
+	}
+	return count
 }

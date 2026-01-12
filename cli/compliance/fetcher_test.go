@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -235,4 +236,111 @@ func createTestTarballWithPAX(t *testing.T, files map[string]string) []byte {
 	}
 
 	return result
+}
+
+// ---- LocalhostFetcher Tests ----
+
+func TestLocalhostFetcher_FetchesLocalFile(t *testing.T) {
+	// Create temp remotes directory with a schema
+	remotesDir := t.TempDir()
+	schemaContent := `{"type": "integer"}`
+	if err := os.WriteFile(filepath.Join(remotesDir, "integer.json"), []byte(schemaContent), 0644); err != nil {
+		t.Fatalf("failed to create test file: %v", err)
+	}
+
+	fetcher := NewLocalhostFetcher(remotesDir)
+	data, err := fetcher.Fetch(context.Background(), "http://localhost:1234/integer.json")
+	if err != nil {
+		t.Fatalf("Fetch() error = %v", err)
+	}
+
+	if string(data) != schemaContent {
+		t.Errorf("Fetch() = %s, want %s", string(data), schemaContent)
+	}
+}
+
+func TestLocalhostFetcher_FetchesSubdirectoryFile(t *testing.T) {
+	// Create temp remotes directory with subdirectory
+	remotesDir := t.TempDir()
+	subDir := filepath.Join(remotesDir, "subdir")
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		t.Fatalf("failed to create subdir: %v", err)
+	}
+
+	schemaContent := `{"type": "string"}`
+	if err := os.WriteFile(filepath.Join(subDir, "schema.json"), []byte(schemaContent), 0644); err != nil {
+		t.Fatalf("failed to create test file: %v", err)
+	}
+
+	fetcher := NewLocalhostFetcher(remotesDir)
+	data, err := fetcher.Fetch(context.Background(), "http://localhost:1234/subdir/schema.json")
+	if err != nil {
+		t.Fatalf("Fetch() error = %v", err)
+	}
+
+	if string(data) != schemaContent {
+		t.Errorf("Fetch() = %s, want %s", string(data), schemaContent)
+	}
+}
+
+func TestLocalhostFetcher_RejectsNonLocalhostURL(t *testing.T) {
+	remotesDir := t.TempDir()
+	fetcher := NewLocalhostFetcher(remotesDir)
+
+	tests := []string{
+		"http://example.com/schema.json",
+		"https://json-schema.org/draft/2020-12/schema",
+		"http://localhost:5000/schema.json", // different port
+		"https://localhost:1234/schema.json", // https not http
+	}
+
+	for _, url := range tests {
+		_, err := fetcher.Fetch(context.Background(), url)
+		if err == nil {
+			t.Errorf("Fetch(%q) expected error for non-localhost URL, got nil", url)
+		}
+		if err != nil && !strings.Contains(err.Error(), "unsupported URI") {
+			t.Errorf("Fetch(%q) error = %v, want error containing 'unsupported URI'", url, err)
+		}
+	}
+}
+
+func TestLocalhostFetcher_FileNotFound(t *testing.T) {
+	remotesDir := t.TempDir()
+	fetcher := NewLocalhostFetcher(remotesDir)
+
+	_, err := fetcher.Fetch(context.Background(), "http://localhost:1234/nonexistent.json")
+	if err == nil {
+		t.Fatal("Fetch() expected error for nonexistent file, got nil")
+	}
+
+	// Error should mention "not found" and include the URI
+	errStr := err.Error()
+	if !strings.Contains(errStr, "not found") {
+		t.Errorf("error = %q, want error containing 'not found'", errStr)
+	}
+	if !strings.Contains(errStr, "nonexistent.json") {
+		t.Errorf("error = %q, want error mentioning the file", errStr)
+	}
+}
+
+func TestLocalhostFetcher_StripsQueryParams(t *testing.T) {
+	// Create temp remotes directory with a schema
+	remotesDir := t.TempDir()
+	schemaContent := `{"type": "boolean"}`
+	if err := os.WriteFile(filepath.Join(remotesDir, "schema.json"), []byte(schemaContent), 0644); err != nil {
+		t.Fatalf("failed to create test file: %v", err)
+	}
+
+	fetcher := NewLocalhostFetcher(remotesDir)
+
+	// Fetch with query params - should strip them and find the file
+	data, err := fetcher.Fetch(context.Background(), "http://localhost:1234/schema.json?foo=bar&baz=qux")
+	if err != nil {
+		t.Fatalf("Fetch() error = %v", err)
+	}
+
+	if string(data) != schemaContent {
+		t.Errorf("Fetch() = %s, want %s", string(data), schemaContent)
+	}
 }

@@ -1,0 +1,54 @@
+---
+title: JSON Schema Compliance
+description: How XSchema validates against the official JSON Schema Test Suite
+icon: CheckCircle
+---
+
+XSchema adapters are tested against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite), ensuring reliable schema conversion across all supported validation libraries.
+
+## What is compliance testing?
+
+The JSON Schema Test Suite is a collection of test cases that verify correct implementation of the JSON Schema specification. Each test case provides:
+
+- A JSON Schema
+- Sample data to validate
+- Expected validation results (valid or invalid)
+
+XSchema runs these tests by:
+1. Converting each JSON Schema to native validation code (e.g., Zod, Valibot)
+2. Executing the generated validator against the test data
+3. Comparing results to expected outcomes
+
+## Static generation approach
+
+Unlike runtime validators that interpret schemas on-the-fly, XSchema generates static validation code at build time. This approach offers:
+
+- **Type safety**: Full TypeScript type inference from schemas
+- **Performance**: No schema parsing at runtime
+- **Bundle size**: Only include the validation code you need
+
+However, static generation cannot support certain dynamic JSON Schema features that require runtime evaluation. See [Unsupported Features](/docs/compliance/unsupported-features) for these limitations.
+
+## Adapter compliance
+
+Each adapter is tested across multiple JSON Schema drafts. Coverage percentages exclude unsupported features that are fundamental to static generation.
+
+<Cards>
+  <Card title="Zod" href="/docs/typescript/adapters/zod/compliance" />
+  <Card title="Valibot" href="/docs/typescript/adapters/valibot/compliance" />
+  <Card title="ArkType" href="/docs/typescript/adapters/arktype/compliance" />
+  <Card title="Effect" href="/docs/typescript/adapters/effect/compliance" />
+</Cards>
+
+## Understanding results
+
+Each adapter's compliance report shows:
+
+| Term | Meaning |
+| ---- | ------- |
+| **Passed** | Tests where the generated validator produces correct results |
+| **Failed** | Tests with unexpected behavior (potential bugs) |
+| **Unsupported** | Tests excluded due to fundamental limitations |
+| **Coverage** | Pass rate excluding unsupported features |
+
+A coverage of 98%+ means the adapter handles nearly all practical JSON Schema use cases correctly.

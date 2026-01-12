@@ -42,6 +42,7 @@ interface KeywordResult {
   }[];
 }
 
+
 interface DraftResult {
   draft: string;
   keywords: KeywordResult[];
@@ -51,6 +52,9 @@ interface DraftResult {
     skipped: number;
     total: number;
     percentage: number;
+    unsupportedFeatures?: {
+      count: number;
+    };
   };
 }
 
@@ -276,6 +280,7 @@ function groupIssuesByKeyword(drafts: DraftResult[]): KeywordIssue[] {
   );
 }
 
+
 /**
  * Check if adapter is type-only (no runtime validation).
  * Type-only adapters have no passed tests and at least some skipped tests.
@@ -319,7 +324,7 @@ function generateComplianceMdx(info: AdapterInfo): string {
   );
   lines.push("");
 
-  // Type-only adapter callout - skip summary and coverage for these
+  // Type-only adapter callout - nothing else to show
   const typeOnly = isTypeOnlyAdapter(info.drafts);
   if (typeOnly) {
     lines.push('<Callout type="info" title="Type-Only Adapter">');
@@ -329,87 +334,106 @@ function generateComplianceMdx(info: AdapterInfo): string {
     );
     lines.push("</Callout>");
     lines.push("");
+    return lines.join("\n");
+  }
+
+  // Summary section
+  lines.push("## Summary");
+  lines.push("");
+
+  // Check if any draft has unsupported features to decide on table format
+  const hasUnsupportedFeatures = info.drafts.some(
+    (d) => d.summary.unsupportedFeatures && d.summary.unsupportedFeatures.count > 0,
+  );
+
+  if (hasUnsupportedFeatures) {
+    lines.push("| Draft | Passed | Failed | Unsupported | Coverage |");
+    lines.push("| ----- | ------ | ------ | ----------- | -------- |");
   } else {
-    // Summary section
-    lines.push("## Summary");
-    lines.push("");
     lines.push("| Draft | Passed | Failed | Coverage |");
     lines.push("| ----- | ------ | ------ | -------- |");
+  }
 
-    for (const draft of info.drafts) {
-      const { passed, failed, percentage } = draft.summary;
-      const coverageEmoji =
-        percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
+  for (const draft of info.drafts) {
+    const { passed, failed, percentage, unsupportedFeatures } = draft.summary;
+    const unsupportedCount = unsupportedFeatures?.count ?? 0;
+    const coverageEmoji =
+      percentage >= 99 ? "🟢" : percentage >= 95 ? "🟡" : "🔴";
+    if (hasUnsupportedFeatures) {
+      lines.push(
+        `| ${draft.draft} | ${passed} | ${failed} | ${unsupportedCount} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
+      );
+    } else {
       lines.push(
         `| ${draft.draft} | ${passed} | ${failed} | ${coverageEmoji} ${formatPercentage(percentage)} |`,
       );
     }
-    lines.push("");
+  }
+  lines.push("");
 
-    // Coverage by Draft - using tabs
-    lines.push("## Coverage by Draft");
+  // Coverage by Draft - using tabs
+  lines.push("## Coverage by Draft");
+  lines.push("");
+  lines.push(
+    "<Tabs items={[" +
+      info.drafts.map((d) => `"${d.draft}"`).join(", ") +
+      "]}>",
+  );
+  lines.push("");
+
+  for (const draft of info.drafts) {
+    lines.push(`<Tab value="${draft.draft}">`);
     lines.push("");
     lines.push(
-      "<Tabs items={[" +
-        info.drafts.map((d) => `"${d.draft}"`).join(", ") +
-        "]}>",
+      `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
     );
     lines.push("");
 
-    for (const draft of info.drafts) {
-      lines.push(`<Tab value="${draft.draft}">`);
+    // Only show keywords with issues, or a success message
+    const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
+    const passingKeywords = draft.keywords.filter(
+      (kw) => kw.total > 0 && kw.failed === 0,
+    );
+
+    if (failingKeywords.length > 0) {
+      lines.push("**Keywords with issues:**");
       lines.push("");
-      lines.push(
-        `**${draft.summary.passed}/${draft.summary.total}** tests passing (${formatPercentage(draft.summary.percentage)})`,
-      );
-      lines.push("");
-
-      // Only show keywords with issues, or a success message
-      const failingKeywords = draft.keywords.filter((kw) => kw.failed > 0);
-      const passingKeywords = draft.keywords.filter(
-        (kw) => kw.total > 0 && kw.failed === 0,
-      );
-
-      if (failingKeywords.length > 0) {
-        lines.push("**Keywords with issues:**");
-        lines.push("");
-        lines.push("| Keyword | Status | Pass Rate |");
-        lines.push("| ------- | ------ | --------- |");
-        for (const kw of failingKeywords) {
-          const rate = formatPercentage((kw.passed / kw.total) * 100);
-          lines.push(
-            `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
-          );
-        }
-        lines.push("");
-      }
-
-      if (passingKeywords.length > 0) {
-        lines.push("<Accordions>");
+      lines.push("| Keyword | Status | Pass Rate |");
+      lines.push("| ------- | ------ | --------- |");
+      for (const kw of failingKeywords) {
+        const rate = formatPercentage((kw.passed / kw.total) * 100);
         lines.push(
-          `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+          `| \`${kw.keyword}\` | ${getStatusEmoji(kw.passed, kw.total)} | ${kw.passed}/${kw.total} (${rate}) |`,
         );
-        lines.push("");
-        lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
-        lines.push("");
-        lines.push("</Accordion>");
-        lines.push("</Accordions>");
-        lines.push("");
       }
-
-      lines.push("</Tab>");
       lines.push("");
     }
 
-    lines.push("</Tabs>");
+    if (passingKeywords.length > 0) {
+      lines.push("<Accordions>");
+      lines.push(
+        `<Accordion title="✅ ${passingKeywords.length} fully supported keywords">`,
+      );
+      lines.push("");
+      lines.push(passingKeywords.map((kw) => `\`${kw.keyword}\``).join(", "));
+      lines.push("");
+      lines.push("</Accordion>");
+      lines.push("</Accordions>");
+      lines.push("");
+    }
+
+    lines.push("</Tab>");
     lines.push("");
   }
 
-  // Known Issues section - grouped by keyword
+  lines.push("</Tabs>");
+  lines.push("");
+
+  // Unexpected Failures section - actual failures grouped by keyword
   const issues = groupIssuesByKeyword(info.drafts);
 
   if (issues.length > 0) {
-    lines.push("## Known Issues");
+    lines.push("## Unexpected Failures");
     lines.push("");
     lines.push(
       "The following JSON Schema keywords have incomplete support. " +
@@ -449,14 +473,16 @@ function generateComplianceMdx(info: AdapterInfo): string {
 
     lines.push("</Accordions>");
     lines.push("");
-  } else {
-    lines.push("## Known Issues");
-    lines.push("");
-    lines.push(
-      "🎉 **No known issues!** All JSON Schema keywords are fully supported.",
-    );
-    lines.push("");
   }
+
+  // Link to global unsupported features
+  lines.push("## Unsupported Features");
+  lines.push("");
+  lines.push(
+    "Some tests are excluded from compliance percentages due to fundamental limitations " +
+      "of static code generation. See [Unsupported Features](/docs/compliance/unsupported-features) for details.",
+  );
+  lines.push("");
 
   return lines.join("\n");
 }

@@ -34,6 +34,7 @@ type Options struct {
 	HTTPTimeout time.Duration
 	Retries     int
 	NoCache     bool
+	Headers     map[string]string
 }
 
 // DefaultOptions returns sensible defaults
@@ -149,17 +150,18 @@ func maskHeaderValue(value string) string {
 	return value[:2] + "***" + value[len(value)-2:]
 }
 
-// RetrieveFromURL fetches a JSON schema from a URL with retry
-// headers is a map of already-resolved header values (no ${VAR} syntax)
-func RetrieveFromURL(ctx context.Context, url string, headers map[string]string, opts Options) (json.RawMessage, error) {
+// RetrieveFromURL fetches a JSON schema from a URL with retry.
+// opts.Headers should contain already-resolved header values (no ${VAR} syntax).
+// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
+func RetrieveFromURL(ctx context.Context, url string, opts Options, draftHint ...string) (json.RawMessage, error) {
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
 	maxAttempts := max(opts.Retries, 1)
 
 	ui.Verbosef("fetching from URL: %s (max_attempts: %d)", url, maxAttempts)
-	if len(headers) > 0 {
-		for name, value := range headers {
+	if len(opts.Headers) > 0 {
+		for name, value := range opts.Headers {
 			ui.Verbosef("  header: %s=%s", name, maskHeaderValue(value))
 		}
 	}
@@ -182,7 +184,7 @@ func RetrieveFromURL(ctx context.Context, url string, headers map[string]string,
 		req.Header.Set("User-Agent", userAgent)
 
 		// Add custom headers
-		for name, value := range headers {
+		for name, value := range opts.Headers {
 			req.Header.Set(name, value)
 		}
 
@@ -216,7 +218,7 @@ func RetrieveFromURL(ctx context.Context, url string, headers map[string]string,
 			return nil, fmt.Errorf("invalid JSON from %s", url)
 		}
 
-		if err := validator.ValidateSchema(data); err != nil {
+		if err := validator.ValidateSchema(data, draftHint...); err != nil {
 			return nil, fmt.Errorf("schema from %s: %w", url, err)
 		}
 
@@ -227,8 +229,9 @@ func RetrieveFromURL(ctx context.Context, url string, headers map[string]string,
 	return nil, lastErr
 }
 
-// retrieveFromFile reads a JSON schema from a file relative to the config file
-func retrieveFromFile(ctx context.Context, filePath string, configPath string) (json.RawMessage, error) {
+// retrieveFromFile reads a JSON schema from a file relative to the config file.
+// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
+func retrieveFromFile(ctx context.Context, filePath string, configPath string, draftHint ...string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -252,7 +255,7 @@ func retrieveFromFile(ctx context.Context, filePath string, configPath string) (
 		return nil, fmt.Errorf("invalid JSON in %s", fullPath)
 	}
 
-	if err := validator.ValidateSchema(data); err != nil {
+	if err := validator.ValidateSchema(data, draftHint...); err != nil {
 		return nil, fmt.Errorf("schema in %s: %w", fullPath, err)
 	}
 
@@ -260,8 +263,9 @@ func retrieveFromFile(ctx context.Context, filePath string, configPath string) (
 	return json.RawMessage(data), nil
 }
 
-// RetrieveFromFilePath reads a JSON schema from an absolute file path
-func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMessage, error) {
+// RetrieveFromFilePath reads a JSON schema from an absolute file path.
+// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
+func RetrieveFromFilePath(ctx context.Context, absolutePath string, draftHint ...string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -281,7 +285,7 @@ func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMes
 		return nil, fmt.Errorf("invalid JSON in %s", absolutePath)
 	}
 
-	if err := validator.ValidateSchema(data); err != nil {
+	if err := validator.ValidateSchema(data, draftHint...); err != nil {
 		return nil, fmt.Errorf("schema in %s: %w", absolutePath, err)
 	}
 
@@ -384,7 +388,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				if err := json.Unmarshal(d.Source, &url); err != nil {
 					return fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
 				}
-				schema, err = RetrieveFromURL(ctx, url, hdrs, opts)
+				urlOpts := opts
+				urlOpts.Headers = hdrs
+				schema, err = RetrieveFromURL(ctx, url, urlOpts)
 			case parser.SourceFile:
 				var filePath string
 				if err := json.Unmarshal(d.Source, &filePath); err != nil {

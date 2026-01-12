@@ -3,11 +3,14 @@ package bundler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/xschemadev/xschema/fetcher"
 )
 
 func testdataPath(name string) string {
@@ -25,11 +28,33 @@ func readTestFile(t *testing.T, name string) json.RawMessage {
 	return json.RawMessage(data)
 }
 
+// testFileFetcher creates a fetcher that reads files relative to the testdata directory
+// and also maps localhost:1234 URLs to the remotes/ subdirectory
+func testFileFetcher() fetcher.Fetcher {
+	return fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		// Handle localhost:1234 URLs (for JSON Schema Test Suite compatibility)
+		if strings.HasPrefix(uri, "http://localhost:1234/") {
+			localPath := filepath.Join(testdataPath("remotes"), strings.TrimPrefix(uri, "http://localhost:1234/"))
+			data, err := os.ReadFile(localPath)
+			if err != nil {
+				return nil, err
+			}
+			return json.RawMessage(data), nil
+		}
+		// Otherwise read from filesystem
+		data, err := os.ReadFile(uri)
+		if err != nil {
+			return nil, err
+		}
+		return json.RawMessage(data), nil
+	})
+}
+
 func TestBundleSimpleSchema(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "simple.json")
 
-	bundled, err := Bundle(ctx, schema, DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: schema})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -54,7 +79,7 @@ func TestBundleLocalRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "local-ref.json")
 
-	bundled, err := Bundle(ctx, schema, DefaultOptions())
+	bundled, err := Bundle(ctx, BundleInput{Schema: schema})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -76,11 +101,11 @@ func TestBundleFileRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-file-ref.json")
 
-	opts := Options{
-		BaseURI: testdataPath("with-file-ref.json"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-file-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -129,11 +154,11 @@ func TestBundleFragmentRef(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-fragment-ref.json")
 
-	opts := Options{
-		BaseURI: testdataPath("with-fragment-ref.json"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-fragment-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -143,14 +168,27 @@ func TestBundleFragmentRef(t *testing.T) {
 		t.Fatalf("failed to parse result: %v", err)
 	}
 
-	// The ref should include the fragment
+	// The ref should point to the flattened definition
 	props := result["properties"].(map[string]any)
 	addressProp := props["address"].(map[string]any)
 	ref := addressProp["$ref"].(string)
 
-	// Should be something like #/$defs/key/definitions/Address
-	if !strings.Contains(ref, "/definitions/Address") {
-		t.Errorf("expected ref to contain /definitions/Address, got %s", ref)
+	// Definitions are flattened: #/$defs/key__Address (not #/$defs/key/definitions/Address)
+	if !strings.Contains(ref, "__Address") {
+		t.Errorf("expected ref to contain flattened __Address, got %s", ref)
+	}
+
+	// Verify the flattened definition exists in $defs
+	defs := result["$defs"].(map[string]any)
+	var foundFlattenedAddress bool
+	for key := range defs {
+		if strings.HasSuffix(key, "__Address") {
+			foundFlattenedAddress = true
+			break
+		}
+	}
+	if !foundFlattenedAddress {
+		t.Error("expected flattened Address definition in $defs")
 	}
 }
 
@@ -158,12 +196,11 @@ func TestBundleLocalhostMapping(t *testing.T) {
 	ctx := context.Background()
 	schema := readTestFile(t, "with-localhost-ref.json")
 
-	opts := Options{
-		BaseURI:     testdataPath("with-localhost-ref.json"),
-		RemotesPath: testdataPath("remotes"),
-	}
-
-	bundled, err := Bundle(ctx, schema, opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    schema,
+		SourceURI: testdataPath("with-localhost-ref.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -212,11 +249,11 @@ func TestBundleInternalRefRewriting(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schemaWithInternalRefs), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schemaWithInternalRefs),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -226,23 +263,40 @@ func TestBundleInternalRefRewriting(t *testing.T) {
 		t.Fatalf("failed to parse result: %v", err)
 	}
 
-	// The internal refs in the embedded schema should be rewritten
+	// The internal refs in the embedded schema should be rewritten to flattened location
 	defs := result["$defs"].(map[string]any)
-	for _, def := range defs {
+
+	// With flattening, the Address definition should be at $defs/key__Address
+	// and the ref in the user schema should point there
+	var foundUserSchema bool
+	for key, def := range defs {
 		defObj := def.(map[string]any)
 		if props, ok := defObj["properties"].(map[string]any); ok {
 			if addr, ok := props["address"].(map[string]any); ok {
+				foundUserSchema = true
 				ref := addr["$ref"].(string)
 				// The internal ref #/definitions/Address should be rewritten
-				// to #/$defs/key/definitions/Address
+				// to #/$defs/key__Address (flattened)
 				if !strings.HasPrefix(ref, "#/$defs/") {
 					t.Errorf("internal ref should be rewritten, got %s", ref)
 				}
-				if !strings.Contains(ref, "/definitions/Address") {
-					t.Errorf("internal ref should preserve path, got %s", ref)
+				if !strings.Contains(ref, "__Address") {
+					t.Errorf("internal ref should point to flattened Address, got %s", ref)
+				}
+				// The flattened key should exist
+				expectedDefKey := key + "__Address"
+				if _, ok := defs[expectedDefKey]; !ok {
+					// The ref might use a different key format, just check it exists
+					refKey := strings.TrimPrefix(ref, "#/$defs/")
+					if _, ok := defs[refKey]; !ok {
+						t.Errorf("flattened Address def should exist, ref points to %s", refKey)
+					}
 				}
 			}
 		}
+	}
+	if !foundUserSchema {
+		t.Error("embedded user schema not found in $defs")
 	}
 }
 
@@ -250,11 +304,11 @@ func TestBundleMissingFile(t *testing.T) {
 	ctx := context.Background()
 	schema := `{"$ref": "nonexistent.json"}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	_, err := Bundle(ctx, json.RawMessage(schema), opts)
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err == nil {
 		t.Error("expected error for missing file")
 	}
@@ -264,7 +318,7 @@ func TestBundleInvalidJSON(t *testing.T) {
 	ctx := context.Background()
 	schema := `{not valid json}`
 
-	_, err := Bundle(ctx, json.RawMessage(schema), DefaultOptions())
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
 	if err == nil {
 		t.Error("expected error for invalid JSON")
 	}
@@ -275,11 +329,17 @@ func TestBundleContextCancellation(t *testing.T) {
 	cancel() // Cancel immediately
 
 	schema := `{"$ref": "http://example.com/schema.json"}`
-	opts := Options{
-		BaseURI: "http://example.com/base.json",
-	}
 
-	_, err := Bundle(ctx, json.RawMessage(schema), opts)
+	// Create a fetcher that checks for context cancellation
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return nil, ctx.Err()
+	})
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
 	if err == nil {
 		t.Error("expected error for cancelled context")
 	}
@@ -384,11 +444,11 @@ func TestBundlePreservesExistingDefs(t *testing.T) {
 		}
 	}`
 
-	opts := Options{
-		BaseURI: testdataPath("test.json"),
-	}
-
-	bundled, err := Bundle(ctx, json.RawMessage(schema), opts)
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -407,5 +467,1300 @@ func TestBundlePreservesExistingDefs(t *testing.T) {
 
 	if len(defs) < 2 {
 		t.Errorf("expected at least 2 defs, got %d", len(defs))
+	}
+}
+
+func TestBundleRejectsMissingInternalRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "#/$defs/NonExistent" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for missing internal ref")
+	}
+	if !strings.Contains(err.Error(), "missing target") {
+		t.Errorf("expected 'missing target' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsDynamicRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$dynamicRef": "#foo"
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for $dynamicRef")
+	}
+	if !strings.Contains(err.Error(), "$dynamicRef") {
+		t.Errorf("expected '$dynamicRef' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsDynamicAnchor(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$dynamicAnchor": "foo"
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for $dynamicAnchor")
+	}
+	if !strings.Contains(err.Error(), "$dynamicAnchor") {
+		t.Errorf("expected '$dynamicAnchor' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsRecursiveRef(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$recursiveRef": "#"
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for $recursiveRef")
+	}
+	if !strings.Contains(err.Error(), "$recursiveRef") {
+		t.Errorf("expected '$recursiveRef' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsRecursiveAnchor(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"$recursiveAnchor": true
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for $recursiveAnchor")
+	}
+	if !strings.Contains(err.Error(), "$recursiveAnchor") {
+		t.Errorf("expected '$recursiveAnchor' in error, got: %v", err)
+	}
+}
+
+func TestBundleRejectsExternalRefWithoutBaseURI(t *testing.T) {
+	ctx := context.Background()
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "other.json" }
+		}
+	}`
+
+	// No SourceURI and no Fetcher - external ref should error
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for external ref without base URI")
+	}
+	if !strings.Contains(err.Error(), "requires a base URI") {
+		t.Errorf("expected 'requires a base URI' in error, got: %v", err)
+	}
+}
+
+func TestBundleAllowsAbsoluteExternalRefWithoutBaseURI(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel immediately
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"user": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	// No SourceURI but ref is absolute - needs a fetcher though
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return nil, ctx.Err()
+	})
+	_, err := Bundle(ctx, BundleInput{
+		Schema:  json.RawMessage(schema),
+		Fetcher: fetcher,
+	})
+	// Should fail with fetch error (context cancelled), not base URI error
+	if err == nil {
+		t.Error("expected error (context cancelled)")
+	}
+	if strings.Contains(err.Error(), "requires a base URI") {
+		t.Errorf("should not require base URI for absolute refs, got: %v", err)
+	}
+}
+
+func TestValidateJSONPointer(t *testing.T) {
+	root := map[string]any{
+		"type": "object",
+		"$defs": map[string]any{
+			"User": map[string]any{
+				"type": "object",
+			},
+		},
+		"properties": map[string]any{
+			"name": map[string]any{"type": "string"},
+		},
+	}
+
+	tests := []struct {
+		ref     string
+		wantErr bool
+	}{
+		{"#", false},                        // root ref
+		{"#/$defs/User", false},             // valid path
+		{"#/properties/name", false},        // valid nested path
+		{"#/$defs/NonExistent", true},       // missing key
+		{"#/properties/name/foo", true},     // traverse into primitive
+		{"#/$defs/User/properties/x", true}, // path doesn't exist
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.ref, func(t *testing.T) {
+			err := validateJSONPointer(tt.ref, root)
+			if tt.wantErr && err == nil {
+				t.Error("expected error")
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+func TestBundleInjectsSchemaForDraft(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		draft      string
+		wantSchema string
+	}{
+		{"draft3", "http://json-schema.org/draft-03/schema#"},
+		{"draft4", "http://json-schema.org/draft-04/schema#"},
+		{"draft6", "http://json-schema.org/draft-06/schema#"},
+		{"draft7", "http://json-schema.org/draft-07/schema#"},
+		{"draft2019-09", "https://json-schema.org/draft/2019-09/schema"},
+		{"draft2020-12", "https://json-schema.org/draft/2020-12/schema"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.draft, func(t *testing.T) {
+			schema := `{"type": "string"}`
+
+			bundled, err := Bundle(ctx, BundleInput{
+				Schema: json.RawMessage(schema),
+				Draft:  tt.draft,
+			})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			var result map[string]any
+			if err := json.Unmarshal(bundled, &result); err != nil {
+				t.Fatalf("failed to parse result: %v", err)
+			}
+
+			got, ok := result["$schema"].(string)
+			if !ok {
+				t.Fatalf("$schema not found in bundled schema")
+			}
+			if got != tt.wantSchema {
+				t.Errorf("$schema: got %q, want %q", got, tt.wantSchema)
+			}
+		})
+	}
+}
+
+func TestBundlePreservesExistingSchema(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema already has $schema - should NOT be overwritten
+	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema: json.RawMessage(schema),
+		Draft:  "draft4", // trying to inject draft4
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	got := result["$schema"].(string)
+	// Should preserve the original draft7 schema, not inject draft4
+	if got != "http://json-schema.org/draft-07/schema#" {
+		t.Errorf("existing $schema should be preserved, got %q", got)
+	}
+}
+
+func TestBundleNoDraftNoInjection(t *testing.T) {
+	ctx := context.Background()
+
+	// No draft specified - should not inject $schema
+	schema := `{"type": "string"}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if _, hasSchema := result["$schema"]; hasSchema {
+		t.Error("should not inject $schema when no draft is specified")
+	}
+}
+
+func TestValidateJSONPointerURIEncoded(t *testing.T) {
+	// Schema with keys that need URI encoding in refs
+	root := map[string]any{
+		"$defs": map[string]any{
+			"percent%field": map[string]any{"type": "string"},
+			"slash/field":   map[string]any{"type": "number"},
+			"tilde~field":   map[string]any{"type": "boolean"},
+			"quote\"field":  map[string]any{"type": "integer"},
+			"space field":   map[string]any{"type": "array"},
+		},
+	}
+
+	tests := []struct {
+		name    string
+		ref     string
+		wantErr bool
+	}{
+		// URI-encoded percent: %25 → %
+		{"percent encoded", "#/$defs/percent%25field", false},
+		// URI-encoded slash: %2F → / (also needs ~1 for JSON pointer)
+		{"slash encoded", "#/$defs/slash~1field", false},
+		// URI-encoded tilde: %7E → ~ (but JSON pointer uses ~0)
+		{"tilde via json pointer", "#/$defs/tilde~0field", false},
+		// URI-encoded quote: %22 → "
+		{"quote encoded", "#/$defs/quote%22field", false},
+		// URI-encoded space: %20 → space
+		{"space encoded", "#/$defs/space%20field", false},
+		// Direct keys (not encoded) should also work
+		{"direct percent - should fail", "#/$defs/percent%field", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateJSONPointer(tt.ref, root)
+			if tt.wantErr && err == nil {
+				t.Error("expected error")
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+func TestBundleAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with $anchor and $ref to that anchor
+	schema := `{
+		"$ref": "#foo",
+		"$defs": {
+			"A": {
+				"$anchor": "foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	ref := result["$ref"].(string)
+	if ref != "#/$defs/A" {
+		t.Errorf("expected $ref to be rewritten to #/$defs/A, got %s", ref)
+	}
+}
+
+func TestBundleNestedAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with nested $anchor
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "#bar" }
+		},
+		"$defs": {
+			"outer": {
+				"$defs": {
+					"inner": {
+						"$anchor": "bar",
+						"type": "string"
+					}
+				}
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to the nested JSON pointer
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+	if ref != "#/$defs/outer/$defs/inner" {
+		t.Errorf("expected $ref to be rewritten to #/$defs/outer/$defs/inner, got %s", ref)
+	}
+}
+
+func TestBundleMissingAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with $ref to non-existent anchor
+	schema := `{
+		"$ref": "#nonexistent"
+	}`
+
+	_, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err == nil {
+		t.Error("expected error for missing anchor ref")
+	}
+	// Should fail validation (anchor not found, so ref stays as #nonexistent which isn't a valid JSON pointer)
+}
+
+func TestBundleMultipleAnchors(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with multiple anchors
+	schema := `{
+		"oneOf": [
+			{ "$ref": "#first" },
+			{ "$ref": "#second" }
+		],
+		"$defs": {
+			"A": {
+				"$anchor": "first",
+				"type": "string"
+			},
+			"B": {
+				"$anchor": "second",
+				"type": "number"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	oneOf := result["oneOf"].([]any)
+	firstRef := oneOf[0].(map[string]any)["$ref"].(string)
+	secondRef := oneOf[1].(map[string]any)["$ref"].(string)
+
+	if firstRef != "#/$defs/A" {
+		t.Errorf("expected first ref to be #/$defs/A, got %s", firstRef)
+	}
+	if secondRef != "#/$defs/B" {
+		t.Errorf("expected second ref to be #/$defs/B, got %s", secondRef)
+	}
+}
+
+func TestBundleFragmentIDAsAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema using draft4/6/7 style fragment $id as location-independent identifier
+	schema := `{
+		"allOf": [{ "$ref": "#foo" }],
+		"definitions": {
+			"A": {
+				"$id": "#foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	allOf := result["allOf"].([]any)
+	ref := allOf[0].(map[string]any)["$ref"].(string)
+	if ref != "#/definitions/A" {
+		t.Errorf("expected $ref to be rewritten to #/definitions/A, got %s", ref)
+	}
+}
+
+func TestBundleLegacyIDAsAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema using draft4 style "id" (not "$id") with fragment
+	schema := `{
+		"allOf": [{ "$ref": "#bar" }],
+		"definitions": {
+			"B": {
+				"id": "#bar",
+				"type": "string"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{Schema: json.RawMessage(schema)})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The anchor ref should be rewritten to a JSON pointer
+	allOf := result["allOf"].([]any)
+	ref := allOf[0].(map[string]any)["$ref"].(string)
+	if ref != "#/definitions/B" {
+		t.Errorf("expected $ref to be rewritten to #/definitions/B, got %s", ref)
+	}
+}
+
+func TestBundleRemoteSchemaWithAnchor(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs a remote schema, and the remote schema uses anchors internally
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "schema-with-anchor.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The remote schema is embedded in $defs. Its internal anchor ref (#myAnchor)
+	// should be rewritten to point to the correct flattened location.
+	defs := result["$defs"].(map[string]any)
+
+	// Find the embedded schema (should have properties.value.$ref)
+	var embeddedRef string
+	for _, def := range defs {
+		defObj, ok := def.(map[string]any)
+		if !ok {
+			continue
+		}
+		props, ok := defObj["properties"].(map[string]any)
+		if !ok {
+			continue
+		}
+		valueProp, ok := props["value"].(map[string]any)
+		if !ok {
+			continue
+		}
+		if ref, ok := valueProp["$ref"].(string); ok {
+			embeddedRef = ref
+			break
+		}
+	}
+
+	if embeddedRef == "" {
+		t.Fatal("could not find embedded schema with properties.value.$ref")
+	}
+
+	// The anchor should be resolved to point to flattened location
+	// #myAnchor → #/$defs/schema_with_anchor_json__Target (flattened)
+	if !strings.HasPrefix(embeddedRef, "#/$defs/") {
+		t.Errorf("expected anchor ref to be rewritten to #/$defs/..., got %s", embeddedRef)
+	}
+	if !strings.Contains(embeddedRef, "__Target") {
+		t.Errorf("expected anchor ref to point to flattened Target def, got %s", embeddedRef)
+	}
+}
+
+func TestBundleExternalAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs an anchor in a remote schema directly: remote.json#anchor
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "schema-with-anchor.json#myAnchor" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The ref should point directly to the flattened Target def
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+
+	// Should be #/$defs/key__Target (flattened location)
+	if !strings.HasPrefix(ref, "#/$defs/") {
+		t.Errorf("expected ref to be #/$defs/..., got %s", ref)
+	}
+	if !strings.Contains(ref, "__Target") {
+		t.Errorf("expected ref to point to flattened Target def, got %s", ref)
+	}
+
+	// The flattened Target def should exist
+	defs := result["$defs"].(map[string]any)
+	refKey := strings.TrimPrefix(ref, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened Target def %s not found in $defs", refKey)
+	}
+}
+
+// =============================================================================
+// Fetcher Interface Tests (US-004)
+// =============================================================================
+
+func TestFetcherCalledForExternalRefs(t *testing.T) {
+	ctx := context.Background()
+
+	var fetchedURIs []string
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		fetchedURIs = append(fetchedURIs, uri)
+		return json.RawMessage(`{"type": "string"}`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(fetchedURIs) != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once, got %d calls", len(fetchedURIs))
+	}
+	if len(fetchedURIs) > 0 && fetchedURIs[0] != "http://example.com/schema.json" {
+		t.Errorf("expected fetch URI http://example.com/schema.json, got %s", fetchedURIs[0])
+	}
+}
+
+func TestFetcherCalledForRelativeRefs(t *testing.T) {
+	ctx := context.Background()
+
+	var fetchedURIs []string
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		fetchedURIs = append(fetchedURIs, uri)
+		return json.RawMessage(`{"type": "integer"}`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "other.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/schemas/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(fetchedURIs) != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once, got %d calls", len(fetchedURIs))
+	}
+	// Relative ref should be resolved against base URI
+	expected := "http://example.com/schemas/other.json"
+	if len(fetchedURIs) > 0 && fetchedURIs[0] != expected {
+		t.Errorf("expected fetch URI %s, got %s", expected, fetchedURIs[0])
+	}
+}
+
+func TestFetcherErrorPropagated(t *testing.T) {
+	ctx := context.Background()
+
+	fetchErr := fmt.Errorf("network error: connection refused")
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return nil, fetchErr
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+
+	if err == nil {
+		t.Fatal("expected error from Fetcher to be propagated")
+	}
+	if !strings.Contains(err.Error(), "network error") {
+		t.Errorf("expected error to contain 'network error', got: %v", err)
+	}
+}
+
+func TestFetcherInvalidJSONError(t *testing.T) {
+	ctx := context.Background()
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(`{not valid json`), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+
+	if err == nil {
+		t.Fatal("expected error for invalid JSON from Fetcher")
+	}
+	if !strings.Contains(err.Error(), "parse") {
+		t.Errorf("expected error to mention parsing, got: %v", err)
+	}
+}
+
+func TestNilFetcherExternalRefError(t *testing.T) {
+	ctx := context.Background()
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"external": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   nil, // explicitly nil
+	})
+
+	if err == nil {
+		t.Fatal("expected error for external ref with nil Fetcher")
+	}
+	if !strings.Contains(err.Error(), "no fetcher") {
+		t.Errorf("expected error to mention 'no fetcher', got: %v", err)
+	}
+}
+
+func TestLocalRefsDoNotCallFetcher(t *testing.T) {
+	ctx := context.Background()
+
+	fetcherCalled := false
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		fetcherCalled = true
+		return nil, fmt.Errorf("fetcher should not be called")
+	})
+
+	// Schema with only local refs
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"User": { "type": "string" }
+		},
+		"properties": {
+			"name": { "$ref": "#/$defs/User" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if fetcherCalled {
+		t.Error("Fetcher should not be called for local refs (#/...)")
+	}
+}
+
+func TestLocalAnchorRefsDoNotCallFetcher(t *testing.T) {
+	ctx := context.Background()
+
+	fetcherCalled := false
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		fetcherCalled = true
+		return nil, fmt.Errorf("fetcher should not be called")
+	})
+
+	// Schema with local anchor refs
+	schema := `{
+		"$ref": "#foo",
+		"$defs": {
+			"A": {
+				"$anchor": "foo",
+				"type": "integer"
+			}
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if fetcherCalled {
+		t.Error("Fetcher should not be called for local anchor refs (#anchor)")
+	}
+}
+
+func TestFetcherCalledOncePerURI(t *testing.T) {
+	ctx := context.Background()
+
+	fetchCounts := make(map[string]int)
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		fetchCounts[uri]++
+		return json.RawMessage(`{"type": "string"}`), nil
+	})
+
+	// Schema that refs the same external schema multiple times
+	schema := `{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/schema.json" },
+			"b": { "$ref": "http://example.com/schema.json" },
+			"c": { "$ref": "http://example.com/schema.json" }
+		}
+	}`
+
+	_, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should only fetch once due to caching
+	uri := "http://example.com/schema.json"
+	if fetchCounts[uri] != 1 {
+		t.Errorf("expected Fetcher.Fetch() called once for %s, got %d calls", uri, fetchCounts[uri])
+	}
+}
+
+func TestFetchFuncAdapter(t *testing.T) {
+	// Test that FetchFunc correctly implements Fetcher interface
+	fn := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		if uri == "test://ok" {
+			return json.RawMessage(`{"type": "number"}`), nil
+		}
+		return nil, fmt.Errorf("unknown uri: %s", uri)
+	})
+
+	// Test successful fetch
+	result, err := fn.Fetch(context.Background(), "test://ok")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(result) != `{"type": "number"}` {
+		t.Errorf("expected `{\"type\": \"number\"}`, got %s", string(result))
+	}
+
+	// Test error case
+	_, err = fn.Fetch(context.Background(), "test://fail")
+	if err == nil {
+		t.Error("expected error for unknown uri")
+	}
+	if !strings.Contains(err.Error(), "unknown uri") {
+		t.Errorf("expected 'unknown uri' in error, got: %v", err)
+	}
+}
+
+// =============================================================================
+// Nested $defs Flattening Tests (US-005, US-006)
+// =============================================================================
+
+func TestBundle3LevelNestedDefs(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with 3-level nesting: $defs/A/$defs/B/$defs/C
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"A": {
+				"type": "object",
+				"$defs": {
+					"B": {
+						"type": "object",
+						"$defs": {
+							"C": {
+								"type": "string"
+							}
+						},
+						"properties": {
+							"c": { "$ref": "#/$defs/A/$defs/B/$defs/C" }
+						}
+					}
+				},
+				"properties": {
+					"b": { "$ref": "#/$defs/A/$defs/B" }
+				}
+			}
+		},
+		"properties": {
+			"a": { "$ref": "#/$defs/A" }
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/nested.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have flattened keys with __ separators
+	// Expected keys: example_com_nested_json, example_com_nested_json__A,
+	//               example_com_nested_json__A__B, example_com_nested_json__A__B__C
+	var foundKeys []string
+	for key := range defs {
+		foundKeys = append(foundKeys, key)
+	}
+
+	// Check all nested defs are flattened to root level
+	var hasA, hasB, hasC bool
+	for key := range defs {
+		if strings.Contains(key, "__A__B__C") {
+			hasC = true
+		} else if strings.Contains(key, "__A__B") && !strings.Contains(key, "__C") {
+			hasB = true
+		} else if strings.Contains(key, "__A") && !strings.Contains(key, "__B") {
+			hasA = true
+		}
+	}
+
+	if !hasA {
+		t.Errorf("expected flattened key containing __A, found: %v", foundKeys)
+	}
+	if !hasB {
+		t.Errorf("expected flattened key containing __A__B, found: %v", foundKeys)
+	}
+	if !hasC {
+		t.Errorf("expected flattened key containing __A__B__C, found: %v", foundKeys)
+	}
+}
+
+func TestBundleMixedDefsAndDefinitions(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with both $defs and definitions (draft-04 style)
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"Modern": {
+				"type": "string"
+			}
+		},
+		"definitions": {
+			"Legacy": {
+				"type": "integer"
+			}
+		},
+		"properties": {
+			"modern": { "$ref": "#/$defs/Modern" },
+			"legacy": { "$ref": "#/definitions/Legacy" }
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/mixed.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Both Modern and Legacy should be flattened to root $defs
+	var foundModern, foundLegacy bool
+	for key := range defs {
+		if strings.HasSuffix(key, "__Modern") {
+			foundModern = true
+		}
+		if strings.HasSuffix(key, "__Legacy") {
+			foundLegacy = true
+		}
+	}
+
+	if !foundModern {
+		t.Error("expected flattened Modern definition in $defs")
+	}
+	if !foundLegacy {
+		t.Error("expected flattened Legacy definition in $defs")
+	}
+}
+
+func TestBundleKeyCollisionWithCounter(t *testing.T) {
+	ctx := context.Background()
+
+	// Two remote schemas with the same def name "Shared"
+	schemaA := `{
+		"type": "object",
+		"$defs": {
+			"Shared": {
+				"type": "string",
+				"description": "from A"
+			}
+		}
+	}`
+
+	schemaB := `{
+		"type": "object",
+		"$defs": {
+			"Shared": {
+				"type": "integer",
+				"description": "from B"
+			}
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		if strings.Contains(uri, "a.json") {
+			return json.RawMessage(schemaA), nil
+		}
+		return json.RawMessage(schemaB), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/a.json" },
+			"b": { "$ref": "http://example.com/b.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Both Shared defs should exist with unique keys (one may have counter suffix)
+	var sharedCount int
+	for key := range defs {
+		if strings.Contains(key, "Shared") {
+			sharedCount++
+		}
+	}
+
+	if sharedCount < 2 {
+		t.Errorf("expected 2 Shared definitions (with unique keys), got %d", sharedCount)
+	}
+
+	// Verify they have different types (string vs integer)
+	var foundString, foundInteger bool
+	for key, def := range defs {
+		if strings.Contains(key, "Shared") {
+			defObj := def.(map[string]any)
+			if defObj["type"] == "string" {
+				foundString = true
+			}
+			if defObj["type"] == "integer" {
+				foundInteger = true
+			}
+		}
+	}
+
+	if !foundString || !foundInteger {
+		t.Error("expected both string and integer Shared definitions to be preserved")
+	}
+}
+
+func TestBundleRefsInFlattenedDefsRewritten(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema where nested def references another nested def
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"Outer": {
+				"$defs": {
+					"Inner": {
+						"type": "string"
+					}
+				},
+				"properties": {
+					"value": { "$ref": "#/$defs/Outer/$defs/Inner" }
+				}
+			}
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/refs.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Find the flattened Outer def and check its internal ref was rewritten
+	var outerKey string
+	for key := range defs {
+		if strings.HasSuffix(key, "__Outer") {
+			outerKey = key
+			break
+		}
+	}
+
+	if outerKey == "" {
+		t.Fatal("expected flattened Outer definition")
+	}
+
+	outerDef := defs[outerKey].(map[string]any)
+	props := outerDef["properties"].(map[string]any)
+	valueRef := props["value"].(map[string]any)["$ref"].(string)
+
+	// The ref should point to the flattened Inner location
+	expectedRef := "#/$defs/" + outerKey + "__Inner"
+	if valueRef != expectedRef {
+		t.Errorf("expected ref to be rewritten to %s, got %s", expectedRef, valueRef)
+	}
+
+	// Verify the flattened Inner def exists
+	innerKey := outerKey + "__Inner"
+	if _, ok := defs[innerKey]; !ok {
+		t.Errorf("expected flattened Inner definition at key %s", innerKey)
+	}
+}
+
+func TestBundleDeeplyNestedRefChain(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema A references B/$defs/X, which references C/$defs/Y
+	schemaC := `{
+		"type": "object",
+		"$defs": {
+			"Y": {
+				"type": "string",
+				"minLength": 1
+			}
+		}
+	}`
+
+	schemaB := `{
+		"type": "object",
+		"$defs": {
+			"X": {
+				"$ref": "http://example.com/c.json#/$defs/Y"
+			}
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		if strings.Contains(uri, "b.json") {
+			return json.RawMessage(schemaB), nil
+		}
+		if strings.Contains(uri, "c.json") {
+			return json.RawMessage(schemaC), nil
+		}
+		return nil, fmt.Errorf("unknown URI: %s", uri)
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "http://example.com/b.json#/$defs/X" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/a.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have both B's X and C's Y flattened
+	var foundX, foundY bool
+	for key := range defs {
+		if strings.Contains(key, "__X") || strings.HasSuffix(key, "_X") {
+			foundX = true
+		}
+		if strings.Contains(key, "__Y") || strings.HasSuffix(key, "_Y") {
+			foundY = true
+		}
+	}
+
+	if !foundX {
+		t.Error("expected flattened X definition from b.json")
+	}
+	if !foundY {
+		t.Error("expected flattened Y definition from c.json")
+	}
+
+	// Verify the ref chain resolves correctly
+	props := result["properties"].(map[string]any)
+	valueRef := props["value"].(map[string]any)["$ref"].(string)
+	if !strings.HasPrefix(valueRef, "#/$defs/") {
+		t.Errorf("expected ref to be rewritten to #/$defs/..., got %s", valueRef)
 	}
 }

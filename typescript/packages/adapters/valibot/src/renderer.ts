@@ -24,6 +24,27 @@ import type {
 } from "@xschemadev/core";
 import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
 
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string): string {
+	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
+}
+
 /**
  * Render a SchemaNode to Valibot code
  */
@@ -189,6 +210,10 @@ function renderNumber(node: NumberNode): string {
 	return `v.pipe(v.number(), ${actions.join(", ")})`;
 }
 
+// JSON Schema: type:object excludes arrays (unlike JS where typeof [] === 'object')
+// Must use rawCheck BEFORE the object schema, since valibot's object schemas coerce arrays
+const ARRAY_REJECTION_CHECK = `v.rawCheck((ctx) => { if (Array.isArray(ctx.dataset.value)) ctx.addIssue({ message: "Expected object, not array" }); })`;
+
 function renderObject(node: ObjectNode): string {
 	const propKeys = Array.from(node.properties.keys());
 	const hasPatternProps = node.patternProperties.length > 0;
@@ -206,12 +231,10 @@ function renderObject(node: ObjectNode): string {
 		node.additionalProperties.kind !== "any"
 	) {
 		const valueSchema = render(node.additionalProperties);
-		let result = `v.record(v.string(), ${valueSchema})`;
+		const record = `v.record(v.string(), ${valueSchema})`;
 		const actions = renderObjectConstraintsActions(node);
-		if (actions.length > 0) {
-			result = `v.pipe(${result}, ${actions.join(", ")})`;
-		}
-		return result;
+		// Always wrap with array rejection check
+		return `v.pipe(v.unknown(), ${ARRAY_REJECTION_CHECK}, ${record}${actions.length > 0 ? ", " + actions.join(", ") : ""})`;
 	}
 
 	// Build shape
@@ -221,48 +244,50 @@ function renderObject(node: ObjectNode): string {
 		if (!prop.required) {
 			propCode = `v.optional(${propCode})`;
 		}
-		return `${escapeString(key)}: ${propCode}`;
+		return `${formatPropertyKey(key)}: ${propCode}`;
 	});
 
 	let result = "";
 
 	// Choose object type based on additionalProperties
-	if (node.additionalProperties === false) {
-		// Strict mode - no additional properties
+	// When patternProperties exist, we can't use strictObject (it would reject pattern-matched keys)
+	if (node.additionalProperties === false && !hasPatternProps) {
+		// Strict mode - no additional properties (only when no pattern props)
 		result =
 			shape.length > 0
 				? `v.strictObject({ ${shape.join(", ")} })`
 				: "v.strictObject({})";
 	} else if (
 		typeof node.additionalProperties === "object" &&
-		node.additionalProperties.kind !== "any"
+		node.additionalProperties.kind !== "any" &&
+		!hasPatternProps
 	) {
-		// Validate additional properties against schema
+		// Validate additional properties against schema (only when no pattern props)
 		const restSchema = render(node.additionalProperties);
 		result =
 			shape.length > 0
 				? `v.objectWithRest({ ${shape.join(", ")} }, ${restSchema})`
 				: `v.record(v.string(), ${restSchema})`;
 	} else {
-		// Allow additional properties (loose mode)
+		// Allow additional properties (loose mode) - pattern props handling is done separately
 		result =
 			shape.length > 0
 				? `v.looseObject({ ${shape.join(", ")} })`
 				: "v.looseObject({})";
 	}
 
-	// Collect all validation actions
-	const actions: string[] = [];
+	// Collect all validation actions (run AFTER the object schema)
+	const postActions: string[] = [];
 
-	// Pattern properties validation
+	// Pattern properties validation + additionalProperties check when both are present
 	if (hasPatternProps) {
-		actions.push(...renderPatternPropsActions(node, propKeys));
+		postActions.push(...renderPatternPropsActionsWithAdditional(node, propKeys));
 	}
 
 	// Property names validation
 	if (node.propertyNames) {
 		const keySchema = render(node.propertyNames);
-		actions.push(`v.check((val) => {
+		postActions.push(`v.check((val) => {
       for (const key of Object.keys(val)) {
         const result = v.safeParse(${keySchema}, key);
         if (!result.success) return false;
@@ -271,18 +296,33 @@ function renderObject(node: ObjectNode): string {
     }, "Invalid property name")`);
 	}
 
-	// Min/max properties
-	actions.push(...renderObjectConstraintsActions(node));
-
-	// Dependencies
-	actions.push(...renderDependenciesActions(node));
-
-	// Apply all actions in single pipe
-	if (actions.length > 0) {
-		result = `v.pipe(${result}, ${actions.join(", ")})`;
+	// Required properties validation - only needed when v.any() props exist (which accept undefined)
+	const requiredAnyProps: string[] = [];
+	for (const key of propKeys) {
+		const prop = node.properties.get(key)!;
+		if (prop.required && (prop.schema as SchemaNode).kind === "any") {
+			requiredAnyProps.push(key);
+		}
+	}
+	if (requiredAnyProps.length > 0) {
+		const requiredJson = JSON.stringify(requiredAnyProps);
+		postActions.push(`v.check((val) => {
+      for (const key of ${requiredJson}) {
+        if (!Object.hasOwn(val, key)) return false;
+      }
+      return true;
+    }, "Required property missing")`);
 	}
 
-	return result;
+	// Min/max properties
+	postActions.push(...renderObjectConstraintsActions(node));
+
+	// Dependencies
+	postActions.push(...renderDependenciesActions(node));
+
+	// Always wrap with array rejection check BEFORE the object schema
+	const parts = ["v.unknown()", ARRAY_REJECTION_CHECK, result, ...postActions];
+	return `v.pipe(${parts.join(", ")})`;
 }
 
 function renderObjectWithPatternProps(node: ObjectNode): string {
@@ -336,17 +376,32 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 	allActions.push(`v.check((val) => {${checks.join("")}
       return true;
     }, "Object validation failed")`);
+
+	// Property names validation
+	if (node.propertyNames) {
+		const keySchema = render(node.propertyNames);
+		allActions.push(`v.check((val) => {
+      for (const key of Object.keys(val)) {
+        const result = v.safeParse(${keySchema}, key);
+        if (!result.success) return false;
+      }
+      return true;
+    }, "Invalid property name")`);
+	}
+
 	allActions.push(...renderObjectConstraintsActions(node));
 	allActions.push(...renderDependenciesActions(node));
 
-	return `v.pipe(v.looseObject({}), ${allActions.join(", ")})`;
+	// Wrap with array rejection check BEFORE the object schema
+	return `v.pipe(v.unknown(), ${ARRAY_REJECTION_CHECK}, v.looseObject({}), ${allActions.join(", ")})`;
 }
 
-function renderPatternPropsActions(
+function renderPatternPropsActionsWithAdditional(
 	node: ObjectNode,
 	propKeys: string[],
 ): string[] {
 	const patterns = node.patternProperties;
+	const definedProps = JSON.stringify(propKeys);
 
 	let checks: string[] = [];
 
@@ -363,9 +418,37 @@ function renderPatternPropsActions(
       }`);
 	});
 
+	// Handle additionalProperties when pattern props are present
+	if (node.additionalProperties === false) {
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const key of Object.keys(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) return false;
+      }`);
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const additionalSchema = render(node.additionalProperties);
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const [key, value] of Object.entries(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) {
+          const result = v.safeParse(${additionalSchema}, value);
+          if (!result.success) return false;
+        }
+      }`);
+	}
+
 	return [`v.check((val) => {${checks.join("")}
       return true;
-    }, "Pattern property validation failed")`];
+    }, "Object validation failed")`];
 }
 
 function renderObjectConstraintsActions(node: ObjectNode): string[] {
@@ -423,26 +506,54 @@ function renderArray(node: ArrayNode): string {
 }
 
 function renderTuple(node: TupleNode): string {
+	// JSON Schema semantics: prefixItems only validates items at positions IF they exist
+	// Empty arrays and incomplete arrays (fewer items than prefixItems) are valid
+	// valibot's v.tuple/v.tupleWithRest enforce minimum length, so we use v.array with custom validation
 	const tupleSchemas = node.prefixItems.map((item) => render(item));
+	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
-	let result = "";
+	let result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      return true;
+    }, "Tuple items validation failed"))`;
 
 	// Rest items handling
 	if (node.restItems === false) {
-		// Strict tuple - no additional items
-		result = `v.tuple([${tupleSchemas.join(", ")}])`;
+		// No additional items allowed beyond prefix
+		result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      return val.length <= schemas.length;
+    }, "Tuple validation failed"))`;
 	} else if (node.restItems.kind !== "any") {
-		// Tuple with rest items
+		// Rest items must match schema
 		const restSchema = render(node.restItems);
-		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], ${restSchema})`;
-	} else {
-		// Tuple allowing any rest items
-		result = `v.tupleWithRest([${tupleSchemas.join(", ")}], v.any())`;
+		result = `v.pipe(v.array(v.any()), v.check((val) => {
+      const schemas = ${schemasArray};
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = v.safeParse(schemas[i], val[i]);
+        if (!itemResult.success) return false;
+      }
+      const restSchema = ${restSchema};
+      for (let i = schemas.length; i < val.length; i++) {
+        const itemResult = v.safeParse(restSchema, val[i]);
+        if (!itemResult.success) return false;
+      }
+      return true;
+    }, "Tuple validation failed"))`;
 	}
 
 	const constraints = renderArrayConstraints(node.constraints);
 	if (constraints) {
-		result = `v.pipe(${result}${constraints})`;
+		// Remove the outer v.pipe and add constraints to it
+		result = result.replace(/^v\.pipe\(/, "v.pipe(").replace(/\)$/, constraints + ")");
 	}
 	return result;
 }
@@ -509,6 +620,15 @@ function renderUnion(node: UnionNode): string {
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "v.never()";
 	if (filtered.length === 1) return render(filtered[0]!);
+
+	// Detect nullable pattern: union of [T, null] -> v.nullable(T)
+	if (filtered.length === 2) {
+		const nullIndex = filtered.findIndex((v) => v.kind === "null");
+		if (nullIndex !== -1) {
+			const otherIndex = nullIndex === 0 ? 1 : 0;
+			return `v.nullable(${render(filtered[otherIndex]!)})`;
+		}
+	}
 
 	const schemas = filtered.map((v) => render(v));
 	return `v.union([${schemas.join(", ")}])`;
@@ -592,16 +712,19 @@ function renderEnum(node: EnumNode): string {
 		return `v.picklist([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
 	}
 
-	// Check for complex values
+	// Check for complex values (objects/arrays)
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
+		// Stringify all values for comparison (sorted keys for objects)
 		const sortedValues = values.map((v) =>
 			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v as object).sort()
-					: undefined,
+				JSON.stringify(
+					v,
+					v != null && typeof v === "object"
+						? Object.keys(v as object).sort()
+						: undefined,
+				),
 			),
 		);
 		return `v.pipe(v.any(), v.check((val) => {
@@ -663,10 +786,44 @@ function renderConditional(node: ConditionalNode): string {
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-	// For now, render as union of all guarded schemas
 	if (node.guards.length === 0) return "v.any()";
-	if (node.guards.length === 1) return render(node.guards[0].schema);
-	return `v.union([${node.guards.map((g) => render(g.schema)).join(", ")}])`;
+
+	const checks: string[] = [];
+
+	for (const guard of node.guards) {
+		const schema = render(guard.schema);
+		switch (guard.check) {
+			case "object":
+				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "array":
+				checks.push(`if (Array.isArray(val)) {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "string":
+				checks.push(`if (typeof val === "string") {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+			case "number":
+				checks.push(`if (typeof val === "number") {
+          const result = v.safeParse(${schema}, val);
+          if (!result.success) return false;
+        }`);
+				break;
+		}
+	}
+
+	return `v.pipe(v.any(), v.check((val) => {
+        ${checks.join("\n        ")}
+        return true;
+      }, "Type-guarded validation failed"))`;
 }
 
 function renderNullable(node: NullableNode): string {
