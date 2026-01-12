@@ -13,3 +13,13 @@ Started: Mon Jan 12 01:14:36 AM CET 2026
   - Go build must be run from cli/ directory
   - Format is array of groups, each with name/reason/tests
 ---
+
+## 2026-01-12 - US-002
+- Updated LoadKnownIssues() to use go:embed instead of runtime file reading
+- Removed adapterPath parameter - function now reads from embedded known-issues.json
+- Files changed:
+  - cli/compliance/runner.go
+- **Learnings:**
+  - go:embed is cleaner than runtime path resolution for bundled config files
+  - embed directive must be above var declaration: `//go:embed known-issues.json`
+---

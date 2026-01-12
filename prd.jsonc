@@ -27,8 +27,8 @@
         "Update KnownIssueGroup struct to include Name field",
         "Build passes (go build)"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used go:embed to embed known-issues.json at compile time"
     },
     {
       "id": "US-003",

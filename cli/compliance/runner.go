@@ -2,6 +2,7 @@ package compliance
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +18,9 @@ import (
 	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
 )
+
+//go:embed known-issues.json
+var knownIssuesData []byte
 
 // ProgressUpdate contains info about current test progress
 type ProgressUpdate struct {
@@ -47,19 +51,10 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
-// LoadKnownIssues loads known-issues.json from the adapter's compliance directory
-func LoadKnownIssues(adapterPath string) (KnownIssues, error) {
-	knownIssuesPath := filepath.Join(adapterPath, "compliance", "known-issues.json")
-	data, err := os.ReadFile(knownIssuesPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil // no known issues file is valid
-		}
-		return nil, fmt.Errorf("failed to read known-issues.json: %w", err)
-	}
-
+// LoadKnownIssues loads known-issues from the embedded global known-issues.json
+func LoadKnownIssues() (KnownIssues, error) {
 	var issues KnownIssues
-	if err := json.Unmarshal(data, &issues); err != nil {
+	if err := json.Unmarshal(knownIssuesData, &issues); err != nil {
 		return nil, fmt.Errorf("failed to parse known-issues.json: %w", err)
 	}
 
@@ -92,7 +87,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	}
 
 	// Load known issues
-	knownIssues, err := LoadKnownIssues(opts.AdapterPath)
+	knownIssues, err := LoadKnownIssues()
 	if err != nil {
 		return nil, err
 	}
