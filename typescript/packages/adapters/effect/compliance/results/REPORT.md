@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 858 | 17 | 0 | 40 | 98.1% |
-| draft2020-12 | 870 | 17 | 0 | 33 | 98.1% |
-| draft3 | 400 | 7 | 0 | 0 | 98.3% |
-| draft4 | 567 | 1 | 0 | 0 | 99.8% |
-| draft6 | 759 | 9 | 0 | 0 | 98.8% |
-| draft7 | 835 | 9 | 0 | 0 | 98.9% |
+| draft2019-09 | 858 | 21 | 0 | 40 | 97.6% |
+| draft2020-12 | 870 | 21 | 0 | 33 | 97.6% |
+| draft3 | 396 | 11 | 0 | 0 | 97.3% |
+| draft4 | 559 | 7 | 0 | 0 | 98.8% |
+| draft6 | 749 | 17 | 0 | 0 | 97.8% |
+| draft7 | 825 | 17 | 0 | 0 | 98.0% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.1%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.1%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-97.6%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.6%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-97.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-97.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.0%25-brightgreen)
 
 ## draft2019-09
 
@@ -34,7 +34,7 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ❌ | 0/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -62,8 +62,8 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ❌ | 0/10 |
-| refRemote | ❌ | 0/4 |
+| ref | ❌ | 0/8 |
+| refRemote | ❌ | 0/12 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
@@ -124,19 +124,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>defs - 2 failures</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
-
-</details>
-
-<details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 8 failures</summary>
 
 - **URN ref with nested pointer ref**
   - Test: a non-string is invalid
@@ -162,24 +150,42 @@ These tests are intentionally excluded due to documented limitations.
 - **relative refs with absolute uris and defs**
   - Test: valid on both fields
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>refRemote - 4 failures</summary>
+<summary>refRemote - 12 failures</summary>
 
+- **$ref to $ref finds detached $anchor**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_detached_ref_json__foo/$defs/detached" points to missing target: key "$defs" not found`
+- **$ref to $ref finds detached $anchor**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_detached_ref_json__foo/$defs/detached" points to missing target: key "$defs" not found`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
 - **anchor within remote ref**
   - Test: remote anchor invalid
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
 - **anchor within remote ref**
   - Test: remote anchor valid
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
@@ -211,7 +217,7 @@ These tests are intentionally excluded due to documented limitations.
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ❌ | 0/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -240,8 +246,8 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/10 |
-| refRemote | ❌ | 0/4 |
+| ref | ❌ | 0/8 |
+| refRemote | ❌ | 0/12 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
@@ -295,19 +301,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>defs - 2 failures</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
-
-</details>
-
-<details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 8 failures</summary>
 
 - **URN ref with nested pointer ref**
   - Test: a non-string is invalid
@@ -333,24 +327,42 @@ These tests are intentionally excluded due to documented limitations.
 - **relative refs with absolute uris and defs**
   - Test: valid on both fields
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
 <details>
-<summary>refRemote - 4 failures</summary>
+<summary>refRemote - 12 failures</summary>
 
+- **$ref to $ref finds detached $anchor**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_detached_ref_json__foo/$defs/detached" points to missing target: key "$defs" not found`
+- **$ref to $ref finds detached $anchor**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_detached_ref_json__foo/$defs/detached" points to missing target: key "$defs" not found`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
 - **anchor within remote ref**
   - Test: remote anchor invalid
-  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
 - **anchor within remote ref**
   - Test: remote anchor valid
-  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A" points to missing target: key "$defs" not found`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer" points to missing target: key "$defs" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
@@ -394,12 +406,30 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 8/8 |
+| refRemote | ⚠️ | 4/8 |
 | required | ✅ | 4/4 |
 | type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
 ### Unexpected Failures
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft3_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft3_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft3_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft3_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+
+</details>
 
 <details>
 <summary>type - 7 failures</summary>
@@ -437,7 +467,7 @@ These tests are intentionally excluded due to documented limitations.
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -458,7 +488,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 17/17 |
+| refRemote | ⚠️ | 10/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
@@ -466,10 +496,28 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>refRemote - 7 failures</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **root ref in remote ref**
+  - Test: object is invalid
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -486,7 +534,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -510,21 +558,12 @@ These tests are intentionally excluded due to documented limitations.
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
-| refRemote | ⚠️ | 21/23 |
+| refRemote | ⚠️ | 12/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Unexpected Failures
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>ref - 6 failures</summary>
@@ -551,14 +590,41 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>refRemote - 2 failures</summary>
+<summary>refRemote - 11 failures</summary>
 
+- **$ref to $ref finds location-independent $id**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_detached_ref_json__foo/definitions/detached" points to missing target: key "definitions" not found`
+- **$ref to $ref finds location-independent $id**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_detached_ref_json__foo/definitions/detached" points to missing target: key "definitions" not found`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft6_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: string is valid
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **root ref in remote ref**
+  - Test: object is invalid
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -574,7 +640,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -599,21 +665,12 @@ These tests are intentionally excluded due to documented limitations.
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ❌ | 0/6 |
-| refRemote | ⚠️ | 21/23 |
+| refRemote | ⚠️ | 12/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
 ### Unexpected Failures
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
 
 <details>
 <summary>ref - 6 failures</summary>
@@ -640,14 +697,41 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>refRemote - 2 failures</summary>
+<summary>refRemote - 11 failures</summary>
 
+- **$ref to $ref finds location-independent $id**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_detached_ref_json__foo/definitions/detached" points to missing target: key "definitions" not found`
+- **$ref to $ref finds location-independent $id**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_detached_ref_json__foo/definitions/detached" points to missing target: key "definitions" not found`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_locationIndependentIdentifier_json__refToInteger/definitions/A" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft7_subSchemas_json__refToInteger/definitions/integer" points to missing target: key "definitions" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
 - **retrieved nested refs resolve relative to their URI not $id**
   - Test: string is valid
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **root ref in remote ref**
+  - Test: object is invalid
+  - Expected: `invalid`, Got: `true`
 
 </details>
 

@@ -74,27 +74,9 @@
     {
       "keyword": "defs",
       "passed": 0,
-      "failed": 2,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
-        },
-        {
-          "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "dependentRequired",
@@ -288,9 +270,9 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 10,
+      "failed": 8,
       "skipped": 0,
-      "total": 10,
+      "total": 8,
       "failures": [
         {
           "group": "URN ref with nested pointer ref",
@@ -355,39 +337,55 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
         }
       ]
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 4,
+      "failed": 12,
       "skipped": 0,
-      "total": 4,
+      "total": 12,
       "failures": [
+        {
+          "group": "$ref to $ref finds detached $anchor",
+          "test": "non-number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_detached_ref_json__foo/$defs/detached\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "$ref to $ref finds detached $anchor",
+          "test": "number is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_detached_ref_json__foo/$defs/detached\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "integer is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "Location-independent identifier in remote ref",
+          "test": "string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
+        },
         {
           "group": "anchor within remote ref",
           "test": "remote anchor invalid",
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
         },
         {
           "group": "anchor within remote ref",
@@ -395,7 +393,39 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "fragment within remote ref",
+          "test": "remote fragment invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "fragment within remote ref",
+          "test": "remote fragment valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "ref within remote ref",
+          "test": "ref within ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "ref within remote ref",
+          "test": "ref within ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
         },
         {
           "group": "retrieved nested refs resolve relative to their URI not $id",
@@ -469,10 +499,10 @@
   ],
   "summary": {
     "passed": 858,
-    "failed": 17,
+    "failed": 21,
     "skipped": 0,
-    "total": 875,
-    "percentage": 98.05714285714285,
+    "total": 879,
+    "percentage": 97.61092150170649,
     "unsupportedFeatures": {
       "count": 40,
       "items": [
@@ -621,19 +651,19 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         }
       ]

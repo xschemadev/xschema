@@ -58,3 +58,24 @@ Started: Mon Jan 12 02:12:14 AM CET 2026
   - Compliance reports are the single source of truth for limitations
   - READMEs should be concise, point to compliance reports for details
 ---
+
+## 2026-01-12 - US-007
+- Ran compliance verification for all adapters
+- **Critical fix:** Rebuilt CLI to include updated unsupported-features.json (was out of date due to go:embed)
+- Files changed: cli/xschema (rebuilt binary)
+- **Results after filtering unsupported features:**
+  - Zod: 97.6% (870/891 for draft2020-12, 858/879 for draft2019-09)
+  - Effect: 97.6% (identical to Zod)
+  - ArkType: 97.6% (identical to Zod)
+  - Valibot: 96.5% (10 extra failures per draft due to JS prototype property names)
+- **Remaining failures (bundler bugs not addressed by previous PRD items):**
+  1. refs with relative URIs and nested $defs in embedded schemas
+  2. URN refs with nested pointer refs
+  3. Anchor resolution in chained remote refs
+  4. One $vocabulary edge case test still failing
+- **Learnings:**
+  - go:embed compiles file at build time - must rebuild CLI when updating embedded files
+  - unsupported-features.json properly excludes dynamic/recursive refs (73 tests total)
+  - Remaining failures are in bundler, shared by all adapters - not adapter-specific
+  - PRD acceptance criteria NOT MET - need additional bundler fixes
+---
