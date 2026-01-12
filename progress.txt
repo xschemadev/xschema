@@ -103,3 +103,24 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Use mockRoundTripper with atomic counter to track HTTP calls for caching tests
   - HTTPClient exported var allows test mocking without interface changes
 ---
+
+## 2026-01-12 - US-007
+- Implemented: Processor package with crawlAndFetch for iterative external ref discovery
+- Files changed:
+  - cli/processor/processor.go (new) - Created processor package
+- **Key types/functions:**
+  - `ProcessedSchema` - contains Namespace, ID, Schema, Adapter, SourceURI, Vocabulary
+  - `Process(ctx, schemas, opts)` - main entry point for processing pipeline
+  - `crawlAndFetch()` - iteratively discovers and fetches external refs until no new URIs
+  - `Fetcher` interface with `FetchFunc` adapter - mirrors bundler pattern
+  - `extractExternalRefs()` - finds $ref URIs in schema, respects $id base URI changes
+- **Design decisions:**
+  - Processor Fetcher takes context (unlike bundler's simpler interface) - allows cancellation during crawl
+  - `visited` map tracks all processed URIs including declared schema source URIs
+  - External refs extracted by resolving relative refs against base URI, stripping fragments
+  - Fail fast on any fetch error - no partial results
+- **Learnings:**
+  - normalizeURI strips fragments since same URI with different fragments points to same schema
+  - Need to track both declared schema source URIs and fetched external URIs to avoid redundant fetches
+  - Iteration count useful for verbose logging to show crawl progress
+---

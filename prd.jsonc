@@ -105,7 +105,7 @@
         "Fail fast on any fetch error",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
