@@ -55,12 +55,7 @@ export type {
 } from "./ir/index.js";
 
 // Parser
-export {
-  parse,
-  parseSchema,
-  type ParseContext,
-  type ParseOptions,
-} from "./parser/index.js";
+export { parse, parseSchema, type ParseContext } from "./parser/index.js";
 
 // Utilities
 export {

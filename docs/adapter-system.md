@@ -58,7 +58,7 @@ interface ConvertResult {
   schema?: string;          // Generated validator code
   type?: string;            // Type expression for inference
   validate?: string;        // Validation function for compliance harness (optional)
-  validateImports?: string[]; // Imports needed by validate function (optional)
+  validationImports?: string[]; // Imports needed by validate function (optional)
 }
 ```
 
@@ -68,7 +68,7 @@ interface ConvertResult {
 - `schema`: The generated validator/schema code expression
 - `type`: Type expression for TypeScript type inference
 - `validate`: Optional validation function used by the compliance harness to test runtime validation. Takes `data` parameter and returns `boolean`. Can reference `schema` variable. Empty string = type-only adapter (skips runtime validation).
-- `validateImports`: Optional imports needed by the `validate` function, same format as `imports`. Merged with `imports` for harness generation.
+- `validationImports`: Optional imports needed by the `validate` function, same format as `imports`. Merged with `imports` for harness generation.
 
 **Example Output:**
 ```json
@@ -112,7 +112,7 @@ type GenerateOutput struct {
     Type            string   `json:"type"`                       // type expression
     Imports         []string `json:"imports"`                    // required imports
     Validate        string   `json:"validate,omitempty"`         // validation function (compliance)
-    ValidateImports []string `json:"validateImports,omitempty"`  // imports for validate
+    ValidationImports []string `json:"validationImports,omitempty"`  // imports for validate
 }
 ```
 
@@ -534,14 +534,14 @@ export interface ConvertResult {
   schema?: string;             // Generated validator code
   type?: string;               // Type expression
   validate?: string;           // Validation function (compliance testing)
-  validateImports?: string[];  // Imports for validate function
+  validationImports?: string[];  // Imports for validate function
 }
 ```
 
 These are the authoritative types for the adapter protocol.
 
 **Import Format:**
-- Each entry in `imports` and `validateImports` must be a full import statement
+- Each entry in `imports` and `validationImports` must be a full import statement
 - No trailing semicolons (generator handles formatting)
 - Examples: `import { z } from "zod"`, `import * as v from "valibot"`, `import type { Schema } from "effect"`
 
