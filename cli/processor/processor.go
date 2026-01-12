@@ -286,3 +286,24 @@ func normalizeURI(uri string) string {
 	}
 	return uri
 }
+
+// CacheFetcher implements bundler.Fetcher by looking up schemas in a pre-populated cache.
+// It's used during the bundle phase to resolve external refs without network I/O.
+type CacheFetcher struct {
+	cache externalRefCache
+}
+
+// NewCacheFetcher creates a CacheFetcher from an externalRefCache.
+func NewCacheFetcher(cache externalRefCache) *CacheFetcher {
+	return &CacheFetcher{cache: cache}
+}
+
+// Fetch implements bundler.Fetcher. Returns the cached schema for the given URI.
+// Returns an error if URI is not in cache (indicates crawler bug - all refs should be pre-fetched).
+func (f *CacheFetcher) Fetch(uri string) (json.RawMessage, error) {
+	normalized := normalizeURI(uri)
+	if data, ok := f.cache[normalized]; ok {
+		return data, nil
+	}
+	return nil, fmt.Errorf("cache miss for %q: URI was not pre-fetched by crawler (this is a bug)", uri)
+}

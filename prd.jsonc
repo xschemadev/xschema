@@ -136,7 +136,7 @@
         "Processor uses CacheFetcher when calling bundler in phase 3",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -146,3 +146,21 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Can't reassign struct methods - use FetchFunc wrapper for tests needing custom behavior
   - OnVerbose callback useful for verifying iteration count
 ---
+
+## 2026-01-12 - US-009
+- Implemented: CacheFetcher type for Processor package
+- Files changed:
+  - cli/processor/processor.go - Added CacheFetcher struct and NewCacheFetcher function
+- **Key implementation:**
+  - `CacheFetcher` implements bundler.Fetcher interface (without context)
+  - `Fetch(uri)` normalizes URI (strips fragment) and looks up in cache map
+  - Returns error with descriptive message if URI not found (indicates crawler bug)
+  - `NewCacheFetcher(cache)` factory function creates fetcher from externalRefCache
+- **Design decisions:**
+  - CacheFetcher takes externalRefCache (unexported) - only used internally within processor package
+  - Will be used by bundleAll phase (US-012) when calling bundler
+  - Error message explicitly mentions "crawler bug" to aid debugging if cache miss occurs
+- **Learnings:**
+  - bundler.Fetcher has no context param, processor.Fetcher has context - different interfaces for different phases
+  - CacheFetcher bridges crawl phase (which populates cache) to bundle phase (which consumes cache)
+---
