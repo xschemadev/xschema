@@ -13,7 +13,7 @@ import type {
 	Dependency,
 	ContainsConstraint,
 } from "../ir/nodes.js";
-import type { ParseContext } from "./context.js";
+import { isValidationEnabled, type ParseContext } from "./context.js";
 
 type ParseSchemaFn = (
 	schema: JSONSchema | boolean,
@@ -27,23 +27,26 @@ export function parseObject(
 ): ObjectNode {
 	const properties = new Map<string, PropertyDef>();
 	const requiredSet = new Set<string>();
+	const validation = isValidationEnabled(ctx);
 
-	// Collect required properties
-	if (Array.isArray(schema.required)) {
+	// Collect required properties (only if validation enabled)
+	if (validation && Array.isArray(schema.required)) {
 		for (const key of schema.required) {
 			requiredSet.add(key);
 		}
 	}
 
-	// Draft3 style: check for required: true on individual properties
+	// Draft3 style: check for required: true on individual properties (only if validation enabled)
 	const schemaProps = schema.properties || {};
-	for (const [key, propSchema] of Object.entries(schemaProps)) {
-		if (
-			propSchema &&
-			typeof propSchema === "object" &&
-			(propSchema as Record<string, unknown>).required === true
-		) {
-			requiredSet.add(key);
+	if (validation) {
+		for (const [key, propSchema] of Object.entries(schemaProps)) {
+			if (
+				propSchema &&
+				typeof propSchema === "object" &&
+				(propSchema as Record<string, unknown>).required === true
+			) {
+				requiredSet.add(key);
+			}
 		}
 	}
 
@@ -59,12 +62,15 @@ export function parseObject(
 	}
 
 	// Add required properties that don't have schemas (must exist, any type)
-	for (const key of requiredSet) {
-		if (!properties.has(key)) {
-			properties.set(key, {
-				schema: { kind: "any" },
-				required: true,
-			});
+	// Only if validation enabled
+	if (validation) {
+		for (const key of requiredSet) {
+			if (!properties.has(key)) {
+				properties.set(key, {
+					schema: { kind: "any" },
+					required: true,
+				});
+			}
 		}
 	}
 
@@ -101,8 +107,8 @@ export function parseObject(
 	// Parse dependencies
 	const dependencies = new Map<string, Dependency>();
 
-	// Handle dependentRequired
-	if (schema.dependentRequired) {
+	// Handle dependentRequired (validation keyword - only if enabled)
+	if (validation && schema.dependentRequired) {
 		for (const [prop, deps] of Object.entries(schema.dependentRequired)) {
 			dependencies.set(prop, {
 				kind: "property",
@@ -111,7 +117,7 @@ export function parseObject(
 		}
 	}
 
-	// Handle dependentSchemas
+	// Handle dependentSchemas (applicator - always enabled)
 	if (schema.dependentSchemas) {
 		for (const [prop, depSchema] of Object.entries(schema.dependentSchemas)) {
 			dependencies.set(prop, {
@@ -126,21 +132,28 @@ export function parseObject(
 		for (const [prop, dep] of Object.entries(schema.dependencies)) {
 			// draft3 allows a single string as a shorthand for a 1-element dependency list
 			if (typeof dep === "string") {
-				dependencies.set(prop, {
-					kind: "property",
-					requiredProperties: [dep],
-				});
+				// Property dependencies are validation - only if enabled
+				if (validation) {
+					dependencies.set(prop, {
+						kind: "property",
+						requiredProperties: [dep],
+					});
+				}
 				continue;
 			}
 
 			if (Array.isArray(dep)) {
-				dependencies.set(prop, {
-					kind: "property",
-					requiredProperties: dep,
-				});
+				// Property dependencies are validation - only if enabled
+				if (validation) {
+					dependencies.set(prop, {
+						kind: "property",
+						requiredProperties: dep,
+					});
+				}
 				continue;
 			}
 
+			// Schema dependencies are applicators - always enabled
 			dependencies.set(prop, {
 				kind: "schema",
 				schema: parseSchema(dep, ctx),
@@ -154,8 +167,8 @@ export function parseObject(
 		additionalProperties,
 		patternProperties,
 		propertyNames,
-		minProperties: schema.minProperties,
-		maxProperties: schema.maxProperties,
+		minProperties: validation ? schema.minProperties : undefined,
+		maxProperties: validation ? schema.maxProperties : undefined,
 		dependencies,
 	};
 }
@@ -260,20 +273,22 @@ function buildArrayConstraints(
 	ctx: ParseContext,
 	parseSchema: ParseSchemaFn,
 ): ArrayNode["constraints"] {
+	const validation = isValidationEnabled(ctx);
 	let contains: ContainsConstraint | undefined;
 
+	// contains is an applicator, but minContains/maxContains are validation
 	if (schema.contains !== undefined) {
 		contains = {
 			schema: parseSchema(schema.contains, ctx),
-			minContains: schema.minContains ?? 1,
-			maxContains: schema.maxContains,
+			minContains: validation ? (schema.minContains ?? 1) : 1,
+			maxContains: validation ? schema.maxContains : undefined,
 		};
 	}
 
 	return {
-		minItems: schema.minItems,
-		maxItems: schema.maxItems,
-		uniqueItems: schema.uniqueItems,
+		minItems: validation ? schema.minItems : undefined,
+		maxItems: validation ? schema.maxItems : undefined,
+		uniqueItems: validation ? schema.uniqueItems : undefined,
 		contains,
 	};
 }

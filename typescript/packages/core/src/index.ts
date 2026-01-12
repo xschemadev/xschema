@@ -59,6 +59,7 @@ export {
   parse,
   parseSchema,
   type ParseContext,
+  type ParseOptions,
 } from "./parser/index.js";
 
 // Utilities

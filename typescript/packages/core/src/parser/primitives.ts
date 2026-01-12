@@ -4,35 +4,51 @@
 
 import type { JSONSchema } from "../schema/json-schema.js";
 import type { StringNode, NumberNode } from "../ir/nodes.js";
+import {
+	isValidationEnabled,
+	isFormatEnabled,
+	type ParseContext,
+} from "./context.js";
 
-export function parseString(schema: JSONSchema): StringNode {
+export function parseString(schema: JSONSchema, ctx: ParseContext): StringNode {
+	const validation = isValidationEnabled(ctx);
+	const formatEnabled = isFormatEnabled(ctx);
+
 	return {
 		kind: "string",
 		constraints: {
-			minLength: schema.minLength,
-			maxLength: schema.maxLength,
-			pattern: schema.pattern,
+			minLength: validation ? schema.minLength : undefined,
+			maxLength: validation ? schema.maxLength : undefined,
+			pattern: validation ? schema.pattern : undefined,
 		},
-		format: schema.format,
+		format: formatEnabled ? schema.format : undefined,
 	};
 }
 
-export function parseNumber(schema: JSONSchema, integer: boolean): NumberNode {
+export function parseNumber(
+	schema: JSONSchema,
+	integer: boolean,
+	ctx: ParseContext,
+): NumberNode {
+	const validation = isValidationEnabled(ctx);
+
 	return {
 		kind: "number",
 		integer,
 		constraints: {
-			minimum: schema.minimum,
-			maximum: schema.maximum,
-			exclusiveMinimum:
-				typeof schema.exclusiveMinimum === "number"
+			minimum: validation ? schema.minimum : undefined,
+			maximum: validation ? schema.maximum : undefined,
+			exclusiveMinimum: validation
+				? typeof schema.exclusiveMinimum === "number"
 					? schema.exclusiveMinimum
-					: undefined,
-			exclusiveMaximum:
-				typeof schema.exclusiveMaximum === "number"
+					: undefined
+				: undefined,
+			exclusiveMaximum: validation
+				? typeof schema.exclusiveMaximum === "number"
 					? schema.exclusiveMaximum
-					: undefined,
-			multipleOf: schema.multipleOf,
+					: undefined
+				: undefined,
+			multipleOf: validation ? schema.multipleOf : undefined,
 		},
 	};
 }

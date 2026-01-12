@@ -9,7 +9,13 @@ import { detectVersion, supportsRefSiblings } from "../schema/version.js";
 import { normalizeDeep } from "../schema/normalizer.js";
 import { resolveJsonPointer } from "../utils/json-pointer.js";
 import { isEmptyObject } from "../utils/primitives.js";
-import { createContext, type ParseContext } from "./context.js";
+import {
+	createContext,
+	isValidationEnabled,
+	isFormatEnabled,
+	type ParseContext,
+	type ParseOptions,
+} from "./context.js";
 import { parseString, parseNumber } from "./primitives.js";
 import { parseObject, parseArray } from "./collections.js";
 import {
@@ -21,12 +27,17 @@ import {
 } from "./composition.js";
 import { parseLiteral, parseEnum } from "./values.js";
 
-export type { ParseContext } from "./context.js";
+export type { ParseContext, ParseOptions } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
+ * @param schema The JSON Schema to parse
+ * @param options Parse options including vocabulary settings
  */
-export function parse(schema: JSONSchema | boolean): SchemaNode {
+export function parse(
+	schema: JSONSchema | boolean,
+	options?: ParseOptions,
+): SchemaNode {
 	// Handle boolean schemas at root level
 	if (typeof schema === "boolean") {
 		return schema ? { kind: "any" } : { kind: "never" };
@@ -34,29 +45,8 @@ export function parse(schema: JSONSchema | boolean): SchemaNode {
 
 	const version = detectVersion(schema);
 	const normalized = normalizeDeep(schema, version);
-	const ctx = createContext(normalized, version);
+	const ctx = createContext(normalized, version, options);
 	return parseSchema(normalized, ctx);
-}
-
-/**
- * Check if validation vocabulary is disabled via $vocabulary
- * This applies when a metaschema explicitly sets validation to false
- */
-function isValidationDisabled(schema: JSONSchema): boolean {
-	const vocab = schema.$vocabulary;
-	if (!vocab) return false;
-
-	// Check if any validation vocabulary URI is explicitly set to false
-	const validationVocabs = [
-		"https://json-schema.org/draft/2019-09/vocab/validation",
-		"https://json-schema.org/draft/2020-12/vocab/validation",
-	];
-
-	for (const uri of validationVocabs) {
-		if (vocab[uri] === false) return true;
-	}
-
-	return false;
 }
 
 /**
@@ -69,11 +59,6 @@ export function parseSchema(
 	// Handle boolean schemas
 	if (typeof schema === "boolean") {
 		return schema ? { kind: "any" } : { kind: "never" };
-	}
-
-	// Handle $vocabulary disabling validation - schema accepts anything
-	if (isValidationDisabled(schema)) {
-		return { kind: "any" };
 	}
 
 	// Fail on unsupported keywords that require evaluation semantics
@@ -212,13 +197,13 @@ export function parseSchema(
 
 	switch (type) {
 		case "string":
-			result = parseString(schema);
+			result = parseString(schema, ctx);
 			break;
 		case "number":
-			result = parseNumber(schema, false);
+			result = parseNumber(schema, false, ctx);
 			break;
 		case "integer":
-			result = parseNumber(schema, true);
+			result = parseNumber(schema, true, ctx);
 			break;
 		case "boolean":
 			result = { kind: "boolean" };
@@ -368,45 +353,52 @@ function parseComposition(
 
 function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	const guards: TypeGuard[] = [];
+	const validation = isValidationEnabled(ctx);
 
 	// Check for object keywords
 	// Note: required as boolean (draft3 property-level) should NOT trigger object detection
 	// Only array-style required (draft4+) indicates schema-level object constraints
+	// When validation disabled, only check applicator keywords (properties, additionalProperties, etc.)
 	const hasObjectKeywords =
 		schema.properties !== undefined ||
 		schema.additionalProperties !== undefined ||
 		schema.patternProperties !== undefined ||
-		(Array.isArray(schema.required) && schema.required.length > 0) ||
+		(validation &&
+			Array.isArray(schema.required) &&
+			schema.required.length > 0) ||
 		schema.propertyNames !== undefined ||
-		schema.minProperties !== undefined ||
-		schema.maxProperties !== undefined ||
-		schema.dependentRequired !== undefined ||
+		(validation && schema.minProperties !== undefined) ||
+		(validation && schema.maxProperties !== undefined) ||
+		(validation && schema.dependentRequired !== undefined) ||
 		schema.dependentSchemas !== undefined ||
 		schema.dependencies !== undefined;
 
-	// Check for array keywords
+	// Check for array keywords - applicators work regardless of validation
+	// validation keywords (minItems, maxItems, uniqueItems) only when enabled
 	const hasArrayKeywords =
 		schema.items !== undefined ||
 		schema.prefixItems !== undefined ||
 		schema.additionalItems !== undefined ||
-		schema.minItems !== undefined ||
-		schema.maxItems !== undefined ||
-		schema.uniqueItems !== undefined ||
+		(validation && schema.minItems !== undefined) ||
+		(validation && schema.maxItems !== undefined) ||
+		(validation && schema.uniqueItems !== undefined) ||
 		schema.contains !== undefined;
 
-	// Check for numeric keywords
+	// Check for numeric keywords - all are validation keywords
 	const hasNumericKeywords =
-		schema.minimum !== undefined ||
-		schema.maximum !== undefined ||
-		schema.exclusiveMinimum !== undefined ||
-		schema.exclusiveMaximum !== undefined ||
-		schema.multipleOf !== undefined;
+		validation &&
+		(schema.minimum !== undefined ||
+			schema.maximum !== undefined ||
+			schema.exclusiveMinimum !== undefined ||
+			schema.exclusiveMaximum !== undefined ||
+			schema.multipleOf !== undefined);
 
-	// Check for string keywords
+	// Check for string keywords - all are validation keywords
 	const hasStringKeywords =
-		schema.minLength !== undefined ||
-		schema.maxLength !== undefined ||
-		schema.pattern !== undefined;
+		validation &&
+		(schema.minLength !== undefined ||
+			schema.maxLength !== undefined ||
+			schema.pattern !== undefined);
 
 	if (hasObjectKeywords) {
 		guards.push({
@@ -425,14 +417,14 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	if (hasNumericKeywords) {
 		guards.push({
 			check: "number",
-			schema: parseNumber(schema, false),
+			schema: parseNumber(schema, false, ctx),
 		});
 	}
 
 	if (hasStringKeywords) {
 		guards.push({
 			check: "string",
-			schema: parseString(schema),
+			schema: parseString(schema, ctx),
 		});
 	}
 

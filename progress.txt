@@ -293,3 +293,28 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Added strings import for strings.Contains in error message checks
   - Tests use t.TempDir() for isolated file system setup
 ---
+
+## 2026-01-12 - US-021
+- Implemented: Vocabulary-aware keyword skipping in TypeScript parser
+- Files changed:
+  - typescript/packages/core/src/types.ts - Added `vocabulary` to ConvertInput
+  - typescript/packages/core/src/parser/context.ts - Added VOCAB constants, keyword sets, ParseOptions, isVocabEnabled/isValidationEnabled/isFormatEnabled helpers
+  - typescript/packages/core/src/parser/index.ts - Updated parse() to accept ParseOptions, removed old isValidationDisabled(), passed ctx to primitives
+  - typescript/packages/core/src/parser/primitives.ts - parseString/parseNumber now accept ctx and skip constraints when validation disabled
+  - typescript/packages/core/src/parser/collections.ts - parseObject/buildArrayConstraints now respect vocabulary (skip required, min/maxProperties, min/maxItems, etc.)
+  - typescript/packages/core/src/index.ts - Exported ParseOptions type
+  - typescript/packages/adapters/zod/src/index.ts - Pass vocabulary from ConvertInput to parse()
+  - typescript/packages/adapters/effect/src/index.ts - Pass vocabulary from ConvertInput to parse()
+  - typescript/packages/adapters/arktype/src/index.ts - Pass vocabulary from ConvertInput to parse()
+  - typescript/packages/adapters/valibot/src/index.ts - Pass vocabulary from ConvertInput to parse()
+- **Key implementation:**
+  - Vocabulary URIs mapped to keyword sets: VALIDATION_KEYWORDS, APPLICATOR_KEYWORDS, FORMAT_KEYWORDS
+  - isValidationEnabled(ctx) checks if draft 2019/2020 validation vocab is enabled (true if vocab undefined or not false)
+  - When validation disabled: minLength, maxLength, pattern, minimum, maximum, minItems, maxItems, required, etc. become undefined
+  - Applicator keywords (properties, items, allOf, etc.) always work regardless of validation vocab
+  - parseTypeless also respects vocabulary - won't create type guards for validation-only keywords when disabled
+- **Learnings:**
+  - $vocabulary is passed from Go CLI via ConvertInput.vocabulary as Record<string,bool>
+  - Context flows through parser chain: parse() → createContext() → parseString/parseNumber/parseObject/parseArray
+  - Careful distinction between validation vs applicator keywords - e.g. `contains` is applicator but `minContains/maxContains` are validation
+---
