@@ -786,22 +786,21 @@ func TestProcess_InvalidExternalSchema_ValidationError(t *testing.T) {
 	}
 }
 
-func TestProcess_CustomMetaschema_ReportsVocabulary(t *testing.T) {
+func TestProcess_CustomMetaschema_FiltersVocabulary(t *testing.T) {
 	ctx := context.Background()
 	fetcher := newMockFetcher()
 
-	// Schema with embedded $vocabulary (simulates what bundler produces when
-	// embedding external refs and metaschema vocabulary)
-	// Using standard draft $schema so validation passes, but with embedded $vocabulary
+	// Schema with embedded $vocabulary that disables validation vocab.
+	// Validation keywords like minLength should be stripped from output.
 	schema := json.RawMessage(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"$vocabulary": {
 			"https://json-schema.org/draft/2020-12/vocab/core": true,
-			"https://json-schema.org/draft/2020-12/vocab/applicator": true,
-			"https://json-schema.org/draft/2020-12/vocab/validation": false
+			"https://json-schema.org/draft/2020-12/vocab/applicator": true
 		},
 		"type": "string",
-		"minLength": 5
+		"minLength": 5,
+		"format": "email"
 	}`)
 
 	schemas := []retriever.RetrievedSchema{
@@ -823,32 +822,33 @@ func TestProcess_CustomMetaschema_ReportsVocabulary(t *testing.T) {
 		t.Fatalf("expected 1 result, got %d", len(result))
 	}
 
-	// Should have vocabulary populated from embedded $vocabulary
-	p := result[0]
-	if p.Vocabulary == nil {
-		t.Fatal("expected vocabulary to be extracted from embedded $vocabulary")
+	// Parse the output schema
+	var outputSchema map[string]any
+	if err := json.Unmarshal(result[0].Schema, &outputSchema); err != nil {
+		t.Fatalf("failed to parse output schema: %v", err)
 	}
 
-	// Check vocabulary values
-	coreVocab := "https://json-schema.org/draft/2020-12/vocab/core"
-	if _, ok := p.Vocabulary[coreVocab]; !ok {
-		t.Errorf("expected core vocabulary in result")
+	// type should be preserved (not a validation keyword in our filter)
+	if outputSchema["type"] != "string" {
+		t.Errorf("type should be preserved, got %v", outputSchema["type"])
 	}
 
-	validationVocab := "https://json-schema.org/draft/2020-12/vocab/validation"
-	val, ok := p.Vocabulary[validationVocab]
-	if !ok {
-		t.Errorf("expected validation vocabulary in result")
-	} else if val != false {
-		t.Errorf("expected validation vocabulary to be false (optional), got %v", val)
+	// minLength should be stripped (validation vocab not in $vocabulary)
+	if _, ok := outputSchema["minLength"]; ok {
+		t.Error("minLength should be stripped when validation vocab is disabled")
 	}
 
-	applicatorVocab := "https://json-schema.org/draft/2020-12/vocab/applicator"
-	val, ok = p.Vocabulary[applicatorVocab]
-	if !ok {
-		t.Errorf("expected applicator vocabulary in result")
-	} else if val != true {
-		t.Errorf("expected applicator vocabulary to be true (required), got %v", val)
+	// format should be stripped (format vocab not in $vocabulary)
+	if _, ok := outputSchema["format"]; ok {
+		t.Error("format should be stripped when format vocab is disabled")
+	}
+
+	// $vocabulary and $schema should still be present
+	if outputSchema["$schema"] == nil {
+		t.Error("$schema should be preserved")
+	}
+	if outputSchema["$vocabulary"] == nil {
+		t.Error("$vocabulary should be preserved")
 	}
 }
 

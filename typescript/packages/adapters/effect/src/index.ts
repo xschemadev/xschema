@@ -3,8 +3,8 @@ import { parse, type ConvertInput, type ConvertResult, type JSONSchema } from "@
 import { render } from "./renderer.js";
 
 export function convert(input: ConvertInput): ConvertResult {
-	const { namespace, id, varName, schema, vocabulary } = input;
-	const ir = parse(schema as JSONSchema, { vocabulary });
+	const { namespace, id, varName, schema } = input;
+	const ir = parse(schema as JSONSchema);
 	const schemaCode = render(ir);
 
 	return {

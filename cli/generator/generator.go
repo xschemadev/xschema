@@ -96,11 +96,10 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 		}
 
 		adapterInput[i] = adapter.ConvertInput{
-			Namespace:  s.Namespace,
-			ID:         s.ID,
-			VarName:    varName,
-			Schema:     s.Schema, // already bundled by Processor
-			Vocabulary: s.Vocabulary,
+			Namespace: s.Namespace,
+			ID:        s.ID,
+			VarName:   varName,
+			Schema:    s.Schema, // already bundled and filtered by Processor
 		}
 	}
 

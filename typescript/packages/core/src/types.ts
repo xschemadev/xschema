@@ -4,7 +4,6 @@ export interface ConvertInput {
   id: string;
   varName: string;
   schema: object;
-  vocabulary?: Record<string, boolean>; // $vocabulary from custom metaschema (undefined = all enabled)
 }
 
 export interface ConvertResult {

@@ -16,16 +16,16 @@ import (
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 	"github.com/xschemadev/xschema/validator"
+	"github.com/xschemadev/xschema/vocabulary"
 )
 
 // ProcessedSchema contains a fully processed schema ready for code generation.
 type ProcessedSchema struct {
-	Namespace  string          // namespace from config
-	ID         string          // schema ID from config
-	Schema     json.RawMessage // bundled schema (self-contained)
-	Adapter    string          // adapter package ref
-	SourceURI  string          // original source URI
-	Vocabulary map[string]bool // $vocabulary from custom metaschema (nil = all enabled)
+	Namespace string          // namespace from config
+	ID        string          // schema ID from config
+	Schema    json.RawMessage // bundled schema (self-contained, filtered by vocabulary)
+	Adapter   string          // adapter package ref
+	SourceURI string          // original source URI
 }
 
 // Key returns the full namespaced key like "namespace:id"
@@ -152,17 +152,24 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache e
 		// Extract vocabulary from custom metaschema if present
 		vocab, err := extractVocabulary(ctx, bundled)
 		if err != nil {
-			// Non-fatal: log and continue without vocabulary
+			// Non-fatal: log and continue without vocabulary filtering
 			ui.Verbosef("processor: could not extract vocabulary for %s: %v", s.SourceURI, err)
 		}
 
+		// Filter schema by vocabulary (strips disabled keywords)
+		if vocab != nil {
+			bundled, err = vocabulary.FilterSchema(bundled, vocab)
+			if err != nil {
+				return nil, fmt.Errorf("filtering by vocabulary failed for %s: %w", s.SourceURI, err)
+			}
+		}
+
 		result[i] = ProcessedSchema{
-			Namespace:  s.Namespace,
-			ID:         s.ID,
-			Schema:     bundled,
-			Adapter:    s.Adapter,
-			SourceURI:  s.SourceURI,
-			Vocabulary: vocab,
+			Namespace: s.Namespace,
+			ID:        s.ID,
+			Schema:    bundled,
+			Adapter:   s.Adapter,
+			SourceURI: s.SourceURI,
 		}
 	}
 

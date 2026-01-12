@@ -334,6 +334,22 @@
       "count": 40,
       "items": [
         {
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
@@ -475,22 +491,6 @@
         },
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         }
       ]

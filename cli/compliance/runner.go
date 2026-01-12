@@ -17,6 +17,7 @@ import (
 	"github.com/xschemadev/xschema/adapter"
 	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/vocabulary"
 )
 
 //go:embed unsupported-features.json
@@ -368,7 +369,6 @@ type bundledGroup struct {
 	group         TestGroup
 	bundledSchema RawSchema
 	bundleErr     error
-	vocabulary    map[string]bool // extracted from custom metaschema's $vocabulary (nil = all enabled)
 }
 
 // processKeyword batches adapter invocation and harness execution for all groups in a keyword
@@ -437,18 +437,25 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath, opts.draft)
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
-		// Extract vocabulary from custom metaschema if present
-		var vocabulary map[string]bool
+		// Extract vocabulary from custom metaschema and filter schema
 		if err == nil {
 			remotesPath := filepath.Join(opts.suitePath, "remotes")
-			vocabulary = extractVocabularyFromSchema(bundledSchema, remotesPath)
+			vocab := extractVocabularyFromSchema(bundledSchema, remotesPath)
+			if vocab != nil {
+				filtered, filterErr := vocabulary.FilterSchema(bundledSchema.Raw(), vocab)
+				if filterErr == nil {
+					var filteredSchema RawSchema
+					if jsonErr := json.Unmarshal(filtered, &filteredSchema); jsonErr == nil {
+						bundledSchema = filteredSchema
+					}
+				}
+			}
 		}
 
 		bundled[i] = bundledGroup{
 			group:         group,
 			bundledSchema: bundledSchema,
 			bundleErr:     err,
-			vocabulary:    vocabulary,
 		}
 	}
 
@@ -466,11 +473,10 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		if bg.bundleErr == nil {
 			groupID := fmt.Sprintf("group_%d", i)
 			adapterInputs = append(adapterInputs, adapter.ConvertInput{
-				Namespace:  "compliance",
-				ID:         groupID,
-				VarName:    groupID,
-				Schema:     bg.bundledSchema.Raw(),
-				Vocabulary: bg.vocabulary,
+				Namespace: "compliance",
+				ID:        groupID,
+				VarName:   groupID,
+				Schema:    bg.bundledSchema.Raw(),
 			})
 			inputIndexes = append(inputIndexes, i)
 		}
