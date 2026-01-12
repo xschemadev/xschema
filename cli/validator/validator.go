@@ -90,6 +90,23 @@ func ValidateSchema(data []byte, draftHint ...string) error {
 	return ValidateSchemaWithOptions(data, nil, draftHint...)
 }
 
+// extractSchemaURL extracts the $schema URL from schema bytes
+func extractSchemaURL(data []byte) string {
+	var schema struct {
+		Schema string `json:"$schema"`
+	}
+	if err := json.Unmarshal(data, &schema); err != nil {
+		return ""
+	}
+	return schema.Schema
+}
+
+// isStandardMetaschema returns true if the URL is a known standard JSON Schema metaschema
+func isStandardMetaschema(url string) bool {
+	_, ok := draftURLs[url]
+	return ok
+}
+
 // ValidateSchemaWithOptions validates a schema with configurable options.
 // Use this to pre-load custom metaschemas for schemas with custom $schema URIs.
 func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...string) error {
@@ -134,11 +151,18 @@ func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...
 		return fmt.Errorf("invalid JSON Schema: %w", err)
 	}
 
+	schemaURL := extractSchemaURL(data)
+
 	_, err = compiler.Compile("schema.json")
 	if err != nil {
-		// Ignore external ref loading errors - bundler handles these
 		var loadErr *jsonschema.LoadURLError
 		if errors.As(err, &loadErr) {
+			// If error is for $schema URL and it's not a standard draft, fail
+			// Custom metaschemas must be pre-loaded
+			if loadErr.URL == schemaURL && !isStandardMetaschema(schemaURL) {
+				return fmt.Errorf("custom metaschema %s not pre-loaded: %w", schemaURL, err)
+			}
+			// Ignore external ref loading errors - bundler handles these
 			return nil
 		}
 		return fmt.Errorf("invalid JSON Schema: %w", err)

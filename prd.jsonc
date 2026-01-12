@@ -221,7 +221,7 @@
 				"Test ValidateOptions with empty Metaschemas map → uses defaults",
 				"`go test ./cli/validator/...` passes"
 			],
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

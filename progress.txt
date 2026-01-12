@@ -341,3 +341,22 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Test files should be excluded from tsconfig.json build output to avoid shipping tests in dist
   - VOCAB constants exported from context.ts provide canonical URIs for vocabulary checking
 ---
+
+## 2026-01-12 - US-015
+- Implemented: Tests for Validator metaschema pre-loading
+- Files changed:
+  - cli/validator/validator.go - Fixed LoadURLError handling to distinguish metaschema vs external ref errors; added extractSchemaURL() and isStandardMetaschema() helpers
+  - cli/validator/validator_test.go - Added 5 tests for ValidateSchemaWithOptions
+- **Tests added:**
+  - TestValidateSchemaWithOptions_CustomMetaschema - custom $schema validates with pre-loaded metaschema
+  - TestValidateSchemaWithOptions_MissingMetaschema - missing custom metaschema returns error
+  - TestValidateSchemaWithOptions_CrossDraft - cross-draft schemas work correctly
+  - TestValidateSchemaWithOptions_EmptyMetaschemas - empty map uses defaults
+  - TestValidateSchemaWithOptions_InvalidMetaschemaJSON - invalid JSON returns descriptive error
+- **Bug fix:**
+  - Validator was swallowing ALL LoadURLError including custom metaschema load failures
+  - Now distinguishes $schema URL (must be pre-loaded if custom) vs $ref URL (handled by bundler)
+- **Learnings:**
+  - jsonschema library's LoadURLError.URL field identifies which URL failed to load
+  - Standard drafts (json-schema.org) are auto-loaded; only custom metaschemas need pre-loading
+---
