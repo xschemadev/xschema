@@ -89,7 +89,7 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 	// First pass: collect all $id and $anchor declarations in the schema
 	bctx.collectIDsAndAnchors(parsed, opts.BaseURI, "", "")
 
-	result, err := bctx.processNode(parsed, opts.BaseURI)
+	result, err := bctx.processNode(parsed, opts.BaseURI, "")
 	if err != nil {
 		return nil, err
 	}
@@ -182,12 +182,13 @@ func escapeJSONPointer(key string) string {
 }
 
 // processNode recursively processes a schema node, resolving external refs
-func (b *bundleContext) processNode(node any, baseURI string) (any, error) {
+// scopePath is the JSON pointer path of the nearest ancestor with $id (for rewriting scoped refs)
+func (b *bundleContext) processNode(node any, baseURI string, scopePath string) (any, error) {
 	switch v := node.(type) {
 	case map[string]any:
-		return b.processObject(v, baseURI)
+		return b.processObject(v, baseURI, scopePath)
 	case []any:
-		return b.processArray(v, baseURI)
+		return b.processArray(v, baseURI, scopePath)
 	default:
 		// Primitives pass through unchanged
 		return node, nil
@@ -206,13 +207,17 @@ func isMetaschema(uri string) bool {
 }
 
 // processObject handles object nodes, looking for $ref
-func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, error) {
+// scopePath is the JSON pointer path of the nearest ancestor with $id (for rewriting scoped refs)
+func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopePath string) (any, error) {
 	// Reject forbidden keywords (dynamic/recursive refs)
 	for _, kw := range forbiddenKeywords {
 		if _, exists := obj[kw]; exists {
 			return nil, fmt.Errorf("unsupported keyword %q: dynamic and recursive references are not supported", kw)
 		}
 	}
+
+	// Track current path for scope tracking
+	currentScopePath := scopePath
 
 	// Check for $id (draft6+) or id (draft4/draft3) and update baseURI for this scope
 	id, ok := obj["$id"].(string)
@@ -224,11 +229,17 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, 
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)
 			baseURI = newBase
+			// This object establishes a new scope - clear the scope path
+			// (refs inside this scope are relative to this object)
+			currentScopePath = ""
 		}
 	}
 
-	// Check for $ref
+	// Check for $ref - handle scoped refs
 	if ref, ok := obj["$ref"].(string); ok {
+		// If we have a fragment ref and we're inside a scope that was reset,
+		// we don't need to rewrite (the ref is relative to the current scope).
+		// But we DO need to mark refs that are scoped so validation can handle them.
 		return b.processRef(obj, ref, baseURI)
 	}
 
@@ -241,7 +252,14 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, 
 
 	result := make(map[string]any, len(obj))
 	for _, k := range keys {
-		processed, err := b.processNode(obj[k], baseURI)
+		// Build the child path (for scope tracking)
+		childScopePath := currentScopePath
+		if currentScopePath == "" {
+			childScopePath = "/" + escapeJSONPointer(k)
+		} else {
+			childScopePath = currentScopePath + "/" + escapeJSONPointer(k)
+		}
+		processed, err := b.processNode(obj[k], baseURI, childScopePath)
 		if err != nil {
 			return nil, err
 		}
@@ -251,10 +269,11 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, 
 }
 
 // processArray handles array nodes
-func (b *bundleContext) processArray(arr []any, baseURI string) (any, error) {
+func (b *bundleContext) processArray(arr []any, baseURI string, scopePath string) (any, error) {
 	result := make([]any, len(arr))
 	for i, v := range arr {
-		processed, err := b.processNode(v, baseURI)
+		childPath := fmt.Sprintf("%s/%d", scopePath, i)
+		processed, err := b.processNode(v, baseURI, childPath)
 		if err != nil {
 			return nil, err
 		}
@@ -359,7 +378,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		b.collectIDsAndAnchors(parsed, resolvedURI, "", "")
 
 		// Recursively bundle the fetched schema (it may have its own external refs)
-		bundled, err := b.processNode(parsed, resolvedURI)
+		bundled, err := b.processNode(parsed, resolvedURI, "")
 		if err != nil {
 			return nil, fmt.Errorf("failed to bundle schema from %q: %w", resolvedURI, err)
 		}
@@ -484,8 +503,9 @@ func (b *bundleContext) flattenDefs(node any, parentKey string) any {
 	}
 
 	if defs == nil {
-		// No nested defs, still need to rewrite refs for the parent key
-		return b.rewriteInternalRefs(node, parentKey)
+		// No nested defs - return node unchanged.
+		// The caller (rewriteNestedRefs) will handle ref rewriting.
+		return node
 	}
 
 	// Build the ref rewrite map: #/$defs/X or #/definitions/X → #/$defs/parentKey__X
@@ -710,25 +730,49 @@ func copyObject(obj map[string]any) map[string]any {
 
 // validateInternalRefs validates that all internal $refs (starting with #) point to valid targets
 func validateInternalRefs(root any) error {
-	return validateInternalRefsRecursive(root, root)
+	// scopes tracks all subschemas with $id - refs inside should be validated against their scope
+	scopes := []any{root}
+	return validateInternalRefsRecursive(root, root, scopes)
 }
 
-func validateInternalRefsRecursive(node, root any) error {
+// validateInternalRefsRecursive validates refs, handling scope changes from $id.
+// node is the current node being processed
+// root is the schema root
+// scopes is the stack of enclosing schemas with $id (for validating scoped refs)
+func validateInternalRefsRecursive(node, root any, scopes []any) error {
 	switch v := node.(type) {
 	case map[string]any:
+		// Check for $id that creates a new scope
+		newScopes := scopes
+		if _, ok := v["$id"].(string); ok {
+			newScopes = append([]any{v}, scopes...)
+		} else if _, ok := v["id"].(string); ok {
+			newScopes = append([]any{v}, scopes...)
+		}
+
 		if ref, ok := v["$ref"].(string); ok && strings.HasPrefix(ref, "#") {
-			if err := validateJSONPointer(ref, root); err != nil {
-				return err
+			// Try validating against each scope in order (nearest first)
+			var lastErr error
+			for _, scope := range newScopes {
+				err := validateJSONPointer(ref, scope)
+				if err == nil {
+					lastErr = nil
+					break
+				}
+				lastErr = err
+			}
+			if lastErr != nil {
+				return lastErr
 			}
 		}
 		for _, val := range v {
-			if err := validateInternalRefsRecursive(val, root); err != nil {
+			if err := validateInternalRefsRecursive(val, root, newScopes); err != nil {
 				return err
 			}
 		}
 	case []any:
 		for _, val := range v {
-			if err := validateInternalRefsRecursive(val, root); err != nil {
+			if err := validateInternalRefsRecursive(val, root, scopes); err != nil {
 				return err
 			}
 		}

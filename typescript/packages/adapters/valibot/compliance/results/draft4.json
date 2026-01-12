@@ -227,67 +227,10 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 10,
-      "failed": 7,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_locationIndependentIdentifier_json__refToInteger/definitions/A\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_locationIndependentIdentifier_json__refToInteger/definitions/A\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft4_subSchemas_json__refToInteger/definitions/integer\" points to missing target: key \"definitions\" not found"
-        },
-        {
-          "group": "root ref in remote ref",
-          "test": "object is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "required",
@@ -354,11 +297,11 @@
     }
   ],
   "summary": {
-    "passed": 549,
-    "failed": 17,
+    "passed": 556,
+    "failed": 10,
     "skipped": 0,
     "total": 566,
-    "percentage": 96.99646643109541,
+    "percentage": 98.23321554770318,
     "unsupportedFeatures": {
       "count": 0,
       "items": null
