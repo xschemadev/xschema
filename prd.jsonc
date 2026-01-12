@@ -12,7 +12,7 @@
         "No more 'unsupported keyword $recursiveAnchor' errors for metaschema refs",
         "go build ./... passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

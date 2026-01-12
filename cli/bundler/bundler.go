@@ -194,6 +194,14 @@ func (b *bundleContext) processNode(node any, baseURI string) (any, error) {
 // forbiddenKeywords are keywords that require evaluation semantics we can't provide
 var forbiddenKeywords = []string{"$dynamicRef", "$dynamicAnchor", "$recursiveRef", "$recursiveAnchor"}
 
+// isMetaschema checks if a URI is an official JSON Schema metaschema URL.
+// These should not be fetched/bundled - they reference complex recursive schemas
+// that use $recursiveAnchor and other features adapters can't handle.
+func isMetaschema(uri string) bool {
+	return strings.HasPrefix(uri, "http://json-schema.org/draft-") ||
+		strings.HasPrefix(uri, "https://json-schema.org/draft/")
+}
+
 // processObject handles object nodes, looking for $ref
 func (b *bundleContext) processObject(obj map[string]any, baseURI string) (any, error) {
 	// Reject forbidden keywords (dynamic/recursive refs)
@@ -296,6 +304,13 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	// Check if this ref points to a local $id - if so, skip bundling
 	if b.localIDs[resolvedURI] {
 		ui.Verbosef("bundler: ref %q matches local $id, skipping", ref)
+		return obj, nil
+	}
+
+	// Check if this is a metaschema ref - don't try to fetch/bundle these
+	// They use $recursiveAnchor and other features that would fail
+	if isMetaschema(resolvedURI) {
+		ui.Verbosef("bundler: ref %q is a metaschema, skipping bundling", ref)
 		return obj, nil
 	}
 
