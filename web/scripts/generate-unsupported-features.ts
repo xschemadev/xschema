@@ -20,6 +20,7 @@ const UNSUPPORTED_FEATURES_PATH = join(REPO_ROOT, "cli", "compliance", "unsuppor
 interface UnsupportedFeatureGroup {
   name: string;
   reason: string;
+  explanation?: string;
   tests: string[];
 }
 
@@ -87,7 +88,20 @@ function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): stri
     lines.push("");
     lines.push(group.reason);
     lines.push("");
-    lines.push("**Affected tests:**");
+
+    // Add detailed explanation if present
+    if (group.explanation) {
+      lines.push("### Why This Cannot Be Supported");
+      lines.push("");
+      // Split explanation by double newlines to preserve paragraph structure
+      const paragraphs = group.explanation.split("\n\n");
+      for (const paragraph of paragraphs) {
+        lines.push(escapeMdx(paragraph));
+        lines.push("");
+      }
+    }
+
+    lines.push("### Affected Tests");
     lines.push("");
     for (const test of group.tests) {
       lines.push(`- ${escapeMdx(test)}`);

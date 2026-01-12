@@ -1,29 +1,8 @@
 [
   {
-    "name": "metaschema-vocabulary",
-    "reason": "Custom metaschema vocabulary requires fetching and parsing metaschemas at compile time",
-    "tests": [
-      "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-      "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates"
-    ]
-  },
-  {
-    "name": "draft3-type-schemas",
-    "reason": "Draft3 type with inline schemas is a deprecated feature not supported by modern adapters",
-    "tests": [
-      "draft3/type/applies a nested schema/an object is invalid otherwise",
-      "draft3/type/types can include schemas/a boolean is invalid",
-      "draft3/type/types can include schemas/a float is invalid",
-      "draft3/type/types can include schemas/a string is invalid",
-      "draft3/type/types can include schemas/an integer is invalid",
-      "draft3/type/types can include schemas/an object is valid",
-      "draft3/type/types can include schemas/null is invalid",
-      "draft3/type/types from separate schemas are merged/an integer is invalid"
-    ]
-  },
-  {
     "name": "dynamic-refs",
     "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking",
+    "explanation": "The `$dynamicRef` and `$dynamicAnchor` keywords enable \"open recursion\" - a pattern where child schemas can be overridden by parent schemas at validation time. The key mechanism is that `$dynamicRef` doesn't just resolve to a fixed target; it walks up the *dynamic evaluation path* to find the nearest `$dynamicAnchor` with a matching name.\n\nThis is fundamentally incompatible with static code generation because:\n\n1. **The target depends on the call path** - The same `$dynamicRef` can resolve to different schemas depending on which schema invoked it. This isn't knowable until validation runs.\n\n2. **No shared validation context** - Validation libraries like Zod, Effect Schema, or ArkType don't provide a mechanism to track \"which schemas called which\" during validation. Each nested schema validates independently.\n\n3. **Custom validators (superRefine, etc.) can't help** - While these allow custom validation logic, they can't access or modify a shared \"dynamic scope stack\" that flows through the entire validation tree. You'd need to rewrite the validation architecture from scratch.\n\nThe only way to support these features would be to build a runtime interpreter with a schema registry and scope tracking - which defeats the purpose of static code generation (type inference, tree-shaking, zero runtime overhead).",
     "tests": [
       "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
       "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema",
@@ -63,6 +42,7 @@
   {
     "name": "recursive-refs",
     "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking",
+    "explanation": "The `$recursiveRef` and `$recursiveAnchor` keywords (draft 2019-09) are the predecessor to `$dynamicRef`/`$dynamicAnchor`. They serve the same purpose: allowing schemas to be \"extended\" by outer schemas through dynamic resolution.\n\nWhen `$recursiveAnchor: true` is set, `$recursiveRef` can \"jump\" to a different schema based on which outer schema is currently evaluating. This requires tracking the validation call stack at runtime.\n\nThe same fundamental limitations apply:\n\n1. **Runtime path dependency** - The target of `$recursiveRef` depends on which schemas are currently \"active\" in the validation stack.\n\n2. **No static resolution possible** - At code generation time, we can't know all possible call paths that will occur during validation.\n\n3. **Test names reveal the limitation** - Note tests like \"dynamic $recursiveRef destination (not predictable at schema compile time)\" - the spec explicitly acknowledges this is runtime behavior.\n\nThese keywords were replaced by `$dynamicRef`/`$dynamicAnchor` in draft 2020-12, but both share the same architectural incompatibility with static code generation.",
     "tests": [
       "draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer does not match as a property value",
       "draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer matches at the outer level",

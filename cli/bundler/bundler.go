@@ -110,12 +110,84 @@ func Bundle(ctx context.Context, schema json.RawMessage, opts Options) (json.Raw
 		}
 	}
 
+	// Extract $vocabulary from custom metaschema if present
+	if obj, ok := result.(map[string]any); ok {
+		if err := bctx.extractMetaschemaVocabulary(obj); err != nil {
+			return nil, err
+		}
+	}
+
 	// Validate all internal refs point to valid JSON pointer targets
 	if err := validateInternalRefs(result); err != nil {
 		return nil, err
 	}
 
 	return json.Marshal(result)
+}
+
+// isStandardMetaschema checks if a $schema URI is a standard JSON Schema draft
+func isStandardMetaschema(schemaURI string) bool {
+	for _, uri := range draftToSchemaURI {
+		if schemaURI == uri {
+			return true
+		}
+	}
+	// Also check common variations
+	standardPrefixes := []string{
+		"http://json-schema.org/",
+		"https://json-schema.org/",
+	}
+	for _, prefix := range standardPrefixes {
+		if strings.HasPrefix(schemaURI, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+// extractMetaschemaVocabulary fetches a custom metaschema and extracts its $vocabulary
+// into the schema being bundled, so the TypeScript parser can respect vocabulary settings.
+func (b *bundleContext) extractMetaschemaVocabulary(schema map[string]any) error {
+	schemaURI, ok := schema["$schema"].(string)
+	if !ok || schemaURI == "" {
+		return nil
+	}
+
+	// Skip standard metaschemas - they have well-known vocabularies
+	if isStandardMetaschema(schemaURI) {
+		return nil
+	}
+
+	// Don't override if schema already has $vocabulary
+	if _, hasVocab := schema["$vocabulary"]; hasVocab {
+		return nil
+	}
+
+	ui.Verbosef("bundler: fetching custom metaschema: %s", schemaURI)
+
+	// Fetch the metaschema
+	raw, err := b.fetch(schemaURI)
+	if err != nil {
+		// Non-fatal: if we can't fetch the metaschema, continue without vocabulary
+		ui.Verbosef("bundler: could not fetch metaschema %s: %v", schemaURI, err)
+		return nil
+	}
+
+	var metaschema map[string]any
+	if err := json.Unmarshal(raw, &metaschema); err != nil {
+		ui.Verbosef("bundler: could not parse metaschema %s: %v", schemaURI, err)
+		return nil
+	}
+
+	// Extract $vocabulary from metaschema
+	vocab, ok := metaschema["$vocabulary"].(map[string]any)
+	if !ok || len(vocab) == 0 {
+		return nil
+	}
+
+	ui.Verbosef("bundler: extracted $vocabulary from metaschema: %v", vocab)
+	schema["$vocabulary"] = vocab
+	return nil
 }
 
 // collectIDsAndAnchors recursively collects all $id and $anchor declarations in the schema,

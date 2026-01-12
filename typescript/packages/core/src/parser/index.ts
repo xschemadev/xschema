@@ -188,6 +188,10 @@ export function parseSchema(
 	if (Array.isArray(type)) {
 		// Multiple types - create union
 		const variants = type.map((t) => {
+			// Draft3: type array can contain inline schemas
+			if (typeof t === "object" && t !== null) {
+				return parseSchema(t as JSONSchema, ctx);
+			}
 			const typeSchema: JSONSchema = { ...schema, type: t };
 			delete typeSchema.enum;
 			return parseSchema(typeSchema, ctx);
