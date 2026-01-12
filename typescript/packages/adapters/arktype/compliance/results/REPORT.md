@@ -4,9 +4,9 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 858 | 0 | 0 | 41 | 100.0% |
-| draft2020-12 | 870 | 0 | 0 | 34 | 100.0% |
-| draft3 | 399 | 0 | 0 | 8 | 100.0% |
+| draft2019-09 | 859 | 0 | 0 | 40 | 100.0% |
+| draft2020-12 | 871 | 0 | 0 | 33 | 100.0% |
+| draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 566 | 0 | 0 | 0 | 100.0% |
 | draft6 | 760 | 0 | 0 | 0 | 100.0% |
 | draft7 | 836 | 0 | 0 | 0 | 100.0% |
@@ -69,18 +69,11 @@
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ✅ | 69/69 |
-| vocabulary | ✅ | 4/4 |
+| vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
 
 These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Custom metaschema vocabulary requires fetching and parsing metaschemas at compile time (1 test)</summary>
-
-- `draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
-
-</details>
 
 <details>
 <summary>Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (40 tests)</summary>
@@ -177,18 +170,11 @@ These tests are intentionally excluded due to documented limitations.
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ✅ | 69/69 |
-| vocabulary | ✅ | 4/4 |
+| vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
 
 These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Custom metaschema vocabulary requires fetching and parsing metaschemas at compile time (1 test)</summary>
-
-- `draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
-
-</details>
 
 <details>
 <summary>Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (33 tests)</summary>
@@ -256,26 +242,8 @@ These tests are intentionally excluded due to documented limitations.
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
-| type | ✅ | 72/72 |
+| type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
-
-### Unsupported Features
-
-These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Draft3 type with inline schemas is a deprecated feature not supported by modern adapters (8 tests)</summary>
-
-- `draft3/type/applies a nested schema/an object is invalid otherwise`
-- `draft3/type/types can include schemas/a boolean is invalid`
-- `draft3/type/types can include schemas/a float is invalid`
-- `draft3/type/types can include schemas/a string is invalid`
-- `draft3/type/types can include schemas/an integer is invalid`
-- `draft3/type/types can include schemas/an object is valid`
-- `draft3/type/types can include schemas/null is invalid`
-- `draft3/type/types from separate schemas are merged/an integer is invalid`
-
-</details>
 
 ## draft4
 

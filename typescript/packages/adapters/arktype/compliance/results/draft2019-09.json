@@ -318,25 +318,21 @@
     },
     {
       "keyword": "vocabulary",
-      "passed": 4,
+      "passed": 5,
       "failed": 0,
       "skipped": 0,
-      "total": 4
+      "total": 5
     }
   ],
   "summary": {
-    "passed": 858,
+    "passed": 859,
     "failed": 0,
     "skipped": 0,
-    "total": 858,
+    "total": 859,
     "percentage": 100,
     "unsupportedFeatures": {
-      "count": 41,
+      "count": 40,
       "items": [
-        {
-          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Custom metaschema vocabulary requires fetching and parsing metaschemas at compile time"
-        },
         {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
@@ -482,19 +478,19 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         }
       ]

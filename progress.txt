@@ -400,3 +400,20 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - effect adapter was already at 100% compliance after US-023 fixes (vocabulary-aware parsing)
   - Same code path as zod - vocabulary extraction and keyword skipping work correctly
 ---
+
+## 2026-01-12 - US-025
+- Verified: arktype adapter achieves 100% compliance
+- Files changed: none (already passing)
+- **Results:**
+  - draft2020-12: 871 passed, 33 unsupported (100.0%)
+  - draft2019-09: 859 passed, 40 unsupported (100.0%)
+  - draft7: 836 passed (100.0%)
+  - draft6: 760 passed (100.0%)
+  - draft4: 566 passed (100.0%)
+  - draft3: 407 passed (100.0%)
+  - Total unsupported: 73 tests (dynamic-refs + recursive-refs only)
+- **Learnings:**
+  - arktype adapter was already at 100% compliance after vocabulary-aware parsing fixes (US-021/US-022)
+  - All three TS adapters (zod, effect, arktype) share same parser and vocabulary handling
+  - unsupported-features.json correctly lists only dynamic-refs and recursive-refs
+---
