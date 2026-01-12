@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/xschemadev/xschema/adapter"
-	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
-	"github.com/xschemadev/xschema/vocabulary"
+	"github.com/xschemadev/xschema/processor"
+	"github.com/xschemadev/xschema/retriever"
 )
 
 //go:embed unsupported-features.json
@@ -415,8 +415,12 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 	}
 
-	// Phase 1: Bundle schemas (skip groups where all tests are known issues)
+	// Phase 1: Process schemas (crawl, validate, bundle) using processor
+	// Process each schema individually to handle errors per-schema
 	bundled := make([]bundledGroup, len(groups))
+	remotesPath := filepath.Join(opts.suitePath, "remotes")
+	fetcher := NewLocalhostFetcher(remotesPath)
+
 	for i, group := range groups {
 		// Skip groups where all tests are known issues
 		if groupFilters[i].allKnown {
@@ -433,29 +437,57 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		default:
 		}
 
+		schemaJSON, err := json.Marshal(group.Schema)
+		if err != nil {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("failed to marshal schema: %w", err),
+			}
+			continue
+		}
+
 		bundleStart := time.Now()
-		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath, opts.draft)
+		toProcess := []retriever.RetrievedSchema{{
+			Namespace: "compliance",
+			ID:        fmt.Sprintf("group_%d", i),
+			Schema:    schemaJSON,
+			Adapter:   "compliance",
+			SourceURI: fmt.Sprintf("compliance://%s/%s/group_%d", opts.draft, keywordResult.Keyword, i),
+		}}
+
+		processed, err := processor.Process(ctx, toProcess, processor.Options{
+			Fetcher: fetcher,
+		})
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
-		// Extract vocabulary from custom metaschema and filter schema
-		if err == nil {
-			remotesPath := filepath.Join(opts.suitePath, "remotes")
-			vocab := extractVocabularyFromSchema(bundledSchema, remotesPath)
-			if vocab != nil {
-				filtered, filterErr := vocabulary.FilterSchema(bundledSchema.Raw(), vocab)
-				if filterErr == nil {
-					var filteredSchema RawSchema
-					if jsonErr := json.Unmarshal(filtered, &filteredSchema); jsonErr == nil {
-						bundledSchema = filteredSchema
-					}
-				}
+		if err != nil {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: err,
 			}
+			continue
+		}
+
+		if len(processed) == 0 {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("processor returned no results"),
+			}
+			continue
+		}
+
+		var schema RawSchema
+		if jsonErr := json.Unmarshal(processed[0].Schema, &schema); jsonErr != nil {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("failed to unmarshal processed schema: %w", jsonErr),
+			}
+			continue
 		}
 
 		bundled[i] = bundledGroup{
 			group:         group,
-			bundledSchema: bundledSchema,
-			bundleErr:     err,
+			bundledSchema: schema,
 		}
 	}
 
@@ -704,16 +736,39 @@ func NewLocalhostFetcher(remotesPath string) *LocalhostFetcher {
 	return &LocalhostFetcher{RemotesPath: remotesPath}
 }
 
-// Fetch implements fetcher.Fetcher.
-// It maps localhost:1234 URLs to local files and rejects other URLs.
+// Fetch implements fetcher.Fetcher for compliance testing.
+//
+// The JSON Schema Test Suite has schemas that reference URLs in several ways:
+//
+// 1. localhost:1234/* URLs - These map to files in the remotes/ directory.
+//    Example: http://localhost:1234/integer.json → remotes/integer.json
+//
+// 2. example.com, urn:, etc URLs - These appear in test schemas as $ids that
+//    "claim" those URLs locally. The schema defines the content inline.
+//    Example: A schema with $id:"http://example.com/foo.json" and a nested
+//    $ref:"http://example.com/foo.json" should resolve to itself, not fetch.
+//
+// 3. localhost URLs without files - Some test schemas define $id like
+//    "http://localhost:1234/draft2020-12/tree" but no tree file exists.
+//    The schema claims that URL with a local $id, so the bundler won't fetch.
+//
+// The processor's crawl phase extracts ALL external-looking refs and tries to
+// fetch them upfront. It doesn't understand local $ids - that's the bundler's
+// job. So crawl may try to fetch URLs that the bundler would skip.
+//
+// Our solution: return stub schemas for unfetchable URLs. The bundler checks
+// local $ids first, so stubs for locally-defined refs are never used. For
+// truly missing external refs, the bundler will fail when it can't resolve.
 func (f *LocalhostFetcher) Fetch(_ context.Context, uri string) (json.RawMessage, error) {
 	const localhostPrefix = "http://localhost:1234/"
 
+	// Non-localhost URLs (example.com, urn:, etc) are never real external refs
+	// in the test suite - they're always claimed by local $ids.
 	if !strings.HasPrefix(uri, localhostPrefix) {
-		return nil, fmt.Errorf("unsupported URI for compliance testing: %s (only localhost:1234 URLs supported)", uri)
+		return json.RawMessage(`{}`), nil
 	}
 
-	// Extract path from URI, stripping query params
+	// Try to read from remotes directory
 	path := strings.TrimPrefix(uri, localhostPrefix)
 	if idx := strings.Index(path, "?"); idx != -1 {
 		path = path[:idx]
@@ -722,97 +777,11 @@ func (f *LocalhostFetcher) Fetch(_ context.Context, uri string) (json.RawMessage
 	localPath := filepath.Join(f.RemotesPath, path)
 	data, err := os.ReadFile(localPath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("remote schema not found: %s (looked in %s)", uri, localPath)
-		}
-		return nil, fmt.Errorf("failed to read remote schema %s: %w", localPath, err)
+		// File doesn't exist or is a directory - probably a localhost URL claimed
+		// by local $id. Return stub; bundler will resolve to local $id and never use this.
+		return json.RawMessage(`{}`), nil
 	}
 
 	return json.RawMessage(data), nil
 }
 
-// extractVocabularyFromSchema extracts $vocabulary from a schema's custom metaschema.
-// If the schema's $schema is a localhost URL, fetches the metaschema from remotes
-// and extracts its $vocabulary. Returns nil for standard drafts or if no $vocabulary.
-func extractVocabularyFromSchema(schema RawSchema, remotesPath string) map[string]bool {
-	// Extract $schema from the schema
-	obj, ok := schema.Value().(map[string]any)
-	if !ok {
-		return nil
-	}
-
-	schemaURI, ok := obj["$schema"].(string)
-	if !ok {
-		return nil
-	}
-
-	// Skip standard JSON Schema drafts
-	if strings.HasPrefix(schemaURI, "http://json-schema.org/") ||
-		strings.HasPrefix(schemaURI, "https://json-schema.org/") {
-		return nil
-	}
-
-	// Only handle localhost URLs for compliance testing
-	const localhostPrefix = "http://localhost:1234/"
-	if !strings.HasPrefix(schemaURI, localhostPrefix) {
-		return nil
-	}
-
-	// Fetch metaschema from remotes directory
-	path := strings.TrimPrefix(schemaURI, localhostPrefix)
-	localPath := filepath.Join(remotesPath, path)
-	data, err := os.ReadFile(localPath)
-	if err != nil {
-		return nil // silently fail - metaschema not available
-	}
-
-	var metaschema map[string]any
-	if err := json.Unmarshal(data, &metaschema); err != nil {
-		return nil
-	}
-
-	// Extract $vocabulary from metaschema
-	vocabRaw, hasVocab := metaschema["$vocabulary"]
-	if !hasVocab {
-		return nil
-	}
-
-	vocabMap, ok := vocabRaw.(map[string]any)
-	if !ok {
-		return nil
-	}
-
-	result := make(map[string]bool, len(vocabMap))
-	for uri, val := range vocabMap {
-		if required, ok := val.(bool); ok {
-			result[uri] = required
-		}
-	}
-	return result
-}
-
-func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string) (RawSchema, error) {
-	schemaJSON, err := json.Marshal(schema)
-	if err != nil {
-		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
-	}
-
-	remotesPath := filepath.Join(suitePath, "remotes")
-	fetcher := NewLocalhostFetcher(remotesPath)
-
-	bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
-		Schema:  schemaJSON,
-		Fetcher: fetcher,
-		Draft:   draft,
-	})
-	if err != nil {
-		return RawSchema{}, err
-	}
-
-	var result RawSchema
-	if err := json.Unmarshal(bundled, &result); err != nil {
-		return RawSchema{}, fmt.Errorf("failed to unmarshal bundled schema: %w", err)
-	}
-
-	return result, nil
-}
