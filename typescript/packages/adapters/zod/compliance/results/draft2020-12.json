@@ -67,9 +67,27 @@
     {
       "keyword": "defs",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "validate definition against metaschema",
+          "test": "valid definition schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "dependentRequired",
@@ -270,9 +288,9 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 8,
+      "failed": 10,
       "skipped": 0,
-      "total": 8,
+      "total": 10,
       "failures": [
         {
           "group": "URN ref with nested pointer ref",
@@ -337,6 +355,22 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2020-12/schema\": unsupported keyword \"$dynamicAnchor\": dynamic and recursive references are not supported"
         }
       ]
     },
@@ -419,32 +453,29 @@
     {
       "keyword": "vocabulary",
       "passed": 4,
-      "failed": 0,
+      "failed": 1,
       "skipped": 0,
-      "total": 4
+      "total": 5,
+      "failures": [
+        {
+          "group": "schema that uses custom metaschema with with no validation vocabulary",
+          "test": "no validation: invalid number, but it still validates",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     }
   ],
   "summary": {
     "passed": 870,
-    "failed": 12,
+    "failed": 17,
     "skipped": 0,
-    "total": 882,
-    "percentage": 98.63945578231292,
-    "knownIssues": {
-      "count": 38,
+    "total": 887,
+    "percentage": 98.08342728297632,
+    "unsupportedFeatures": {
+      "count": 33,
       "items": [
-        {
-          "path": "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
@@ -576,14 +607,6 @@
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         }
       ]
     }

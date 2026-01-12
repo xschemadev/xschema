@@ -60,9 +60,18 @@
     {
       "keyword": "definitions",
       "passed": 1,
-      "failed": 0,
+      "failed": 1,
       "skipped": 0,
-      "total": 1
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "dependencies",
@@ -408,18 +417,13 @@
   ],
   "summary": {
     "passed": 749,
-    "failed": 18,
+    "failed": 19,
     "skipped": 0,
-    "total": 767,
-    "percentage": 97.65319426336376,
-    "knownIssues": {
-      "count": 1,
-      "items": [
-        {
-          "path": "draft6/definitions/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        }
-      ]
+    "total": 768,
+    "percentage": 97.52604166666666,
+    "unsupportedFeatures": {
+      "count": 0,
+      "items": null
     }
   }
 }

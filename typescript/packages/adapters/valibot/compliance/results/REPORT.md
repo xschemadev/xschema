@@ -2,23 +2,23 @@
 
 ## Summary
 
-| Draft | Passed | Failed | Skipped | Known | Coverage |
-| ----- | ------ | ------ | ------- | ----- | -------- |
-| draft2019-09 | 848 | 22 | 0 | 45 | 97.5% |
-| draft2020-12 | 860 | 22 | 0 | 38 | 97.5% |
+| Draft | Passed | Failed | Skipped | Unsupported | Coverage |
+| ----- | ------ | ------ | ------- | ----------- | -------- |
+| draft2019-09 | 848 | 27 | 0 | 40 | 96.9% |
+| draft2020-12 | 860 | 27 | 0 | 33 | 97.0% |
 | draft3 | 400 | 7 | 0 | 0 | 98.3% |
-| draft4 | 557 | 10 | 0 | 1 | 98.2% |
-| draft6 | 749 | 18 | 0 | 1 | 97.7% |
-| draft7 | 825 | 18 | 0 | 1 | 97.9% |
+| draft4 | 557 | 11 | 0 | 0 | 98.1% |
+| draft6 | 749 | 19 | 0 | 0 | 97.5% |
+| draft7 | 825 | 19 | 0 | 0 | 97.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-97.5%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.5%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-96.9%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.0%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.2%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-97.7%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-97.9%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.1%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-97.5%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.7%25-brightgreen)
 
 ## draft2019-09
 
@@ -34,7 +34,7 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -62,28 +62,18 @@
 | properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ❌ | 0/8 |
+| ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
 | required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ✅ | 69/69 |
-| vocabulary | ✅ | 4/4 |
+| vocabulary | ⚠️ | 4/5 |
 
-### Known Behaviors
+### Unsupported Features
 
 These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Metaschema validation requires fetching schemas containing dynamic refs (4 tests)</summary>
-
-- `draft2019-09/defs/validate definition against metaschema/invalid definition schema`
-- `draft2019-09/defs/validate definition against metaschema/valid definition schema`
-- `draft2019-09/ref/remote ref, containing refs itself/remote ref invalid`
-- `draft2019-09/ref/remote ref, containing refs itself/remote ref valid`
-
-</details>
 
 <details>
 <summary>Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (40 tests)</summary>
@@ -131,14 +121,19 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
+### Unexpected Failures
 
-- `draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+<details>
+<summary>defs - 2 failures</summary>
+
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
-
-### Unexpected Failures
 
 <details>
 <summary>properties - 5 failures</summary>
@@ -162,7 +157,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **URN ref with nested pointer ref**
   - Test: a non-string is invalid
@@ -188,6 +183,12 @@ These tests are intentionally excluded due to documented limitations.
 - **relative refs with absolute uris and defs**
   - Test: valid on both fields
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2019-09/schema": unsupported keyword "$recursiveAnchor": dynamic and recursive references are not supported`
 
 </details>
 
@@ -230,6 +231,15 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
+<details>
+<summary>vocabulary - 1 failure</summary>
+
+- **schema that uses custom metaschema with with no validation vocabulary**
+  - Test: no validation: invalid number, but it still validates
+  - Expected: `valid`, Got: `false`
+
+</details>
+
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -243,7 +253,7 @@ These tests are intentionally excluded due to documented limitations.
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -272,16 +282,16 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ❌ | 0/8 |
+| ref | ❌ | 0/10 |
 | refRemote | ❌ | 0/4 |
 | required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
 | uniqueItems | ✅ | 69/69 |
-| vocabulary | ✅ | 4/4 |
+| vocabulary | ⚠️ | 4/5 |
 
-### Known Behaviors
+### Unsupported Features
 
 These tests are intentionally excluded due to documented limitations.
 
@@ -324,24 +334,19 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>Metaschema validation requires fetching schemas containing dynamic refs (4 tests)</summary>
-
-- `draft2020-12/defs/validate definition against metaschema/invalid definition schema`
-- `draft2020-12/defs/validate definition against metaschema/valid definition schema`
-- `draft2020-12/ref/remote ref, containing refs itself/remote ref invalid`
-- `draft2020-12/ref/remote ref, containing refs itself/remote ref valid`
-
-</details>
-
-<details>
-<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
-
-- `draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
-
-</details>
-
 ### Unexpected Failures
+
+<details>
+<summary>defs - 2 failures</summary>
+
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+
+</details>
 
 <details>
 <summary>properties - 5 failures</summary>
@@ -365,7 +370,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **URN ref with nested pointer ref**
   - Test: a non-string is invalid
@@ -391,6 +396,12 @@ These tests are intentionally excluded due to documented limitations.
 - **relative refs with absolute uris and defs**
   - Test: valid on both fields
   - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to bundle schema from "https://json-schema.org/draft/2020-12/schema": unsupported keyword "$dynamicAnchor": dynamic and recursive references are not supported`
 
 </details>
 
@@ -430,6 +441,15 @@ These tests are intentionally excluded due to documented limitations.
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+
+</details>
+
+<details>
+<summary>vocabulary - 1 failure</summary>
+
+- **schema that uses custom metaschema with with no validation vocabulary**
+  - Test: no validation: invalid number, but it still validates
+  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -501,7 +521,7 @@ These tests are intentionally excluded due to documented limitations.
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 1/1 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -527,18 +547,16 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
-### Known Behaviors
-
-These tests are intentionally excluded due to documented limitations.
+### Unexpected Failures
 
 <details>
-<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
+<summary>definitions - 1 failure</summary>
 
-- `draft4/definitions/validate definition against metaschema/invalid definition schema`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
-
-### Unexpected Failures
 
 <details>
 <summary>properties - 5 failures</summary>
@@ -594,7 +612,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 1/1 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -623,18 +641,16 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Known Behaviors
-
-These tests are intentionally excluded due to documented limitations.
+### Unexpected Failures
 
 <details>
-<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
+<summary>definitions - 1 failure</summary>
 
-- `draft6/definitions/validate definition against metaschema/invalid definition schema`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
-
-### Unexpected Failures
 
 <details>
 <summary>properties - 5 failures</summary>
@@ -726,7 +742,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 1/1 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -756,18 +772,16 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Known Behaviors
-
-These tests are intentionally excluded due to documented limitations.
+### Unexpected Failures
 
 <details>
-<summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
+<summary>definitions - 1 failure</summary>
 
-- `draft7/definitions/validate definition against metaschema/invalid definition schema`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
-
-### Unexpected Failures
 
 <details>
 <summary>properties - 5 failures</summary>

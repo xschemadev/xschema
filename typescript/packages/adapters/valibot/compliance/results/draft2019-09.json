@@ -74,9 +74,27 @@
     {
       "keyword": "defs",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "validate definition against metaschema",
+          "test": "valid definition schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        }
+      ]
     },
     {
       "keyword": "dependentRequired",
@@ -312,9 +330,9 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 8,
+      "failed": 10,
       "skipped": 0,
-      "total": 8,
+      "total": 10,
       "failures": [
         {
           "group": "URN ref with nested pointer ref",
@@ -379,6 +397,22 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to bundle schema from \"https://json-schema.org/draft/2019-09/schema\": unsupported keyword \"$recursiveAnchor\": dynamic and recursive references are not supported"
         }
       ]
     },
@@ -503,32 +537,29 @@
     {
       "keyword": "vocabulary",
       "passed": 4,
-      "failed": 0,
+      "failed": 1,
       "skipped": 0,
-      "total": 4
+      "total": 5,
+      "failures": [
+        {
+          "group": "schema that uses custom metaschema with with no validation vocabulary",
+          "test": "no validation: invalid number, but it still validates",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     }
   ],
   "summary": {
     "passed": 848,
-    "failed": 22,
+    "failed": 27,
     "skipped": 0,
-    "total": 870,
-    "percentage": 97.47126436781609,
-    "knownIssues": {
-      "count": 45,
+    "total": 875,
+    "percentage": 96.91428571428573,
+    "unsupportedFeatures": {
+      "count": 40,
       "items": [
-        {
-          "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
-          "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
-        },
         {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
@@ -666,12 +697,12 @@
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
@@ -679,14 +710,6 @@
         },
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {

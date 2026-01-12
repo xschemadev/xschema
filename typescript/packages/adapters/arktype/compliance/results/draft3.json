@@ -234,7 +234,7 @@
     "skipped": 0,
     "total": 407,
     "percentage": 98.28009828009829,
-    "knownIssues": {
+    "unsupportedFeatures": {
       "count": 0,
       "items": null
     }
