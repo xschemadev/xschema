@@ -42,8 +42,8 @@
         "All results written to respective compliance/results/ folders",
         "No runtime errors"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "All 4 adapters pass: zod 98.6%, valibot 97.5%, arktype 98.6%, effect 98.6%"
     },
     {
       "id": "US-004",

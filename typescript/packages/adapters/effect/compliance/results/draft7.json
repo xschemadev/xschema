@@ -228,16 +228,84 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 6,
       "skipped": 0,
-      "total": 0
+      "total": 6,
+      "failures": [
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/definitions/inner\" points to missing target: key \"definitions\" not found"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
       "passed": 21,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 21
+      "total": 23,
+      "failures": [
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "required",
@@ -263,45 +331,13 @@
   ],
   "summary": {
     "passed": 835,
-    "failed": 0,
+    "failed": 8,
     "skipped": 0,
-    "total": 835,
-    "percentage": 100,
+    "total": 843,
+    "percentage": 99.05100830367735,
     "knownIssues": {
-      "count": 9,
+      "count": 1,
       "items": [
-        {
-          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft7/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
         {
           "path": "draft7/definitions/validate definition against metaschema/invalid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"

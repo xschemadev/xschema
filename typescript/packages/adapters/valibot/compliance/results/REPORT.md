@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Known | Coverage |
 | ----- | ------ | ------ | ------- | ----- | -------- |
-| draft2019-09 | 848 | 0 | 0 | 67 | 100.0% |
-| draft2020-12 | 860 | 0 | 0 | 60 | 100.0% |
-| draft3 | 400 | 0 | 0 | 7 | 100.0% |
-| draft4 | 557 | 0 | 0 | 11 | 100.0% |
-| draft6 | 749 | 0 | 0 | 19 | 100.0% |
-| draft7 | 825 | 0 | 0 | 19 | 100.0% |
+| draft2019-09 | 848 | 22 | 0 | 45 | 97.5% |
+| draft2020-12 | 860 | 22 | 0 | 38 | 97.5% |
+| draft3 | 400 | 7 | 0 | 0 | 98.3% |
+| draft4 | 557 | 10 | 0 | 1 | 98.2% |
+| draft6 | 749 | 18 | 0 | 1 | 97.7% |
+| draft7 | 825 | 18 | 0 | 1 | 97.9% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-100.0%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-100.0%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-100.0%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-100.0%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-100.0%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-97.5%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.5%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.2%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-97.7%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.9%25-brightgreen)
 
 ## draft2019-09
 
@@ -59,12 +59,12 @@
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ✅ | 11/11 |
+| ref | ❌ | 0/8 |
+| refRemote | ❌ | 0/4 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
@@ -74,24 +74,6 @@
 ### Known Behaviors
 
 These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Bundler limitation: relative URIs with $id combinations (12 tests)</summary>
-
-- `draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid`
-- `draft2019-09/ref/URN ref with nested pointer ref/a string is valid`
-- `draft2019-09/ref/refs with relative uris and defs/invalid on inner field`
-- `draft2019-09/ref/refs with relative uris and defs/invalid on outer field`
-- `draft2019-09/ref/refs with relative uris and defs/valid on both fields`
-- `draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field`
-- `draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field`
-- `draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields`
-- `draft2019-09/refRemote/anchor within remote ref/remote anchor invalid`
-- `draft2019-09/refRemote/anchor within remote ref/remote anchor valid`
-- `draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
-- `draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
-
-</details>
 
 <details>
 <summary>Metaschema validation requires fetching schemas containing dynamic refs (4 tests)</summary>
@@ -150,25 +132,101 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>Valibot does not handle JS prototype property names (__proto__, constructor, toString) (10 tests)</summary>
+<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
 
-- `draft2019-09/properties/properties whose names are Javascript object property names/__proto__ not valid`
-- `draft2019-09/properties/properties whose names are Javascript object property names/all present and valid`
-- `draft2019-09/properties/properties whose names are Javascript object property names/constructor not valid`
-- `draft2019-09/properties/properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft2019-09/properties/properties whose names are Javascript object property names/toString not valid`
-- `draft2019-09/required/required properties whose names are Javascript object property names/__proto__ present`
-- `draft2019-09/required/required properties whose names are Javascript object property names/all present`
-- `draft2019-09/required/required properties whose names are Javascript object property names/constructor present`
-- `draft2019-09/required/required properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft2019-09/required/required properties whose names are Javascript object property names/toString present`
+- `draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+
+</details>
+
+### Unexpected Failures
+
+<details>
+<summary>properties - 5 failures</summary>
+
+- **properties whose names are Javascript object property names**
+  - Test: __proto__ not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: all present and valid
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: constructor not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: toString not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
 <details>
-<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
+<summary>ref - 8 failures</summary>
 
-- `draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>required - 5 failures</summary>
+
+- **required properties whose names are Javascript object property names**
+  - Test: __proto__ present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: all present
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: constructor present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: toString present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -212,11 +270,11 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | prefixItems | ✅ | 11/11 |
-| properties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
-| required | ✅ | 11/11 |
+| ref | ❌ | 0/8 |
+| refRemote | ❌ | 0/4 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 0/0 |
 | unevaluatedProperties | ✅ | 0/0 |
@@ -226,24 +284,6 @@ These tests are intentionally excluded due to documented limitations.
 ### Known Behaviors
 
 These tests are intentionally excluded due to documented limitations.
-
-<details>
-<summary>Bundler limitation: relative URIs with $id combinations (12 tests)</summary>
-
-- `draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid`
-- `draft2020-12/ref/URN ref with nested pointer ref/a string is valid`
-- `draft2020-12/ref/refs with relative uris and defs/invalid on inner field`
-- `draft2020-12/ref/refs with relative uris and defs/invalid on outer field`
-- `draft2020-12/ref/refs with relative uris and defs/valid on both fields`
-- `draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field`
-- `draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field`
-- `draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields`
-- `draft2020-12/refRemote/anchor within remote ref/remote anchor invalid`
-- `draft2020-12/refRemote/anchor within remote ref/remote anchor valid`
-- `draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
-- `draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
-
-</details>
 
 <details>
 <summary>Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (33 tests)</summary>
@@ -295,25 +335,101 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>Valibot does not handle JS prototype property names (__proto__, constructor, toString) (10 tests)</summary>
+<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
 
-- `draft2020-12/properties/properties whose names are Javascript object property names/__proto__ not valid`
-- `draft2020-12/properties/properties whose names are Javascript object property names/all present and valid`
-- `draft2020-12/properties/properties whose names are Javascript object property names/constructor not valid`
-- `draft2020-12/properties/properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft2020-12/properties/properties whose names are Javascript object property names/toString not valid`
-- `draft2020-12/required/required properties whose names are Javascript object property names/__proto__ present`
-- `draft2020-12/required/required properties whose names are Javascript object property names/all present`
-- `draft2020-12/required/required properties whose names are Javascript object property names/constructor present`
-- `draft2020-12/required/required properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft2020-12/required/required properties whose names are Javascript object property names/toString present`
+- `draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+
+</details>
+
+### Unexpected Failures
+
+<details>
+<summary>properties - 5 failures</summary>
+
+- **properties whose names are Javascript object property names**
+  - Test: __proto__ not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: all present and valid
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: constructor not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: toString not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
 <details>
-<summary>Vocabulary control: custom metaschemas disabling validation vocabulary not supported (1 test)</summary>
+<summary>ref - 8 failures</summary>
 
-- `draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/bar" points to missing target: key "bar" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/inner" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" points to missing target: key "localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>required - 5 failures</summary>
+
+- **required properties whose names are Javascript object property names**
+  - Test: __proto__ present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: all present
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: constructor present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: toString present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -344,23 +460,35 @@ These tests are intentionally excluded due to documented limitations.
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
-| type | ✅ | 73/73 |
+| type | ⚠️ | 73/80 |
 | uniqueItems | ✅ | 62/62 |
 
-### Known Behaviors
-
-These tests are intentionally excluded due to documented limitations.
+### Unexpected Failures
 
 <details>
-<summary>Draft3 type with inline schemas is legacy feature removed in draft4+ (7 tests)</summary>
+<summary>type - 7 failures</summary>
 
-- `draft3/type/applies a nested schema/an object is invalid otherwise`
-- `draft3/type/types can include schemas/a boolean is invalid`
-- `draft3/type/types can include schemas/a float is invalid`
-- `draft3/type/types can include schemas/a string is invalid`
-- `draft3/type/types can include schemas/an integer is invalid`
-- `draft3/type/types can include schemas/null is invalid`
-- `draft3/type/types from separate schemas are merged/an integer is invalid`
+- **applies a nested schema**
+  - Test: an object is invalid otherwise
+  - Expected: `invalid`, Got: `true`
+- **types can include schemas**
+  - Test: a boolean is invalid
+  - Expected: `invalid`, Got: `true`
+- **types can include schemas**
+  - Test: a float is invalid
+  - Expected: `invalid`, Got: `true`
+- **types can include schemas**
+  - Test: a string is invalid
+  - Expected: `invalid`, Got: `true`
+- **types can include schemas**
+  - Test: an integer is invalid
+  - Expected: `invalid`, Got: `true`
+- **types can include schemas**
+  - Test: null is invalid
+  - Expected: `invalid`, Got: `true`
+- **types from separate schemas are merged**
+  - Test: an integer is invalid
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -392,10 +520,10 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ✅ | 19/19 |
+| properties | ⚠️ | 19/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 17/17 |
-| required | ✅ | 10/10 |
+| required | ⚠️ | 10/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -410,19 +538,47 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>Valibot does not handle JS prototype property names (__proto__, constructor, toString) (10 tests)</summary>
+### Unexpected Failures
 
-- `draft4/properties/properties whose names are Javascript object property names/__proto__ not valid`
-- `draft4/properties/properties whose names are Javascript object property names/all present and valid`
-- `draft4/properties/properties whose names are Javascript object property names/constructor not valid`
-- `draft4/properties/properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft4/properties/properties whose names are Javascript object property names/toString not valid`
-- `draft4/required/required properties whose names are Javascript object property names/__proto__ present`
-- `draft4/required/required properties whose names are Javascript object property names/all present`
-- `draft4/required/required properties whose names are Javascript object property names/constructor present`
-- `draft4/required/required properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft4/required/required properties whose names are Javascript object property names/toString present`
+<details>
+<summary>properties - 5 failures</summary>
+
+- **properties whose names are Javascript object property names**
+  - Test: __proto__ not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: all present and valid
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: constructor not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: toString not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+
+</details>
+
+<details>
+<summary>required - 5 failures</summary>
+
+- **required properties whose names are Javascript object property names**
+  - Test: __proto__ present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: all present
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: constructor present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: toString present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -459,11 +615,11 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 21/21 |
-| required | ✅ | 11/11 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -472,39 +628,89 @@ These tests are intentionally excluded due to documented limitations.
 These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>Bundler limitation: relative URIs with $id combinations (8 tests)</summary>
-
-- `draft6/ref/refs with relative uris and defs/invalid on inner field`
-- `draft6/ref/refs with relative uris and defs/invalid on outer field`
-- `draft6/ref/refs with relative uris and defs/valid on both fields`
-- `draft6/ref/relative refs with absolute uris and defs/invalid on inner field`
-- `draft6/ref/relative refs with absolute uris and defs/invalid on outer field`
-- `draft6/ref/relative refs with absolute uris and defs/valid on both fields`
-- `draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
-- `draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
-
-</details>
-
-<details>
 <summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
 
 - `draft6/definitions/validate definition against metaschema/invalid definition schema`
 
 </details>
 
-<details>
-<summary>Valibot does not handle JS prototype property names (__proto__, constructor, toString) (10 tests)</summary>
+### Unexpected Failures
 
-- `draft6/properties/properties whose names are Javascript object property names/__proto__ not valid`
-- `draft6/properties/properties whose names are Javascript object property names/all present and valid`
-- `draft6/properties/properties whose names are Javascript object property names/constructor not valid`
-- `draft6/properties/properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft6/properties/properties whose names are Javascript object property names/toString not valid`
-- `draft6/required/required properties whose names are Javascript object property names/__proto__ present`
-- `draft6/required/required properties whose names are Javascript object property names/all present`
-- `draft6/required/required properties whose names are Javascript object property names/constructor present`
-- `draft6/required/required properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft6/required/required properties whose names are Javascript object property names/toString present`
+<details>
+<summary>properties - 5 failures</summary>
+
+- **properties whose names are Javascript object property names**
+  - Test: __proto__ not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: all present and valid
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: constructor not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: toString not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+
+</details>
+
+<details>
+<summary>ref - 6 failures</summary>
+
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 2 failures</summary>
+
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>required - 5 failures</summary>
+
+- **required properties whose names are Javascript object property names**
+  - Test: __proto__ present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: all present
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: constructor present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: toString present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -542,11 +748,11 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 21/21 |
-| required | ✅ | 11/11 |
+| ref | ❌ | 0/6 |
+| refRemote | ⚠️ | 21/23 |
+| required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -555,39 +761,89 @@ These tests are intentionally excluded due to documented limitations.
 These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>Bundler limitation: relative URIs with $id combinations (8 tests)</summary>
-
-- `draft7/ref/refs with relative uris and defs/invalid on inner field`
-- `draft7/ref/refs with relative uris and defs/invalid on outer field`
-- `draft7/ref/refs with relative uris and defs/valid on both fields`
-- `draft7/ref/relative refs with absolute uris and defs/invalid on inner field`
-- `draft7/ref/relative refs with absolute uris and defs/invalid on outer field`
-- `draft7/ref/relative refs with absolute uris and defs/valid on both fields`
-- `draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid`
-- `draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid`
-
-</details>
-
-<details>
 <summary>Metaschema validation requires fetching schemas containing dynamic refs (1 test)</summary>
 
 - `draft7/definitions/validate definition against metaschema/invalid definition schema`
 
 </details>
 
-<details>
-<summary>Valibot does not handle JS prototype property names (__proto__, constructor, toString) (10 tests)</summary>
+### Unexpected Failures
 
-- `draft7/properties/properties whose names are Javascript object property names/__proto__ not valid`
-- `draft7/properties/properties whose names are Javascript object property names/all present and valid`
-- `draft7/properties/properties whose names are Javascript object property names/constructor not valid`
-- `draft7/properties/properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft7/properties/properties whose names are Javascript object property names/toString not valid`
-- `draft7/required/required properties whose names are Javascript object property names/__proto__ present`
-- `draft7/required/required properties whose names are Javascript object property names/all present`
-- `draft7/required/required properties whose names are Javascript object property names/constructor present`
-- `draft7/required/required properties whose names are Javascript object property names/none of the properties mentioned`
-- `draft7/required/required properties whose names are Javascript object property names/toString present`
+<details>
+<summary>properties - 5 failures</summary>
+
+- **properties whose names are Javascript object property names**
+  - Test: __proto__ not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: all present and valid
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: constructor not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **properties whose names are Javascript object property names**
+  - Test: toString not valid
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+
+</details>
+
+<details>
+<summary>ref - 6 failures</summary>
+
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/definitions/inner" points to missing target: key "definitions" not found`
+
+</details>
+
+<details>
+<summary>refRemote - 2 failures</summary>
+
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: bundling error: $ref "#/$defs/localhost_1234_nested_foo_ref_string_json/$defs/localhost_1234_nested_string_json" points to missing target: key "$defs" not found`
+
+</details>
+
+<details>
+<summary>required - 5 failures</summary>
+
+- **required properties whose names are Javascript object property names**
+  - Test: __proto__ present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: all present
+  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: constructor present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: none of the properties mentioned
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
+- **required properties whose names are Javascript object property names**
+  - Test: toString present
+  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 

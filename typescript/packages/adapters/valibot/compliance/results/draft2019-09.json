@@ -249,9 +249,51 @@
     {
       "keyword": "properties",
       "passed": 23,
-      "failed": 0,
+      "failed": 5,
       "skipped": 0,
-      "total": 23
+      "total": 28,
+      "failures": [
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "__proto__ not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "all present and valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "constructor not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "propertyNames",
@@ -270,23 +312,165 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 8,
       "skipped": 0,
-      "total": 0
+      "total": 8,
+      "failures": [
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 0,
+      "failed": 4,
       "skipped": 0,
-      "total": 0
+      "total": 4,
+      "failures": [
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2019_09_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2019_09_nested_foo_ref_string_json/$defs/localhost_1234_draft2019_09_nested_string_json\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "required",
       "passed": 11,
-      "failed": 0,
+      "failed": 5,
       "skipped": 0,
-      "total": 11
+      "total": 16,
+      "failures": [
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "all present",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "toString present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "type",
@@ -326,13 +510,21 @@
   ],
   "summary": {
     "passed": 848,
-    "failed": 0,
+    "failed": 22,
     "skipped": 0,
-    "total": 848,
-    "percentage": 100,
+    "total": 870,
+    "percentage": 97.47126436781609,
     "knownIssues": {
-      "count": 67,
+      "count": 45,
       "items": [
+        {
+          "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
         {
           "path": "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
           "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
@@ -482,80 +674,12 @@
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         },
         {
-          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/URN ref with nested pointer ref/a string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2019-09/properties/properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/properties/properties whose names are Javascript object property names/__proto__ not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/properties/properties whose names are Javascript object property names/toString not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/properties/properties whose names are Javascript object property names/constructor not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/properties/properties whose names are Javascript object property names/all present and valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         },
         {
           "path": "draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items",
@@ -572,34 +696,6 @@
         {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/required/required properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/required/required properties whose names are Javascript object property names/__proto__ present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/required/required properties whose names are Javascript object property names/toString present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/required/required properties whose names are Javascript object property names/constructor present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/required/required properties whose names are Javascript object property names/all present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         }
       ]
     }

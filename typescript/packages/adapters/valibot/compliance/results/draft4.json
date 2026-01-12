@@ -172,9 +172,51 @@
     {
       "keyword": "properties",
       "passed": 19,
-      "failed": 0,
+      "failed": 5,
       "skipped": 0,
-      "total": 19
+      "total": 24,
+      "failures": [
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "__proto__ not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "all present and valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "constructor not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "ref",
@@ -193,9 +235,51 @@
     {
       "keyword": "required",
       "passed": 10,
-      "failed": 0,
+      "failed": 5,
       "skipped": 0,
-      "total": 10
+      "total": 15,
+      "failures": [
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "all present",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "toString present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "type",
@@ -214,56 +298,16 @@
   ],
   "summary": {
     "passed": 557,
-    "failed": 0,
+    "failed": 10,
     "skipped": 0,
-    "total": 557,
-    "percentage": 100,
+    "total": 567,
+    "percentage": 98.2363315696649,
     "knownIssues": {
-      "count": 11,
+      "count": 1,
       "items": [
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/__proto__ present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/toString present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/constructor present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/all present",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
         {
           "path": "draft4/definitions/validate definition against metaschema/invalid definition schema",
           "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/__proto__ not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/toString not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/constructor not valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/all present and valid",
-          "reason": "Valibot does not handle JS prototype property names (__proto__, constructor, toString)"
         }
       ]
     }

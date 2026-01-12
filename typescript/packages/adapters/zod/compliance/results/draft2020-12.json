@@ -270,16 +270,116 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 0,
+      "failed": 8,
       "skipped": 0,
-      "total": 0
+      "total": 8,
+      "failures": [
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a non-string is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "URN ref with nested pointer ref",
+          "test": "a string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "refs with relative uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on inner field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "invalid on outer field",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "relative refs with absolute uris and defs",
+          "test": "valid on both fields",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 0,
+      "failed": 4,
       "skipped": 0,
-      "total": 0
+      "total": 4,
+      "failures": [
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "anchor within remote ref",
+          "test": "remote anchor valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" points to missing target: key \"localhost_1234_draft2020_12_locationIndependentIdentifier_jsonfoo\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "number is invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
+        },
+        {
+          "group": "retrieved nested refs resolve relative to their URI not $id",
+          "test": "string is valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
+        }
+      ]
     },
     {
       "keyword": "required",
@@ -326,72 +426,16 @@
   ],
   "summary": {
     "passed": 870,
-    "failed": 0,
+    "failed": 12,
     "skipped": 0,
-    "total": 870,
-    "percentage": 100,
+    "total": 882,
+    "percentage": 98.63945578231292,
     "knownIssues": {
-      "count": 50,
+      "count": 38,
       "items": [
         {
           "path": "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
           "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
-          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
-        },
-        {
-          "path": "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-          "reason": "Bundler limitation: relative URIs with $id combinations"
         },
         {
           "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
@@ -532,6 +576,14 @@
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "Metaschema validation requires fetching schemas containing dynamic refs"
         }
       ]
     }

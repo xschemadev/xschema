@@ -23,3 +23,17 @@ Started: Mon Jan 12 01:14:36 AM CET 2026
   - go:embed is cleaner than runtime path resolution for bundled config files
   - embed directive must be above var declaration: `//go:embed known-issues.json`
 ---
+
+## 2026-01-12 - US-003
+- Re-ran compliance on all 4 adapters using global known-issues
+- Results:
+  - zod: 98.6% (870 passed draft2020-12)
+  - valibot: 97.5% (860 passed draft2020-12)
+  - arktype: 98.6% (870 passed draft2020-12)
+  - effect: 98.6% (870 passed draft2020-12)
+- All results written to respective compliance/results/ folders
+- No runtime errors
+- **Learnings:**
+  - Build typescript first with `bun run build` from typescript/ dir
+  - Compliance runner uses embedded known-issues.json correctly
+---
