@@ -207,7 +207,7 @@
         "Handle cross-draft schemas (each resource can have different $schema)",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

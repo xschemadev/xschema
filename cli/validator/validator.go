@@ -9,6 +9,13 @@ import (
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
+// ValidateOptions configures schema validation behavior
+type ValidateOptions struct {
+	// Metaschemas maps URI to raw JSON for custom metaschemas.
+	// Pre-loaded metaschemas allow validation of schemas using custom $schema URIs.
+	Metaschemas map[string]json.RawMessage
+}
+
 // noopLoader returns an error for all URL loads.
 // External refs are handled by the bundler, not the validator.
 type noopLoader struct{}
@@ -80,6 +87,12 @@ func detectDraft(data []byte) *jsonschema.Draft {
 // External $ref loading errors are ignored (handled by bundler later).
 // If draftHint is provided and schema has no $schema field, it will be used instead of defaulting to draft2020-12.
 func ValidateSchema(data []byte, draftHint ...string) error {
+	return ValidateSchemaWithOptions(data, nil, draftHint...)
+}
+
+// ValidateSchemaWithOptions validates a schema with configurable options.
+// Use this to pre-load custom metaschemas for schemas with custom $schema URIs.
+func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...string) error {
 	var draft *jsonschema.Draft
 	if len(draftHint) > 0 && draftHint[0] != "" {
 		if d, ok := draftNames[draftHint[0]]; ok {
@@ -102,6 +115,20 @@ func ValidateSchema(data []byte, draftHint ...string) error {
 	compiler.DefaultDraft(draft)
 	// Use noop loader - external refs are handled by bundler
 	compiler.UseLoader(noopLoader{})
+
+	// Pre-load custom metaschemas via AddResource
+	// Each metaschema is added by its URI so schemas using $schema can reference it
+	if opts != nil && opts.Metaschemas != nil {
+		for uri, raw := range opts.Metaschemas {
+			metaDoc, err := jsonschema.UnmarshalJSON(strings.NewReader(string(raw)))
+			if err != nil {
+				return fmt.Errorf("invalid metaschema %s: %w", uri, err)
+			}
+			if err := compiler.AddResource(uri, metaDoc); err != nil {
+				return fmt.Errorf("failed to add metaschema %s: %w", uri, err)
+			}
+		}
+	}
 
 	if err := compiler.AddResource("schema.json", doc); err != nil {
 		return fmt.Errorf("invalid JSON Schema: %w", err)

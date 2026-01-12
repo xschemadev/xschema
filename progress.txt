@@ -214,3 +214,21 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Circular refs between declared schemas and external refs work because declared schemas are in cache
   - Processor now has complete 3-phase pipeline: crawlAndFetch → validateAll → bundleAll
 ---
+
+## 2026-01-12 - US-014
+- Implemented: Validator metaschema pre-loading support
+- Files changed:
+  - cli/validator/validator.go - Added ValidateOptions struct and ValidateSchemaWithOptions function
+- **Key implementation:**
+  - `ValidateOptions` struct with `Metaschemas map[string]json.RawMessage` field
+  - `ValidateSchemaWithOptions(data, opts, draftHint)` for validation with pre-loaded metaschemas
+  - Uses `compiler.AddResource(uri, metaDoc)` to pre-load custom metaschemas by URI
+  - Original `ValidateSchema()` now delegates to `ValidateSchemaWithOptions(data, nil, draftHint...)`
+- **Design decisions:**
+  - Kept backward compatible: ValidateSchema still works without options
+  - Each metaschema added by its URI so $schema references resolve correctly
+  - Cross-draft handled automatically by jsonschema library (each resource's $schema determines draft)
+- **Learnings:**
+  - compiler.AddResource allows pre-loading any schema/metaschema by URI
+  - Library handles cross-draft automatically when resources have their own $schema
+---
