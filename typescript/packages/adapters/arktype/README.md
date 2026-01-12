@@ -19,7 +19,7 @@ This adapter is used by xschema CLI to convert JSON Schema to ArkType validators
 ```jsonc
 // user.ts.jsonc
 {
-  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
       "id": "User",

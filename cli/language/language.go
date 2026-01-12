@@ -33,7 +33,7 @@ type Language struct {
 	Name             string
 	Extensions       []string // file extensions for source files (for injector)
 	SchemaURL        string   // e.g., "https://xschema.dev/schemas/typescript.jsonc"
-	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
+	SchemaExt        string   // e.g., "typescript.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
 	DetectRunner     func() (cmd string, args []string, err error)
 	AdapterInvoker   AdapterInvoker // resolves adapter refs to a runnable command

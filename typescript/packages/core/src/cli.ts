@@ -5,7 +5,7 @@ import type { ConvertInput, ConvertResult } from "./types.js";
  * Reads JSON array of ConvertInput from stdin, calls convert for each, outputs JSON array of ConvertResult.
  *
  * @example
- * ```ts
+ * ```typescript
  * #!/usr/bin/env node
  * import { createAdapterCLI } from "@xschemadev/core";
  * import { convert } from "./index";

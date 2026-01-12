@@ -253,7 +253,7 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Same ID in same namespace across files = error
 - Multiple languages without `--lang` flag = error
 - `json.RawMessage` preserves raw JSON; don't re-marshal inline schemas
-- Language detected from `$schema` URL: `ts.jsonc` -> ts, `py.jsonc` -> py
+- Language detected from `$schema` URL: `typescript.jsonc` -> typescript, `python.jsonc` -> python
 - Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec
 - Always run `bun run build` from typescript/ dir before testing adapters
 - Language registry is global; tests that register languages must call `language.ResetForTests()` (and `t.Cleanup(language.ResetForTests)`)
