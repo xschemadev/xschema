@@ -119,16 +119,23 @@ export function createContext(
 
 /**
  * Check if a vocabulary is enabled.
- * Returns true if vocabulary is undefined (all enabled) or the vocab URI is not explicitly false.
+ *
+ * Per JSON Schema spec on $vocabulary:
+ * - true: vocabulary is required and must be processed
+ * - false: vocabulary is optional but recognized (should be processed if understood)
+ * - not present: vocabulary is NOT recognized, keywords should be ignored
+ *
+ * Returns true if vocabulary is undefined (all enabled) or any of the vocab URIs
+ * is present in $vocabulary (regardless of true/false value - presence means enabled).
  */
 export function isVocabEnabled(
 	ctx: ParseContext,
 	...vocabUris: string[]
 ): boolean {
 	if (!ctx.vocabulary) return true;
-	// Check if any of the vocab URIs is enabled (present and not false)
+	// Vocabulary is enabled if present in $vocabulary map (value doesn't matter - presence = enabled)
 	for (const uri of vocabUris) {
-		if (ctx.vocabulary[uri] !== false) return true;
+		if (uri in ctx.vocabulary) return true;
 	}
 	return false;
 }

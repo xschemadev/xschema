@@ -368,6 +368,7 @@ type bundledGroup struct {
 	group         TestGroup
 	bundledSchema RawSchema
 	bundleErr     error
+	vocabulary    map[string]bool // extracted from custom metaschema's $vocabulary (nil = all enabled)
 }
 
 // processKeyword batches adapter invocation and harness execution for all groups in a keyword
@@ -436,10 +437,18 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath, opts.draft)
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
+		// Extract vocabulary from custom metaschema if present
+		var vocabulary map[string]bool
+		if err == nil {
+			remotesPath := filepath.Join(opts.suitePath, "remotes")
+			vocabulary = extractVocabularyFromSchema(bundledSchema, remotesPath)
+		}
+
 		bundled[i] = bundledGroup{
 			group:         group,
 			bundledSchema: bundledSchema,
 			bundleErr:     err,
+			vocabulary:    vocabulary,
 		}
 	}
 
@@ -457,10 +466,11 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		if bg.bundleErr == nil {
 			groupID := fmt.Sprintf("group_%d", i)
 			adapterInputs = append(adapterInputs, adapter.ConvertInput{
-				Namespace: "compliance",
-				ID:        groupID,
-				VarName:   groupID,
-				Schema:    bg.bundledSchema.Raw(),
+				Namespace:  "compliance",
+				ID:         groupID,
+				VarName:    groupID,
+				Schema:     bg.bundledSchema.Raw(),
+				Vocabulary: bg.vocabulary,
 			})
 			inputIndexes = append(inputIndexes, i)
 		}
@@ -713,6 +723,66 @@ func (f *LocalhostFetcher) Fetch(uri string) (json.RawMessage, error) {
 	}
 
 	return json.RawMessage(data), nil
+}
+
+// extractVocabularyFromSchema extracts $vocabulary from a schema's custom metaschema.
+// If the schema's $schema is a localhost URL, fetches the metaschema from remotes
+// and extracts its $vocabulary. Returns nil for standard drafts or if no $vocabulary.
+func extractVocabularyFromSchema(schema RawSchema, remotesPath string) map[string]bool {
+	// Extract $schema from the schema
+	obj, ok := schema.Value().(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	schemaURI, ok := obj["$schema"].(string)
+	if !ok {
+		return nil
+	}
+
+	// Skip standard JSON Schema drafts
+	if strings.HasPrefix(schemaURI, "http://json-schema.org/") ||
+		strings.HasPrefix(schemaURI, "https://json-schema.org/") {
+		return nil
+	}
+
+	// Only handle localhost URLs for compliance testing
+	const localhostPrefix = "http://localhost:1234/"
+	if !strings.HasPrefix(schemaURI, localhostPrefix) {
+		return nil
+	}
+
+	// Fetch metaschema from remotes directory
+	path := strings.TrimPrefix(schemaURI, localhostPrefix)
+	localPath := filepath.Join(remotesPath, path)
+	data, err := os.ReadFile(localPath)
+	if err != nil {
+		return nil // silently fail - metaschema not available
+	}
+
+	var metaschema map[string]any
+	if err := json.Unmarshal(data, &metaschema); err != nil {
+		return nil
+	}
+
+	// Extract $vocabulary from metaschema
+	vocabRaw, hasVocab := metaschema["$vocabulary"]
+	if !hasVocab {
+		return nil
+	}
+
+	vocabMap, ok := vocabRaw.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	result := make(map[string]bool, len(vocabMap))
+	for uri, val := range vocabMap {
+		if required, ok := val.(bool); ok {
+			result[uri] = required
+		}
+	}
+	return result
 }
 
 func bundleSchema(ctx context.Context, schema RawSchema, suitePath, draft string) (RawSchema, error) {

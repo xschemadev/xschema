@@ -360,3 +360,27 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - jsonschema library's LoadURLError.URL field identifies which URL failed to load
   - Standard drafts (json-schema.org) are auto-loaded; only custom metaschemas need pre-loading
 ---
+
+## 2026-01-12 - US-023
+- Implemented: 100% zod compliance achieved
+- Files changed:
+  - cli/compliance/runner.go - Added extractVocabularyFromSchema() to extract $vocabulary from custom metaschemas, pass to adapter
+  - typescript/packages/core/src/parser/context.ts - Fixed isVocabEnabled() to use JSON Schema spec semantics
+  - typescript/packages/core/src/parser/vocabulary.test.ts - Updated test helpers to use correct $vocabulary semantics
+- **Bug fix (compliance runner):**
+  - Compliance runner wasn't extracting $vocabulary from custom metaschemas
+  - Added extractVocabularyFromSchema() that reads metaschema from localhost remotes dir
+  - Now passes vocabulary to adapter.ConvertInput.Vocabulary
+- **Bug fix (TypeScript parser):**
+  - isVocabEnabled() was treating "absent from $vocabulary" as enabled (wrong)
+  - Per JSON Schema spec: present=enabled (true=required, false=optional), absent=disabled
+  - Fixed to check `uri in ctx.vocabulary` instead of `ctx.vocabulary[uri] !== false`
+- **Tests updated:**
+  - Updated test helpers to create proper $vocabulary maps (presence=enabled, absence=disabled)
+  - validationDisabled() now includes only applicator/format vocabs (validation absent)
+  - formatDisabled() now includes validation/applicator vocabs (format absent)
+- **Learnings:**
+  - $vocabulary semantics: true=required, false=optional but recognized, absent=not recognized
+  - When vocabulary is absent from $vocabulary, keywords from that vocabulary should be ignored
+  - compliance testing uses actual metaschemas from JSON Schema Test Suite remotes directory
+---

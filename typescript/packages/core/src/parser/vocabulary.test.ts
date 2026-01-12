@@ -18,39 +18,48 @@ import type {
 } from "../ir/nodes.js";
 
 /**
- * Creates vocabulary with validation disabled (both 2019 and 2020 drafts)
+ * Creates vocabulary with validation disabled.
+ * Per JSON Schema spec, absence from $vocabulary = vocab not recognized = disabled.
+ * We include only applicator (and format for convenience) - validation is absent = disabled.
  */
 function validationDisabled(): ParseOptions {
 	return {
 		vocabulary: {
-			[VOCAB.VALIDATION_2020]: false,
-			[VOCAB.VALIDATION_2019]: false,
+			// Only applicator and format are enabled - validation is absent = disabled
+			[VOCAB.APPLICATOR_2020]: true,
+			[VOCAB.APPLICATOR_2019]: true,
+			[VOCAB.FORMAT_ANNOTATION_2020]: true,
+			[VOCAB.FORMAT_2019]: true,
 		},
 	};
 }
 
 /**
- * Creates vocabulary with format disabled
+ * Creates vocabulary with format disabled.
+ * Include validation and applicator - format is absent = disabled.
  */
 function formatDisabled(): ParseOptions {
 	return {
 		vocabulary: {
-			[VOCAB.FORMAT_ANNOTATION_2020]: false,
-			[VOCAB.FORMAT_2019]: false,
+			[VOCAB.VALIDATION_2020]: true,
+			[VOCAB.VALIDATION_2019]: true,
+			[VOCAB.APPLICATOR_2020]: true,
+			[VOCAB.APPLICATOR_2019]: true,
+			// Format is absent = disabled
 		},
 	};
 }
 
 /**
  * Creates vocabulary with only applicators enabled (validation and format disabled)
+ * Only applicator vocab is present - validation and format are absent = disabled.
  */
 function onlyApplicatorsEnabled(): ParseOptions {
 	return {
 		vocabulary: {
-			[VOCAB.VALIDATION_2020]: false,
-			[VOCAB.VALIDATION_2019]: false,
-			[VOCAB.FORMAT_ANNOTATION_2020]: false,
-			[VOCAB.FORMAT_2019]: false,
+			[VOCAB.APPLICATOR_2020]: true,
+			[VOCAB.APPLICATOR_2019]: true,
+			// Validation and format are absent = disabled
 		},
 	};
 }
@@ -370,13 +379,12 @@ describe("vocabulary-aware keyword skipping", () => {
 				format: "email",
 			};
 
-			// Empty vocabulary = all vocabularies explicitly set to false
+			// Empty vocabulary = no vocabularies present = all disabled
+			// Per JSON Schema spec, absence from $vocabulary means not recognized
 			const emptyVocab: ParseOptions = {
 				vocabulary: {
-					[VOCAB.VALIDATION_2020]: false,
-					[VOCAB.VALIDATION_2019]: false,
-					[VOCAB.FORMAT_ANNOTATION_2020]: false,
-					[VOCAB.FORMAT_2019]: false,
+					// Only core/applicator enabled - validation and format are absent = disabled
+					[VOCAB.APPLICATOR_2020]: true,
 				},
 			};
 
@@ -399,21 +407,22 @@ describe("vocabulary-aware keyword skipping", () => {
 				format: "email",
 			};
 
-			// Only disable validation, keep format enabled
+			// Disable validation but keep format enabled
+			// Per JSON Schema spec: present = enabled, absent = disabled
 			const partialVocab: ParseOptions = {
 				vocabulary: {
-					[VOCAB.VALIDATION_2020]: false,
-					[VOCAB.VALIDATION_2019]: false,
-					// Format not disabled - should still work
+					[VOCAB.APPLICATOR_2020]: true,
+					[VOCAB.FORMAT_ANNOTATION_2020]: true,
+					// Validation is absent = disabled
 				},
 			};
 
 			const result = parse(schema, partialVocab) as StringNode;
 
 			expect(result.kind).toBe("string");
-			// Validation disabled
+			// Validation disabled (not in vocabulary)
 			expect(result.constraints.minLength).toBeUndefined();
-			// Format still enabled (not in disabled list)
+			// Format still enabled (present in vocabulary)
 			expect(result.format).toBe("email");
 		});
 	});

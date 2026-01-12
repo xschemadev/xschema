@@ -270,180 +270,16 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "URN ref with nested pointer ref",
-          "test": "a non-string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
-        },
-        {
-          "group": "URN ref with nested pointer ref",
-          "test": "a string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/bar\" points to missing target: key \"bar\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/inner\" points to missing target: key \"$defs\" not found"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
       "passed": 0,
-      "failed": 12,
+      "failed": 0,
       "skipped": 0,
-      "total": 12,
-      "failures": [
-        {
-          "group": "$ref to $ref finds detached $anchor",
-          "test": "non-number is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_detached_ref_json__foo/$defs/detached\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "$ref to $ref finds detached $anchor",
-          "test": "number is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_detached_ref_json__foo/$defs/detached\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "integer is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "Location-independent identifier in remote ref",
-          "test": "string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "anchor within remote ref",
-          "test": "remote anchor invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "anchor within remote ref",
-          "test": "remote anchor valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__refToInteger/$defs/A\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "ref within remote ref",
-          "test": "ref within ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_subSchemas_json__refToInteger/$defs/integer\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "retrieved nested refs resolve relative to their URI not $id",
-          "test": "number is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
-        },
-        {
-          "group": "retrieved nested refs resolve relative to their URI not $id",
-          "test": "string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: $ref \"#/$defs/localhost_1234_draft2020_12_nested_foo_ref_string_json/$defs/localhost_1234_draft2020_12_nested_string_json\" points to missing target: key \"$defs\" not found"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "required",
@@ -482,27 +318,18 @@
     },
     {
       "keyword": "vocabulary",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "schema that uses custom metaschema with with no validation vocabulary",
-          "test": "no validation: invalid number, but it still validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     }
   ],
   "summary": {
-    "passed": 870,
-    "failed": 21,
+    "passed": 871,
+    "failed": 0,
     "skipped": 0,
-    "total": 891,
-    "percentage": 97.64309764309765,
+    "total": 871,
+    "percentage": 100,
     "unsupportedFeatures": {
       "count": 33,
       "items": [
