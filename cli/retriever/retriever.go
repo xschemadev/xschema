@@ -17,7 +17,6 @@ import (
 
 	"github.com/xschemadev/xschema/parser"
 	"github.com/xschemadev/xschema/ui"
-	"github.com/xschemadev/xschema/validator"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -152,8 +151,7 @@ func maskHeaderValue(value string) string {
 
 // RetrieveFromURL fetches a JSON schema from a URL with retry.
 // opts.Headers should contain already-resolved header values (no ${VAR} syntax).
-// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
-func RetrieveFromURL(ctx context.Context, url string, opts Options, draftHint ...string) (json.RawMessage, error) {
+func RetrieveFromURL(ctx context.Context, url string, opts Options) (json.RawMessage, error) {
 	client := &http.Client{Timeout: opts.HTTPTimeout}
 	var lastErr error
 
@@ -218,10 +216,6 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options, draftHint ..
 			return nil, fmt.Errorf("invalid JSON from %s", url)
 		}
 
-		if err := validator.ValidateSchema(data, draftHint...); err != nil {
-			return nil, fmt.Errorf("schema from %s: %w", url, err)
-		}
-
 		ui.Verbosef("successfully fetched from URL: url=%s, status=%d, bytes=%d", url, resp.StatusCode, len(data))
 		return json.RawMessage(data), nil
 	}
@@ -230,8 +224,7 @@ func RetrieveFromURL(ctx context.Context, url string, opts Options, draftHint ..
 }
 
 // retrieveFromFile reads a JSON schema from a file relative to the config file.
-// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
-func retrieveFromFile(ctx context.Context, filePath string, configPath string, draftHint ...string) (json.RawMessage, error) {
+func retrieveFromFile(ctx context.Context, filePath string, configPath string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -255,17 +248,12 @@ func retrieveFromFile(ctx context.Context, filePath string, configPath string, d
 		return nil, fmt.Errorf("invalid JSON in %s", fullPath)
 	}
 
-	if err := validator.ValidateSchema(data, draftHint...); err != nil {
-		return nil, fmt.Errorf("schema in %s: %w", fullPath, err)
-	}
-
 	ui.Verbosef("successfully read file: path=%s, bytes=%d", fullPath, len(data))
 	return json.RawMessage(data), nil
 }
 
 // RetrieveFromFilePath reads a JSON schema from an absolute file path.
-// If draftHint is provided, it will be used for schema validation when the schema has no $schema field.
-func RetrieveFromFilePath(ctx context.Context, absolutePath string, draftHint ...string) (json.RawMessage, error) {
+func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -283,10 +271,6 @@ func RetrieveFromFilePath(ctx context.Context, absolutePath string, draftHint ..
 	if !json.Valid(data) {
 		ui.Verbosef("invalid JSON in file: %s", absolutePath)
 		return nil, fmt.Errorf("invalid JSON in %s", absolutePath)
-	}
-
-	if err := validator.ValidateSchema(data, draftHint...); err != nil {
-		return nil, fmt.Errorf("schema in %s: %w", absolutePath, err)
 	}
 
 	ui.Verbosef("successfully read file: path=%s, bytes=%d", absolutePath, len(data))
@@ -400,9 +384,6 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			case parser.SourceJSON:
 				// Inline JSON - source is already the schema
 				schema = d.Source
-				if err := validator.ValidateSchema(schema); err != nil {
-					return fmt.Errorf("inline schema %s: %w", d.Key(), err)
-				}
 			default:
 				err = fmt.Errorf("unknown source type: %s", d.SourceType)
 			}
