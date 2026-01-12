@@ -471,3 +471,101 @@ func containsHelper(s, substr string) bool {
 	}
 	return false
 }
+
+// --- CacheFetcher Tests (US-010) ---
+
+func TestCacheFetcher_CacheHit(t *testing.T) {
+	cache := externalRefCache{
+		"http://example.com/schema.json": json.RawMessage(`{"type":"string"}`),
+	}
+	fetcher := NewCacheFetcher(cache)
+
+	result, err := fetcher.Fetch("http://example.com/schema.json")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(result) != `{"type":"string"}` {
+		t.Errorf("expected schema bytes, got: %s", result)
+	}
+}
+
+func TestCacheFetcher_CacheMiss(t *testing.T) {
+	cache := externalRefCache{
+		"http://example.com/exists.json": json.RawMessage(`{"type":"string"}`),
+	}
+	fetcher := NewCacheFetcher(cache)
+
+	_, err := fetcher.Fetch("http://example.com/missing.json")
+	if err == nil {
+		t.Fatal("expected error for cache miss, got nil")
+	}
+	errStr := err.Error()
+	if !contains(errStr, "cache miss") {
+		t.Errorf("error should mention 'cache miss', got: %s", errStr)
+	}
+	if !contains(errStr, "missing.json") {
+		t.Errorf("error should mention the missing URI, got: %s", errStr)
+	}
+	if !contains(errStr, "bug") {
+		t.Errorf("error should mention this indicates a bug, got: %s", errStr)
+	}
+}
+
+func TestCacheFetcher_EmptyCache(t *testing.T) {
+	cache := externalRefCache{}
+	fetcher := NewCacheFetcher(cache)
+
+	_, err := fetcher.Fetch("http://example.com/any.json")
+	if err == nil {
+		t.Fatal("expected error for empty cache, got nil")
+	}
+	if !contains(err.Error(), "cache miss") {
+		t.Errorf("error should mention 'cache miss', got: %s", err)
+	}
+}
+
+func TestCacheFetcher_CaseSensitivity(t *testing.T) {
+	// URIs should be matched exactly - different case = different URI
+	cache := externalRefCache{
+		"http://Example.com/Schema.json": json.RawMessage(`{"type":"string"}`),
+	}
+	fetcher := NewCacheFetcher(cache)
+
+	// Exact match should work
+	result, err := fetcher.Fetch("http://Example.com/Schema.json")
+	if err != nil {
+		t.Fatalf("unexpected error for exact match: %v", err)
+	}
+	if string(result) != `{"type":"string"}` {
+		t.Errorf("expected schema bytes, got: %s", result)
+	}
+
+	// Different case should NOT match (case sensitive)
+	_, err = fetcher.Fetch("http://example.com/schema.json")
+	if err == nil {
+		t.Fatal("expected error for case-different URI, got nil (URIs should be case-sensitive)")
+	}
+
+	// Another case variation
+	_, err = fetcher.Fetch("http://EXAMPLE.COM/SCHEMA.JSON")
+	if err == nil {
+		t.Fatal("expected error for uppercase URI, got nil (URIs should be case-sensitive)")
+	}
+}
+
+func TestCacheFetcher_FragmentStripped(t *testing.T) {
+	// CacheFetcher normalizes URI (strips fragment) before lookup
+	cache := externalRefCache{
+		"http://example.com/defs.json": json.RawMessage(`{"$defs":{"A":{"type":"string"}}}`),
+	}
+	fetcher := NewCacheFetcher(cache)
+
+	// Fetch with fragment should find the base URI in cache
+	result, err := fetcher.Fetch("http://example.com/defs.json#/$defs/A")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(result) != `{"$defs":{"A":{"type":"string"}}}` {
+		t.Errorf("expected full schema (fragment stripped), got: %s", result)
+	}
+}

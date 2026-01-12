@@ -164,3 +164,18 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - bundler.Fetcher has no context param, processor.Fetcher has context - different interfaces for different phases
   - CacheFetcher bridges crawl phase (which populates cache) to bundle phase (which consumes cache)
 ---
+
+## 2026-01-12 - US-010
+- Implemented: Tests for CacheFetcher covering hit/miss/edge cases
+- Files changed:
+  - cli/processor/processor_test.go - Added 5 new tests for CacheFetcher
+- **Tests added:**
+  - TestCacheFetcher_CacheHit - URI in cache returns schema bytes
+  - TestCacheFetcher_CacheMiss - missing URI returns descriptive error mentioning "cache miss" and "bug"
+  - TestCacheFetcher_EmptyCache - empty cache returns error for any URI
+  - TestCacheFetcher_CaseSensitivity - URIs matched exactly (case sensitive)
+  - TestCacheFetcher_FragmentStripped - URI with fragment finds base URI in cache (normalizes)
+- **Learnings:**
+  - CacheFetcher correctly normalizes URIs before lookup (strips fragments)
+  - Case sensitivity ensures crawler stores with exact URI it uses
+---
