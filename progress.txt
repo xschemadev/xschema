@@ -37,3 +37,19 @@ Started: Mon Jan 12 01:14:36 AM CET 2026
   - Build typescript first with `bun run build` from typescript/ dir
   - Compliance runner uses embedded known-issues.json correctly
 ---
+
+## 2026-01-12 - US-006
+- Updated web/scripts/generate-compliance.ts to remove per-adapter known-issues
+- Removed KnownIssueItem interface
+- Removed groupKnownIssuesByReason function
+- Removed "Known Behaviors" section from adapter compliance pages
+- Added "Known Limitations" section with link to /docs/compliance/known-issues
+- Regenerated all 4 adapter compliance MDX files
+- Verified in browser: zod and valibot pages render correctly
+- Files changed:
+  - web/scripts/generate-compliance.ts
+- **Learnings:**
+  - compliance.mdx files are gitignored (generated at build time)
+  - web dev server is on port 3002 when 3000/3001 are occupied
+  - typecheck command is `bun run types:check`
+---
