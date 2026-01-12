@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/xschemadev/xschema/bundler"
+	"github.com/xschemadev/xschema/metaschema"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 	"github.com/xschemadev/xschema/validator"
@@ -82,21 +84,13 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose("processor: validation complete")
 
-	// Phase 3: bundleAll (placeholder - implemented in US-012)
-
-	// For now, return schemas as ProcessedSchema without bundling
-	// (bundling happens in US-012)
-	result := make([]ProcessedSchema, len(schemas))
-	for i, s := range schemas {
-		result[i] = ProcessedSchema{
-			Namespace:  s.Namespace,
-			ID:         s.ID,
-			Schema:     s.Schema,
-			Adapter:    s.Adapter,
-			SourceURI:  s.SourceURI,
-			Vocabulary: nil, // extracted in bundleAll phase
-		}
+	// Phase 3: Bundle all schemas using the cache
+	result, err := bundleAll(ctx, schemas, cache, verbose)
+	if err != nil {
+		return nil, err
 	}
+
+	verbose(fmt.Sprintf("processor: bundling complete, produced %d schemas", len(result)))
 
 	return result, nil
 }
@@ -126,6 +120,91 @@ func validateAll(schemas []retriever.RetrievedSchema, cache externalRefCache, ve
 	verbose(fmt.Sprintf("processor: validated %d external schemas", len(cache)))
 
 	return nil
+}
+
+// bundleAll bundles each declared schema using the CacheFetcher.
+// No I/O occurs during bundling - all refs resolve from the pre-populated cache.
+func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache externalRefCache, verbose func(string)) ([]ProcessedSchema, error) {
+	// Add declared schemas to cache so bundler can resolve circular refs back to them
+	for _, s := range schemas {
+		if s.SourceURI != "" {
+			normalized := normalizeURI(s.SourceURI)
+			cache[normalized] = s.Schema
+		}
+	}
+
+	fetcher := NewCacheFetcher(cache)
+	result := make([]ProcessedSchema, len(schemas))
+
+	for i, s := range schemas {
+		verbose(fmt.Sprintf("processor: bundling %s", s.SourceURI))
+
+		bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
+			Schema:    s.Schema,
+			SourceURI: s.SourceURI,
+			Fetcher:   fetcher,
+			Draft:     "", // let bundler detect draft from $schema
+		})
+		if err != nil {
+			return nil, fmt.Errorf("bundling failed for %s: %w", s.SourceURI, err)
+		}
+
+		// Extract vocabulary from custom metaschema if present
+		vocab, err := extractVocabulary(ctx, bundled)
+		if err != nil {
+			// Non-fatal: log and continue without vocabulary
+			ui.Verbosef("processor: could not extract vocabulary for %s: %v", s.SourceURI, err)
+		}
+
+		result[i] = ProcessedSchema{
+			Namespace:  s.Namespace,
+			ID:         s.ID,
+			Schema:     bundled,
+			Adapter:    s.Adapter,
+			SourceURI:  s.SourceURI,
+			Vocabulary: vocab,
+		}
+	}
+
+	return result, nil
+}
+
+// extractVocabulary extracts $vocabulary from a bundled schema's custom metaschema.
+// Returns nil if schema uses standard draft or metaschema can't be fetched.
+func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]bool, error) {
+	var parsed map[string]any
+	if err := json.Unmarshal(schema, &parsed); err != nil {
+		return nil, nil // not an object schema, no vocabulary
+	}
+
+	schemaURI, ok := parsed["$schema"].(string)
+	if !ok || schemaURI == "" {
+		return nil, nil // no $schema, use defaults
+	}
+
+	// Skip standard drafts - they have well-known vocabularies
+	if metaschema.IsStandardDraft(schemaURI) {
+		return nil, nil
+	}
+
+	// Check if vocabulary already embedded in schema (by bundler)
+	if vocab, ok := parsed["$vocabulary"].(map[string]any); ok {
+		result := make(map[string]bool, len(vocab))
+		for uri, val := range vocab {
+			if required, ok := val.(bool); ok {
+				result[uri] = required
+			}
+		}
+		return result, nil
+	}
+
+	// Fetch custom metaschema and extract vocabulary
+	meta, err := metaschema.Get(ctx, schemaURI)
+	if err != nil {
+		return nil, err
+	}
+
+	return meta.Vocabulary, nil
 }
 
 // crawlAndFetch iteratively discovers external $refs in schemas and fetches them.

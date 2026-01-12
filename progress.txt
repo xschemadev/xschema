@@ -195,3 +195,22 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Adding validation exposed pre-existing test bug: `#Role` anchor ref without corresponding `$anchor: "Role"` definition
   - Validation phase catches invalid schemas early (before bundling), providing clearer errors
 ---
+
+## 2026-01-12 - US-012
+- Implemented: bundleAll() phase in Processor - completes 3-phase pipeline
+- Files changed:
+  - cli/processor/processor.go - Added bundleAll() and extractVocabulary() functions, integrated into Process()
+- **Key implementation:**
+  - `bundleAll(ctx, schemas, cache, verbose)` bundles each declared schema using CacheFetcher
+  - Adds declared schemas to cache before bundling (enables circular refs back to declared schemas)
+  - `extractVocabulary(ctx, schema)` extracts $vocabulary from custom metaschema
+  - Vocabulary extraction checks: embedded $vocabulary first, then fetches metaschema if needed
+  - Uses bundler.Bundle() with CacheFetcher - no I/O during bundling phase
+- **Design decisions:**
+  - Declared schemas added to cache at bundle time (not crawl time) to avoid mutation during iteration
+  - Non-fatal vocabulary errors: log and continue without vocabulary rather than failing bundle
+  - Standard drafts (json-schema.org) skip vocabulary extraction - well-known vocabularies
+- **Learnings:**
+  - Circular refs between declared schemas and external refs work because declared schemas are in cache
+  - Processor now has complete 3-phase pipeline: crawlAndFetch → validateAll → bundleAll
+---
