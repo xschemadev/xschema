@@ -12,7 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
-	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
@@ -75,7 +74,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Step 1: Parse config files
-	ui.Step(1, 4, "Scanning for xschema config files")
+	ui.Step(1, 5, "Scanning for xschema config files")
 	result, err := parser.Parse(ctx, root, langFilter)
 	if err != nil {
 		ui.ErrorMsg("Failed to parse config files", err)
@@ -90,7 +89,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Step 2: Fetch schemas (with spinner)
-	ui.Step(2, 4, "Fetching schemas")
+	ui.Step(2, 5, "Fetching schemas")
 	retrieverOpts := retriever.DefaultOptions()
 	retrieverOpts.Concurrency = concurrency
 
@@ -120,16 +119,27 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Step 3: Generate (with spinner per adapter)
-	ui.Step(3, 4, "Generating validators")
+	// Step 3: Process schemas (crawl external refs, validate, bundle)
+	ui.Step(3, 5, "Processing schemas")
+	var processed []processor.ProcessedSchema
+	err = ui.RunWithSpinner("Processing schemas...", func() error {
+		var procErr error
+		processed, procErr = processor.Process(ctx, schemas, processor.Options{
+			Fetcher:   newRetrieverFetcher(ctx, retrieverOpts),
+			OnVerbose: verboseCallback(),
+		})
+		return procErr
+	})
+	if err != nil {
+		ui.ErrorMsg("Processing failed", err)
+		return err
+	}
+	ui.SuccessMsg(fmt.Sprintf("Processed %d schemas", len(processed)))
+
+	// Step 4: Generate (with spinner per adapter)
+	ui.Step(4, 5, "Generating validators")
 	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
-		// Convert retrieved schemas to processed schemas (with bundling)
-		// TODO(US-017): Replace with proper Processor call
-		processed, convErr := convertToProcessedSchemas(ctx, schemas)
-		if convErr != nil {
-			return convErr
-		}
 		var genErr error
 		outputs, genErr = generator.GenerateAll(ctx, processed, result.Language.Name, root)
 		return genErr
@@ -139,8 +149,8 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Step 4: Inject
-	ui.Step(4, 4, "Writing output files")
+	// Step 5: Inject
+	ui.Step(5, 5, "Writing output files")
 	err = injector.Inject(injector.InjectInput{
 		Language: result.Language.Name,
 		Outputs:  outputs,
@@ -198,37 +208,29 @@ func printDryRunSchemas(schemas []retriever.RetrievedSchema) {
 	}
 }
 
-// convertToProcessedSchemas bundles retrieved schemas into processed schemas.
-// TODO(US-017): Replace with proper processor.Process() call.
-func convertToProcessedSchemas(ctx context.Context, schemas []retriever.RetrievedSchema) ([]processor.ProcessedSchema, error) {
-	result := make([]processor.ProcessedSchema, len(schemas))
-	for i, s := range schemas {
-		schema := s.Schema
-		if s.SourceURI != "" {
-			// Create a fetcher that uses retriever for HTTP/file fetching
-			fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
-				if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
-					return retriever.RetrieveFromURL(ctx, uri, retriever.DefaultOptions())
-				}
-				return retriever.RetrieveFromFilePath(ctx, uri)
-			})
-			bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
-				Schema:    s.Schema,
-				SourceURI: s.SourceURI,
-				Fetcher:   fetcher,
-			})
-			if err != nil {
-				return nil, fmt.Errorf("failed to bundle schema %s: %w", s.Key(), err)
-			}
-			schema = bundled
-		}
-		result[i] = processor.ProcessedSchema{
-			Namespace: s.Namespace,
-			ID:        s.ID,
-			Schema:    schema,
-			Adapter:   s.Adapter,
-			SourceURI: s.SourceURI,
-		}
+// retrieverFetcher wraps retriever package to implement processor.Fetcher.
+type retrieverFetcher struct {
+	ctx  context.Context
+	opts retriever.Options
+}
+
+func newRetrieverFetcher(ctx context.Context, opts retriever.Options) *retrieverFetcher {
+	return &retrieverFetcher{ctx: ctx, opts: opts}
+}
+
+func (f *retrieverFetcher) Fetch(ctx context.Context, uri string) (json.RawMessage, error) {
+	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
+		return retriever.RetrieveFromURL(ctx, uri, f.opts)
 	}
-	return result, nil
+	return retriever.RetrieveFromFilePath(ctx, uri)
+}
+
+// verboseCallback returns a callback for processor verbose output when verbose mode is enabled.
+func verboseCallback() func(string) {
+	if !verbose {
+		return nil
+	}
+	return func(msg string) {
+		ui.Verbosef("%s", msg)
+	}
 }

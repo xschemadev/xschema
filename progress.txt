@@ -248,3 +248,18 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - Temporary bridge in cmd/generate.go maintains compatibility until US-017 integrates Processor
   - ConvertInput.Vocabulary uses `omitempty` for backward compatibility with adapters that don't support it yet
 ---
+
+## 2026-01-12 - US-017
+- Implemented: Integrated Processor into generate command
+- Files changed:
+  - cli/cmd/generate.go - Replaced temporary convertToProcessedSchemas() with processor.Process() call
+- **Key changes:**
+  - Pipeline now: Parser → Retriever → Processor → Generator → Injector (5 steps)
+  - Added retrieverFetcher type implementing processor.Fetcher (wraps retriever for HTTP/file fetching)
+  - Added verboseCallback() for processor verbose output when --verbose flag enabled
+  - Removed bundler import (bundling now handled by Processor)
+  - Steps updated from 4 to 5 with new "Processing schemas" step
+- **Learnings:**
+  - retrieverFetcher stores context and options, passes context from Fetch() call
+  - verbose flag already existed from US-020 acceptance criteria being partially done
+---

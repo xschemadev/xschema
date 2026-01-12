@@ -248,7 +248,7 @@
         "Pipeline is now: Parser → Retriever → Processor → Generator → Injector",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
