@@ -99,67 +99,10 @@
     ]
   },
   {
-    "reason": "Bundler limitation: relative URIs with $id combinations",
-    "tests": [
-      "draft2020-12/ref/URN ref with nested pointer ref/a non-string is invalid",
-      "draft2020-12/ref/URN ref with nested pointer ref/a string is valid",
-      "draft2020-12/ref/refs with relative uris and defs/invalid on inner field",
-      "draft2020-12/ref/refs with relative uris and defs/invalid on outer field",
-      "draft2020-12/ref/refs with relative uris and defs/valid on both fields",
-      "draft2020-12/ref/relative refs with absolute uris and defs/invalid on inner field",
-      "draft2020-12/ref/relative refs with absolute uris and defs/invalid on outer field",
-      "draft2020-12/ref/relative refs with absolute uris and defs/valid on both fields",
-      "draft2020-12/refRemote/anchor within remote ref/remote anchor invalid",
-      "draft2020-12/refRemote/anchor within remote ref/remote anchor valid",
-      "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-      "draft2020-12/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-      "draft2019-09/ref/URN ref with nested pointer ref/a non-string is invalid",
-      "draft2019-09/ref/URN ref with nested pointer ref/a string is valid",
-      "draft2019-09/ref/refs with relative uris and defs/invalid on inner field",
-      "draft2019-09/ref/refs with relative uris and defs/invalid on outer field",
-      "draft2019-09/ref/refs with relative uris and defs/valid on both fields",
-      "draft2019-09/ref/relative refs with absolute uris and defs/invalid on inner field",
-      "draft2019-09/ref/relative refs with absolute uris and defs/invalid on outer field",
-      "draft2019-09/ref/relative refs with absolute uris and defs/valid on both fields",
-      "draft2019-09/refRemote/anchor within remote ref/remote anchor invalid",
-      "draft2019-09/refRemote/anchor within remote ref/remote anchor valid",
-      "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-      "draft2019-09/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-      "draft7/ref/refs with relative uris and defs/invalid on inner field",
-      "draft7/ref/refs with relative uris and defs/invalid on outer field",
-      "draft7/ref/refs with relative uris and defs/valid on both fields",
-      "draft7/ref/relative refs with absolute uris and defs/invalid on inner field",
-      "draft7/ref/relative refs with absolute uris and defs/invalid on outer field",
-      "draft7/ref/relative refs with absolute uris and defs/valid on both fields",
-      "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-      "draft7/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid",
-      "draft6/ref/refs with relative uris and defs/invalid on inner field",
-      "draft6/ref/refs with relative uris and defs/invalid on outer field",
-      "draft6/ref/refs with relative uris and defs/valid on both fields",
-      "draft6/ref/relative refs with absolute uris and defs/invalid on inner field",
-      "draft6/ref/relative refs with absolute uris and defs/invalid on outer field",
-      "draft6/ref/relative refs with absolute uris and defs/valid on both fields",
-      "draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/number is invalid",
-      "draft6/refRemote/retrieved nested refs resolve relative to their URI not $id/string is valid"
-    ]
-  },
-  {
     "reason": "Vocabulary control: custom metaschemas disabling validation vocabulary not supported",
     "tests": [
       "draft2020-12/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates",
       "draft2019-09/vocabulary/schema that uses custom metaschema with with no validation vocabulary/no validation: invalid number, but it still validates"
-    ]
-  },
-  {
-    "reason": "Draft3 type with inline schemas is legacy feature removed in draft4+",
-    "tests": [
-      "draft3/type/applies a nested schema/an object is invalid otherwise",
-      "draft3/type/types can include schemas/a boolean is invalid",
-      "draft3/type/types can include schemas/a float is invalid",
-      "draft3/type/types can include schemas/a string is invalid",
-      "draft3/type/types can include schemas/an integer is invalid",
-      "draft3/type/types can include schemas/null is invalid",
-      "draft3/type/types from separate schemas are merged/an integer is invalid"
     ]
   }
 ]
