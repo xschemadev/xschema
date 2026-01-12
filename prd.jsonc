@@ -235,7 +235,7 @@
         "Update all Generator call sites",
         "`go build ./...` passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
+	"sort"
 
 	"github.com/xschemadev/xschema/adapter"
-	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/language"
-	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/processor"
 	"github.com/xschemadev/xschema/ui"
 )
 
@@ -55,7 +54,7 @@ type GenerateBatchInput struct {
 	AdapterRef  string // adapter ref e.g., "@xschemadev/zod"
 	Language    string // language name e.g., "typescript"
 	ProjectRoot string // project root directory
-	Schemas     []retriever.RetrievedSchema
+	Schemas     []processor.ProcessedSchema
 }
 
 // Generate calls the adapter to convert schemas to native code
@@ -88,40 +87,20 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 		return nil, fmt.Errorf("%s not found: %w", cmdSpec.Cmd, err)
 	}
 
-	// Bundle schemas to resolve external $refs
+	// Build adapter input from already-bundled schemas
 	adapterInput := make([]adapter.ConvertInput, len(input.Schemas))
 	for i, s := range input.Schemas {
-		schema := s.Schema
-		if s.SourceURI != "" {
-			// Create a fetcher that uses retriever for HTTP/file fetching
-			fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
-				if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
-					return retriever.RetrieveFromURL(ctx, uri, retriever.DefaultOptions())
-				}
-				return retriever.RetrieveFromFilePath(ctx, uri)
-			})
-			bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
-				Schema:    s.Schema,
-				SourceURI: s.SourceURI,
-				Fetcher:   fetcher,
-			})
-			if err != nil {
-				ui.Verbosef("failed to bundle schema %s: %v", s.Key(), err)
-				return nil, fmt.Errorf("failed to bundle schema %s: %w", s.Key(), err)
-			}
-			schema = bundled
-		}
-
 		varName := s.Namespace + "_" + s.ID
 		if lang.BuildVarName != nil {
 			varName = lang.BuildVarName(s.Namespace, s.ID)
 		}
 
 		adapterInput[i] = adapter.ConvertInput{
-			Namespace: s.Namespace,
-			ID:        s.ID,
-			VarName:   varName,
-			Schema:    schema,
+			Namespace:  s.Namespace,
+			ID:         s.ID,
+			VarName:    varName,
+			Schema:     s.Schema, // already bundled by Processor
+			Vocabulary: s.Vocabulary,
 		}
 	}
 
@@ -170,9 +149,9 @@ func Generate(ctx context.Context, input GenerateBatchInput) ([]adapter.ConvertR
 }
 
 // GenerateAll runs generation for all adapter groups and returns all outputs
-func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langName string, projectRoot string) ([]adapter.ConvertResult, error) {
-	groups := retriever.GroupByAdapter(schemas)
-	adapters := retriever.SortedAdapters(groups)
+func GenerateAll(ctx context.Context, schemas []processor.ProcessedSchema, langName string, projectRoot string) ([]adapter.ConvertResult, error) {
+	groups := GroupByAdapter(schemas)
+	adapters := SortedAdapters(groups)
 
 	var allOutputs []adapter.ConvertResult
 
@@ -193,4 +172,23 @@ func GenerateAll(ctx context.Context, schemas []retriever.RetrievedSchema, langN
 	}
 
 	return allOutputs, nil
+}
+
+// GroupByAdapter groups processed schemas by adapter.
+func GroupByAdapter(schemas []processor.ProcessedSchema) map[string][]processor.ProcessedSchema {
+	groups := make(map[string][]processor.ProcessedSchema)
+	for _, s := range schemas {
+		groups[s.Adapter] = append(groups[s.Adapter], s)
+	}
+	return groups
+}
+
+// SortedAdapters returns adapter keys in sorted order for deterministic output.
+func SortedAdapters(groups map[string][]processor.ProcessedSchema) []string {
+	keys := make([]string, 0, len(groups))
+	for k := range groups {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

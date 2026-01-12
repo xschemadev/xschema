@@ -1,17 +1,22 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
+	"github.com/xschemadev/xschema/processor"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 )
@@ -119,8 +124,14 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	ui.Step(3, 4, "Generating validators")
 	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
+		// Convert retrieved schemas to processed schemas (with bundling)
+		// TODO(US-017): Replace with proper Processor call
+		processed, convErr := convertToProcessedSchemas(ctx, schemas)
+		if convErr != nil {
+			return convErr
+		}
 		var genErr error
-		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name, root)
+		outputs, genErr = generator.GenerateAll(ctx, processed, result.Language.Name, root)
 		return genErr
 	})
 	if err != nil {
@@ -185,4 +196,39 @@ func printDryRunSchemas(schemas []retriever.RetrievedSchema) {
 			ui.Printf("    %s %s\n", ui.Dim.Render("•"), s.Key())
 		}
 	}
+}
+
+// convertToProcessedSchemas bundles retrieved schemas into processed schemas.
+// TODO(US-017): Replace with proper processor.Process() call.
+func convertToProcessedSchemas(ctx context.Context, schemas []retriever.RetrievedSchema) ([]processor.ProcessedSchema, error) {
+	result := make([]processor.ProcessedSchema, len(schemas))
+	for i, s := range schemas {
+		schema := s.Schema
+		if s.SourceURI != "" {
+			// Create a fetcher that uses retriever for HTTP/file fetching
+			fetcher := bundler.FetchFunc(func(uri string) (json.RawMessage, error) {
+				if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
+					return retriever.RetrieveFromURL(ctx, uri, retriever.DefaultOptions())
+				}
+				return retriever.RetrieveFromFilePath(ctx, uri)
+			})
+			bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
+				Schema:    s.Schema,
+				SourceURI: s.SourceURI,
+				Fetcher:   fetcher,
+			})
+			if err != nil {
+				return nil, fmt.Errorf("failed to bundle schema %s: %w", s.Key(), err)
+			}
+			schema = bundled
+		}
+		result[i] = processor.ProcessedSchema{
+			Namespace: s.Namespace,
+			ID:        s.ID,
+			Schema:    schema,
+			Adapter:   s.Adapter,
+			SourceURI: s.SourceURI,
+		}
+	}
+	return result, nil
 }

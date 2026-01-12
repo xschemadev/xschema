@@ -232,3 +232,19 @@ Started: Mon Jan 12 04:23:40 PM CET 2026
   - compiler.AddResource allows pre-loading any schema/metaschema by URI
   - Library handles cross-draft automatically when resources have their own $schema
 ---
+
+## 2026-01-12 - US-016
+- Implemented: Generator now accepts ProcessedSchema instead of RetrievedSchema
+- Files changed:
+  - cli/generator/generator.go - Changed GenerateBatchInput.Schemas to []processor.ProcessedSchema, removed bundling logic, added GroupByAdapter/SortedAdapters helpers
+  - cli/generator/generator_test.go - Updated to use processor.ProcessedSchema
+  - cli/adapter/types.go - Added Vocabulary field to ConvertInput
+  - cli/cmd/generate.go - Added temporary convertToProcessedSchemas() bridge function until US-017
+- **Key changes:**
+  - Generator no longer does bundling - expects already-bundled schemas from Processor
+  - Vocabulary now passed through to adapter CLI via ConvertInput
+  - GroupByAdapter/SortedAdapters moved from retriever to generator (for ProcessedSchema)
+- **Learnings:**
+  - Temporary bridge in cmd/generate.go maintains compatibility until US-017 integrates Processor
+  - ConvertInput.Vocabulary uses `omitempty` for backward compatibility with adapters that don't support it yet
+---
