@@ -421,3 +421,27 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Same semantic pattern as zod: additionalProperties evaluates props, unevaluatedProperties only applies when additionalProperties not set
   - Cyclic $ref with unevaluatedProperties remains edge case (1 failure) - requires recursive validator generation
 ---
+
+## 2026-01-13 - US-014
+- Fixed valibot adapter for standalone unevaluatedProperties/unevaluatedItems
+- Compliance improved from 4401p/94f to 4441p/54f (+40 passed, -40 failed)
+- Object changes:
+  - Added additionalPropsExplicit check (undefined vs explicit true/false/schema)
+  - isStrict now considers unevaluatedProperties: false when additionalProperties not set
+  - additionalSchema falls back to unevaluatedProperties when additionalProperties not set
+  - Updated renderPatternPropsActionsWithAdditional and renderObjectWithPatternProps for unevaluated
+  - Added unevaluatedProperties value validation when propertyNames is set without patternProperties
+- Array changes:
+  - unevaluatedItems: false -> v.array(v.never()) with maxLength(0)
+  - unevaluatedItems as schema -> use as item schema for all items
+  - Added unevaluatedItems superRefine when both items and unevaluatedItems present
+- Tuple changes:
+  - disallowExtraItems now includes unevaluatedItems: false
+  - extraItemsSchema falls back to unevaluatedItems when restItems is false or any
+- Files changed:
+  - typescript/packages/adapters/valibot/src/renderer.ts - renderObject, renderArray, renderTuple, renderPatternPropsActionsWithAdditional, renderObjectWithPatternProps
+- **Learnings for future iterations:**
+  - Same semantic pattern as zod/arktype: additionalProperties evaluates props, unevaluatedProperties only applies when additionalProperties not set
+  - Valibot uses v.strictObject for strict mode, v.objectWithRest for catchall schema
+  - Valibot's v.check returns boolean (vs superRefine which adds issues) - simpler pattern for validation
+---

@@ -218,8 +218,8 @@
         "No regressions in other tests (valibot baseline had 50 failures)",
         "`bun run typecheck` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Compliance: 98.8% (4441 passed, 54 failed, 339 unsupported). Improved from US-010 baseline (4401p/94f): +40 passed, -40 failed. Updated renderObject to use additionalPropsExplicit pattern, isStrict considers unevaluatedProperties: false. Updated renderArray to handle standalone unevaluatedItems (false = empty array, schema = all items). Updated renderTuple to use unevaluatedItems when restItems not set. Same 54 failures as other adapters: cyclic $ref edge cases + complex applicator interactions."
     },
     {
       "id": "US-015",

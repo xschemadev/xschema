@@ -381,118 +381,18 @@
     },
     {
       "keyword": "unevaluatedItems",
-      "passed": 12,
-      "failed": 3,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "unevaluatedItems as schema",
-          "test": "with invalid unevaluated items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedItems can't see inside cousins",
-          "test": "always fails",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedItems false",
-          "test": "with unevaluated items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 27,
-      "failed": 19,
+      "passed": 44,
+      "failed": 2,
       "skipped": 0,
       "total": 46,
       "failures": [
-        {
-          "group": "Evaluated properties collection needs to consider instance location",
-          "test": "with an unevaluated property that exists at another location",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, false with properties",
-          "test": "with nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, true with properties",
-          "test": "with nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, true with properties",
-          "test": "with no nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, allOf has unevaluated",
-          "test": "base case: both properties present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, allOf has unevaluated",
-          "test": "in place applicator siblings, foo is missing",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "base case: both properties present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "in place applicator siblings, bar is missing",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
-          "test": "uncle keyword evaluation is not significant",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 1st level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 2nd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "unevaluatedProperties + single cyclic ref",
           "test": "Unevaluated on 3rd level is invalid",
@@ -501,50 +401,8 @@
           "passed": false
         },
         {
-          "group": "unevaluatedProperties can't see inside cousins",
-          "test": "always fails",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties can't see inside cousins (reverse order)",
-          "test": "always fails",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties false",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
           "group": "unevaluatedProperties not affected by propertyNames",
           "test": "string property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties schema",
-          "test": "with invalid unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent patternProperties",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent properties",
-          "test": "with unevaluated properties",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -567,11 +425,11 @@
     }
   ],
   "summary": {
-    "passed": 938,
-    "failed": 32,
+    "passed": 958,
+    "failed": 12,
     "skipped": 0,
     "total": 970,
-    "percentage": 96.70103092783505,
+    "percentage": 98.76288659793815,
     "unsupportedFeatures": {
       "count": 181,
       "items": [
@@ -669,7 +527,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution/An array containing non-strings is invalid",
@@ -681,7 +539,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef without a matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/items)"
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of numbers is valid",
@@ -841,11 +699,11 @@
         },
         {
           "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with no unevaluated items",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/derived)"
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
         },
         {
           "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with unevaluated items",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/derived)"
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
         },
         {
           "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $ref/with no unevaluated items",
