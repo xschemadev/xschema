@@ -107,6 +107,34 @@ func (f Features) TestCount() int {
 	return count
 }
 
+// Property applicators that require annotation tracking when combined with unevaluatedProperties
+var propertyApplicators = []string{"allOf", "anyOf", "oneOf", "if", "$ref", "dependentSchemas", "not"}
+
+// Item applicators that require annotation tracking when combined with unevaluatedItems
+var itemApplicators = []string{"prefixItems", "contains", "allOf", "anyOf", "oneOf", "if"}
+
+// hasPropertyApplicators checks if an object has any keyword that applies schemas to properties.
+// When unevaluatedProperties is combined with these, it needs annotation tracking.
+func hasPropertyApplicators(obj map[string]any) bool {
+	for _, kw := range propertyApplicators {
+		if _, ok := obj[kw]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+// hasItemApplicators checks if an object has any keyword that applies schemas to items.
+// When unevaluatedItems is combined with these, it needs annotation tracking.
+func hasItemApplicators(obj map[string]any) bool {
+	for _, kw := range itemApplicators {
+		if _, ok := obj[kw]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 // ValidateKeywords checks a parsed schema for unsupported keywords.
 // Returns *UnsupportedKeywordError if any unsupported keyword is found, nil otherwise.
 func ValidateKeywords(node any) *UnsupportedKeywordError {
@@ -129,6 +157,7 @@ func validateNode(node any, path string) *UnsupportedKeywordError {
 }
 
 func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
+	// Check for absolutely unsupported keywords (always error)
 	for keyword, reason := range keywords {
 		if _, ok := obj[keyword]; ok {
 			return &UnsupportedKeywordError{
@@ -139,6 +168,26 @@ func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 		}
 	}
 
+	// Check for context-aware unevaluated detection
+	// unevaluatedProperties is only unsupported when combined with property applicators
+	if _, hasUnevalProps := obj["unevaluatedProperties"]; hasUnevalProps && hasPropertyApplicators(obj) {
+		return &UnsupportedKeywordError{
+			Keyword: "unevaluatedProperties",
+			Reason:  "requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not)",
+			Path:    path,
+		}
+	}
+
+	// unevaluatedItems is only unsupported when combined with item applicators
+	if _, hasUnevalItems := obj["unevaluatedItems"]; hasUnevalItems && hasItemApplicators(obj) {
+		return &UnsupportedKeywordError{
+			Keyword: "unevaluatedItems",
+			Reason:  "requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if)",
+			Path:    path,
+		}
+	}
+
+	// Recurse into nested schemas
 	for k, v := range obj {
 		if err := validateNode(v, path+"/"+k); err != nil {
 			return err

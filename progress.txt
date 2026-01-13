@@ -211,3 +211,21 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Error message format preserved: "$keyword is not supported: reason (at path)"
   - Path field stores empty string for root, not "root" - Error() method handles display
 ---
+
+## 2026-01-13 - US-003
+- Implemented context-aware unevaluated keyword detection
+- unevaluatedProperties/unevaluatedItems are now allowed standalone, but error when combined with applicators
+- Implementation:
+  - Added propertyApplicators list: allOf, anyOf, oneOf, if, $ref, dependentSchemas, not
+  - Added itemApplicators list: prefixItems, contains, allOf, anyOf, oneOf, if
+  - hasPropertyApplicators(obj) - checks if object has any property applicator keyword
+  - hasItemApplicators(obj) - checks if object has any item applicator keyword
+  - validateObject() now checks for unevaluated+applicator combinations before recursing
+- Files changed:
+  - cli/unsupported/unsupported.go - added hasPropertyApplicators(), hasItemApplicators(), updated validateObject()
+  - cli/unsupported/unsupported_test.go - added TestContextAwareUnevaluatedProperties, TestContextAwareUnevaluatedItems
+- **Learnings for future iterations:**
+  - Context-aware detection only applies to the same schema object - nested schemas are checked independently via recursion
+  - The applicator keywords indicate that annotation tracking would be needed at runtime
+  - Reason messages include the specific applicators: "requires annotation tracking when combined with applicators (allOf, anyOf, ...)"
+---

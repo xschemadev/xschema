@@ -117,3 +117,136 @@ func TestTestCount(t *testing.T) {
 		t.Error("expected non-zero test count")
 	}
 }
+
+func TestContextAwareUnevaluatedProperties(t *testing.T) {
+	tests := []struct {
+		name    string
+		schema  map[string]any
+		wantErr bool
+	}{
+		{
+			name:    "standalone unevaluatedProperties is allowed",
+			schema:  map[string]any{"type": "object", "unevaluatedProperties": false},
+			wantErr: false,
+		},
+		{
+			name:    "unevaluatedProperties + allOf is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "allOf": []any{map[string]any{"type": "object"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + anyOf is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "anyOf": []any{map[string]any{"type": "object"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + oneOf is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "oneOf": []any{map[string]any{"type": "object"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + if is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "if": map[string]any{"type": "object"}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + $ref is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "$ref": "#/$defs/foo"},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + dependentSchemas is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "dependentSchemas": map[string]any{"foo": map[string]any{}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedProperties + not is unsupported",
+			schema:  map[string]any{"unevaluatedProperties": false, "not": map[string]any{"type": "null"}},
+			wantErr: true,
+		},
+		{
+			name: "unevaluatedProperties nested with applicator is unsupported",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"nested": map[string]any{
+						"unevaluatedProperties": false,
+						"allOf":                 []any{map[string]any{"type": "object"}},
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateKeywords(tt.schema)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestContextAwareUnevaluatedItems(t *testing.T) {
+	tests := []struct {
+		name    string
+		schema  map[string]any
+		wantErr bool
+	}{
+		{
+			name:    "standalone unevaluatedItems is allowed",
+			schema:  map[string]any{"type": "array", "unevaluatedItems": false},
+			wantErr: false,
+		},
+		{
+			name:    "unevaluatedItems + prefixItems is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "prefixItems": []any{map[string]any{"type": "string"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedItems + contains is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "contains": map[string]any{"type": "string"}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedItems + allOf is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "allOf": []any{map[string]any{"type": "array"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedItems + anyOf is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "anyOf": []any{map[string]any{"type": "array"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedItems + oneOf is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "oneOf": []any{map[string]any{"type": "array"}}},
+			wantErr: true,
+		},
+		{
+			name:    "unevaluatedItems + if is unsupported",
+			schema:  map[string]any{"unevaluatedItems": false, "if": map[string]any{"type": "array"}},
+			wantErr: true,
+		},
+		{
+			name: "unevaluatedItems nested with applicator is unsupported",
+			schema: map[string]any{
+				"items": map[string]any{
+					"unevaluatedItems": false,
+					"prefixItems":      []any{map[string]any{"type": "string"}},
+				},
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateKeywords(tt.schema)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

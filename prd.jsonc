@@ -46,8 +46,8 @@
         "Detection recurses into nested schemas",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented context-aware detection with hasPropertyApplicators() and hasItemApplicators() helpers. Added comprehensive tests for all applicator combinations."
     },
     {
       "id": "US-004",
