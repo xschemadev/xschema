@@ -416,6 +416,26 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
           if (!result.success) return false;
         }
       }`);
+	} else if (
+		!additionalPropsExplicit &&
+		typeof node.unevaluatedProperties === "object" &&
+		node.unevaluatedProperties.kind !== "any"
+	) {
+		// unevaluatedProperties schema applies when additionalProperties is not set
+		// This handles cases like { propertyNames: {...}, unevaluatedProperties: {...} }
+		// where propertyNames validates keys but unevaluatedProperties validates values
+		const unevalSchema = render(node.unevaluatedProperties);
+		checks.push(`
+      const definedProps = new Set(${definedProps});
+      const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
+      for (const [key, value] of Object.entries(val)) {
+        if (definedProps.has(key)) continue;
+        const matchesPattern = patterns.some(p => p.test(key));
+        if (!matchesPattern) {
+          const result = v.safeParse(${unevalSchema}, value);
+          if (!result.success) return false;
+        }
+      }`);
 	}
 
 	const allActions: string[] = [];

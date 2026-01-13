@@ -567,3 +567,27 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Then/else are also applicator subschemas where cousins can't see each other's annotations
 ---
 
+## 2026-01-13 - US-021
+- Fixed valibot propertyNames + unevaluatedProperties handling
+- Root cause: `renderObjectWithPatternProps()` was called for schemas with `propertyNames` (even without patternProperties)
+  but it didn't handle `unevaluatedProperties` as a schema for value validation
+- Added new branch in `renderObjectWithPatternProps()` to check for `unevaluatedProperties` when `additionalProperties` is not set
+- Test case: `{ propertyNames: { maxLength: 1 }, unevaluatedProperties: { type: "number" } }`
+  - `propertyNames` validates keys (max 1 char)
+  - `unevaluatedProperties` should validate values (must be number)
+  - `{"a": "b"}` was incorrectly passing; now correctly fails
+- Files changed:
+  - typescript/packages/adapters/valibot/src/renderer.ts - added unevaluatedProperties schema handling in renderObjectWithPatternProps()
+- Compliance results:
+  | Draft        | Before | After | Change |
+  |--------------|--------|-------|--------|
+  | draft2020-12 | 11 failures | 10 failures | -1 |
+  | draft2019-09 | 11 failures | 10 failures | -1 |
+  | draft7/6/4   | 10 failures | 10 failures | 0 (no propertyNames test) |
+- Remaining 10 failures are all "Javascript object property names" (valibot library bug with __proto__, constructor, toString)
+- **Learnings for future iterations:**
+  - propertyNames validates keys but does NOT evaluate values - unevaluatedProperties still applies
+  - When schema has propertyNames but no patternProperties, renderObjectWithPatternProps is still called
+  - Must handle unevaluatedProperties schema in renderObjectWithPatternProps, not just additionalProperties
+---
+

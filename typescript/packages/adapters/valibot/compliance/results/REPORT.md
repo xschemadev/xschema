@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 925 | 11 | 0 | 178 | 98.8% |
-| draft2020-12 | 939 | 11 | 0 | 201 | 98.8% |
+| draft2019-09 | 926 | 10 | 0 | 178 | 98.9% |
+| draft2020-12 | 940 | 10 | 0 | 201 | 98.9% |
 | draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 556 | 10 | 0 | 0 | 98.2% |
 | draft6 | 750 | 10 | 0 | 0 | 98.7% |
@@ -13,8 +13,8 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.8%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.8%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.9%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.9%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-98.2%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-98.7%25-brightgreen)
@@ -67,7 +67,7 @@
 | required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
-| unevaluatedProperties | ⚠️ | 24/25 |
+| unevaluatedProperties | ✅ | 25/25 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -381,15 +381,6 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>unevaluatedProperties - 1 failure</summary>
-
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -437,7 +428,7 @@ These tests are intentionally excluded due to documented limitations.
 | required | ⚠️ | 11/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
-| unevaluatedProperties | ⚠️ | 26/27 |
+| unevaluatedProperties | ✅ | 27/27 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -819,15 +810,6 @@ These tests are intentionally excluded due to documented limitations.
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
-<details>
-<summary>unevaluatedProperties - 1 failure</summary>
-
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 

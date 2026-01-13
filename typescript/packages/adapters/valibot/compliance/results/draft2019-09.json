@@ -388,19 +388,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 24,
-      "failed": 1,
+      "passed": 25,
+      "failed": 0,
       "skipped": 0,
-      "total": 25,
-      "failures": [
-        {
-          "group": "unevaluatedProperties not affected by propertyNames",
-          "test": "string property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 25
     },
     {
       "keyword": "uniqueItems",
@@ -418,11 +409,11 @@
     }
   ],
   "summary": {
-    "passed": 925,
-    "failed": 11,
+    "passed": 926,
+    "failed": 10,
     "skipped": 0,
     "total": 936,
-    "percentage": 98.82478632478633,
+    "percentage": 98.93162393162393,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

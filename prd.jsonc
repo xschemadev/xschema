@@ -324,8 +324,8 @@
         "Run `bun run compliance` from valibot adapter",
         "`bun run typecheck` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Fixed renderObjectWithPatternProps to handle unevaluatedProperties schema when additionalProperties is not set. Failures dropped from 11 to 10 per draft."
     },
     {
       "id": "US-022",
