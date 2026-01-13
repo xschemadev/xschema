@@ -11,6 +11,13 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
 - Cache normalizes URIs internally (strips fragments)
 - Thread-safe via `sync.RWMutex`
 
+### Compiled Schema Cache (US-002)
+- `validator.CompiledCache` caches compiled schemas by SHA256 content hash
+- Hash key includes: schema content + draft hint + sorted metaschema URIs
+- Pass cache via `ValidateOptions.Cache` field
+- `CacheStats` tracks hits/misses/compiles for testing
+- Thread-safe via `sync.RWMutex`
+
 ---
 
 ## 2026-01-13 - US-001
@@ -68,4 +75,20 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - When building rewrite maps recursively, track newly added keys per call instead of iterating entire map
   - Linear scaling test: compare ratio of time(depth=10)/time(depth=5) - should be ~2 (linear), not ~4 (quadratic)
   - lookupRewrite uses longest prefix match for refs with sub-paths (e.g., #/$defs/X/properties/foo)
+---
+
+## 2026-01-13 - US-002
+- Implemented compiled schema caching in validator
+- Cache key: SHA256 hash of (schema content + draft hint + sorted metaschema URIs)
+- Thread-safe via sync.RWMutex with separate read/write locks
+- Files changed:
+  - cli/validator/validator.go - added CompiledCache type, CacheStats, contentHash(), sortStrings()
+  - cli/validator/validator.go - added Cache field to ValidateOptions
+  - cli/validator/validator.go - ValidateSchemaWithOptions checks cache before compile, stores after
+  - cli/validator/validator_test.go - added TestCompiledCache_SameSchemaTwice, TestCompiledCache_DifferentSchemas, TestCompiledCache_ConcurrentValidations, TestCompiledCache_WithExternalRef, TestCompiledCache_DraftHintAffectsCache
+- **Learnings for future iterations:**
+  - Cache key must include all factors that affect compilation: content, draft, metaschemas
+  - Schemas with external refs still cache as valid (nil schema value) since the schema itself validated
+  - Stats tracking (hits/misses/compiles) essential for testing cache behavior
+  - sort.Strings would require import; simple O(n²) sort sufficient for small metaschema lists
 ---

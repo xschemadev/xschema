@@ -34,8 +34,8 @@
         "Existing validator tests pass",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "CompiledCache implemented with SHA256 content hash as key. Cache is thread-safe via sync.RWMutex. Stats tracking (hits/misses/compiles) for testing. Tests cover: same schema twice, different schemas, concurrent validations with -race, external refs, draft hint affecting cache key."
     },
     {
       "id": "US-003",

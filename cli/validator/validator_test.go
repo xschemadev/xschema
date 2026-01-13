@@ -3,6 +3,7 @@ package validator
 import (
 	"encoding/json"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -259,5 +260,198 @@ func TestDetectDraft(t *testing.T) {
 				t.Error("expected non-nil draft")
 			}
 		})
+	}
+}
+
+func TestCompiledCache_SameSchemaTwice(t *testing.T) {
+	// Validate same schema twice - second call should hit cache and not recompile
+	schema := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "object",
+		"properties": {
+			"name": { "type": "string" }
+		}
+	}`)
+
+	cache := NewCompiledCache()
+	opts := &ValidateOptions{Cache: cache}
+
+	// First validation
+	err := ValidateSchemaWithOptions(schema, opts)
+	if err != nil {
+		t.Fatalf("first validation failed: %v", err)
+	}
+
+	stats := cache.Stats()
+	if stats.Compiles != 1 {
+		t.Errorf("expected 1 compile after first validation, got %d", stats.Compiles)
+	}
+	if stats.Misses != 1 {
+		t.Errorf("expected 1 miss after first validation, got %d", stats.Misses)
+	}
+
+	// Second validation - should hit cache
+	err = ValidateSchemaWithOptions(schema, opts)
+	if err != nil {
+		t.Fatalf("second validation failed: %v", err)
+	}
+
+	stats = cache.Stats()
+	if stats.Compiles != 1 {
+		t.Errorf("expected still 1 compile after second validation (cache hit), got %d", stats.Compiles)
+	}
+	if stats.Hits != 1 {
+		t.Errorf("expected 1 hit after second validation, got %d", stats.Hits)
+	}
+}
+
+func TestCompiledCache_DifferentSchemas(t *testing.T) {
+	// Two different schemas should both compile separately
+	schema1 := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "string"
+	}`)
+
+	schema2 := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "number"
+	}`)
+
+	cache := NewCompiledCache()
+	opts := &ValidateOptions{Cache: cache}
+
+	// Validate first schema
+	err := ValidateSchemaWithOptions(schema1, opts)
+	if err != nil {
+		t.Fatalf("first schema validation failed: %v", err)
+	}
+
+	// Validate second schema
+	err = ValidateSchemaWithOptions(schema2, opts)
+	if err != nil {
+		t.Fatalf("second schema validation failed: %v", err)
+	}
+
+	stats := cache.Stats()
+	if stats.Compiles != 2 {
+		t.Errorf("expected 2 compiles for different schemas, got %d", stats.Compiles)
+	}
+	if stats.Misses != 2 {
+		t.Errorf("expected 2 misses for different schemas, got %d", stats.Misses)
+	}
+
+	// Validate first schema again - should hit cache
+	err = ValidateSchemaWithOptions(schema1, opts)
+	if err != nil {
+		t.Fatalf("repeated first schema validation failed: %v", err)
+	}
+
+	stats = cache.Stats()
+	if stats.Compiles != 2 {
+		t.Errorf("expected still 2 compiles after cache hit, got %d", stats.Compiles)
+	}
+	if stats.Hits != 1 {
+		t.Errorf("expected 1 hit after validating first schema again, got %d", stats.Hits)
+	}
+}
+
+func TestCompiledCache_ConcurrentValidations(t *testing.T) {
+	// Concurrent validations of the same schema should be safe
+	schema := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "object",
+		"properties": {
+			"id": { "type": "integer" }
+		}
+	}`)
+
+	cache := NewCompiledCache()
+	opts := &ValidateOptions{Cache: cache}
+
+	var wg sync.WaitGroup
+	errs := make(chan error, 100)
+
+	// Run 100 concurrent validations
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := ValidateSchemaWithOptions(schema, opts); err != nil {
+				errs <- err
+			}
+		}()
+	}
+
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		t.Errorf("concurrent validation failed: %v", err)
+	}
+
+	// At least one compile should have happened (could be more due to races)
+	stats := cache.Stats()
+	if stats.Compiles < 1 {
+		t.Errorf("expected at least 1 compile, got %d", stats.Compiles)
+	}
+	// Most should be hits (though exact count depends on scheduling)
+	if stats.Hits < 50 {
+		t.Errorf("expected significant cache hits, got only %d hits out of 100 validations", stats.Hits)
+	}
+}
+
+func TestCompiledCache_WithExternalRef(t *testing.T) {
+	// Schema with external ref should still be cached (marked as valid)
+	schema := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "object",
+		"properties": {
+			"address": { "$ref": "https://example.com/address.json" }
+		}
+	}`)
+
+	cache := NewCompiledCache()
+	opts := &ValidateOptions{Cache: cache}
+
+	// First validation
+	err := ValidateSchemaWithOptions(schema, opts)
+	if err != nil {
+		t.Fatalf("first validation with external ref failed: %v", err)
+	}
+
+	// Second validation should hit cache
+	err = ValidateSchemaWithOptions(schema, opts)
+	if err != nil {
+		t.Fatalf("second validation with external ref failed: %v", err)
+	}
+
+	stats := cache.Stats()
+	if stats.Hits < 1 {
+		t.Errorf("expected cache hit for schema with external ref, got %d hits", stats.Hits)
+	}
+}
+
+func TestCompiledCache_DraftHintAffectsCache(t *testing.T) {
+	// Same schema content but different draft hint should cache separately
+	schema := []byte(`{"type": "object"}`)
+
+	cache := NewCompiledCache()
+	opts := &ValidateOptions{Cache: cache}
+
+	// Validate with draft7 hint
+	err := ValidateSchemaWithOptions(schema, opts, "draft7")
+	if err != nil {
+		t.Fatalf("draft7 validation failed: %v", err)
+	}
+
+	// Validate with draft2020-12 hint - should compile separately
+	err = ValidateSchemaWithOptions(schema, opts, "draft2020-12")
+	if err != nil {
+		t.Fatalf("draft2020-12 validation failed: %v", err)
+	}
+
+	stats := cache.Stats()
+	if stats.Compiles != 2 {
+		t.Errorf("expected 2 compiles for same schema with different drafts, got %d", stats.Compiles)
 	}
 }

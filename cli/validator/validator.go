@@ -1,19 +1,103 @@
 package validator
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
+
+// CompiledCache caches compiled schemas by content hash to avoid recompilation.
+// Thread-safe for concurrent access.
+type CompiledCache struct {
+	mu    sync.RWMutex
+	cache map[string]*jsonschema.Schema
+	stats CacheStats
+}
+
+// CacheStats tracks cache statistics for testing/debugging
+type CacheStats struct {
+	Hits       int
+	Misses     int
+	Compiles   int
+}
+
+// NewCompiledCache creates a new compiled schema cache.
+func NewCompiledCache() *CompiledCache {
+	return &CompiledCache{
+		cache: make(map[string]*jsonschema.Schema),
+	}
+}
+
+// contentHash computes a SHA256 hash of the schema content combined with
+// draft hint and metaschema URIs for cache key uniqueness.
+func contentHash(data []byte, draftHint string, metaschemaURIs []string) string {
+	h := sha256.New()
+	h.Write(data)
+	h.Write([]byte(draftHint))
+	for _, uri := range metaschemaURIs {
+		h.Write([]byte(uri))
+	}
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// Get retrieves a compiled schema from cache by content hash.
+// Returns (schema, true) if cached, (nil, false) if not.
+func (c *CompiledCache) Get(key string) (*jsonschema.Schema, bool) {
+	c.mu.RLock()
+	schema, ok := c.cache[key]
+	c.mu.RUnlock()
+
+	if ok {
+		c.mu.Lock()
+		c.stats.Hits++
+		c.mu.Unlock()
+	}
+	return schema, ok
+}
+
+// Set stores a compiled schema in the cache.
+func (c *CompiledCache) Set(key string, schema *jsonschema.Schema) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.cache[key] = schema
+}
+
+// Stats returns a copy of the current cache statistics.
+func (c *CompiledCache) Stats() CacheStats {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.stats
+}
+
+// recordMiss increments the miss counter.
+func (c *CompiledCache) recordMiss() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.stats.Misses++
+}
+
+// recordCompile increments the compile counter.
+func (c *CompiledCache) recordCompile() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.stats.Compiles++
+}
 
 // ValidateOptions configures schema validation behavior
 type ValidateOptions struct {
 	// Metaschemas maps URI to raw JSON for custom metaschemas.
 	// Pre-loaded metaschemas allow validation of schemas using custom $schema URIs.
 	Metaschemas map[string]json.RawMessage
+
+	// Cache is an optional compiled schema cache for reusing compiled schemas.
+	// When provided, schemas are cached by content hash and reused on subsequent validations.
+	Cache *CompiledCache
 }
 
 // noopLoader returns an error for all URL loads.
@@ -109,10 +193,36 @@ func isStandardMetaschema(url string) bool {
 
 // ValidateSchemaWithOptions validates a schema with configurable options.
 // Use this to pre-load custom metaschemas for schemas with custom $schema URIs.
+// If opts.Cache is provided, compiled schemas are cached by content hash.
 func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...string) error {
+	hint := ""
+	if len(draftHint) > 0 {
+		hint = draftHint[0]
+	}
+
+	// Build cache key from content, draft hint, and metaschema URIs
+	var metaURIs []string
+	if opts != nil && opts.Metaschemas != nil {
+		metaURIs = make([]string, 0, len(opts.Metaschemas))
+		for uri := range opts.Metaschemas {
+			metaURIs = append(metaURIs, uri)
+		}
+		// Sort for deterministic hash
+		sortStrings(metaURIs)
+	}
+	cacheKey := contentHash(data, hint, metaURIs)
+
+	// Check cache
+	if opts != nil && opts.Cache != nil {
+		if _, ok := opts.Cache.Get(cacheKey); ok {
+			return nil // Cache hit - schema already validated
+		}
+		opts.Cache.recordMiss()
+	}
+
 	var draft *jsonschema.Draft
-	if len(draftHint) > 0 && draftHint[0] != "" {
-		if d, ok := draftNames[draftHint[0]]; ok {
+	if hint != "" {
+		if d, ok := draftNames[hint]; ok {
 			draft = d
 		} else {
 			draft = detectDraft(data)
@@ -153,7 +263,12 @@ func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...
 
 	schemaURL := extractSchemaURL(data)
 
-	_, err = compiler.Compile("schema.json")
+	// Track compilation
+	if opts != nil && opts.Cache != nil {
+		opts.Cache.recordCompile()
+	}
+
+	compiled, err := compiler.Compile("schema.json")
 	if err != nil {
 		var loadErr *jsonschema.LoadURLError
 		if errors.As(err, &loadErr) {
@@ -163,10 +278,30 @@ func ValidateSchemaWithOptions(data []byte, opts *ValidateOptions, draftHint ...
 				return fmt.Errorf("custom metaschema %s not pre-loaded: %w", schemaURL, err)
 			}
 			// Ignore external ref loading errors - bundler handles these
+			// Still cache as valid since the schema itself is fine
+			if opts != nil && opts.Cache != nil {
+				opts.Cache.Set(cacheKey, nil) // nil schema means "valid but had external refs"
+			}
 			return nil
 		}
 		return fmt.Errorf("invalid JSON Schema: %w", err)
 	}
 
+	// Cache successful compilation
+	if opts != nil && opts.Cache != nil {
+		opts.Cache.Set(cacheKey, compiled)
+	}
+
 	return nil
+}
+
+// sortStrings sorts a slice of strings in place
+func sortStrings(s []string) {
+	for i := 0; i < len(s); i++ {
+		for j := i + 1; j < len(s); j++ {
+			if s[i] > s[j] {
+				s[i], s[j] = s[j], s[i]
+			}
+		}
+	}
 }
