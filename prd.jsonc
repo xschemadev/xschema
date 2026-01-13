@@ -1,347 +1,350 @@
 {
-  "project": "xschema",
-  "description": "Centralized Unsupported Keyword Detection - Move detection from TS adapters to Go CLI",
-  "userStories": [
+  "description": "Build xschema-pydantic adapter: JSON Schema -> Pydantic v2 code generator. Aligns Python IR with TypeScript core, restructures for maintainability, targets 100% compliance.",
+  "items": [
+    // ============================================
+    // PHASE 1: Align with CLI Redesign
+    // ============================================
     {
-      "id": "US-007",
-      "title": "Establish compliance baseline",
-      "description": "As a maintainer, I need to capture current compliance state before changes to detect regressions.",
-      "acceptanceCriteria": [
-        "Run `bun run compliance` on ALL adapters BEFORE any changes",
-        "Save/note the current passed/failed/unsupported counts per adapter per draft",
-        "Adapters: zod, arktype, valibot, effect",
-        "This establishes the baseline for regression detection"
+      "id": "align-ir-with-ts",
+      "category": "architectural",
+      "description": "Update Python IR to match TypeScript core IR exactly",
+      "steps": [
+        "Add OneOfNode (separate from UnionNode) with schemas tuple",
+        "Add NotNode with inner schema field",
+        "Add ConditionalNode with if/then/else fields",
+        "Add TypeGuardedNode with guards list (TypeGuard has check: str and schema)",
+        "Add NullableNode with inner field (for OpenAPI 3.0 nullable)",
+        "Update StringNode: move constraints into StringConstraints dataclass (minLength, maxLength, pattern), keep format separate",
+        "Update NumberNode: move constraints into NumberConstraints dataclass",
+        "Update ArrayNode: add constraints field (ArrayConstraints with minItems, maxItems, uniqueItems, contains), add unevaluatedItems field",
+        "Update TupleNode: add constraints field (ArrayConstraints), add unevaluatedItems field, change restItems to allow False",
+        "Update ObjectNode: add patternProperties, propertyNames, minProperties, maxProperties, dependencies, unevaluatedProperties fields",
+        "Add ContainsConstraint dataclass (schema, minContains, maxContains)",
+        "Add PatternPropertyDef dataclass (pattern, schema)",
+        "Add Dependency type (PropertyDependency | SchemaDependency)",
+        "Export all types from __init__.py",
+        "Run 'uv run pytest tests/' in core package and verify existing tests still pass"
       ],
       "passes": true,
-      "notes": "Baseline captured in progress.txt US-001"
+      "notes": "IR must be 1:1 with TS version. Existing tests may need updates for new constraint structure."
     },
     {
-      "id": "US-001",
-      "title": "Define UnsupportedKeywordError type",
-      "description": "As a developer, I need a typed error for unsupported keywords so callers can distinguish it from other errors.",
-      "acceptanceCriteria": [
-        "Add `UnsupportedKeywordError` struct in `cli/unsupported/unsupported.go`",
-        "Contains: Keyword string, Reason string, Path string (location in schema)",
-        "Implements `error` interface with descriptive message",
-        "`ValidateKeywords()` returns `*UnsupportedKeywordError` (not generic error)",
-        "`go vet ./...` passes"
+      "id": "align-parser-with-ts",
+      "category": "functional",
+      "description": "Update Python parser to handle all IR node types like TS parser",
+      "steps": [
+        "Update parse() to handle oneOf -> OneOfNode (not UnionNode)",
+        "Add parsing for not keyword -> NotNode",
+        "Add parsing for if/then/else -> ConditionalNode",
+        "Add parsing for typeless schemas with type-specific keywords -> TypeGuardedNode",
+        "Add parsing for nullable: true (OpenAPI 3.0) -> NullableNode",
+        "Update string parsing to use StringConstraints",
+        "Update number parsing to use NumberConstraints",
+        "Update array parsing to use ArrayConstraints and handle contains/unevaluatedItems",
+        "Update tuple parsing to use ArrayConstraints and handle unevaluatedItems",
+        "Update object parsing: handle patternProperties, propertyNames, min/maxProperties, dependencies, unevaluatedProperties",
+        "Simplify $ref handling - CLI bundles everything, throw error if $ref encountered",
+        "Run 'uv run pytest tests/' and fix any failing tests",
+        "Add new tests for new node types (NotNode, ConditionalNode, TypeGuardedNode, NullableNode)"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-002"
+      "passes": false,
+      "notes": "Parser should be simpler than TS version since CLI does normalization. Throw on $ref since schemas should be pre-bundled."
     },
     {
-      "id": "US-002",
-      "title": "Add context-aware unevaluated detection",
-      "description": "As a user, I want unevaluatedProperties to work standalone but error when combined with applicators.",
-      "acceptanceCriteria": [
-        "`ValidateKeywords()` checks for unevaluated keywords at each schema level",
-        "`unevaluatedProperties` standalone: allowed (no error)",
-        "`unevaluatedProperties` with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not): returns UnsupportedKeywordError",
-        "Same logic for `unevaluatedItems` with array applicators (prefixItems, contains)",
-        "Detection is recursive (checks nested schemas)",
-        "`go test ./unsupported/` passes"
+      "id": "verify-existing-renderer",
+      "category": "test",
+      "description": "Verify existing renderer works with updated IR structure",
+      "steps": [
+        "Update render() to use new constraint structure (node.constraints.min_length instead of node.min_length)",
+        "Update render_string() for StringConstraints",
+        "Update render_number() for NumberConstraints",
+        "Update render_array() for ArrayConstraints",
+        "Update render_object() for new fields (ignore advanced features for now, just don't break)",
+        "Test CLI still works: echo '[{\"namespace\":\"test\",\"id\":\"X\",\"varName\":\"test_x\",\"schema\":{\"type\":\"string\"}}]' | uv run xschema-pydantic",
+        "Verify output is valid JSON with schema/type/imports fields"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-003"
+      "passes": false,
+      "notes": "Quick verification that refactored IR doesn't break existing functionality."
+    },
+    // ============================================
+    // PHASE 2: Complete Renderer Implementation  
+    // ============================================
+    {
+      "id": "renderer-arrays-tuples",
+      "category": "functional",
+      "description": "Complete renderer for array and tuple types",
+      "steps": [
+        "Render ArrayNode -> list[ItemType]",
+        "Handle array constraints via Annotated[list[T], Field(min_length=, max_length=)]",
+        "Handle uniqueItems with custom validator (Pydantic doesn't have built-in)",
+        "Handle contains constraint with custom validator",
+        "Handle unevaluatedItems (simple case: treat like items since CLI filters complex cases)",
+        "Render TupleNode -> tuple[A, B, C]",
+        "Handle tuple with rest items: tuple[A, B, ...] pattern or custom validator",
+        "Handle tuple unevaluatedItems",
+        "For root-level arrays/tuples, wrap in TypeAdapter",
+        "Test array with minItems/maxItems validates correctly",
+        "Test tuple with 3 elements validates correctly",
+        "Test generated code executes without errors"
+      ],
+      "passes": false
     },
     {
-      "id": "US-003",
-      "title": "Update unsupported-features.json to keywords-only",
-      "description": "As a maintainer, I want unsupported features defined by keywords only, not hardcoded test paths.",
-      "acceptanceCriteria": [
-        "Remove all entries from `tests` arrays in `unsupported-features.json`",
-        "Add `unevaluated-with-applicators` group with keywords array",
-        "Remove `ContainsTest()`, `TestPaths()`, `TestCount()` methods",
-        "Update tests to not rely on test paths",
-        "`go test ./unsupported/` passes"
+      "id": "renderer-unions-intersections",
+      "category": "functional",
+      "description": "Complete renderer for union and intersection types",
+      "steps": [
+        "Render UnionNode -> A | B | C (Python union syntax)",
+        "Handle discriminated unions with Annotated[..., Field(discriminator='field')]",
+        "Render OneOfNode -> custom validator ensuring exactly one schema matches",
+        "Render IntersectionNode -> merge object properties or multiple inheritance",
+        "Handle intersection of objects: create merged class with all properties",
+        "Handle intersection with primitives: use most restrictive type",
+        "Render NotNode -> custom validator checking schema doesn't match",
+        "Render NullableNode -> T | None",
+        "Test simple union validates correctly",
+        "Test discriminated union validates correctly",
+        "Test oneOf rejects when multiple schemas match"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-007"
+      "passes": false,
+      "notes": "Discriminated unions in Pydantic require all variants to have Literal type for discriminator field."
     },
     {
-      "id": "US-009",
-      "title": "Unit tests for keyword detection",
-      "description": "As a developer, I need comprehensive tests for the keyword detection logic.",
-      "acceptanceCriteria": [
-        "Test: `$dynamicRef` detected at root",
-        "Test: `$dynamicRef` detected when nested in properties",
-        "Test: `unevaluatedProperties` standalone allowed",
-        "Test: `unevaluatedProperties` + allOf rejected",
-        "Test: `unevaluatedProperties` + $ref rejected",
-        "Test: `unevaluatedItems` standalone allowed",
-        "Test: `unevaluatedItems` + prefixItems rejected",
-        "Test: supported schema passes validation",
-        "`go test ./unsupported/ -v` passes"
+      "id": "renderer-conditionals",
+      "category": "functional",
+      "description": "Implement renderer for conditional and type-guarded schemas",
+      "steps": [
+        "Render ConditionalNode -> custom validator with if/then/else logic",
+        "If 'if' matches and 'then' exists, validate against 'then'",
+        "If 'if' doesn't match and 'else' exists, validate against 'else'",
+        "Render TypeGuardedNode -> custom validator applying schema based on runtime type",
+        "For object guard: check isinstance(val, dict)",
+        "For array guard: check isinstance(val, list)",
+        "For string guard: check isinstance(val, str)",
+        "For number guard: check isinstance(val, (int, float))",
+        "Test if/then/else validates correctly",
+        "Test type-guarded schema applies constraints only to matching types"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-004"
+      "passes": false
     },
     {
-      "id": "US-004",
-      "title": "Integrate validation into processor",
-      "description": "As a user running xschema generate, I want early errors when my schema contains unsupported keywords.",
-      "acceptanceCriteria": [
-        "`processor.Process()` calls `unsupported.ValidateKeywords()` on each schema",
-        "Validation happens AFTER bundling (so we validate the resolved schema)",
-        "`UnsupportedKeywordError` propagates up to caller unchanged",
-        "Existing processor tests pass",
-        "`go test ./processor/` passes"
+      "id": "renderer-formats",
+      "category": "functional",
+      "description": "Implement format string type mappings",
+      "steps": [
+        "Map format='email' -> pydantic.EmailStr",
+        "Map format='uri' -> pydantic.AnyUrl or HttpUrl",
+        "Map format='uuid' -> uuid.UUID",
+        "Map format='date' -> datetime.date",
+        "Map format='date-time' -> datetime.datetime",
+        "Map format='time' -> datetime.time",
+        "Map format='ipv4' -> pydantic.IPvAnyAddress with custom validator",
+        "Map format='ipv6' -> pydantic.IPvAnyAddress with custom validator",
+        "Map format='hostname' -> str with regex pattern validator",
+        "Unknown formats -> str (no validation, as per JSON Schema spec)",
+        "Add imports for each format type used",
+        "Test email format rejects invalid emails",
+        "Test uuid format accepts valid UUIDs"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-005"
+      "passes": false,
+      "notes": "Some formats use Pydantic types, others need Annotated with validators."
     },
     {
-      "id": "US-005",
-      "title": "Compliance catches UnsupportedKeywordError and skips",
-      "description": "As a compliance runner, I want tests with unsupported keywords automatically skipped (not failed).",
-      "acceptanceCriteria": [
-        "`bundleSchemas()` in `cli/compliance/runner.go` catches `UnsupportedKeywordError`",
-        "When caught, mark group as unsupported (not failed)",
-        "Add to `summary.UnsupportedFeatures` with keyword and reason",
-        "All tests in that group counted as unsupported",
-        "No adapter call for unsupported groups",
-        "`go test ./compliance/` passes"
+      "id": "renderer-object-advanced",
+      "category": "functional",
+      "description": "Complete object renderer with all JSON Schema features",
+      "steps": [
+        "Handle patternProperties with custom validator matching regex patterns",
+        "Handle propertyNames with custom validator checking key schemas",
+        "Handle minProperties/maxProperties with len() validator",
+        "Handle dependencies (property and schema dependencies)",
+        "Handle unevaluatedProperties (simple case: treat like additionalProperties)",
+        "For additionalProperties as schema: add custom validator for extra props",
+        "Test object with patternProperties validates matching keys",
+        "Test object with minProperties rejects too few properties",
+        "Test dependencies trigger correctly"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-006"
+      "passes": false,
+      "notes": "Complex features need superRefine-style validators. Pydantic's model_validator(mode='after') is the equivalent."
+    },
+    // ============================================
+    // PHASE 3: Code Quality & Testing
+    // ============================================
+    {
+      "id": "import-collection",
+      "category": "functional",
+      "description": "Implement proper import tracking and deduplication",
+      "steps": [
+        "Create ImportCollector class to track imports during rendering",
+        "Support grouping: typing, datetime, uuid, pydantic, annotated_types",
+        "Format as 'from module import Name1, Name2' style",
+        "Deduplicate imports automatically",
+        "Handle conditional imports (only add if feature used)",
+        "Return imports list in ConvertResult sorted by module",
+        "Test no duplicate imports in output",
+        "Test correct imports for complex schema using multiple features"
+      ],
+      "passes": false
     },
     {
-      "id": "US-010",
-      "title": "Opposite compliance test",
-      "description": "As a maintainer, I want a test that verifies unsupported schemas actually produce errors.",
-      "acceptanceCriteria": [
-        "Add test in `cli/unsupported/`",
-        "Test loads schemas known to be unsupported (from JSON Schema Test Suite)",
-        "Calls `unsupported.ValidateKeywords()` on each",
-        "Asserts all return `UnsupportedKeywordError`",
-        "Covers: dynamicRef, recursiveRef, unevaluatedProperties+allOf",
-        "`go test ./unsupported/` passes"
+      "id": "renderer-unit-tests",
+      "category": "test",
+      "description": "Comprehensive unit tests for Pydantic renderer",
+      "steps": [
+        "Create tests/test_renderer.py in pydantic adapter",
+        "Test rendering string with constraints",
+        "Test rendering number with constraints",
+        "Test rendering object with properties",
+        "Test rendering nested objects",
+        "Test rendering arrays with constraints",
+        "Test rendering tuples",
+        "Test rendering unions (simple and discriminated)",
+        "Test rendering oneOf with exactly-one validation",
+        "Test rendering intersections",
+        "Test rendering enums and literals",
+        "Test rendering format strings",
+        "Test rendering conditionals (if/then/else)",
+        "Test rendering type-guarded schemas",
+        "Test TypeAdapter generation for non-objects",
+        "Run 'uv run pytest tests/' and verify all pass"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-008"
+      "passes": false
     },
     {
-      "id": "US-006",
-      "title": "Remove TypeScript parser checks",
-      "description": "As a maintainer, I want the TS parser to not check for unsupported keywords since Go handles it.",
-      "acceptanceCriteria": [
-        "Remove `unevaluatedItems` check from `typescript/packages/core/src/parser/index.ts`",
-        "Remove `unevaluatedProperties` check (the hasApplicators block)",
-        "`bun run build` passes (from `typescript/` directory)",
-        "`bun run typecheck` passes"
+      "id": "integration-test",
+      "category": "integration",
+      "description": "End-to-end integration test with CLI",
+      "steps": [
+        "Create test fixture with various schema types",
+        "Run xschema-pydantic via stdin/stdout",
+        "Verify output JSON structure is valid",
+        "Verify each result has namespace, id, varName, imports, schema, type",
+        "Write generated code to temp file",
+        "Import generated module and verify no syntax errors",
+        "Validate test data against generated schemas",
+        "Verify valid data passes, invalid data fails"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-009"
+      "passes": false
     },
     {
-      "id": "US-008",
-      "title": "Verify compliance exhaustiveness",
-      "description": "As a maintainer, I want compliance to pass with 0 unexpected failures after changes.",
-      "acceptanceCriteria": [
-        "Run `bun run compliance` on ALL adapters: zod, arktype, valibot, effect",
-        "All drafts show failed=0 in summary for each adapter (except known baseline)",
-        "Unsupported count includes dynamic refs, recursive refs, and unevaluated-with-applicators",
-        "No regressions from baseline"
+      "id": "compliance-baseline",
+      "category": "integration",
+      "description": "Run compliance tests and establish baseline",
+      "steps": [
+        "Navigate to cli/ directory",
+        "Run: go run . compliance --adapter-path ../python/packages/adapters/pydantic --lang python",
+        "Capture initial pass/fail/unsupported counts",
+        "Review failures to identify categories",
+        "Document known limitations in REPORT.md",
+        "Target: establish baseline metrics for iterative improvement"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-010"
+      "passes": false,
+      "notes": "Initial run to understand where we stand. 100% is the goal but incremental progress is expected."
+    },
+    // ============================================
+    // PHASE 4: Compliance Improvements
+    // ============================================
+    {
+      "id": "compliance-primitives",
+      "category": "integration",
+      "description": "Fix compliance failures for primitive types",
+      "steps": [
+        "Run compliance, filter to string/number/boolean/null failures",
+        "Fix string minLength/maxLength edge cases (grapheme clusters vs bytes)",
+        "Fix number multipleOf floating point precision issues",
+        "Fix integer type coercion (JSON number vs Python int)",
+        "Re-run compliance and verify primitive failures reduced",
+        "Document any remaining known limitations"
+      ],
+      "passes": false
     },
     {
-      "id": "US-011",
-      "title": "Remove deprecated test path matching",
-      "description": "As a maintainer, I want to clean up the deprecated test path matching system.",
-      "acceptanceCriteria": [
-        "Remove `tests` field from FeatureGroup struct",
-        "Remove `tests` key from all feature groups in JSON",
-        "Remove related tests that checked test paths",
-        "Update compliance runner to not use test path filtering",
-        "`go test ./...` passes"
+      "id": "compliance-objects",
+      "category": "integration",
+      "description": "Fix compliance failures for object types",
+      "steps": [
+        "Run compliance, filter to object-related failures",
+        "Fix additionalProperties validation edge cases",
+        "Fix required property handling",
+        "Fix patternProperties regex matching",
+        "Fix propertyNames validation",
+        "Re-run compliance and verify object failures reduced"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-011"
+      "passes": false
     },
     {
-      "id": "US-012",
-      "title": "Fix zod adapter for standalone unevaluated keywords",
-      "description": "As a user, I want the zod adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
-      "acceptanceCriteria": [
-        "`unevaluatedProperties: false` generates `.strict()` or equivalent",
-        "`unevaluatedProperties: { type: \"string\" }` generates `.catchall(z.string())`",
-        "`unevaluatedItems: false` generates tuple that rejects extra items",
-        "`unevaluatedItems: { type: \"string\" }` generates tuple with string rest",
-        "Run `bun run compliance` from zod adapter",
-        "unevaluatedProperties/unevaluatedItems standalone tests pass",
-        "No regressions in other tests",
-        "`bun run typecheck` passes"
+      "id": "compliance-arrays",
+      "category": "integration",
+      "description": "Fix compliance failures for array/tuple types",
+      "steps": [
+        "Run compliance, filter to array-related failures",
+        "Fix items validation edge cases",
+        "Fix prefixItems/additionalItems handling",
+        "Fix contains/minContains/maxContains validation",
+        "Fix uniqueItems deep equality comparison",
+        "Re-run compliance and verify array failures reduced"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-012"
+      "passes": false
     },
     {
-      "id": "US-013",
-      "title": "Fix arktype adapter for standalone unevaluated keywords",
-      "description": "As a user, I want the arktype adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
-      "acceptanceCriteria": [
-        "Same patterns as zod but using arktype syntax",
-        "Run `bun run compliance` from arktype adapter",
-        "unevaluatedProperties/unevaluatedItems standalone tests pass",
-        "No regressions in other tests",
-        "`bun run typecheck` passes"
+      "id": "compliance-composition",
+      "category": "integration",
+      "description": "Fix compliance failures for composition keywords",
+      "steps": [
+        "Run compliance, filter to allOf/anyOf/oneOf failures",
+        "Fix oneOf exactly-one matching logic",
+        "Fix allOf property merging",
+        "Fix anyOf type narrowing",
+        "Fix not schema validation",
+        "Re-run compliance and verify composition failures reduced"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-013"
+      "passes": false
     },
     {
-      "id": "US-014",
-      "title": "Fix valibot adapter for standalone unevaluated keywords",
-      "description": "As a user, I want the valibot adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
-      "acceptanceCriteria": [
-        "Same patterns as zod but using valibot syntax",
-        "Run `bun run compliance` from valibot adapter",
-        "unevaluatedProperties/unevaluatedItems standalone tests pass",
-        "No regressions beyond baseline failures",
-        "`bun run typecheck` passes"
+      "id": "compliance-final",
+      "category": "integration",
+      "description": "Final compliance push toward 100%",
+      "steps": [
+        "Run full compliance suite",
+        "Categorize remaining failures",
+        "Fix addressable failures",
+        "Mark genuinely unsupported features in adapter-limitations.json if needed",
+        "Generate final REPORT.md with pass rates",
+        "Target: 100% (passed + documented unsupported)"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-014"
+      "passes": false
+    },
+    // ============================================
+    // PHASE 5: Polish
+    // ============================================
+    {
+      "id": "error-handling",
+      "category": "functional",
+      "description": "Robust error handling with helpful messages",
+      "steps": [
+        "Handle invalid JSON input with clear error",
+        "Handle unsupported schema features with warning (not crash)",
+        "Handle malformed schemas gracefully",
+        "Output errors as JSON to stderr: {\"error\": \"message\"}",
+        "Exit with non-zero code on error",
+        "Include schema path in error messages for debugging",
+        "Test error handling with various malformed inputs"
+      ],
+      "passes": false
     },
     {
-      "id": "US-015",
-      "title": "Fix effect adapter for standalone unevaluated keywords",
-      "description": "As a user, I want the effect adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
-      "acceptanceCriteria": [
-        "Same patterns as zod but using effect schema syntax",
-        "Run `bun run compliance` from effect adapter",
-        "unevaluatedProperties/unevaluatedItems standalone tests pass",
-        "No regressions in other tests",
-        "`bun run typecheck` passes"
+      "id": "code-quality",
+      "category": "cleanup",
+      "description": "Code quality and type safety improvements",
+      "steps": [
+        "Add type hints to all functions",
+        "Add docstrings to public functions",
+        "Run mypy --strict and fix type errors",
+        "Ensure no runtime type errors in generated code",
+        "Review and clean up any TODO comments",
+        "Verify 'uv run pytest' passes in both core and adapter packages"
       ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-015"
-    },
-    {
-      "id": "US-016",
-      "title": "Update web app for new unsupported features format",
-      "description": "As a user viewing the docs, I want the unsupported features page to display correctly with keyword-based format.",
-      "acceptanceCriteria": [
-        "Update `web/scripts/generate-unsupported-features.ts` to read from `cli/unsupported/unsupported-features.json`",
-        "Update script to use `keywords` array instead of `tests` array",
-        "Generate page showing keyword groups with explanations",
-        "Show which keywords trigger each limitation",
-        "No build errors in web app"
-      ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-016"
-    },
-    {
-      "id": "US-017",
-      "title": "Make unsupported features output verbose-only",
-      "description": "As a CLI user, I want the detailed unsupported features list to only show with --verbose flag.",
-      "acceptanceCriteria": [
-        "Move 'Unsupported Features:' print block in `cli/cmd/compliance.go` behind verbose check",
-        "Summary line still shows unsupported count (e.g., '181 unsupported')",
-        "With `--verbose`, show the detailed breakdown by reason",
-        "`go build -o xschema . && go vet ./...` passes"
-      ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-017"
-    },
-    {
-      "id": "US-018",
-      "title": "Mark cyclic $ref + unevaluatedProperties as unsupported",
-      "description": "As a compliance runner, I want schemas with cyclic $ref combined with unevaluatedProperties to be marked as unsupported.",
-      "acceptanceCriteria": [
-        "Add detection for cyclic $ref patterns combined with unevaluatedProperties in `cli/unsupported/unsupported.go`",
-        "Pattern: schema has `unevaluatedProperties` AND contains `$ref` that creates a cycle",
-        "Return `UnsupportedKeywordError` with reason 'cyclic $ref with unevaluatedProperties requires recursive annotation tracking'",
-        "Test: schema with cyclic ref + unevaluatedProperties returns error",
-        "Test: schema with non-cyclic ref + unevaluatedProperties still works",
-        "Run compliance on all adapters - 'unevaluatedProperties + single cyclic ref' should move from failed to unsupported",
-        "`go test ./unsupported/` passes"
-      ],
-      "passes": true,
-      "notes": "Completed in progress.txt US-018"
-    },
-    {
-      "id": "US-019",
-      "title": "Mark valibot JS property names tests as unsupported",
-      "description": "As a compliance runner, I want tests using JavaScript prototype property names to be marked as unsupported for valibot.",
-      "acceptanceCriteria": [
-        "Add adapter-specific unsupported test patterns to compliance runner",
-        "Create `cli/compliance/adapter-limitations.json` config file",
-        "Structure: `{ \"valibot\": { \"unsupported_patterns\": [\"Javascript object property names\"] } }`",
-        "Compliance runner checks test group description against adapter's unsupported patterns",
-        "Matching tests marked as unsupported with reason 'valibot library limitation: JS prototype property names'",
-        "Run `bun run compliance` on valibot - 10 'Javascript object property names' tests per draft should be unsupported",
-        "Other adapters unaffected",
-        "`go test ./compliance/` passes"
-      ],
-      "passes": true,
-      "notes": "Created adapter-limitations.json with @xschemadev/valibot entry. Actually 14 tests per draft (7 properties + 7 required) are now unsupported. Valibot at 100% pass rate."
-    },
-    {
-      "id": "US-020",
-      "title": "Fix effect adapter unevaluatedItems false handling",
-      "description": "As a user, I want the effect adapter to correctly handle unevaluatedItems: false without errors.",
-      "acceptanceCriteria": [
-        "Fix `renderArray` in `typescript/packages/adapters/effect/src/renderer.ts`",
-        "For `unevaluatedItems: false` with no items: use `S.Tuple()` or `S.Array(S.Never)` instead of `S.maxItems(0)`",
-        "'unevaluatedItems false / with no unevaluated items' test passes",
-        "'unevaluatedItems false / with unevaluated items' test passes",
-        "Run `bun run compliance` from effect adapter",
-        "Effect failures should drop from 8 to 4 (cousins and cyclic ref remain)",
-        "`bun run typecheck` passes"
-      ],
-      "passes": true,
-      "notes": "Fixed by using S.Tuple() instead of S.maxItems(0). Failures dropped from 4 to 1 per draft (only cyclic ref remains). 'unevaluatedItems false' tests now pass."
-    },
-    {
-      "id": "US-020b",
-      "title": "Mark unevaluatedItems in allOf subschema as unsupported",
-      "description": "As a compliance runner, I want schemas where unevaluatedItems appears inside an allOf subschema to be marked as unsupported.",
-      "acceptanceCriteria": [
-        "Update `validateNode` in `cli/unsupported/unsupported.go` to track 'inside applicator' context",
-        "When recursing into allOf/anyOf/oneOf children, set flag indicating applicator context",
-        "If unevaluatedItems found while in applicator context, return UnsupportedKeywordError",
-        "Test: `{allOf: [{items: true}, {unevaluatedItems: false}]}` returns unsupported",
-        "Test: `{unevaluatedItems: false}` alone still works",
-        "'unevaluatedItems can't see inside cousins' moves from failed to unsupported",
-        "Effect failures should drop from 4 to 2 (only cyclic ref remains)",
-        "`go test ./unsupported/` passes"
-      ],
-      "passes": true,
-      "notes": "Added insideApplicator context tracking. Effect/zod/arktype now at 100% (0 failures). Valibot still has 11 failures (JS property names, propertyNames issues)."
-    },
-    {
-      "id": "US-021",
-      "title": "Fix valibot propertyNames + unevaluatedProperties handling",
-      "description": "As a user, I want valibot to correctly handle schemas with both propertyNames and unevaluatedProperties.",
-      "acceptanceCriteria": [
-        "Investigate the failure in `typescript/packages/adapters/valibot/src/renderer.ts`",
-        "propertyNames validates keys only; unevaluatedProperties should still validate values",
-        "Fix `renderObject` to properly apply unevaluatedProperties even when propertyNames is present",
-        "Test 'unevaluatedProperties not affected by propertyNames / string property is invalid' passes",
-        "Run `bun run compliance` from valibot adapter",
-        "`bun run typecheck` passes"
-      ],
-      "passes": true,
-      "notes": "Fixed renderObjectWithPatternProps to handle unevaluatedProperties schema when additionalProperties is not set. Failures dropped from 11 to 10 per draft."
-    },
-    {
-      "id": "US-022",
-      "title": "Final compliance verification",
-      "description": "As a maintainer, I want to verify all adapters have zero failures after all fixes.",
-      "acceptanceCriteria": [
-        "Run `bun run compliance` on all adapters after US-018 through US-021 complete",
-        "zod: 0 failed (cyclic ref moved to unsupported)",
-        "arktype: 0 failed (cyclic ref moved to unsupported)",
-        "effect: 0 failed (unevaluatedItems fixed, cyclic ref unsupported)",
-        "valibot: 0 failed (JS names unsupported, propertyNames fixed, cyclic ref unsupported)",
-        "Update progress.txt with final compliance numbers",
-        "All adapters at 100% pass rate (excluding unsupported)"
-      ],
-      "passes": true,
-      "notes": "All 4 adapters at 100% pass rate. zod/arktype/effect: 4455 passed, 379 unsupported. valibot: 4385 passed, 449 unsupported."
+      "passes": false
     }
   ]
 }
