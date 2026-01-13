@@ -418,31 +418,51 @@
       "count": 33,
       "items": [
         {
-          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root",
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
@@ -450,7 +470,47 @@
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
           "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor/The recursive part doesn't need to validate against the root",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef",
+          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
@@ -470,15 +530,7 @@
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
+          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
@@ -486,11 +538,7 @@
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema",
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
@@ -498,55 +546,7 @@
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         },
         {
-          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes",
-          "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema",
           "reason": "Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking"
         }
       ]

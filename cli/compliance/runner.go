@@ -357,6 +357,11 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 		return &result, firstErr
 	}
 
+	// Sort unsupported features for deterministic output
+	sort.Slice(result.Summary.UnsupportedFeatures.Items, func(i, j int) bool {
+		return result.Summary.UnsupportedFeatures.Items[i].Path < result.Summary.UnsupportedFeatures.Items[j].Path
+	})
+
 	// Calculate percentage
 	if result.Summary.Total > 0 {
 		result.Summary.Percentage = float64(result.Summary.Passed) / float64(result.Summary.Total) * 100
