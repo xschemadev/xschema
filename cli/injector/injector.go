@@ -249,14 +249,22 @@ func Inject(input InjectInput) error {
 		return fmt.Errorf("unsupported language: %s", input.Language)
 	}
 
-	if lang.Template == "" {
-		ui.Verbosef("no template defined for language: %s", input.Language)
-		return fmt.Errorf("no template defined for language: %s", input.Language)
+	// Resolve output files: prefer OutputFiles, fall back to legacy OutputFile/Template
+	outputFiles := lang.OutputFiles
+	if len(outputFiles) == 0 {
+		if lang.Template == "" {
+			ui.Verbosef("no template defined for language: %s", input.Language)
+			return fmt.Errorf("no template defined for language: %s", input.Language)
+		}
+		outputFiles = []language.OutputFileSpec{{
+			Path:     lang.OutputFile,
+			Template: lang.Template,
+		}}
 	}
 
-	ui.Verbosef("injecting schemas: language=%s, outputs=%d, outDir=%s", input.Language, len(input.Outputs), input.OutDir)
+	ui.Verbosef("injecting schemas: language=%s, outputs=%d, outDir=%s, files=%d", input.Language, len(input.Outputs), input.OutDir, len(outputFiles))
 
-	// Build template data
+	// Build template data (shared across all output files)
 	data, err := buildTemplateData(input, lang)
 	if err != nil {
 		return err
@@ -264,25 +272,28 @@ func Inject(input InjectInput) error {
 
 	ui.Verbosef("template data: imports=%d, schemas=%d", len(data.Imports), len(data.Schemas))
 
-	// Parse and execute template
-	tmpl, err := template.New("inject").Parse(lang.Template)
-	if err != nil {
-		ui.Verbosef("failed to parse template for language: %s", input.Language)
-		return fmt.Errorf("failed to parse template: %w", err)
+	// Execute each template and collect generated files
+	files := make([]language.GeneratedFile, 0, len(outputFiles))
+	for _, spec := range outputFiles {
+		tmpl, err := template.New("inject").Parse(spec.Template)
+		if err != nil {
+			ui.Verbosef("failed to parse template for file %q: %v", spec.Path, err)
+			return fmt.Errorf("failed to parse template for %q: %w", spec.Path, err)
+		}
+
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, data); err != nil {
+			ui.Verbosef("failed to execute template for file %q: %v", spec.Path, err)
+			return fmt.Errorf("failed to execute template for %q: %w", spec.Path, err)
+		}
+
+		files = append(files, language.GeneratedFile{
+			Path:     spec.Path,
+			Contents: buf.String(),
+		})
 	}
 
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
-		ui.Verbosef("failed to execute template for language: %s", input.Language)
-		return fmt.Errorf("failed to execute template: %w", err)
-	}
-
-	ui.Verbosef("template execution successful: %d bytes", buf.Len())
-
-	files := []language.GeneratedFile{{
-		Path:     lang.OutputFile,
-		Contents: buf.String(),
-	}}
+	ui.Verbosef("template execution successful: %d files", len(files))
 
 	if err := WriteGeneratedFiles(input.OutDir, files); err != nil {
 		ui.Verbosef("failed to write generated files: outDir=%s", input.OutDir)
@@ -370,9 +381,15 @@ func InjectClient(input InjectClientInput) error {
 	lang := input.Language
 	modified := string(content)
 
+	// Get primary output file path (first in OutputFiles, or legacy OutputFile)
+	primaryOutputFile := lang.OutputFile
+	if len(lang.OutputFiles) > 0 {
+		primaryOutputFile = lang.OutputFiles[0].Path
+	}
+
 	// Build import path: use base of OutDir for relative import
 	relOutDir := filepath.Base(input.OutDir)
-	importPath := "./" + relOutDir + "/" + strings.TrimSuffix(lang.OutputFile, filepath.Ext(lang.OutputFile))
+	importPath := "./" + relOutDir + "/" + strings.TrimSuffix(primaryOutputFile, filepath.Ext(primaryOutputFile))
 
 	// 1. Try to inject schemas into config object using regex
 	// Match: createXSchemaClient({ ... })

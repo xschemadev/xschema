@@ -402,3 +402,170 @@ func TestFilterSchema_AllOf(t *testing.T) {
 		t.Error("maxLength in allOf should be stripped")
 	}
 }
+
+func TestFilterSchema_NestedVocabOverride(t *testing.T) {
+	// Parent disables validation vocab, child re-enables it
+	// minLength should be stripped at parent level but preserved in child
+	schema := json.RawMessage(`{
+		"type": "object",
+		"minLength": 5,
+		"properties": {
+			"name": {
+				"$vocabulary": {
+					"https://json-schema.org/draft/2020-12/vocab/validation": true
+				},
+				"type": "string",
+				"minLength": 1
+			},
+			"age": {
+				"type": "integer",
+				"minimum": 0
+			}
+		}
+	}`)
+
+	// Parent vocab: validation disabled
+	vocab := map[string]bool{
+		Applicator2020: true,
+	}
+
+	result, err := FilterSchema(schema, vocab)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var got map[string]any
+	if err := json.Unmarshal(result, &got); err != nil {
+		t.Fatalf("unmarshal result: %v", err)
+	}
+
+	// Parent minLength should be stripped (validation disabled at root)
+	if _, ok := got["minLength"]; ok {
+		t.Error("root minLength should be stripped (validation disabled)")
+	}
+
+	props := got["properties"].(map[string]any)
+
+	// Child "name" has $vocabulary re-enabling validation - minLength should be preserved
+	name := props["name"].(map[string]any)
+	if name["minLength"] != float64(1) {
+		t.Errorf("child minLength should be preserved (re-enabled), got %v", name["minLength"])
+	}
+
+	// Child "age" has no $vocabulary - inherits parent (validation disabled)
+	age := props["age"].(map[string]any)
+	if _, ok := age["minimum"]; ok {
+		t.Error("sibling minimum should be stripped (inherits parent vocab)")
+	}
+}
+
+func TestFilterSchema_NestedVocabFormat(t *testing.T) {
+	// Parent enables format vocab, child disables it by specifying only validation
+	schema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"email": {
+				"type": "string",
+				"format": "email"
+			},
+			"name": {
+				"$vocabulary": {
+					"https://json-schema.org/draft/2020-12/vocab/validation": true
+				},
+				"type": "string",
+				"format": "hostname",
+				"minLength": 1
+			}
+		}
+	}`)
+
+	// Parent vocab: format enabled, validation disabled
+	vocab := map[string]bool{
+		Format2020: true,
+	}
+
+	result, err := FilterSchema(schema, vocab)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var got map[string]any
+	if err := json.Unmarshal(result, &got); err != nil {
+		t.Fatalf("unmarshal result: %v", err)
+	}
+
+	props := got["properties"].(map[string]any)
+
+	// email inherits parent vocab: format preserved, no validation keywords anyway
+	email := props["email"].(map[string]any)
+	if email["format"] != "email" {
+		t.Errorf("email format should be preserved (parent vocab), got %v", email["format"])
+	}
+
+	// name has own $vocabulary with only validation: format stripped, minLength preserved
+	name := props["name"].(map[string]any)
+	if _, ok := name["format"]; ok {
+		t.Error("name format should be stripped (child vocab disables format)")
+	}
+	if name["minLength"] != float64(1) {
+		t.Errorf("name minLength should be preserved (child vocab enables validation), got %v", name["minLength"])
+	}
+}
+
+func TestFilterSchema_DeepNestedVocab(t *testing.T) {
+	// Test 3 levels: root disables -> child enables -> grandchild disables again
+	schema := json.RawMessage(`{
+		"type": "object",
+		"minLength": 1,
+		"properties": {
+			"level1": {
+				"$vocabulary": {
+					"https://json-schema.org/draft/2020-12/vocab/validation": true
+				},
+				"type": "object",
+				"minLength": 2,
+				"properties": {
+					"level2": {
+						"$vocabulary": {},
+						"type": "string",
+						"minLength": 3
+					}
+				}
+			}
+		}
+	}`)
+
+	// Root: validation disabled
+	vocab := map[string]bool{}
+
+	result, err := FilterSchema(schema, vocab)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var got map[string]any
+	if err := json.Unmarshal(result, &got); err != nil {
+		t.Fatalf("unmarshal result: %v", err)
+	}
+
+	// Root minLength stripped
+	if _, ok := got["minLength"]; ok {
+		t.Error("root minLength should be stripped")
+	}
+
+	props := got["properties"].(map[string]any)
+	level1 := props["level1"].(map[string]any)
+
+	// Level1 re-enables validation: minLength preserved
+	if level1["minLength"] != float64(2) {
+		t.Errorf("level1 minLength should be preserved, got %v", level1["minLength"])
+	}
+
+	level1Props := level1["properties"].(map[string]any)
+	level2 := level1Props["level2"].(map[string]any)
+
+	// Level2 disables again (empty vocab): minLength stripped
+	if _, ok := level2["minLength"]; ok {
+		t.Error("level2 minLength should be stripped (empty vocab disables all)")
+	}
+}

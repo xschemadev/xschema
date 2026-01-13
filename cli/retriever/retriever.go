@@ -12,9 +12,9 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/parser"
 	"github.com/xschemadev/xschema/ui"
 	"golang.org/x/sync/errgroup"
@@ -34,6 +34,7 @@ type Options struct {
 	Retries     int
 	NoCache     bool
 	Headers     map[string]string
+	Cache       *fetcher.SharedCache // shared cache across retriever/processor/metaschema
 }
 
 // DefaultOptions returns sensible defaults
@@ -58,29 +59,6 @@ type RetrievedSchema struct {
 // Key returns the full namespaced key like "namespace:id"
 func (r RetrievedSchema) Key() string {
 	return r.Namespace + ":" + r.ID
-}
-
-// schemaCache caches retrieved schemas
-type schemaCache struct {
-	mu    sync.RWMutex
-	items map[string]json.RawMessage
-}
-
-func newSchemaCache() *schemaCache {
-	return &schemaCache{items: make(map[string]json.RawMessage)}
-}
-
-func (c *schemaCache) get(key string) (json.RawMessage, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	v, ok := c.items[key]
-	return v, ok
-}
-
-func (c *schemaCache) set(key string, val json.RawMessage) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.items[key] = val
 }
 
 var envVarRegex = regexp.MustCompile(`\$\{([^}]+)\}`)
@@ -277,20 +255,20 @@ func RetrieveFromFilePath(ctx context.Context, absolutePath string) (json.RawMes
 	return json.RawMessage(data), nil
 }
 
-// Retrieve fetches all schemas from declarations
+// Retrieve fetches all schemas from declarations.
+// If opts.Cache is provided, it's used as a shared cache across retriever/processor/metaschema
+// to ensure no URI is fetched twice.
 func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]RetrievedSchema, error) {
 	if len(decls) == 0 {
 		return nil, nil
 	}
 
-	var cache *schemaCache
-	if !opts.NoCache {
-		cache = newSchemaCache()
-	}
+	cache := opts.Cache
+	cacheEnabled := cache != nil && !opts.NoCache
 
 	results := make([]RetrievedSchema, len(decls))
 
-	ui.Verbosef("retrieving schemas: count=%d, concurrency=%d, cache_enabled=%v", len(decls), opts.Concurrency, cache != nil)
+	ui.Verbosef("retrieving schemas: count=%d, concurrency=%d, cache_enabled=%v", len(decls), opts.Concurrency, cacheEnabled)
 
 	g, ctx := errgroup.WithContext(ctx)
 	g.SetLimit(opts.Concurrency)
@@ -308,30 +286,7 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			}
 		}
 
-		// Build cache key based on source type
-		var cacheKey string
-		switch d.SourceType {
-		case parser.SourceURL:
-			var url string
-			if err := json.Unmarshal(d.Source, &url); err != nil {
-				return nil, fmt.Errorf("invalid URL source for %s: %w", d.Key(), err)
-			}
-			cacheKey = "url:" + url
-			if hKey := headersCacheKey(resolvedHeaders); hKey != "" {
-				cacheKey += ":h:" + hKey
-			}
-		case parser.SourceFile:
-			var filePath string
-			if err := json.Unmarshal(d.Source, &filePath); err != nil {
-				return nil, fmt.Errorf("invalid file source for %s: %w", d.Key(), err)
-			}
-			cacheKey = "file:" + filepath.Join(filepath.Dir(d.ConfigPath), filePath)
-		case parser.SourceJSON:
-			// Inline JSON - use the declaration key as cache key
-			cacheKey = "json:" + d.Key()
-		}
-
-		// Compute source URI for bundling
+		// Compute source URI for bundling and cache key
 		var sourceURI string
 		switch d.SourceType {
 		case parser.SourceURL:
@@ -344,10 +299,11 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 			sourceURI = filepath.Join(filepath.Dir(d.ConfigPath), filePath)
 		}
 
-		// Check cache first (if enabled)
-		if cache != nil {
-			if cached, ok := cache.get(cacheKey); ok {
-				ui.Verbosef("cache hit: schema=%s, key=%s", d.Key(), cacheKey)
+		// Check shared cache first (if enabled)
+		// For URL/file sources, use sourceURI as cache key (SharedCache normalizes internally)
+		if cacheEnabled && sourceURI != "" {
+			if cached, ok := cache.Get(sourceURI); ok {
+				ui.Verbosef("cache hit: schema=%s, uri=%s", d.Key(), sourceURI)
 				results[idx] = RetrievedSchema{
 					Namespace: d.Namespace,
 					ID:        d.ID,
@@ -357,11 +313,11 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				}
 				continue
 			}
-			ui.Verbosef("cache miss: schema=%s, key=%s", d.Key(), cacheKey)
+			ui.Verbosef("cache miss: schema=%s, uri=%s", d.Key(), sourceURI)
 		}
 
-		srcURI := sourceURI       // capture for closure
-		hdrs := resolvedHeaders   // capture for closure
+		srcURI := sourceURI     // capture for closure
+		hdrs := resolvedHeaders // capture for closure
 		g.Go(func() error {
 			var schema json.RawMessage
 			var err error
@@ -393,8 +349,9 @@ func Retrieve(ctx context.Context, decls []parser.Declaration, opts Options) ([]
 				return fmt.Errorf("failed to retrieve schema %s: %w", d.Key(), err)
 			}
 
-			if cache != nil {
-				cache.set(cacheKey, schema)
+			// Store in shared cache (for URL/file sources)
+			if cacheEnabled && srcURI != "" {
+				cache.Set(srcURI, schema)
 			}
 
 			results[idx] = RetrievedSchema{

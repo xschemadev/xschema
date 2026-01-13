@@ -208,8 +208,8 @@ func runCompliance(cmd *cobra.Command, args []string) error {
 		printTimingSummary(timing)
 	}
 
-	// Print unsupported features summary if any
-	printUnsupportedFeaturesSummary(report)
+	// Print unsupported features summary if verbose
+	printUnsupportedFeaturesSummary(report, complianceVerbose)
 
 	ui.Println()
 	ui.SuccessMsg(fmt.Sprintf("Compliance testing complete (%s)", ui.FormatDuration(time.Since(start))))
@@ -258,8 +258,8 @@ func printTimingSummary(timing *compliance.TimingSummary) {
 	ui.Printf("  Harness execution: %s\n", ui.FormatDuration(timing.HarnessExecution))
 }
 
-func printUnsupportedFeaturesSummary(report *compliance.ComplianceReport) {
-	if report == nil {
+func printUnsupportedFeaturesSummary(report *compliance.ComplianceReport, verbose bool) {
+	if report == nil || !verbose {
 		return
 	}
 

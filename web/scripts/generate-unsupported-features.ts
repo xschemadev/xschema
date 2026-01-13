@@ -2,10 +2,10 @@
 /**
  * Unsupported Features MDX Generation Script
  *
- * Generates the unsupported-features.mdx page from cli/compliance/unsupported-features.json.
+ * Generates the unsupported-features.mdx page from cli/unsupported/unsupported-features.json.
  * Each limitation group is displayed as an accordion with:
- * - Header: name and count of affected tests
- * - Body: reason explanation and list of test names
+ * - Header: name and keywords that trigger the limitation
+ * - Body: reason explanation and detailed explanation
  *
  * Output: content/docs/compliance/unsupported-features.mdx
  */
@@ -15,20 +15,20 @@ import { dirname, join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 const CONTENT_DIR = join(import.meta.dirname, "..", "content", "docs");
-const UNSUPPORTED_FEATURES_PATH = join(REPO_ROOT, "cli", "compliance", "unsupported-features.json");
+const UNSUPPORTED_FEATURES_PATH = join(REPO_ROOT, "cli", "unsupported", "unsupported-features.json");
 
 interface UnsupportedFeatureGroup {
   name: string;
   reason: string;
   explanation?: string;
-  tests: string[];
+  keywords: string[];
 }
 
 function loadUnsupportedFeatures(): UnsupportedFeatureGroup[] {
   if (!existsSync(UNSUPPORTED_FEATURES_PATH)) {
     throw new Error(
       `Unsupported features file not found at: ${UNSUPPORTED_FEATURES_PATH}\n` +
-        "Ensure cli/compliance/unsupported-features.json exists.",
+        "Ensure cli/unsupported/unsupported-features.json exists.",
     );
   }
 
@@ -71,10 +71,10 @@ function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): stri
   );
   lines.push("");
 
-  // Total count
-  const totalTests = groups.reduce((sum, g) => sum + g.tests.length, 0);
+  // Count total keywords
+  const totalKeywords = groups.reduce((sum, g) => sum + g.keywords.length, 0);
   lines.push(
-    `**${groups.length} limitation categories** affecting **${totalTests} tests** in the JSON Schema Test Suite.`,
+    `**${groups.length} limitation categories** covering **${totalKeywords} keywords** that cannot be statically compiled.`,
   );
   lines.push("");
 
@@ -83,8 +83,14 @@ function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): stri
   lines.push("");
 
   for (const group of groups) {
-    const title = `${formatGroupName(group.name)} (${group.tests.length} tests)`;
+    const keywordDisplay =
+      group.keywords.length > 0
+        ? group.keywords.map((k) => `\`${k}\``).join(", ")
+        : "context-dependent";
+    const title = `${formatGroupName(group.name)}`;
     lines.push(`<Accordion title="${title}">`);
+    lines.push("");
+    lines.push(`**Keywords:** ${keywordDisplay}`);
     lines.push("");
     lines.push(group.reason);
     lines.push("");
@@ -101,12 +107,6 @@ function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): stri
       }
     }
 
-    lines.push("### Affected Tests");
-    lines.push("");
-    for (const test of group.tests) {
-      lines.push(`- ${escapeMdx(test)}`);
-    }
-    lines.push("");
     lines.push("</Accordion>");
     lines.push("");
   }

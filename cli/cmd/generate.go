@@ -10,9 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/config"
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
@@ -71,18 +72,8 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Load env file for header variable substitution
-	if envFile != "" {
-		ui.Verbosef("loading env file: %s", envFile)
-		if err := godotenv.Load(envFile); err != nil {
-			return fmt.Errorf("failed to load env file %s: %w", envFile, err)
-		}
-	} else {
-		// Try to load .env from cwd if it exists
-		defaultEnvPath := filepath.Join(root, ".env")
-		if _, err := os.Stat(defaultEnvPath); err == nil {
-			ui.Verbosef("loading default .env file: %s", defaultEnvPath)
-			_ = godotenv.Load(defaultEnvPath) // ignore error if .env doesn't exist or is invalid
-		}
+	if err := config.LoadEnvFile(envFile, root); err != nil {
+		return err
 	}
 
 	// Make output directory absolute relative to project root
@@ -108,8 +99,13 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Step 2: Fetch schemas (with spinner)
 	ui.Step(2, 5, "Fetching schemas")
+
+	// Create shared cache for all schema fetching (retriever, processor, metaschema)
+	sharedCache := fetcher.NewSharedCache()
+
 	retrieverOpts := retriever.DefaultOptions()
 	retrieverOpts.Concurrency = concurrency
+	retrieverOpts.Cache = sharedCache
 
 	var schemas []retriever.RetrievedSchema
 	err = ui.RunWithSpinner("Fetching schemas...", func() error {
@@ -143,8 +139,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	err = ui.RunWithSpinner("Processing schemas...", func() error {
 		var procErr error
 		processed, procErr = processor.Process(ctx, schemas, processor.Options{
-			Fetcher:   newRetrieverFetcher(ctx, retrieverOpts),
-			OnVerbose: verboseCallback(),
+			Fetcher:     newRetrieverFetcher(ctx, retrieverOpts),
+			OnVerbose:   verboseCallback(),
+			Cache:       sharedCache, // reuse cache from retriever
+			Concurrency: concurrency,
 		})
 		return procErr
 	})

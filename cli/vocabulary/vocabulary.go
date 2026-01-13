@@ -54,6 +54,7 @@ var formatKeywords = map[string]bool{
 // FilterSchema strips keywords from disabled vocabularies.
 // If vocab is nil, returns schema unchanged (all vocabularies enabled by default).
 // If vocab is empty map, strips all vocabulary-controlled keywords.
+// Nested $vocabulary declarations override parent scope for their subtree.
 func FilterSchema(schema json.RawMessage, vocab map[string]bool) (json.RawMessage, error) {
 	if vocab == nil {
 		return schema, nil
@@ -70,6 +71,26 @@ func FilterSchema(schema json.RawMessage, vocab map[string]bool) (json.RawMessag
 	filtered := filterNode(parsed, validationEnabled, formatEnabled)
 
 	return json.Marshal(filtered)
+}
+
+// parseVocab extracts vocabulary map from $vocabulary field if present.
+// Returns nil if no $vocabulary or not a valid format.
+func parseVocab(obj map[string]any) map[string]bool {
+	vocabVal, ok := obj["$vocabulary"]
+	if !ok {
+		return nil
+	}
+	vocabMap, ok := vocabVal.(map[string]any)
+	if !ok {
+		return nil
+	}
+	result := make(map[string]bool, len(vocabMap))
+	for uri, val := range vocabMap {
+		// presence in $vocabulary means enabled (value is just "required" flag)
+		result[uri] = true
+		_ = val // value indicates if vocabulary is required, not if enabled
+	}
+	return result
 }
 
 // isVocabEnabled checks if any of the given vocabulary URIs is present in vocab.
@@ -96,7 +117,14 @@ func filterNode(node any, validationEnabled, formatEnabled bool) any {
 }
 
 // filterObject filters an object schema node, removing disabled keywords.
+// If $vocabulary is present, it overrides parent scope for this subtree.
 func filterObject(obj map[string]any, validationEnabled, formatEnabled bool) map[string]any {
+	// Check for nested $vocabulary that overrides parent scope
+	if nestedVocab := parseVocab(obj); nestedVocab != nil {
+		validationEnabled = isVocabEnabled(nestedVocab, Validation2020, Validation2019)
+		formatEnabled = isVocabEnabled(nestedVocab, Format2020, Format2019)
+	}
+
 	result := make(map[string]any, len(obj))
 
 	for key, val := range obj {

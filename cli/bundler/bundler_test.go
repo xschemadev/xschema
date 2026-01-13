@@ -3,14 +3,17 @@ package bundler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/xschemadev/xschema/fetcher"
+	"github.com/xschemadev/xschema/unsupported"
 )
 
 func testdataPath(name string) string {
@@ -390,7 +393,7 @@ func TestResolveURI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.ref+"_"+tt.base, func(t *testing.T) {
-			got, err := resolveURI(tt.ref, tt.base)
+			got, err := fetcher.ResolveURI(tt.ref, tt.base)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error")
@@ -531,8 +534,11 @@ func TestBundleRejectsRecursiveRef(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for $recursiveRef")
 	}
-	if !strings.Contains(err.Error(), "$recursiveRef") {
-		t.Errorf("expected '$recursiveRef' in error, got: %v", err)
+	var ukErr *unsupported.UnsupportedKeywordError
+	if !errors.As(err, &ukErr) {
+		t.Errorf("expected UnsupportedKeywordError, got: %T", err)
+	} else if ukErr.Keyword != "$recursiveRef" {
+		t.Errorf("expected keyword '$recursiveRef', got: %s", ukErr.Keyword)
 	}
 }
 
@@ -547,8 +553,11 @@ func TestBundleRejectsRecursiveAnchor(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for $recursiveAnchor")
 	}
-	if !strings.Contains(err.Error(), "$recursiveAnchor") {
-		t.Errorf("expected '$recursiveAnchor' in error, got: %v", err)
+	var ukErr *unsupported.UnsupportedKeywordError
+	if !errors.As(err, &ukErr) {
+		t.Errorf("expected UnsupportedKeywordError, got: %T", err)
+	} else if ukErr.Keyword != "$recursiveAnchor" {
+		t.Errorf("expected keyword '$recursiveAnchor', got: %s", ukErr.Keyword)
 	}
 }
 
@@ -640,14 +649,18 @@ func TestValidateJSONPointer(t *testing.T) {
 func TestBundleInjectsSchemaForDraft(t *testing.T) {
 	ctx := context.Background()
 
+	// Note: Legacy drafts (3, 4, 6, 7) are normalized to 2020-12 syntax,
+	// so they all get the 2020-12 $schema URI after bundling.
 	tests := []struct {
 		draft      string
 		wantSchema string
 	}{
-		{"draft3", "http://json-schema.org/draft-03/schema#"},
-		{"draft4", "http://json-schema.org/draft-04/schema#"},
-		{"draft6", "http://json-schema.org/draft-06/schema#"},
-		{"draft7", "http://json-schema.org/draft-07/schema#"},
+		// Legacy drafts get normalized to 2020-12
+		{"draft3", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft4", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft6", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft7", "https://json-schema.org/draft/2020-12/schema"},
+		// Modern drafts are not normalized
 		{"draft2019-09", "https://json-schema.org/draft/2019-09/schema"},
 		{"draft2020-12", "https://json-schema.org/draft/2020-12/schema"},
 	}
@@ -683,12 +696,12 @@ func TestBundleInjectsSchemaForDraft(t *testing.T) {
 func TestBundlePreservesExistingSchema(t *testing.T) {
 	ctx := context.Background()
 
-	// Schema already has $schema - should NOT be overwritten
-	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+	// Schema already has $schema for 2020-12 - should be preserved (no normalization needed)
+	schema := `{"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "string"}`
 
 	bundled, err := Bundle(ctx, BundleInput{
 		Schema: json.RawMessage(schema),
-		Draft:  "draft4", // trying to inject draft4
+		Draft:  "draft4", // Draft hint ignored when $schema is present
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -700,9 +713,34 @@ func TestBundlePreservesExistingSchema(t *testing.T) {
 	}
 
 	got := result["$schema"].(string)
-	// Should preserve the original draft7 schema, not inject draft4
-	if got != "http://json-schema.org/draft-07/schema#" {
+	// Should preserve the 2020-12 schema (no normalization needed)
+	if got != "https://json-schema.org/draft/2020-12/schema" {
 		t.Errorf("existing $schema should be preserved, got %q", got)
+	}
+}
+
+func TestBundleLegacySchemaGetsNormalized(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema has legacy draft7 $schema - gets normalized to 2020-12
+	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema: json.RawMessage(schema),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	got := result["$schema"].(string)
+	// Legacy draft gets normalized to 2020-12
+	if got != "https://json-schema.org/draft/2020-12/schema" {
+		t.Errorf("legacy $schema should be normalized to 2020-12, got %q", got)
 	}
 }
 
@@ -736,6 +774,11 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 			"tilde~field":   map[string]any{"type": "boolean"},
 			"quote\"field":  map[string]any{"type": "integer"},
 			"space field":   map[string]any{"type": "array"},
+			// Keys with literal JSON pointer escape sequences (edge cases)
+			"literal~1key": map[string]any{"type": "string"},  // key is literally "~1"
+			"literal~0key": map[string]any{"type": "number"},  // key is literally "~0"
+			"uri%2Fslash":  map[string]any{"type": "boolean"}, // key contains literal "%2F"
+			"combo~/field": map[string]any{"type": "integer"}, // key has both ~ and /
 		},
 	}
 
@@ -756,6 +799,18 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 		{"space encoded", "#/$defs/space%20field", false},
 		// Direct keys (not encoded) should also work
 		{"direct percent - should fail", "#/$defs/percent%field", true},
+
+		// RFC 6901 order test cases: URI decode first, then JSON pointer unescape
+		// Key "literal~1key" - the ~1 is literal, so we need ~01 (escape the ~)
+		{"literal tilde-one in key", "#/$defs/literal~01key", false},
+		// Key "literal~0key" - the ~0 is literal, so we need ~00 (escape the ~)
+		{"literal tilde-zero in key", "#/$defs/literal~00key", false},
+		// Key "uri%2Fslash" - contains literal %2F, URI encode the % as %25
+		{"literal percent-2F in key", "#/$defs/uri%252Fslash", false},
+		// Key "combo~/field" - has ~ (needs ~0) and / (needs ~1)
+		{"combo tilde and slash", "#/$defs/combo~0~1field", false},
+		// Wrong: using %2F for a key that literally contains / would fail
+		{"wrong slash encoding for literal percent2F", "#/$defs/uri%2Fslash", true},
 	}
 
 	for _, tt := range tests {
@@ -1763,4 +1818,506 @@ func TestBundleDeeplyNestedRefChain(t *testing.T) {
 	if !strings.HasPrefix(valueRef, "#/$defs/") {
 		t.Errorf("expected ref to be rewritten to #/$defs/..., got %s", valueRef)
 	}
+}
+
+// TestBundleSiblingRefAfterID verifies that $id in one property doesn't affect
+// refs in sibling properties. Per JSON Schema spec, $id creates a new scope only
+// for its descendants, not for siblings at the same level.
+func TestBundleSiblingRefAfterID(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema where "nested" has $id but "sibling" should still resolve refs
+	// relative to the root, not relative to nested's scope
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"Target": { "type": "string" }
+		},
+		"properties": {
+			"nested": {
+				"$id": "http://example.com/nested",
+				"type": "object"
+			},
+			"sibling": {
+				"$ref": "#/$defs/Target"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/root.json",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The sibling's $ref should remain unchanged - it should still point to
+	// #/$defs/Target (root scope), not be affected by nested's $id
+	props := result["properties"].(map[string]any)
+	sibling := props["sibling"].(map[string]any)
+	siblingRef := sibling["$ref"].(string)
+
+	if siblingRef != "#/$defs/Target" {
+		t.Errorf("sibling ref should remain #/$defs/Target, got %s", siblingRef)
+	}
+}
+
+// TestBundle5LevelNestedDefs verifies that schemas with 5+ levels of nested $defs
+// are correctly flattened with all refs rewritten properly.
+func TestBundle5LevelNestedDefs(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with 5 levels of nesting: $defs/L1/$defs/L2/$defs/L3/$defs/L4/$defs/L5
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"L1": {
+				"type": "object",
+				"$defs": {
+					"L2": {
+						"type": "object",
+						"$defs": {
+							"L3": {
+								"type": "object",
+								"$defs": {
+									"L4": {
+										"type": "object",
+										"$defs": {
+											"L5": {
+												"type": "string",
+												"description": "deepest level"
+											}
+										},
+										"properties": {
+											"l5ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3/$defs/L4/$defs/L5" }
+										}
+									}
+								},
+								"properties": {
+									"l4ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3/$defs/L4" }
+								}
+							}
+						},
+						"properties": {
+							"l3ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3" }
+						}
+					}
+				},
+				"properties": {
+					"l2ref": { "$ref": "#/$defs/L1/$defs/L2" }
+				}
+			}
+		},
+		"properties": {
+			"l1ref": { "$ref": "#/$defs/L1" }
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/deep.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have flattened keys with __ separators for all 5 levels
+	var foundL1, foundL2, foundL3, foundL4, foundL5 bool
+	for key := range defs {
+		switch {
+		case strings.Contains(key, "__L1__L2__L3__L4__L5"):
+			foundL5 = true
+		case strings.Contains(key, "__L1__L2__L3__L4") && !strings.Contains(key, "__L5"):
+			foundL4 = true
+		case strings.Contains(key, "__L1__L2__L3") && !strings.Contains(key, "__L4"):
+			foundL3 = true
+		case strings.Contains(key, "__L1__L2") && !strings.Contains(key, "__L3"):
+			foundL2 = true
+		case strings.Contains(key, "__L1") && !strings.Contains(key, "__L2"):
+			foundL1 = true
+		}
+	}
+
+	if !foundL1 {
+		t.Error("expected flattened L1 definition")
+	}
+	if !foundL2 {
+		t.Error("expected flattened L2 definition")
+	}
+	if !foundL3 {
+		t.Error("expected flattened L3 definition")
+	}
+	if !foundL4 {
+		t.Error("expected flattened L4 definition")
+	}
+	if !foundL5 {
+		t.Error("expected flattened L5 definition")
+	}
+
+	// Verify refs were rewritten correctly - find L4 and check its l5ref
+	for key, def := range defs {
+		if strings.Contains(key, "__L1__L2__L3__L4") && !strings.Contains(key, "__L5") {
+			defObj := def.(map[string]any)
+			props, ok := defObj["properties"].(map[string]any)
+			if !ok {
+				continue
+			}
+			l5ref, ok := props["l5ref"].(map[string]any)
+			if !ok {
+				continue
+			}
+			ref := l5ref["$ref"].(string)
+			// Should point to flattened L5, not the nested path
+			if !strings.HasPrefix(ref, "#/$defs/") || !strings.Contains(ref, "__L5") {
+				t.Errorf("L4's l5ref should be rewritten to flattened L5, got %s", ref)
+			}
+		}
+	}
+}
+
+// TestBundleSiblingRefToParentPath tests that refs in sibling properties can
+// reference paths that would be invalid if resolved against a sibling's $id scope.
+func TestBundleSiblingRefToParentPath(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with nested $id that establishes new scope, but sibling refs
+	// should resolve against the parent (root) scope, not the $id's scope
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"Local": { "type": "string" }
+		},
+		"properties": {
+			"nested": {
+				"$id": "http://example.com/nested.json",
+				"type": "object",
+				"properties": {
+					"innerProp": { "type": "number" }
+				}
+			},
+			"sibling": {
+				"$ref": "#/$defs/Local"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/root.json",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The sibling's $ref should remain #/$defs/Local, unchanged
+	props := result["properties"].(map[string]any)
+	sibling := props["sibling"].(map[string]any)
+	siblingRef := sibling["$ref"].(string)
+
+	if siblingRef != "#/$defs/Local" {
+		t.Errorf("sibling ref should remain #/$defs/Local, got %s", siblingRef)
+	}
+
+	// The root $defs should still contain Local
+	defs := result["$defs"].(map[string]any)
+	if _, ok := defs["Local"]; !ok {
+		t.Error("root $defs should still contain Local definition")
+	}
+}
+
+// =============================================================================
+// Benchmark Tests for Linear Scaling (US-006)
+// =============================================================================
+
+// generateNestedDefsSchema generates a schema with N levels of nested $defs
+// where each level has refs to the next level down.
+func generateNestedDefsSchema(levels int) string {
+	if levels <= 0 {
+		return `{"type": "string"}`
+	}
+
+	// Build from innermost to outermost
+	inner := `{"type": "string", "description": "leaf"}`
+
+	for i := levels; i >= 1; i-- {
+		defName := fmt.Sprintf("L%d", i)
+		var refPath string
+		if i == levels {
+			// Innermost level has no ref
+			refPath = ""
+		} else {
+			// Build the ref path like #/$defs/L1/$defs/L2/.../$defs/L(i+1)
+			parts := []string{"#"}
+			for j := 1; j <= i+1; j++ {
+				parts = append(parts, fmt.Sprintf("$defs/L%d", j))
+			}
+			refPath = strings.Join(parts, "/")
+		}
+
+		var propsSection string
+		if refPath != "" {
+			propsSection = fmt.Sprintf(`,"properties":{"ref":{"$ref":"%s"}}`, refPath)
+		}
+
+		inner = fmt.Sprintf(`{
+			"type": "object",
+			"$defs": {
+				"%s": %s
+			}%s
+		}`, defName, inner, propsSection)
+	}
+
+	return inner
+}
+
+// BenchmarkFlattenDefs measures flattening performance with increasing nesting depth.
+// We verify linear scaling by checking that time grows linearly with depth.
+func BenchmarkFlattenDefs(b *testing.B) {
+	depths := []int{2, 4, 6, 8, 10}
+
+	for _, depth := range depths {
+		b.Run(fmt.Sprintf("depth_%d", depth), func(b *testing.B) {
+			schema := generateNestedDefsSchema(depth)
+			fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+				return json.RawMessage(schema), nil
+			})
+
+			rootSchema := `{
+				"type": "object",
+				"properties": {
+					"remote": { "$ref": "http://example.com/nested.json" }
+				}
+			}`
+
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_, err := Bundle(context.Background(), BundleInput{
+					Schema:    json.RawMessage(rootSchema),
+					SourceURI: "http://example.com/base.json",
+					Fetcher:   fetcher,
+				})
+				if err != nil {
+					b.Fatalf("unexpected error: %v", err)
+				}
+			}
+		})
+	}
+}
+
+// TestFlattenDefsLinearScaling verifies that flattening time scales linearly
+// with nesting depth (not quadratically).
+func TestFlattenDefsLinearScaling(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping linear scaling test in short mode")
+	}
+
+	ctx := context.Background()
+
+	// Test with depths 5 and 10 - if quadratic, 10 would be ~4x slower than 5
+	// With linear scaling, 10 should be ~2x slower than 5
+	depths := []int{5, 10}
+	iterations := 100
+	times := make(map[int]int64)
+
+	for _, depth := range depths {
+		schema := generateNestedDefsSchema(depth)
+		fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+			return json.RawMessage(schema), nil
+		})
+
+		rootSchema := `{
+			"type": "object",
+			"properties": {
+				"remote": { "$ref": "http://example.com/nested.json" }
+			}
+		}`
+
+		// Warm up
+		for i := 0; i < 5; i++ {
+			_, _ = Bundle(ctx, BundleInput{
+				Schema:    json.RawMessage(rootSchema),
+				SourceURI: "http://example.com/base.json",
+				Fetcher:   fetcher,
+			})
+		}
+
+		// Time the iterations
+		start := time.Now()
+		for i := 0; i < iterations; i++ {
+			_, err := Bundle(ctx, BundleInput{
+				Schema:    json.RawMessage(rootSchema),
+				SourceURI: "http://example.com/base.json",
+				Fetcher:   fetcher,
+			})
+			if err != nil {
+				t.Fatalf("depth %d: unexpected error: %v", depth, err)
+			}
+		}
+		times[depth] = time.Since(start).Nanoseconds()
+	}
+
+	// With linear scaling: time(10) / time(5) should be approximately 2
+	// With quadratic scaling: time(10) / time(5) would be approximately 4
+	// Allow some margin for variance
+	ratio := float64(times[10]) / float64(times[5])
+	t.Logf("depth 5: %dns, depth 10: %dns, ratio: %.2f", times[5], times[10], ratio)
+
+	// If ratio > 3, it's likely quadratic
+	if ratio > 3.0 {
+		t.Errorf("scaling appears quadratic: ratio %.2f (expected ~2 for linear)", ratio)
+	}
+}
+
+// =============================================================================
+// Anchor Rewriting After Flattening (US-008)
+// =============================================================================
+
+func TestBundleDeeplyNestedAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs an anchor in a deeply nested $def (3+ levels)
+	// The external schema has: $defs/Level1/$defs/Level2/$defs/Target with $anchor: "deepAnchor"
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "schema-deep-anchor.json#deepAnchor" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The ref should point to the flattened location of the deeply nested Target
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+
+	// Should be #/$defs/key__Level1__Level2__Target (fully flattened)
+	if !strings.HasPrefix(ref, "#/$defs/") {
+		t.Errorf("expected ref to be #/$defs/..., got %s", ref)
+	}
+	if !strings.Contains(ref, "Target") {
+		t.Errorf("expected ref to contain 'Target', got %s", ref)
+	}
+
+	// The flattened def must exist
+	defs := result["$defs"].(map[string]any)
+	refKey := strings.TrimPrefix(ref, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened def %s not found in $defs. Available keys: %v", refKey, getMapKeys(defs))
+	}
+}
+
+func TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs a remote schema. The remote schema has a deeply nested anchor
+	// and an internal $ref to that anchor.
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "schema-deep-anchor.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Find the embedded schema and its internal anchor ref
+	var embeddedRef string
+	for _, def := range defs {
+		defObj, ok := def.(map[string]any)
+		if !ok {
+			continue
+		}
+		props, ok := defObj["properties"].(map[string]any)
+		if !ok {
+			continue
+		}
+		valueProp, ok := props["value"].(map[string]any)
+		if !ok {
+			continue
+		}
+		if ref, ok := valueProp["$ref"].(string); ok {
+			embeddedRef = ref
+			break
+		}
+	}
+
+	if embeddedRef == "" {
+		t.Fatal("could not find embedded schema with properties.value.$ref")
+	}
+
+	// The internal anchor ref should be rewritten to point to the flattened location
+	if !strings.HasPrefix(embeddedRef, "#/$defs/") {
+		t.Errorf("expected anchor ref to be rewritten to #/$defs/..., got %s", embeddedRef)
+	}
+
+	// The flattened def must exist
+	refKey := strings.TrimPrefix(embeddedRef, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened def %s not found in $defs. Available keys: %v", refKey, getMapKeys(defs))
+	}
+}
+
+func getMapKeys(m map[string]any) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
 }

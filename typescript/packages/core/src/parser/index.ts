@@ -5,9 +5,7 @@
 
 import type { JSONSchema } from "../schema/json-schema.js";
 import type { SchemaNode, TypeGuard } from "../ir/nodes.js";
-import { detectVersion, supportsRefSiblings } from "../schema/version.js";
-import { normalizeDeep } from "../schema/normalizer.js";
-import { resolveJsonPointer } from "../utils/json-pointer.js";
+// Note: $ref resolution is handled by the Go CLI bundler
 import { isEmptyObject } from "../utils/primitives.js";
 import { createContext, type ParseContext } from "./context.js";
 import { parseString, parseNumber } from "./primitives.js";
@@ -25,6 +23,7 @@ export type { ParseContext } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
+ * Expects schemas to be pre-normalized to draft2020-12 by the bundler.
  * @param schema The JSON Schema to parse
  */
 export function parse(schema: JSONSchema | boolean): SchemaNode {
@@ -33,10 +32,8 @@ export function parse(schema: JSONSchema | boolean): SchemaNode {
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	const version = detectVersion(schema);
-	const normalized = normalizeDeep(schema, version);
-	const ctx = createContext(normalized, version);
-	return parseSchema(normalized, ctx);
+	const ctx = createContext(schema);
+	return parseSchema(schema, ctx);
 }
 
 /**
@@ -51,40 +48,12 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Fail on unsupported keywords that require evaluation semantics
-	if (schema.unevaluatedItems !== undefined) {
-		throw new Error("unevaluatedItems is not supported");
-	}
-	if (schema.unevaluatedProperties !== undefined) {
-		const hasApplicators =
-			schema.allOf ||
-			schema.anyOf ||
-			schema.oneOf ||
-			schema.if ||
-			schema.$ref ||
-			schema.dependentSchemas ||
-			schema.not;
-		if (hasApplicators) {
-			throw new Error("unevaluatedProperties with applicators is not supported");
-		}
-	}
-	// Fail on dynamic/recursive ref keywords
-	if (schema.$dynamicRef !== undefined) {
-		throw new Error("$dynamicRef is not supported");
-	}
-	if (schema.$dynamicAnchor !== undefined) {
-		throw new Error("$dynamicAnchor is not supported");
-	}
-	if (schema.$recursiveRef !== undefined) {
-		throw new Error("$recursiveRef is not supported");
-	}
-	if (schema.$recursiveAnchor !== undefined) {
-		throw new Error("$recursiveAnchor is not supported");
-	}
-
-	// Handle $ref
+	// Handle $ref - schemas must be bundled by Go CLI
 	if (schema.$ref) {
-		return parseRef(schema, ctx);
+		throw new Error(
+			`Encountered $ref "${schema.$ref}" - schemas must be bundled by the Go CLI before processing. ` +
+			`Run the schema through xschema generate to bundle all references.`
+		);
 	}
 
 	// Handle not - check before composition since { not: {} } = never
@@ -121,6 +90,7 @@ export function parseSchema(
 		schema.dependentRequired !== undefined ||
 		schema.dependentSchemas !== undefined ||
 		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined ||
 		// array keywords
 		schema.items !== undefined ||
 		schema.prefixItems !== undefined ||
@@ -129,6 +99,7 @@ export function parseSchema(
 		schema.maxItems !== undefined ||
 		schema.uniqueItems !== undefined ||
 		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined ||
 		// primitive keywords
 		schema.minimum !== undefined ||
 		schema.maximum !== undefined ||
@@ -219,68 +190,7 @@ export function parseSchema(
 	return result;
 }
 
-function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
-	const refPath = schema.$ref!;
 
-	// Check cache
-	const cached = ctx.refs.get(refPath);
-	if (cached) {
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: cached,
-		};
-	}
-
-	// Check for circular reference
-	if (ctx.processing.has(refPath)) {
-		// Circular ref - return a lazy any
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: { kind: "any" },
-		};
-	}
-
-	// Resolve and parse
-	ctx.processing.add(refPath);
-
-	const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
-	const parsed = parseSchema(resolved, ctx);
-	ctx.refs.set(refPath, parsed);
-	ctx.processing.delete(refPath);
-
-	// Handle sibling keywords in draft-2019-09+
-	if (supportsRefSiblings(ctx.version)) {
-		const siblingSchema = { ...schema };
-		delete siblingSchema.$ref;
-		delete siblingSchema.$id;
-		delete siblingSchema.$anchor;
-		delete siblingSchema.$defs;
-		delete siblingSchema.definitions;
-		delete siblingSchema.$schema;
-		delete siblingSchema.$comment;
-		delete siblingSchema.$dynamicRef;
-		delete siblingSchema.$dynamicAnchor;
-
-		if (Object.keys(siblingSchema).length > 0) {
-			const siblingNode = parseSchema(siblingSchema, ctx);
-			return {
-				kind: "intersection",
-				schemas: [
-					{ kind: "ref", path: refPath, resolved: parsed },
-					siblingNode,
-				],
-			};
-		}
-	}
-
-	return {
-		kind: "ref",
-		path: refPath,
-		resolved: parsed,
-	};
-}
 
 function parseComposition(
 	schema: JSONSchema,
@@ -357,7 +267,8 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 		schema.maxProperties !== undefined ||
 		schema.dependentRequired !== undefined ||
 		schema.dependentSchemas !== undefined ||
-		schema.dependencies !== undefined;
+		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined;
 
 	// Check for array keywords
 	const hasArrayKeywords =
@@ -367,7 +278,8 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 		schema.minItems !== undefined ||
 		schema.maxItems !== undefined ||
 		schema.uniqueItems !== undefined ||
-		schema.contains !== undefined;
+		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined;
 
 	// Check for numeric keywords
 	const hasNumericKeywords =

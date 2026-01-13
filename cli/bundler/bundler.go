@@ -6,21 +6,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/ui"
+	"github.com/xschemadev/xschema/unsupported"
 )
 
 // BundleInput contains all inputs needed to bundle a schema.
 type BundleInput struct {
-	Schema    json.RawMessage  // the schema to bundle
-	SourceURI string           // base URI for resolving relative refs (empty if schema has no source)
-	Fetcher   fetcher.Fetcher  // fetcher for external refs (nil means external refs will error)
-	Draft     string           // JSON Schema draft for $schema injection if missing
+	Schema    json.RawMessage // the schema to bundle
+	SourceURI string          // base URI for resolving relative refs (empty if schema has no source)
+	Fetcher   fetcher.Fetcher // fetcher for external refs (nil means external refs will error)
+	Draft     string          // JSON Schema draft for $schema injection if missing
 }
 
 // keyInvalidChars matches characters not allowed in $defs keys
@@ -36,14 +36,15 @@ type bundleContext struct {
 	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
 	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
 	ctx        context.Context
+	draft      string // JSON Schema draft for normalizing fetched schemas
 }
 
 // draftToSchemaURI maps draft names to their canonical $schema URIs
 var draftToSchemaURI = map[string]string{
-	"draft3":      "http://json-schema.org/draft-03/schema#",
-	"draft4":      "http://json-schema.org/draft-04/schema#",
-	"draft6":      "http://json-schema.org/draft-06/schema#",
-	"draft7":      "http://json-schema.org/draft-07/schema#",
+	"draft3":       "http://json-schema.org/draft-03/schema#",
+	"draft4":       "http://json-schema.org/draft-04/schema#",
+	"draft6":       "http://json-schema.org/draft-06/schema#",
+	"draft7":       "http://json-schema.org/draft-07/schema#",
 	"draft2019-09": "https://json-schema.org/draft/2019-09/schema",
 	"draft2020-12": "https://json-schema.org/draft/2020-12/schema",
 }
@@ -67,6 +68,23 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		}
 	}
 
+	// Normalize legacy syntax to draft 2020-12
+	// Detect draft from schema or input, apply normalization if needed
+	draft := input.Draft
+	if draft == "" {
+		if obj, ok := parsed.(map[string]any); ok {
+			draft = detectDraftFromSchema(obj)
+		}
+	}
+	if needsNormalization(draft) {
+		parsed = normalizeLegacySyntax(parsed)
+		// Update $schema to 2020-12 after normalization
+		if obj, ok := parsed.(map[string]any); ok {
+			obj["$schema"] = draftToSchemaURI["draft2020-12"]
+		}
+		ui.Verbosef("bundler: normalized %s syntax to draft2020-12", draft)
+	}
+
 	bctx := &bundleContext{
 		sourceURI:  input.SourceURI,
 		fetcher:    input.Fetcher,
@@ -76,6 +94,7 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		localIDs:   make(map[string]bool),
 		anchors:    make(map[string]string),
 		ctx:        ctx,
+		draft:      draft,
 	}
 
 	// First pass: collect all $id and $anchor declarations in the schema
@@ -203,7 +222,7 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, fullPath)
 			} else {
 				// Resolve relative $id against base URI
-				resolved, err := resolveURI(id, baseURI)
+				resolved, err := fetcher.ResolveURI(id, baseURI)
 				if err == nil && resolved != "" {
 					// Store without fragment
 					resolvedBase, _ := splitFragment(resolved)
@@ -259,9 +278,6 @@ func (b *bundleContext) processNode(node any, baseURI string, scopePath string) 
 	}
 }
 
-// forbiddenKeywords are keywords that require evaluation semantics we can't provide
-var forbiddenKeywords = []string{"$dynamicRef", "$dynamicAnchor", "$recursiveRef", "$recursiveAnchor"}
-
 // isMetaschema checks if a URI is an official JSON Schema metaschema URL.
 // These should not be fetched/bundled - they reference complex recursive schemas
 // that use $recursiveAnchor and other features adapters can't handle.
@@ -273,10 +289,15 @@ func isMetaschema(uri string) bool {
 // processObject handles object nodes, looking for $ref
 // scopePath is the JSON pointer path of the nearest ancestor with $id (for rewriting scoped refs)
 func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopePath string) (any, error) {
-	// Reject forbidden keywords (dynamic/recursive refs)
-	for _, kw := range forbiddenKeywords {
+	// Reject forbidden keywords (dynamic/recursive refs) with proper UnsupportedKeywordError
+	keywords := unsupported.Keywords()
+	for kw, reason := range keywords {
 		if _, exists := obj[kw]; exists {
-			return nil, fmt.Errorf("unsupported keyword %q: dynamic and recursive references are not supported", kw)
+			return nil, &unsupported.UnsupportedKeywordError{
+				Keyword: kw,
+				Reason:  reason,
+				Path:    scopePath,
+			}
 		}
 	}
 
@@ -289,7 +310,7 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 		id, ok = obj["id"].(string)
 	}
 	if ok {
-		newBase, err := resolveURI(id, baseURI)
+		newBase, err := fetcher.ResolveURI(id, baseURI)
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)
 			baseURI = newBase
@@ -317,7 +338,7 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 	result := make(map[string]any, len(obj))
 	for _, k := range keys {
 		// Build the child path (for scope tracking)
-		childScopePath := currentScopePath
+		var childScopePath string
 		if currentScopePath == "" {
 			childScopePath = "/" + escapeJSONPointer(k)
 		} else {
@@ -382,7 +403,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	}
 
 	// Resolve relative URI against base
-	resolvedURI, err := resolveURI(refURI, baseURI)
+	resolvedURI, err := fetcher.ResolveURI(refURI, baseURI)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve ref %q against base %q: %w", ref, baseURI, err)
 	}
@@ -431,6 +452,22 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		var parsed any
 		if err := json.Unmarshal(fetched, &parsed); err != nil {
 			return nil, fmt.Errorf("failed to parse schema from %q: %w", resolvedURI, err)
+		}
+
+		// Normalize legacy syntax in fetched schema
+		if obj, ok := parsed.(map[string]any); ok {
+			fetchedDraft := detectDraftFromSchema(obj)
+			// If fetched schema has no $schema, use parent's draft
+			if fetchedDraft == "" {
+				fetchedDraft = b.draft
+			}
+			if needsNormalization(fetchedDraft) {
+				parsed = normalizeLegacySyntax(parsed)
+				if obj, ok := parsed.(map[string]any); ok {
+					obj["$schema"] = draftToSchemaURI["draft2020-12"]
+				}
+				ui.Verbosef("bundler: normalized fetched schema %s from %s to draft2020-12", resolvedURI, fetchedDraft)
+			}
 		}
 
 		// Flatten nested $defs/definitions and rewrite internal refs
@@ -490,7 +527,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 }
 
 // rewriteAnchorPath rewrites an anchor path that may point to a location that got flattened.
-// For example, /$defs/key/$defs/Target → /$defs/key__Target
+// Handles deeply nested paths like /$defs/key/$defs/L1/$defs/L2/$defs/Target → /$defs/key__L1__L2__Target
 func (b *bundleContext) rewriteAnchorPath(anchorPath string, embeddedKey string) string {
 	prefix := "/$defs/" + embeddedKey
 
@@ -501,26 +538,54 @@ func (b *bundleContext) rewriteAnchorPath(anchorPath string, embeddedKey string)
 
 	// Get the part after /$defs/key
 	rest := anchorPath[len(prefix):]
-
-	// Check if rest points to a definition that got flattened
-	if strings.HasPrefix(rest, "/$defs/") {
-		defName := rest[len("/$defs/"):]
-		// Strip any trailing path (e.g., /$defs/Target/properties/foo → Target)
-		if idx := strings.Index(defName, "/"); idx >= 0 {
-			defName = defName[:idx]
-		}
-		return "/$defs/" + embeddedKey + "__" + defName
-	}
-	if strings.HasPrefix(rest, "/definitions/") {
-		defName := rest[len("/definitions/"):]
-		if idx := strings.Index(defName, "/"); idx >= 0 {
-			defName = defName[:idx]
-		}
-		return "/$defs/" + embeddedKey + "__" + defName
+	if rest == "" {
+		return anchorPath
 	}
 
-	// Not a flattened location, return original path
-	return anchorPath
+	// Extract all nested def names from the path
+	// rest could be: /$defs/L1/$defs/L2/$defs/Target or /$defs/Target/properties/foo
+	var defNames []string
+	remaining := rest
+
+	for remaining != "" {
+		// Check for $defs or definitions prefix
+		var defPrefix string
+		if strings.HasPrefix(remaining, "/$defs/") {
+			defPrefix = "/$defs/"
+		} else if strings.HasPrefix(remaining, "/definitions/") {
+			defPrefix = "/definitions/"
+		} else {
+			// No more def prefixes - any remaining path is preserved as suffix
+			break
+		}
+
+		// Extract the def name
+		afterPrefix := remaining[len(defPrefix):]
+		nextSlash := strings.Index(afterPrefix, "/")
+		var defName string
+		if nextSlash >= 0 {
+			defName = afterPrefix[:nextSlash]
+			remaining = afterPrefix[nextSlash:]
+		} else {
+			defName = afterPrefix
+			remaining = ""
+		}
+		defNames = append(defNames, defName)
+	}
+
+	// If no def names extracted, return original
+	if len(defNames) == 0 {
+		return anchorPath
+	}
+
+	// Build the flattened path: key__L1__L2__Target
+	flattenedKey := embeddedKey
+	for _, name := range defNames {
+		flattenedKey += "__" + name
+	}
+
+	// Append any remaining path (e.g., /properties/foo)
+	return "/$defs/" + flattenedKey + remaining
 }
 
 // parseDefFragment checks if a fragment points to a definition and returns the def name.
@@ -546,81 +611,48 @@ func parseDefFragment(fragment string) (string, bool) {
 	return "", false
 }
 
+// defEntry holds information about a definition to be flattened
+type defEntry struct {
+	newKey   string   // flattened key (e.g., "parent__A__B")
+	schema   any      // the schema content (with nested $defs stripped)
+	oldPaths []string // all old paths that should rewrite to this (e.g., "#/$defs/A", "#/$defs/A/$defs/B")
+}
+
 // flattenDefs extracts $defs/definitions from an embedded schema and adds them
-// to bctx.defs with prefixed keys. It rewrites refs in both the embedded schema
-// and extracted defs to point to the flattened locations.
-// This handles:
-// - Deeply nested $defs (e.g., $defs/A/$defs/B/$defs/C → $defs/key__A, $defs/key__A__B, $defs/key__A__B__C)
-// - Mixed $defs and definitions in the same schema
-// - Key collisions (appends counter suffix)
+// to bctx.defs with prefixed keys. Uses O(n) single-pass algorithm:
+// 1. Single DFS to collect all defs and build complete rewrite map
+// 2. Single pass to rewrite all refs
 func (b *bundleContext) flattenDefs(node any, parentKey string) any {
 	obj, ok := node.(map[string]any)
 	if !ok {
 		return node
 	}
 
-	// Collect ALL definitions from both $defs and definitions
-	allDefs := make(map[string]map[string]any) // defsKey → {defName → schema}
+	// Check if there are any defs to flatten
+	hasDefs := false
 	if d, ok := obj["$defs"].(map[string]any); ok && len(d) > 0 {
-		allDefs["$defs"] = d
+		hasDefs = true
 	}
 	if d, ok := obj["definitions"].(map[string]any); ok && len(d) > 0 {
-		allDefs["definitions"] = d
+		hasDefs = true
 	}
-
-	if len(allDefs) == 0 {
-		// No nested defs - return node unchanged
+	if !hasDefs {
 		return node
 	}
 
-	// First pass: recursively flatten all nested defs and collect the complete rewrite map
-	// This must happen before we rewrite refs, so we have the complete picture
+	// Phase 1: Single DFS pass to collect all defs and build rewrite map
+	var entries []defEntry
 	refRewrites := make(map[string]string)
+	b.collectDefsRecursive(obj, parentKey, &entries, refRewrites)
 
-	for defsKey, defs := range allDefs {
-		for defName, defSchema := range defs {
-			newKey := b.uniqueDefKey(parentKey + "__" + defName)
-			oldRef := "#/" + defsKey + "/" + defName
-			newRef := "#/$defs/" + newKey
-			refRewrites[oldRef] = newRef
-
-			// Recursively flatten (in case nested defs have their own $defs)
-			// This populates b.defs and returns nested ref rewrites
-			nestedRewrites := make(map[string]string)
-			flattened := b.flattenDefsWithRewrites(defSchema, newKey, nestedRewrites)
-
-			// Merge nested rewrites, adjusting paths
-			// e.g., if this def is at $defs/A and it has nested $defs/B,
-			// we need #/$defs/A/$defs/B → #/$defs/key__A__B
-			for oldNested, newNested := range nestedRewrites {
-				// oldNested is like #/$defs/B from inside A's perspective
-				// We need to also add #/$defs/A/$defs/B for refs from outside
-				if strings.HasPrefix(oldNested, "#/$defs/") {
-					// Extract the nested part (e.g., /$defs/B)
-					nestedPart := oldNested[1:] // /$defs/B
-					fullOldRef := "#/" + defsKey + "/" + defName + nestedPart
-					refRewrites[fullOldRef] = newNested
-				} else if strings.HasPrefix(oldNested, "#/definitions/") {
-					nestedPart := oldNested[1:]
-					fullOldRef := "#/" + defsKey + "/" + defName + nestedPart
-					refRewrites[fullOldRef] = newNested
-				}
-				refRewrites[oldNested] = newNested
-			}
-
-			b.defs[newKey] = flattened
-			ui.Verbosef("bundler: flattened %s/%s → $defs/%s", defsKey, defName, newKey)
-		}
+	// Phase 2: Add all collected defs to b.defs and rewrite their refs
+	for _, entry := range entries {
+		rewritten := b.rewriteRefs(entry.schema, refRewrites, parentKey)
+		b.defs[entry.newKey] = rewritten
+		ui.Verbosef("bundler: flattened → $defs/%s", entry.newKey)
 	}
 
-	// Second pass: rewrite all refs in the flattened defs using the complete map
-	for key, def := range b.defs {
-		if strings.HasPrefix(key, parentKey+"__") {
-			b.defs[key] = b.rewriteNestedRefs(def, refRewrites, parentKey)
-		}
-	}
-
-	// Remove $defs/definitions from the embedded schema
+	// Strip $defs/definitions from the root object
 	result := make(map[string]any, len(obj))
 	for k, v := range obj {
 		if k == "$defs" || k == "definitions" {
@@ -629,62 +661,87 @@ func (b *bundleContext) flattenDefs(node any, parentKey string) any {
 		result[k] = v
 	}
 
-	// Rewrite refs in the embedded schema
-	rewritten := b.rewriteNestedRefs(result, refRewrites, parentKey)
-	return rewritten
+	// Rewrite refs in the root object
+	return b.rewriteRefs(result, refRewrites, parentKey)
 }
 
-// flattenDefsWithRewrites is like flattenDefs but also returns the rewrite map
-// for use by the parent caller to build complete nested ref paths
-func (b *bundleContext) flattenDefsWithRewrites(node any, parentKey string, rewrites map[string]string) any {
+// collectDefsRecursive performs a single DFS to collect all nested definitions.
+// It populates entries with all defs found and builds the complete refRewrites map.
+// Returns a slice of newly added rewrite keys (for parent to build nested paths).
+func (b *bundleContext) collectDefsRecursive(
+	node any,
+	parentKey string,
+	entries *[]defEntry,
+	refRewrites map[string]string,
+) []string {
+	obj, ok := node.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	var newRewrites []string
+
+	// Process both $defs and definitions
+	for _, defsKey := range []string{"$defs", "definitions"} {
+		defs, ok := obj[defsKey].(map[string]any)
+		if !ok || len(defs) == 0 {
+			continue
+		}
+
+		for defName, defSchema := range defs {
+			// Build the old path (relative to this node)
+			oldRef := "#/" + defsKey + "/" + defName
+
+			// Generate unique flattened key
+			newKey := b.uniqueDefKey(parentKey + "__" + defName)
+			newRef := "#/$defs/" + newKey
+
+			// Add to rewrite map
+			refRewrites[oldRef] = newRef
+			newRewrites = append(newRewrites, oldRef)
+
+			// Recursively collect nested defs (returns keys added by children)
+			childRewrites := b.collectDefsRecursive(defSchema, newKey, entries, refRewrites)
+
+			// Add nested path rewrites for refs from this level down to children
+			// e.g., #/$defs/L1/$defs/L2 needs to map to #/$defs/key__L1__L2
+			for _, childOld := range childRewrites {
+				childPath := childOld[1:] // strip # to get /$defs/...
+				fullOldRef := oldRef + childPath
+				if childNew, ok := refRewrites[childOld]; ok {
+					refRewrites[fullOldRef] = childNew
+					newRewrites = append(newRewrites, fullOldRef)
+				}
+			}
+
+			// Strip nested $defs/definitions from the schema before storing
+			strippedSchema := b.stripDefs(defSchema)
+
+			*entries = append(*entries, defEntry{
+				newKey:   newKey,
+				schema:   strippedSchema,
+				oldPaths: []string{oldRef},
+			})
+		}
+	}
+
+	return newRewrites
+}
+
+// stripDefs removes $defs and definitions from an object (shallow, non-recursive)
+func (b *bundleContext) stripDefs(node any) any {
 	obj, ok := node.(map[string]any)
 	if !ok {
 		return node
 	}
 
-	// Collect ALL definitions from both $defs and definitions
-	allDefs := make(map[string]map[string]any)
-	if d, ok := obj["$defs"].(map[string]any); ok && len(d) > 0 {
-		allDefs["$defs"] = d
-	}
-	if d, ok := obj["definitions"].(map[string]any); ok && len(d) > 0 {
-		allDefs["definitions"] = d
-	}
-
-	if len(allDefs) == 0 {
+	// Check if stripping is needed
+	_, hasDefs := obj["$defs"]
+	_, hasDefinitions := obj["definitions"]
+	if !hasDefs && !hasDefinitions {
 		return node
 	}
 
-	for defsKey, defs := range allDefs {
-		for defName, defSchema := range defs {
-			newKey := b.uniqueDefKey(parentKey + "__" + defName)
-			oldRef := "#/" + defsKey + "/" + defName
-			newRef := "#/$defs/" + newKey
-			rewrites[oldRef] = newRef
-
-			// Recursively flatten
-			nestedRewrites := make(map[string]string)
-			flattened := b.flattenDefsWithRewrites(defSchema, newKey, nestedRewrites)
-
-			// Merge nested rewrites, adjusting paths for deeper nesting
-			for oldNested, newNested := range nestedRewrites {
-				if strings.HasPrefix(oldNested, "#/$defs/") {
-					nestedPart := oldNested[1:]
-					fullOldRef := "#/" + defsKey + "/" + defName + nestedPart
-					rewrites[fullOldRef] = newNested
-				} else if strings.HasPrefix(oldNested, "#/definitions/") {
-					nestedPart := oldNested[1:]
-					fullOldRef := "#/" + defsKey + "/" + defName + nestedPart
-					rewrites[fullOldRef] = newNested
-				}
-				rewrites[oldNested] = newNested
-			}
-
-			b.defs[newKey] = flattened
-		}
-	}
-
-	// Remove $defs/definitions from the schema
 	result := make(map[string]any, len(obj))
 	for k, v := range obj {
 		if k == "$defs" || k == "definitions" {
@@ -692,8 +749,73 @@ func (b *bundleContext) flattenDefsWithRewrites(node any, parentKey string, rewr
 		}
 		result[k] = v
 	}
-
 	return result
+}
+
+// rewriteRefs rewrites all $ref values according to the rewrite map.
+// Also handles root-relative refs that should point to the parent def.
+func (b *bundleContext) rewriteRefs(node any, rewrites map[string]string, parentKey string) any {
+	switch v := node.(type) {
+	case map[string]any:
+		result := make(map[string]any, len(v))
+		for k, val := range v {
+			if k == "$ref" {
+				if ref, ok := val.(string); ok {
+					if newRef := b.lookupRewrite(ref, rewrites, parentKey); newRef != "" {
+						result[k] = newRef
+						continue
+					}
+				}
+			}
+			result[k] = b.rewriteRefs(val, rewrites, parentKey)
+		}
+		return result
+	case []any:
+		result := make([]any, len(v))
+		for i, val := range v {
+			result[i] = b.rewriteRefs(val, rewrites, parentKey)
+		}
+		return result
+	default:
+		return node
+	}
+}
+
+// lookupRewrite finds the appropriate rewritten ref, handling exact matches and prefix matches
+func (b *bundleContext) lookupRewrite(ref string, rewrites map[string]string, parentKey string) string {
+	// Exact match
+	if newRef, ok := rewrites[ref]; ok {
+		return newRef
+	}
+
+	// Check for refs with sub-paths (e.g., #/$defs/X/properties/foo)
+	// We need to find the longest matching prefix
+	var bestMatch string
+	var bestMatchLen int
+	for oldPrefix, newPrefix := range rewrites {
+		if strings.HasPrefix(ref, oldPrefix+"/") && len(oldPrefix) > bestMatchLen {
+			bestMatch = newPrefix + ref[len(oldPrefix):]
+			bestMatchLen = len(oldPrefix)
+		}
+	}
+	if bestMatch != "" {
+		return bestMatch
+	}
+
+	// Handle root ref (#)
+	if ref == "#" {
+		return "#/$defs/" + parentKey
+	}
+
+	// Handle other root-relative refs not in rewrites
+	if strings.HasPrefix(ref, "#/") {
+		// Don't rewrite if it's already pointing to $defs or definitions
+		if !strings.HasPrefix(ref, "#/$defs/") && !strings.HasPrefix(ref, "#/definitions/") {
+			return "#/$defs/" + parentKey + ref[1:]
+		}
+	}
+
+	return ""
 }
 
 // uniqueDefKey returns a unique key for a definition, appending a counter if needed
@@ -707,92 +829,6 @@ func (b *bundleContext) uniqueDefKey(baseKey string) string {
 		if _, exists := b.defs[candidate]; !exists {
 			return candidate
 		}
-	}
-}
-
-// rewriteNestedRefs rewrites refs according to a rewrite map, and also handles
-// root-relative refs that should point to the parent def
-func (b *bundleContext) rewriteNestedRefs(node any, rewrites map[string]string, parentKey string) any {
-	switch v := node.(type) {
-	case map[string]any:
-		result := make(map[string]any, len(v))
-		for k, val := range v {
-			if k == "$ref" {
-				if ref, ok := val.(string); ok {
-					// Check for exact matches in rewrite map
-					if newRef, ok := rewrites[ref]; ok {
-						result[k] = newRef
-						continue
-					}
-					// Check for refs with sub-paths (e.g., #/$defs/X/properties/foo)
-					for oldPrefix, newPrefix := range rewrites {
-						if strings.HasPrefix(ref, oldPrefix+"/") {
-							suffix := ref[len(oldPrefix):]
-							result[k] = newPrefix + suffix
-							continue
-						}
-					}
-					// Handle root refs
-					if ref == "#" {
-						result[k] = "#/$defs/" + parentKey
-						continue
-					}
-					// Handle other root-relative refs (not in rewrites)
-					if strings.HasPrefix(ref, "#/") {
-						// Check if this is a ref to $defs or definitions that we already handled
-						if !strings.HasPrefix(ref, "#/$defs/") && !strings.HasPrefix(ref, "#/definitions/") {
-							result[k] = "#/$defs/" + parentKey + ref[1:]
-							continue
-						}
-					}
-				}
-			}
-			result[k] = b.rewriteNestedRefs(val, rewrites, parentKey)
-		}
-		return result
-	case []any:
-		result := make([]any, len(v))
-		for i, val := range v {
-			result[i] = b.rewriteNestedRefs(val, rewrites, parentKey)
-		}
-		return result
-	default:
-		return node
-	}
-}
-
-// rewriteInternalRefs rewrites root-relative refs (e.g., #/definitions/Foo)
-// to point into the embedded location (e.g., #/$defs/key/definitions/Foo)
-func (b *bundleContext) rewriteInternalRefs(node any, defsKey string) any {
-	switch v := node.(type) {
-	case map[string]any:
-		result := make(map[string]any, len(v))
-		for k, val := range v {
-			if k == "$ref" {
-				if ref, ok := val.(string); ok {
-					if ref == "#" {
-						// Bare root ref: # → #/$defs/key
-						result[k] = "#/$defs/" + defsKey
-						continue
-					}
-					if strings.HasPrefix(ref, "#/") {
-						// Path ref: #/foo/bar → #/$defs/key/foo/bar
-						result[k] = "#/$defs/" + defsKey + ref[1:]
-						continue
-					}
-				}
-			}
-			result[k] = b.rewriteInternalRefs(val, defsKey)
-		}
-		return result
-	case []any:
-		result := make([]any, len(v))
-		for i, val := range v {
-			result[i] = b.rewriteInternalRefs(val, defsKey)
-		}
-		return result
-	default:
-		return node
 	}
 }
 
@@ -835,41 +871,6 @@ func splitFragment(uri string) (base, fragment string) {
 		return uri[:idx], uri[idx+1:]
 	}
 	return uri, ""
-}
-
-// resolveURI resolves a potentially relative URI against a base URI
-func resolveURI(ref, base string) (string, error) {
-	if base == "" {
-		// No base, ref must be absolute or we treat it as-is
-		return ref, nil
-	}
-
-	// Parse base
-	baseURL, err := url.Parse(base)
-	if err != nil {
-		// Base might be a file path
-		if filepath.IsAbs(ref) {
-			return ref, nil
-		}
-		// Resolve as file path
-		baseDir := filepath.Dir(base)
-		return filepath.Join(baseDir, ref), nil
-	}
-
-	// Parse ref
-	refURL, err := url.Parse(ref)
-	if err != nil {
-		return "", err
-	}
-
-	// If ref is absolute, use it directly
-	if refURL.IsAbs() {
-		return ref, nil
-	}
-
-	// Resolve relative URL
-	resolved := baseURL.ResolveReference(refURL)
-	return resolved.String(), nil
 }
 
 // copyObject creates a shallow copy of a map

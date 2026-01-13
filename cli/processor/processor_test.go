@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -11,12 +13,13 @@ import (
 	"github.com/xschemadev/xschema/retriever"
 )
 
-// mockFetcher tracks fetch calls and returns predefined responses
+// mockFetcher tracks fetch calls and returns predefined responses (thread-safe)
 type mockFetcher struct {
 	responses  map[string]json.RawMessage
 	errors     map[string]error
 	fetchCalls []string
 	callCount  int32
+	mu         sync.Mutex
 }
 
 func newMockFetcher() *mockFetcher {
@@ -28,7 +31,9 @@ func newMockFetcher() *mockFetcher {
 
 func (m *mockFetcher) Fetch(ctx context.Context, uri string) (json.RawMessage, error) {
 	atomic.AddInt32(&m.callCount, 1)
+	m.mu.Lock()
 	m.fetchCalls = append(m.fetchCalls, uri)
+	m.mu.Unlock()
 
 	if err, ok := m.errors[uri]; ok {
 		return nil, err
@@ -45,6 +50,14 @@ func (m *mockFetcher) addResponse(uri string, schema string) {
 
 func (m *mockFetcher) addError(uri string, err error) {
 	m.errors[uri] = err
+}
+
+func (m *mockFetcher) getFetchCalls() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	result := make([]string, len(m.fetchCalls))
+	copy(result, m.fetchCalls)
+	return result
 }
 
 func TestCrawlAndFetch_NoExternalRefs(t *testing.T) {
@@ -1075,5 +1088,412 @@ func TestProcess_CustomMetaschema_FetchedViaDollarSchema(t *testing.T) {
 
 	if _, ok := outputSchema["minLength"]; ok {
 		t.Error("minLength should be stripped when validation vocab is disabled")
+	}
+}
+
+// TestSharedCache_DeclaredSchemaAlsoReferencedViaRef tests that when a declared schema
+// is also referenced via $ref from another schema, it's only fetched once
+// (from retriever via shared cache, not refetched by processor).
+func TestSharedCache_DeclaredSchemaAlsoReferencedViaRef(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// This is the address schema - it will be "declared" (pre-fetched by retriever)
+	// and also referenced via $ref in person schema
+	addressSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"street": { "type": "string" },
+			"city": { "type": "string" }
+		}
+	}`)
+
+	// Add to mock fetcher in case processor tries to fetch it (which it shouldn't)
+	mockFetch.addResponse("http://example.com/address.json", string(addressSchema))
+
+	// Person schema references address via $ref
+	personSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"name": { "type": "string" },
+			"address": { "$ref": "http://example.com/address.json" }
+		}
+	}`)
+
+	// Simulate retriever having already fetched both schemas
+	// and populated the shared cache
+	sharedCache := fetcher.NewSharedCache()
+	sharedCache.Set("http://example.com/address.json", addressSchema)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "address",
+			Schema:    addressSchema,
+			SourceURI: "http://example.com/address.json",
+		},
+		{
+			Namespace: "test",
+			ID:        "person",
+			Schema:    personSchema,
+			SourceURI: "http://example.com/person.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{
+		Fetcher: mockFetch,
+		Cache:   sharedCache,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// The address schema should NOT be fetched again via the Fetcher
+	// because it's already in the shared cache
+	if mockFetch.callCount != 0 {
+		t.Errorf("expected 0 fetches (address should come from shared cache), got %d: %v",
+			mockFetch.callCount, mockFetch.fetchCalls)
+	}
+}
+
+// TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch tests US-003:
+// Invalid declared schema should fail fast before any external refs are fetched.
+func TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Add external schema that should NOT be fetched (we expect early failure)
+	mockFetch.addResponse("http://example.com/external.json", `{"type": "string"}`)
+
+	// Invalid schema: type must be string or array of strings, not integer
+	invalidSchema := json.RawMessage(`{
+		"type": 12345,
+		"properties": {
+			"external": { "$ref": "http://example.com/external.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "invalid",
+			Schema:    invalidSchema,
+			SourceURI: "http://test.com/invalid.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{Fetcher: mockFetch})
+	if err == nil {
+		t.Fatal("expected validation error for invalid declared schema")
+	}
+
+	// Error should mention validation failed
+	if !contains(err.Error(), "validation") || !contains(err.Error(), "failed") {
+		t.Errorf("error should mention validation failed, got: %s", err.Error())
+	}
+
+	// CRITICAL: No external refs should have been fetched
+	if len(mockFetch.fetchCalls) != 0 {
+		t.Errorf("expected 0 fetches (validation should fail before crawl), got %d: %v",
+			len(mockFetch.fetchCalls), mockFetch.fetchCalls)
+	}
+}
+
+// TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl tests US-003:
+// Valid schema with external refs should pass early validation and proceed to crawl.
+func TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// External schema that should be fetched after early validation passes
+	mockFetch.addResponse("http://example.com/address.json", `{
+		"type": "object",
+		"properties": {
+			"street": { "type": "string" }
+		}
+	}`)
+
+	// Valid schema with external ref
+	validSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"address": { "$ref": "http://example.com/address.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "person",
+			Schema:    validSchema,
+			SourceURI: "http://test.com/person.json",
+		},
+	}
+
+	result, err := Process(ctx, schemas, Options{Fetcher: mockFetch})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should have produced result
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	// External ref should have been fetched (crawl phase executed)
+	if len(mockFetch.fetchCalls) != 1 {
+		t.Errorf("expected 1 fetch for external ref, got %d: %v",
+			len(mockFetch.fetchCalls), mockFetch.fetchCalls)
+	}
+	if len(mockFetch.fetchCalls) > 0 && mockFetch.fetchCalls[0] != "http://example.com/address.json" {
+		t.Errorf("expected fetch for address.json, got %s", mockFetch.fetchCalls[0])
+	}
+}
+
+// TestSharedCache_CustomMetaschemaFetchedOnce tests that when multiple schemas
+// use the same custom $schema URI, it's only fetched once via shared cache.
+func TestSharedCache_CustomMetaschemaFetchedOnce(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Custom metaschema
+	customMeta := `{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$vocabulary": {
+			"https://json-schema.org/draft/2020-12/vocab/core": true
+		}
+	}`
+	mockFetch.addResponse("http://example.com/custom-meta.json", customMeta)
+
+	// Two schemas using the same custom metaschema
+	schema1 := json.RawMessage(`{
+		"$schema": "http://example.com/custom-meta.json",
+		"type": "string"
+	}`)
+	schema2 := json.RawMessage(`{
+		"$schema": "http://example.com/custom-meta.json",
+		"type": "integer"
+	}`)
+
+	sharedCache := fetcher.NewSharedCache()
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "schema1",
+			Schema:    schema1,
+			SourceURI: "http://test.com/schema1.json",
+		},
+		{
+			Namespace: "test",
+			ID:        "schema2",
+			Schema:    schema2,
+			SourceURI: "http://test.com/schema2.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{
+		Fetcher: mockFetch,
+		Cache:   sharedCache,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Count how many times the custom metaschema was fetched
+	metaFetchCount := 0
+	for _, call := range mockFetch.fetchCalls {
+		if call == "http://example.com/custom-meta.json" {
+			metaFetchCount++
+		}
+	}
+
+	// Should be fetched exactly once (first schema triggers fetch, second uses cache)
+	if metaFetchCount != 1 {
+		t.Errorf("expected custom metaschema to be fetched exactly once, got %d times. All calls: %v",
+			metaFetchCount, mockFetch.fetchCalls)
+	}
+}
+
+// TestParallelCrawl_FiveExternalRefs tests US-004:
+// Schema with 5+ external refs should have all refs fetched (via parallel wave).
+func TestParallelCrawl_FiveExternalRefs(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Set up 6 external schemas (leaf nodes, no further refs)
+	for i := 1; i <= 6; i++ {
+		mockFetch.addResponse(
+			fmt.Sprintf("http://example.com/schema%d.json", i),
+			fmt.Sprintf(`{"type": "string", "title": "Schema %d"}`, i),
+		)
+	}
+
+	// Root schema references all 6 external schemas
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"prop1": { "$ref": "http://example.com/schema1.json" },
+			"prop2": { "$ref": "http://example.com/schema2.json" },
+			"prop3": { "$ref": "http://example.com/schema3.json" },
+			"prop4": { "$ref": "http://example.com/schema4.json" },
+			"prop5": { "$ref": "http://example.com/schema5.json" },
+			"prop6": { "$ref": "http://example.com/schema6.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	result, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 4, // parallel fetches
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	// All 6 external schemas should have been fetched
+	fetchCalls := mockFetch.getFetchCalls()
+	if len(fetchCalls) != 6 {
+		t.Errorf("expected 6 fetches, got %d: %v", len(fetchCalls), fetchCalls)
+	}
+
+	// Verify each external schema was fetched
+	fetched := make(map[string]bool)
+	for _, call := range fetchCalls {
+		fetched[call] = true
+	}
+	for i := 1; i <= 6; i++ {
+		uri := fmt.Sprintf("http://example.com/schema%d.json", i)
+		if !fetched[uri] {
+			t.Errorf("expected %s to be fetched", uri)
+		}
+	}
+}
+
+// TestParallelCrawl_ConcurrentSafe tests that parallel crawl is race-safe.
+func TestParallelCrawl_ConcurrentSafe(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Set up 10 external schemas
+	for i := 1; i <= 10; i++ {
+		mockFetch.addResponse(
+			fmt.Sprintf("http://example.com/s%d.json", i),
+			`{"type": "string"}`,
+		)
+	}
+
+	// Root schema references all 10
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/s1.json" },
+			"b": { "$ref": "http://example.com/s2.json" },
+			"c": { "$ref": "http://example.com/s3.json" },
+			"d": { "$ref": "http://example.com/s4.json" },
+			"e": { "$ref": "http://example.com/s5.json" },
+			"f": { "$ref": "http://example.com/s6.json" },
+			"g": { "$ref": "http://example.com/s7.json" },
+			"h": { "$ref": "http://example.com/s8.json" },
+			"i": { "$ref": "http://example.com/s9.json" },
+			"j": { "$ref": "http://example.com/s10.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	// Run with -race flag to detect data races
+	_, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 8, // high concurrency to stress test
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Verify all 10 were fetched
+	if int(mockFetch.callCount) != 10 {
+		t.Errorf("expected 10 fetches, got %d", mockFetch.callCount)
+	}
+}
+
+// TestParallelCrawl_WaveBasedFetch tests that chained refs work with wave-based parallel fetch.
+// Wave 1: fetch B, C (refs from root)
+// Wave 2: fetch D (ref from B)
+func TestParallelCrawl_WaveBasedFetch(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// B refs D
+	mockFetch.addResponse("http://example.com/b.json", `{
+		"type": "object",
+		"properties": {
+			"d": { "$ref": "http://example.com/d.json" }
+		}
+	}`)
+	// C is a leaf
+	mockFetch.addResponse("http://example.com/c.json", `{"type": "string"}`)
+	// D is a leaf
+	mockFetch.addResponse("http://example.com/d.json", `{"type": "integer"}`)
+
+	// Root refs B and C
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"b": { "$ref": "http://example.com/b.json" },
+			"c": { "$ref": "http://example.com/c.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	var iterations int
+	_, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 2,
+		OnVerbose: func(msg string) {
+			if len(msg) > 20 && msg[:20] == "processor: crawl ite" {
+				iterations++
+			}
+		},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should have 2 waves: first for B,C, second for D
+	if iterations != 2 {
+		t.Errorf("expected 2 crawl iterations (waves), got %d", iterations)
+	}
+
+	// All 3 should be fetched
+	if int(mockFetch.callCount) != 3 {
+		t.Errorf("expected 3 fetches (B, C, D), got %d", mockFetch.callCount)
 	}
 }

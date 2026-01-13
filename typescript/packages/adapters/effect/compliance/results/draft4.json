@@ -3,116 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 4,
-      "failed": 13,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "additionalItems are allowed by default",
-          "test": "only the first item is validated",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "additionalItems as schema",
-          "test": "additional items do not match schema",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_0: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "additionalItems as schema",
-          "test": "additional items match schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_0: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "additionalItems does not look in applicators, invalid case",
-          "test": "items defined in allOf are not examined",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '': validation failed\n    - at '/allOf/0': 'allOf' failed\n      - at '/allOf/0/items': got array, want boolean or object\n    - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "heterogeneous invalid instance",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_7: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "additionalItems with heterogeneous array",
-          "test": "valid instance",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_7: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "additional items are not permitted",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "equal number of items present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items validation adjusts the starting index for additionalItems",
-          "test": "valid items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_6: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items validation adjusts the starting index for additionalItems",
-          "test": "wrong type of second item",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/additionalItems/group_6: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "additionalProperties",
@@ -172,123 +66,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 2,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 2
+      "total": 0
     },
     {
       "keyword": "items",
-      "passed": 8,
-      "failed": 13,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "array with additional items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "correct types",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "empty array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "incomplete array of items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "wrong types",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "array-form items with null instance elements",
-          "test": "allows null elements",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "too many items",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "too many sub-items",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "valid items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "wrong item",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "items and subitems",
-          "test": "wrong sub-item",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/items/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '/definitions/item': 'allOf' failed\n  - at '/definitions/item/items': got array, want boolean or object\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "maxItems",
@@ -313,60 +101,10 @@
     },
     {
       "keyword": "maximum",
-      "passed": 8,
-      "failed": 6,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "below the maximum is still valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_3: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        },
-        {
-          "group": "exclusiveMaximum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_3: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "above the maximum is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "below the maximum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/maximum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMaximum': got boolean, want number"
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
@@ -391,60 +129,10 @@
     },
     {
       "keyword": "minimum",
-      "passed": 11,
-      "failed": 6,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "above the minimum is still valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        },
-        {
-          "group": "exclusiveMinimum validation",
-          "test": "boundary point is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "above the minimum is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "below the minimum is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "boundary point is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/minimum/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/exclusiveMinimum': got boolean, want number"
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "multipleOf",
@@ -491,50 +179,16 @@
     {
       "keyword": "ref",
       "passed": 0,
-      "failed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "Location-independent identifier",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/ref/group_12: invalid JSON Schema: anchor in \"file:///home/trapani/dev/xschema/cli/schema.json#foo\" not found in schema \"file:///home/trapani/dev/xschema/cli/schema.json\""
-        },
-        {
-          "group": "Location-independent identifier",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/ref/group_12: invalid JSON Schema: anchor in \"file:///home/trapani/dev/xschema/cli/schema.json#foo\" not found in schema \"file:///home/trapani/dev/xschema/cli/schema.json\""
-        },
-        {
-          "group": "relative pointer ref to array",
-          "test": "match array",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/ref/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "relative pointer ref to array",
-          "test": "mismatch array",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/ref/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
@@ -552,228 +206,18 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 43,
-      "failed": 26,
+      "passed": 69,
+      "failed": 0,
       "skipped": 0,
-      "total": 69,
-      "failures": [
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [false, true] is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "non-unique array extended from [true, false] is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_1: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, false] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "[true, true] from items array is not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_2: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[false, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "[true, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_4: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[false, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[false, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[true, false] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "[true, true] from items array is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        },
-        {
-          "group": "uniqueItems=false with an array of items and additionalItems=false",
-          "test": "extra items are invalid even if unique",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: validation failed for compliance://draft4/uniqueItems/group_5: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '/items': got array, want boolean or object"
-        }
-      ]
+      "total": 69
     }
   ],
   "summary": {
-    "passed": 502,
-    "failed": 68,
+    "passed": 526,
+    "failed": 0,
     "skipped": 0,
-    "total": 570,
-    "percentage": 88.0701754385965,
+    "total": 526,
+    "percentage": 100,
     "unsupportedFeatures": {
       "count": 0,
       "items": null
