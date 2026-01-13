@@ -50,8 +50,8 @@
         "Existing processor tests pass",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Early validation phase added before crawlAndFetch. Schemas with custom metaschemas are skipped in early validation (validated after crawl when metaschema is available). Two new tests: TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch and TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl."
     },
     {
       "id": "US-004",

@@ -42,9 +42,10 @@ type Options struct {
 }
 
 // Process runs the full processing pipeline on retrieved schemas:
-// 1. crawlAndFetch - iteratively discover and fetch external refs
-// 2. validateAll - validate all schemas (declared + external) [future US-011]
-// 3. bundleAll - bundle each declared schema using cache [future US-012]
+// 1. validateDeclared - validate declared schemas before any fetching (fail fast)
+// 2. crawlAndFetch - iteratively discover and fetch external refs
+// 3. validateExternal - validate external schemas after crawl
+// 4. bundleAll - bundle each declared schema using cache
 func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Options) ([]ProcessedSchema, error) {
 	if opts.Fetcher == nil {
 		return nil, fmt.Errorf("processor: Fetcher is required")
@@ -64,21 +65,28 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose(fmt.Sprintf("processor: starting with %d schemas", len(schemas)))
 
-	// Phase 1: Crawl and fetch all external refs
+	// Phase 1: Validate declared schemas early (fail fast before fetching)
+	if err := validateDeclared(schemas, verbose); err != nil {
+		return nil, err
+	}
+
+	verbose(fmt.Sprintf("processor: declared schemas validated (%d schemas)", len(schemas)))
+
+	// Phase 2: Crawl and fetch all external refs
 	if err := crawlAndFetch(ctx, schemas, opts.Fetcher, cache, verbose); err != nil {
 		return nil, err
 	}
 
 	verbose(fmt.Sprintf("processor: crawl complete, cache has %d external schemas", cache.Len()))
 
-	// Phase 2: Validate all schemas (declared + external)
-	if err := validateAll(schemas, cache, verbose); err != nil {
+	// Phase 3: Validate external schemas
+	if err := validateExternal(schemas, cache, verbose); err != nil {
 		return nil, err
 	}
 
 	verbose("processor: validation complete")
 
-	// Phase 3: Bundle all schemas using the cache
+	// Phase 4: Bundle all schemas using the cache
 	result, err := bundleAll(ctx, schemas, cache, verbose)
 	if err != nil {
 		return nil, err
@@ -89,11 +97,43 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 	return result, nil
 }
 
-// validateAll validates all declared schemas and external schemas from cache.
-// Runs after crawlAndFetch to ensure all schemas are valid before bundling.
+// validateDeclared validates declared schemas early, before any external fetching.
+// This enables fail-fast behavior: invalid schemas are caught before wasting time
+// fetching external refs. Schemas with custom metaschemas ($schema pointing to
+// non-standard URI) are skipped here - they'll be validated after crawl when the
+// custom metaschema is available.
+func validateDeclared(schemas []retriever.RetrievedSchema, verbose func(string)) error {
+	for _, s := range schemas {
+		// Skip schemas with custom metaschemas (they need the metaschema fetched first)
+		if hasCustomMetaschema(s.Schema) {
+			continue
+		}
+		if err := validator.ValidateSchema(s.Schema); err != nil {
+			return fmt.Errorf("validation failed for %s: %w", s.SourceURI, err)
+		}
+	}
+	return nil
+}
+
+// hasCustomMetaschema returns true if the schema uses a custom (non-standard) $schema URI.
+func hasCustomMetaschema(data json.RawMessage) bool {
+	var parsed struct {
+		Schema string `json:"$schema"`
+	}
+	if err := json.Unmarshal(data, &parsed); err != nil {
+		return false
+	}
+	if parsed.Schema == "" {
+		return false
+	}
+	return !metaschema.IsStandardDraft(parsed.Schema)
+}
+
+// validateExternal validates external schemas and declared schemas with custom metaschemas.
+// Runs after crawlAndFetch when custom metaschemas are available in the cache.
 // Custom metaschemas from cache are passed to the validator so schemas using
 // custom $schema URIs can be validated.
-func validateAll(schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string)) error {
+func validateExternal(schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string)) error {
 	// Get snapshot of cache for iteration
 	cacheSnapshot := cache.ToCache()
 
@@ -104,14 +144,14 @@ func validateAll(schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache
 		Metaschemas: metaschemas,
 	}
 
-	// Validate declared schemas
+	// Validate declared schemas with custom metaschemas (skipped in early validation)
 	for _, s := range schemas {
-		if err := validator.ValidateSchemaWithOptions(s.Schema, opts); err != nil {
-			return fmt.Errorf("validation failed for %s: %w", s.SourceURI, err)
+		if hasCustomMetaschema(s.Schema) {
+			if err := validator.ValidateSchemaWithOptions(s.Schema, opts); err != nil {
+				return fmt.Errorf("validation failed for %s: %w", s.SourceURI, err)
+			}
 		}
 	}
-
-	verbose(fmt.Sprintf("processor: validated %d declared schemas", len(schemas)))
 
 	// Validate external schemas from cache
 	for uri, data := range cacheSnapshot {

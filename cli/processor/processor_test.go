@@ -1143,6 +1143,100 @@ func TestSharedCache_DeclaredSchemaAlsoReferencedViaRef(t *testing.T) {
 	}
 }
 
+// TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch tests US-003:
+// Invalid declared schema should fail fast before any external refs are fetched.
+func TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Add external schema that should NOT be fetched (we expect early failure)
+	mockFetch.addResponse("http://example.com/external.json", `{"type": "string"}`)
+
+	// Invalid schema: type must be string or array of strings, not integer
+	invalidSchema := json.RawMessage(`{
+		"type": 12345,
+		"properties": {
+			"external": { "$ref": "http://example.com/external.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "invalid",
+			Schema:    invalidSchema,
+			SourceURI: "http://test.com/invalid.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{Fetcher: mockFetch})
+	if err == nil {
+		t.Fatal("expected validation error for invalid declared schema")
+	}
+
+	// Error should mention validation failed
+	if !contains(err.Error(), "validation") || !contains(err.Error(), "failed") {
+		t.Errorf("error should mention validation failed, got: %s", err.Error())
+	}
+
+	// CRITICAL: No external refs should have been fetched
+	if len(mockFetch.fetchCalls) != 0 {
+		t.Errorf("expected 0 fetches (validation should fail before crawl), got %d: %v",
+			len(mockFetch.fetchCalls), mockFetch.fetchCalls)
+	}
+}
+
+// TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl tests US-003:
+// Valid schema with external refs should pass early validation and proceed to crawl.
+func TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// External schema that should be fetched after early validation passes
+	mockFetch.addResponse("http://example.com/address.json", `{
+		"type": "object",
+		"properties": {
+			"street": { "type": "string" }
+		}
+	}`)
+
+	// Valid schema with external ref
+	validSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"address": { "$ref": "http://example.com/address.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "person",
+			Schema:    validSchema,
+			SourceURI: "http://test.com/person.json",
+		},
+	}
+
+	result, err := Process(ctx, schemas, Options{Fetcher: mockFetch})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should have produced result
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	// External ref should have been fetched (crawl phase executed)
+	if len(mockFetch.fetchCalls) != 1 {
+		t.Errorf("expected 1 fetch for external ref, got %d: %v",
+			len(mockFetch.fetchCalls), mockFetch.fetchCalls)
+	}
+	if len(mockFetch.fetchCalls) > 0 && mockFetch.fetchCalls[0] != "http://example.com/address.json" {
+		t.Errorf("expected fetch for address.json, got %s", mockFetch.fetchCalls[0])
+	}
+}
+
 // TestSharedCache_CustomMetaschemaFetchedOnce tests that when multiple schemas
 // use the same custom $schema URI, it's only fetched once via shared cache.
 func TestSharedCache_CustomMetaschemaFetchedOnce(t *testing.T) {

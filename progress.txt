@@ -92,3 +92,19 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Stats tracking (hits/misses/compiles) essential for testing cache behavior
   - sort.Strings would require import; simple O(n²) sort sufficient for small metaschema lists
 ---
+
+## 2026-01-13 - US-003
+- Implemented early validation of declared schemas before crawlAndFetch
+- New processing flow:
+  1. validateDeclared - validates schemas with standard metaschemas early (fail fast)
+  2. crawlAndFetch - fetches external refs
+  3. validateExternal - validates external schemas + declared schemas with custom metaschemas
+  4. bundleAll - bundles schemas
+- Files changed:
+  - cli/processor/processor.go - added validateDeclared(), hasCustomMetaschema(), renamed validateAll→validateExternal
+  - cli/processor/processor_test.go - added TestEarlyValidation_InvalidDeclaredSchemaFailsBeforeFetch, TestEarlyValidation_ValidSchemaWithExternalRefsProceedsToCrawl
+- **Learnings for future iterations:**
+  - Schemas with custom metaschemas must be skipped in early validation (metaschema not fetched yet)
+  - hasCustomMetaschema() checks if $schema is non-standard using metaschema.IsStandardDraft()
+  - validateExternal now validates both external schemas and declared schemas with custom metaschemas
+---
