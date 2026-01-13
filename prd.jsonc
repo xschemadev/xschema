@@ -1,0 +1,179 @@
+{
+  "project": "xschema",
+  "description": "Centralized Unsupported Keyword Detection - Move keyword detection from TS to Go CLI with context-aware unevaluated support",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Establish compliance baseline",
+      "description": "As a maintainer, I need to capture current compliance state before changes to detect regressions.",
+      "acceptanceCriteria": [
+        "Run `bun run compliance` on zod adapter, note passed/failed/unsupported counts",
+        "Run `bun run compliance` on arktype adapter, note passed/failed/unsupported counts",
+        "Run `bun run compliance` on valibot adapter, note passed/failed/unsupported counts",
+        "Run `bun run compliance` on effect adapter, note passed/failed/unsupported counts",
+        "Record baseline in notes field for regression comparison"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Define UnsupportedKeywordError type",
+      "description": "As a developer, I need a typed error for unsupported keywords so callers can distinguish it from other errors.",
+      "acceptanceCriteria": [
+        "Add `UnsupportedKeywordError` struct in `cli/unsupported/unsupported.go` after line 22",
+        "Struct has fields: Keyword string, Reason string, Path string",
+        "Implements `error` interface with Error() method returning descriptive message",
+        "Update `ValidateKeywords()` return type to `*UnsupportedKeywordError` (not generic error)",
+        "`go vet ./unsupported/` passes",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add context-aware unevaluated detection",
+      "description": "As a user, I want unevaluatedProperties to work standalone but error when combined with applicators.",
+      "acceptanceCriteria": [
+        "Replace `validateNode()` and `validateObject()` in unsupported.go (lines 101-132) with context-aware implementation",
+        "Add `hasPropertyApplicators()` helper checking: allOf, anyOf, oneOf, if, $ref, dependentSchemas, not",
+        "Add `hasItemApplicators()` helper checking: prefixItems, contains, allOf, anyOf, oneOf, if",
+        "`unevaluatedProperties` standalone returns nil (allowed)",
+        "`unevaluatedProperties` with any property applicator returns UnsupportedKeywordError",
+        "`unevaluatedItems` standalone returns nil (allowed)",
+        "`unevaluatedItems` with any item applicator returns UnsupportedKeywordError",
+        "Detection recurses into nested schemas",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Unit tests for keyword detection",
+      "description": "As a developer, I need comprehensive tests for the keyword detection logic.",
+      "acceptanceCriteria": [
+        "Test: $dynamicRef detected at root returns error",
+        "Test: $dynamicRef nested in properties returns error",
+        "Test: unevaluatedProperties standalone returns nil",
+        "Test: unevaluatedProperties + allOf returns error",
+        "Test: unevaluatedProperties + $ref returns error",
+        "Test: unevaluatedItems standalone returns nil",
+        "Test: unevaluatedItems + prefixItems returns error",
+        "Test: fully supported schema returns nil",
+        "`go test ./unsupported/ -v` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Integrate validation into processor",
+      "description": "As a user running xschema generate, I want early errors when my schema contains unsupported keywords.",
+      "acceptanceCriteria": [
+        "Add import `github.com/xschemadev/xschema/unsupported` to cli/processor/processor.go",
+        "In bundleAll() after vocabulary filtering (~line 263), call unsupported.ValidateKeywords()",
+        "Unmarshal bundled schema to map[string]any before calling ValidateKeywords",
+        "If ValidateKeywords returns error, wrap with source URI and return",
+        "Existing processor tests still pass",
+        "`go test ./processor/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Compliance catches UnsupportedKeywordError and skips",
+      "description": "As a compliance runner, I want tests with unsupported keywords automatically skipped not failed.",
+      "acceptanceCriteria": [
+        "Add `unsupportedErr *unsupported.UnsupportedKeywordError` field to bundledGroup struct (line ~363)",
+        "In bundleSchemas() error handling, use errors.As to check for UnsupportedKeywordError",
+        "When UnsupportedKeywordError caught, set bundledGroup.unsupportedErr instead of bundleErr",
+        "Update markBundleErrors() to handle unsupportedErr separately from bundleErr",
+        "For unsupportedErr: add all tests in group to summary.UnsupportedFeatures",
+        "For bundleErr: call markAllFailed as before",
+        "`go test ./compliance/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Empty test paths in unsupported-features.json",
+      "description": "As a maintainer, I want test paths removed since keyword detection now handles everything.",
+      "acceptanceCriteria": [
+        "Remove all entries from `tests` arrays in `cli/unsupported/unsupported-features.json` (make them empty [])",
+        "Keep the `tests` field itself (don't delete the key yet)",
+        "Add `unevaluated-with-applicators` group with empty keywords array and reason about annotation tracking",
+        "DO NOT remove ContainsTest/TestPaths/TestCount methods yet - cleanup in US-011",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Opposite compliance test",
+      "description": "As a maintainer, I want a test that verifies unsupported schemas actually produce errors.",
+      "acceptanceCriteria": [
+        "Add test in cli/unsupported/ that loads actual schemas from JSON Schema Test Suite",
+        "Test loads dynamicRef test schemas from ~/.cache/xschema/json-schema-test-suite/",
+        "Test loads recursiveRef test schemas",
+        "Test loads unevaluatedProperties+applicators schemas",
+        "Each schema validated with unsupported.ValidateKeywords()",
+        "Assert all return non-nil UnsupportedKeywordError",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Remove TypeScript parser checks",
+      "description": "As a maintainer, I want the TS parser to not check for unsupported keywords since Go handles it.",
+      "acceptanceCriteria": [
+        "Delete lines 51-68 from typescript/packages/core/src/parser/index.ts",
+        "This removes the unevaluatedItems check (lines 51-54)",
+        "This removes the unevaluatedProperties with applicators check (lines 55-68)",
+        "`bun run build` passes from typescript/ directory",
+        "`bun run typecheck` passes from typescript/ directory"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Verify compliance exhaustiveness",
+      "description": "As a maintainer, I want compliance to pass with 0 unexpected failures after all changes.",
+      "acceptanceCriteria": [
+        "Run `bun run compliance` in typescript/packages/adapters/zod/ - failed=0",
+        "Run `bun run compliance` in typescript/packages/adapters/arktype/ - failed=0",
+        "Run `bun run compliance` in typescript/packages/adapters/valibot/ - failed=0",
+        "Run `bun run compliance` in typescript/packages/adapters/effect/ - failed=0",
+        "Unsupported count includes dynamic refs, recursive refs, and unevaluated-with-applicators",
+        "No regressions from US-001 baseline: passed >= baseline, failed <= baseline"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Remove deprecated test path methods",
+      "description": "As a maintainer, I want to clean up unused methods now that keyword detection handles everything.",
+      "acceptanceCriteria": [
+        "Remove `ContainsTest()` method from cli/unsupported/unsupported.go (lines 64-74)",
+        "Remove `TestPaths()` method from cli/unsupported/unsupported.go (lines 76-83)",
+        "Remove `TestCount()` method from cli/unsupported/unsupported.go (lines 85-92)",
+        "Remove `tests` field from FeatureGroup struct",
+        "Remove `tests` key from all entries in unsupported-features.json",
+        "Update cli/unsupported/unsupported_test.go to remove tests for deleted methods",
+        "Remove filterKnownIssues test path checking from cli/compliance/runner.go",
+        "`go test ./...` passes",
+        "`go vet ./...` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
