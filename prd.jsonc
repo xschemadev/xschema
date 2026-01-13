@@ -340,8 +340,8 @@
         "Update progress.txt with final compliance numbers",
         "All adapters at 100% pass rate (excluding unsupported)"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "All 4 adapters at 100% pass rate. zod/arktype/effect: 4455 passed, 379 unsupported. valibot: 4385 passed, 449 unsupported."
     }
   ]
 }

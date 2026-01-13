@@ -619,3 +619,34 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - PRD said "10 tests per draft" but actual count is 14 (7 from properties.json + 7 from required.json)
 ---
 
+## 2026-01-13 - US-022
+- Final compliance verification - ALL adapters at 100% pass rate
+- Final compliance results:
+  | Adapter  | Passed | Failed | Unsupported | Rate   |
+  |----------|--------|--------|-------------|--------|
+  | zod      | 4455   | 0      | 379         | 100.0% |
+  | arktype  | 4455   | 0      | 379         | 100.0% |
+  | valibot  | 4385   | 0      | 449         | 100.0% |
+  | effect   | 4455   | 0      | 379         | 100.0% |
+- Unsupported breakdown (379 for zod/arktype/effect):
+  - dynamicRef: 33 tests
+  - recursiveRef: 40 tests  
+  - unevaluated-with-applicators: 201 tests
+  - cyclic ref with unevaluated: 14 tests
+  - unevaluated inside applicator subschema: 91 tests
+- Valibot has +70 more unsupported (449 total) due to adapter-specific limitation:
+  - "Javascript object property names" tests (14 per draft x 5 drafts = 70)
+- All acceptance criteria met:
+  - zod: 0 failed ✓
+  - arktype: 0 failed ✓
+  - effect: 0 failed ✓
+  - valibot: 0 failed ✓
+- No regressions from baseline (baseline was 73 unsupported, all adapters at 100% except valibot at 98.8%)
+- Files changed: none (verification only)
+- **Learnings for future iterations:**
+  - Centralized keyword detection in Go CLI eliminates need for adapter-specific checks
+  - Keyword-based unsupported detection is more maintainable than test path matching
+  - Adapter limitations config allows marking library bugs as unsupported without code changes
+  - The entire Centralized Unsupported Keyword Detection PRD is now complete
+---
+
