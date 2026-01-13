@@ -208,7 +208,7 @@
         "Test TypeAdapter generation for non-objects",
         "Run 'uv run pytest tests/' and verify all pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "integration-test",
