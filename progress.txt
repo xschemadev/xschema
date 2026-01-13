@@ -469,3 +469,14 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Effect's S.decodeUnknownEither returns Either type (check _tag for "Right"/"Left")
   - 4 failures per draft are $recursiveRef edge cases - same limitation across all adapters
 ---
+
+## 2026-01-13 - US-017
+- Made unsupported features detailed breakdown verbose-only
+- Summary line (e.g., "44 unsupported") still shows without --verbose
+- Detailed "Unsupported Features:" section with breakdown by reason only shown with --verbose flag
+- Files changed:
+  - cli/cmd/compliance.go - added verbose param to printUnsupportedFeaturesSummary(), early return if !verbose
+- **Learnings for future iterations:**
+  - Simple UX changes like this are low risk and quick wins
+  - Function signature change approach (adding param) is cleaner than checking global var inside function
+---

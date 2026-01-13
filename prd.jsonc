@@ -263,8 +263,8 @@
         "Test: run compliance without --verbose, confirm no 'Unsupported Features:' section",
         "Test: run compliance with --verbose, confirm 'Unsupported Features:' section appears"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added verbose bool param to printUnsupportedFeaturesSummary(), returns early if not verbose. Summary line still shows count (e.g., '44 unsupported'). Detailed breakdown by reason only with --verbose flag."
     }
   ]
 }
