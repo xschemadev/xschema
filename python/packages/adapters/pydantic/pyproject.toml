@@ -27,4 +27,7 @@ xschema-core = { path = "../../core", editable = true }
 testpaths = ["tests"]
 
 [dependency-groups]
-dev = ["pytest>=8.0"]
+dev = [
+    "mypy>=1.19.1",
+    "pytest>=8.0",
+]

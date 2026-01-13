@@ -146,7 +146,7 @@ def render_string(node: StringNode) -> RenderResult:
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
 
-def _render_format(fmt: str, constraints) -> RenderResult | None:
+def _render_format(fmt: str, constraints: Any) -> RenderResult | None:
     """Render format string types to Pydantic types.
 
     Returns None for unknown formats (caller should use str).
@@ -705,9 +705,8 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         config_line = "    model_config = ConfigDict(extra='allow')"
     # If additional_properties is a schema, we allow extra but don't constrain type
     # (Pydantic doesn't support typed extra fields directly in model_config)
-    elif (
-        node.additional_properties is not None
-        and node.additional_properties is not False
+    elif node.additional_properties is not None and not isinstance(
+        node.additional_properties, bool
     ):
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
@@ -1006,7 +1005,7 @@ def _detect_discriminator(variants: tuple[SchemaNode, ...]) -> str | None:
         return None
 
     # Cast to ObjectNode for type checker
-    object_variants: list[ObjectNode] = [v for v in variants if v.kind == "object"]  # type: ignore
+    object_variants: list[ObjectNode] = [v for v in variants if v.kind == "object"]
 
     # Find common properties across all variants
     first_obj = object_variants[0]
@@ -1039,7 +1038,7 @@ def _detect_discriminator(variants: tuple[SchemaNode, ...]) -> str | None:
         # Check all values are different
         literal_schemas: list[LiteralNode] = [
             s for s in prop_schemas if s.kind == "literal"
-        ]  # type: ignore
+        ]
         values = [s.value for s in literal_schemas]
         if len(set(map(str, values))) == len(values):  # Use str() for hashability
             # Found discriminator!
@@ -1062,7 +1061,7 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
         return RenderResult(code="", type_expr="Any", imports=imports)
 
     # Separate objects from non-objects
-    object_schemas: list[ObjectNode] = [s for s in node.schemas if s.kind == "object"]  # type: ignore
+    object_schemas: list[ObjectNode] = [s for s in node.schemas if s.kind == "object"]
     non_object_schemas = [s for s in node.schemas if s.kind != "object"]
 
     # If all are objects, merge them

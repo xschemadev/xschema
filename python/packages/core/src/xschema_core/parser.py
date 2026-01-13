@@ -1,6 +1,6 @@
 """JSON Schema to IR parser."""
 
-from typing import Any
+from typing import Any, Literal
 
 from xschema_core.ir import (
     AnyNode,
@@ -35,7 +35,7 @@ from xschema_core.ir import (
 )
 
 
-def parse(schema: dict | bool) -> SchemaNode:
+def parse(schema: dict[str, Any] | bool) -> SchemaNode:
     """Parse a JSON Schema dict into an IR SchemaNode."""
     # Handle boolean schemas
     if schema is True:
@@ -100,11 +100,11 @@ def parse(schema: dict | bool) -> SchemaNode:
 
     # Handle array of types (union)
     if isinstance(schema_type, list):
-        variants = []
+        variant_list: list[SchemaNode] = []
         for t in schema_type:
             variant_schema = {**schema, "type": t}
-            variants.append(parse(variant_schema))
-        return UnionNode(variants=tuple(variants))
+            variant_list.append(parse(variant_schema))
+        return UnionNode(variants=tuple(variant_list))
 
     # Handle prefixItems (tuple)
     if "prefixItems" in schema:
@@ -145,7 +145,7 @@ def parse(schema: dict | bool) -> SchemaNode:
     return AnyNode()
 
 
-def _parse_string(schema: dict) -> StringNode:
+def _parse_string(schema: dict[str, Any]) -> StringNode:
     """Parse a string schema."""
     constraints = StringConstraints(
         min_length=schema.get("minLength"),
@@ -158,7 +158,7 @@ def _parse_string(schema: dict) -> StringNode:
     )
 
 
-def _parse_number(schema: dict, integer: bool) -> NumberNode:
+def _parse_number(schema: dict[str, Any], integer: bool) -> NumberNode:
     """Parse a number/integer schema."""
     # Handle exclusiveMinimum/exclusiveMaximum which can be boolean (draft-4) or number (draft-6+)
     exclusive_min = schema.get("exclusiveMinimum")
@@ -199,7 +199,7 @@ def _parse_number(schema: dict, integer: bool) -> NumberNode:
     )
 
 
-def _parse_object(schema: dict) -> ObjectNode:
+def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     """Parse an object schema."""
     properties: list[tuple[str, PropertyDef]] = []
     required_set = frozenset(schema.get("required", []))
@@ -258,8 +258,9 @@ def _parse_object(schema: dict) -> ObjectNode:
 
     # Handle unevaluatedProperties
     unevaluated = schema.get("unevaluatedProperties")
+    unevaluated_node: SchemaNode | Literal[False] | None
     if unevaluated is None:
-        unevaluated_node: SchemaNode | bool | None = None
+        unevaluated_node = None
     elif unevaluated is False:
         unevaluated_node = False
     elif isinstance(unevaluated, bool):
@@ -279,10 +280,11 @@ def _parse_object(schema: dict) -> ObjectNode:
     )
 
 
-def _parse_array(schema: dict) -> ArrayNode | TupleNode:
+def _parse_array(schema: dict[str, Any]) -> ArrayNode | TupleNode:
     """Parse an array schema."""
     items = schema.get("items")
 
+    items_node: SchemaNode
     if items is None:
         items_node = AnyNode()
     elif isinstance(items, bool):
@@ -314,8 +316,9 @@ def _parse_array(schema: dict) -> ArrayNode | TupleNode:
 
     # Handle unevaluatedItems
     unevaluated = schema.get("unevaluatedItems")
+    unevaluated_node: SchemaNode | Literal[False] | None
     if unevaluated is None:
-        unevaluated_node: SchemaNode | bool | None = None
+        unevaluated_node = None
     elif unevaluated is False:
         unevaluated_node = False
     elif isinstance(unevaluated, bool):
@@ -330,12 +333,13 @@ def _parse_array(schema: dict) -> ArrayNode | TupleNode:
     )
 
 
-def _parse_tuple(schema: dict) -> TupleNode:
+def _parse_tuple(schema: dict[str, Any]) -> TupleNode:
     """Parse a tuple schema (using prefixItems)."""
     prefix_items = tuple(parse(item) for item in schema.get("prefixItems", []))
 
     # Rest items can be in 'items' when prefixItems is present
     rest = schema.get("items")
+    rest_node: SchemaNode | Literal[False] | None
     if rest is None:
         rest_node = None
     elif rest is False:
@@ -353,24 +357,25 @@ def _parse_tuple(schema: dict) -> TupleNode:
 
     # Handle unevaluatedItems
     unevaluated = schema.get("unevaluatedItems")
+    unevaluated_tuple_node: SchemaNode | Literal[False] | None
     if unevaluated is None:
-        unevaluated_node: SchemaNode | bool | None = None
+        unevaluated_tuple_node = None
     elif unevaluated is False:
-        unevaluated_node = False
+        unevaluated_tuple_node = False
     elif isinstance(unevaluated, bool):
-        unevaluated_node = AnyNode() if unevaluated else False
+        unevaluated_tuple_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_node = parse(unevaluated)
+        unevaluated_tuple_node = parse(unevaluated)
 
     return TupleNode(
         prefix_items=prefix_items,
         rest_items=rest_node,
         constraints=constraints,
-        unevaluated_items=unevaluated_node,
+        unevaluated_items=unevaluated_tuple_node,
     )
 
 
-def _parse_legacy_tuple(schema: dict) -> TupleNode:
+def _parse_legacy_tuple(schema: dict[str, Any]) -> TupleNode:
     """Parse legacy tuple syntax where items is an array."""
     items_list = schema.get("items", [])
     prefix_items = tuple(
@@ -380,14 +385,15 @@ def _parse_legacy_tuple(schema: dict) -> TupleNode:
 
     # additionalItems is the rest type for legacy tuples
     additional = schema.get("additionalItems")
+    rest_legacy_node: SchemaNode | Literal[False] | None
     if additional is None:
-        rest_node = None
+        rest_legacy_node = None
     elif additional is False:
-        rest_node = False
+        rest_legacy_node = False
     elif isinstance(additional, bool):
-        rest_node = AnyNode() if additional else False
+        rest_legacy_node = AnyNode() if additional else False
     else:
-        rest_node = parse(additional)
+        rest_legacy_node = parse(additional)
 
     constraints = ArrayConstraints(
         min_items=schema.get("minItems"),
@@ -397,24 +403,25 @@ def _parse_legacy_tuple(schema: dict) -> TupleNode:
 
     # Handle unevaluatedItems
     unevaluated = schema.get("unevaluatedItems")
+    unevaluated_legacy_node: SchemaNode | Literal[False] | None
     if unevaluated is None:
-        unevaluated_node: SchemaNode | bool | None = None
+        unevaluated_legacy_node = None
     elif unevaluated is False:
-        unevaluated_node = False
+        unevaluated_legacy_node = False
     elif isinstance(unevaluated, bool):
-        unevaluated_node = AnyNode() if unevaluated else False
+        unevaluated_legacy_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_node = parse(unevaluated)
+        unevaluated_legacy_node = parse(unevaluated)
 
     return TupleNode(
         prefix_items=prefix_items,
-        rest_items=rest_node,
+        rest_items=rest_legacy_node,
         constraints=constraints,
-        unevaluated_items=unevaluated_node,
+        unevaluated_items=unevaluated_legacy_node,
     )
 
 
-def _infer_type(schema: dict) -> str | None:
+def _infer_type(schema: dict[str, Any]) -> str | None:
     """Infer the type from other keywords in the schema."""
     # String keywords
     if any(k in schema for k in ("minLength", "maxLength", "pattern", "format")):
@@ -488,7 +495,7 @@ def _detect_discriminator(variants: list[Any]) -> str | None:
     return None
 
 
-def _detect_type_guards(schema: dict) -> list[TypeGuard]:
+def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
     """Detect type-specific constraints and create type guards.
 
     For schemas without an explicit type that have type-specific keywords,

@@ -344,7 +344,7 @@
         "Review and clean up any TODO comments",
         "Verify 'uv run pytest' passes in both core and adapter packages"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
