@@ -106,7 +106,7 @@
         "Test discriminated union validates correctly",
         "Test oneOf rejects when multiple schemas match"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Discriminated unions in Pydantic require all variants to have Literal type for discriminator field."
     },
     {

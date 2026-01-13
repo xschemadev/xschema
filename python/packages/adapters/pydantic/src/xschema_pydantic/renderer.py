@@ -16,6 +16,7 @@ from xschema_core import (
     ArrayNode,
     TupleNode,
     ObjectNode,
+    PropertyDef,
     UnionNode,
     OneOfNode,
     IntersectionNode,
@@ -72,15 +73,11 @@ def render(node: SchemaNode, name: str) -> RenderResult:
         case "union":
             return render_union(node, name)
         case "oneOf":
-            # Placeholder: treat like union for now
-            return render_union(UnionNode(variants=node.schemas), name)
+            return render_oneof(node, name)
         case "intersection":
             return render_intersection(node, name)
         case "not":
-            # Placeholder: will implement in later task
-            return RenderResult(
-                code="", type_expr="Any", imports={"from typing import Any"}
-            )
+            return render_not(node, name)
         case "conditional":
             # Placeholder: will implement in later task
             return RenderResult(
@@ -761,28 +758,350 @@ def _is_nullable_type(node: SchemaNode) -> bool:
 
 
 def render_union(node: UnionNode, name: str) -> RenderResult:
-    """Render UnionNode to Pydantic type (placeholder)."""
-    # Will be fully implemented in adapter-renderer-unions task
+    """Render UnionNode (anyOf) to Pydantic union type.
+
+    Renders as A | B | C. Pydantic validates by attempting each variant
+    until one succeeds (anyOf semantics).
+
+    Note: Discriminated unions are detected by structure (all variants are objects
+    with a common property having different literal values). This is adapter-specific
+    optimization and not part of the IR.
+    """
     imports: set[str] = set()
+    code_parts: list[str] = []
     variant_types: list[str] = []
 
+    # Render all variants
     for i, variant in enumerate(node.variants):
         variant_result = render(variant, f"{name}Variant{i}")
         imports.update(variant_result.imports)
         variant_types.append(variant_result.type_expr)
+        if variant_result.code:
+            code_parts.append(variant_result.code)
 
-    type_expr = " | ".join(variant_types)
-    return RenderResult(code="", type_expr=type_expr, imports=imports)
+    # Detect if this is a discriminated union (all variants are objects with a common discriminator)
+    discriminator_field = _detect_discriminator(node.variants)
+
+    if discriminator_field is not None and len(variant_types) > 1:
+        # Discriminated union - use Annotated with Field(discriminator=...)
+        imports.add("from typing import Annotated, Union")
+        imports.add("from pydantic import Field")
+
+        # Build Union[variant1, variant2, ...]
+        union_type = f"Union[{', '.join(variant_types)}]"
+        type_expr = (
+            f"Annotated[{union_type}, Field(discriminator='{discriminator_field}')]"
+        )
+    else:
+        # Simple union using | syntax
+        type_expr = " | ".join(variant_types)
+
+    code = "\n\n\n".join(code_parts) if code_parts else ""
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+
+def _detect_discriminator(variants: tuple[SchemaNode, ...]) -> str | None:
+    """Detect if a union has a discriminator field.
+
+    Returns the discriminator field name if:
+    1. All variants are objects
+    2. All variants have the same property
+    3. That property has a literal type (different value in each variant)
+
+    This enables Pydantic's discriminated union optimization.
+    """
+    if len(variants) < 2:
+        return None
+
+    # Check all variants are objects
+    if not all(v.kind == "object" for v in variants):
+        return None
+
+    # Cast to ObjectNode for type checker
+    object_variants: list[ObjectNode] = [v for v in variants if v.kind == "object"]  # type: ignore
+
+    # Find common properties across all variants
+    first_obj = object_variants[0]
+    prop_names = {prop_name for prop_name, _ in first_obj.properties}
+
+    for variant in object_variants[1:]:
+        variant_props = {prop_name for prop_name, _ in variant.properties}
+        prop_names &= variant_props
+
+    if not prop_names:
+        return None
+
+    # Check each common property to see if it's a literal with different values
+    for prop_name in prop_names:
+        # Get the property schemas for this property in all variants
+        prop_schemas = []
+        for variant in object_variants:
+            for name, prop_def in variant.properties:
+                if name == prop_name:
+                    prop_schemas.append(prop_def.schema)
+                    break
+
+        # Check if all are literals with different values
+        if len(prop_schemas) != len(object_variants):
+            continue
+
+        if not all(s.kind == "literal" for s in prop_schemas):
+            continue
+
+        # Check all values are different
+        literal_schemas: list[LiteralNode] = [
+            s for s in prop_schemas if s.kind == "literal"
+        ]  # type: ignore
+        values = [s.value for s in literal_schemas]
+        if len(set(map(str, values))) == len(values):  # Use str() for hashability
+            # Found discriminator!
+            return prop_name
+
+    return None
 
 
 def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
-    """Render IntersectionNode to Pydantic type (placeholder)."""
-    # Will be fully implemented in adapter-renderer-unions task
-    # For now, just render the first schema
-    if node.schemas:
-        return render(node.schemas[0], name)
-    imports: set[str] = {"from typing import Any"}
-    return RenderResult(code="", type_expr="Any", imports=imports)
+    """Render IntersectionNode (allOf) to Pydantic type.
+
+    For object intersections, merge all properties into a single class.
+    For primitive intersections, use the most restrictive type (or Any if incompatible).
+    """
+    imports: set[str] = set()
+    code_parts: list[str] = []
+
+    if not node.schemas:
+        imports.add("from typing import Any")
+        return RenderResult(code="", type_expr="Any", imports=imports)
+
+    # Separate objects from non-objects
+    object_schemas: list[ObjectNode] = [s for s in node.schemas if s.kind == "object"]  # type: ignore
+    non_object_schemas = [s for s in node.schemas if s.kind != "object"]
+
+    # If all are objects, merge them
+    if len(object_schemas) == len(node.schemas):
+        return _merge_object_schemas(object_schemas, name)
+
+    # If mixed types, render each and combine
+    # For primitives, use custom validator checking all schemas
+    if non_object_schemas:
+        imports.add("from typing import Annotated, Any")
+        imports.add("from pydantic import BeforeValidator, TypeAdapter")
+
+        # Render each schema
+        for i, schema in enumerate(node.schemas):
+            schema_result = render(schema, f"{name}Part{i}")
+            imports.update(schema_result.imports)
+            if schema_result.code:
+                code_parts.append(schema_result.code)
+
+        # Create validator that checks all schemas
+        validator_name = f"_intersection_{name.lower()}"
+        validator_lines = [f"def {validator_name}(v) -> Any:"]
+        validator_lines.append(f"    # Validate against all schemas in intersection")
+
+        for i, schema in enumerate(node.schemas):
+            schema_result = render(schema, f"{name}Part{i}")
+            validator_lines.append(
+                f"    validator_{i} = TypeAdapter({schema_result.type_expr})"
+            )
+            validator_lines.append(f"    try:")
+            validator_lines.append(f"        v = validator_{i}.validate_python(v)")
+            validator_lines.append(f"    except Exception as e:")
+            validator_lines.append(
+                f"        raise ValueError(f'Failed intersection schema {i}: {{e}}')"
+            )
+
+        validator_lines.append("    return v")
+        code_parts.append("\n".join(validator_lines))
+
+        type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+        code = "\n\n\n".join(code_parts)
+        return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+    # Fallback: just use first schema
+    return render(node.schemas[0], name)
+
+
+def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
+    """Merge multiple object schemas into a single Pydantic model.
+
+    Combines all properties, using the most restrictive required setting.
+    """
+    imports: set[str] = {"from pydantic import BaseModel"}
+    nested_classes: list[str] = []
+    field_lines: list[str] = []
+
+    # Collect all properties from all schemas
+    all_properties: dict[str, list[tuple[PropertyDef, ObjectNode]]] = {}
+
+    for schema in schemas:
+        for prop_name, prop_def in schema.properties:
+            if prop_name not in all_properties:
+                all_properties[prop_name] = []
+            all_properties[prop_name].append((prop_def, schema))
+
+    # Render each unique property
+    for prop_name, prop_defs in all_properties.items():
+        # If property appears in multiple schemas, use intersection
+        if len(prop_defs) == 1:
+            prop_def, _ = prop_defs[0]
+            nested_name = f"{name}{_to_pascal_case(prop_name)}"
+            prop_result = render(prop_def.schema, nested_name)
+            imports.update(prop_result.imports)
+
+            if prop_result.code:
+                nested_classes.append(prop_result.code)
+
+            # Property is required if marked required in any schema
+            is_required = prop_def.required
+            is_nullable = _is_nullable_type(prop_def.schema)
+            type_expr = prop_result.type_expr
+
+            if is_required:
+                if is_nullable and not type_expr.endswith(" | None"):
+                    type_expr = f"{type_expr} | None"
+                field_lines.append(f"    {prop_name}: {type_expr}")
+            else:
+                if not type_expr.endswith(" | None") and type_expr != "None":
+                    type_expr = f"{type_expr} | None"
+                field_lines.append(f"    {prop_name}: {type_expr} = None")
+        else:
+            # Property in multiple schemas - intersect the schemas
+            prop_schemas = [pd.schema for pd, _ in prop_defs]
+            intersection = IntersectionNode(schemas=tuple(prop_schemas))
+            nested_name = f"{name}{_to_pascal_case(prop_name)}"
+            prop_result = render(intersection, nested_name)
+            imports.update(prop_result.imports)
+
+            if prop_result.code:
+                nested_classes.append(prop_result.code)
+
+            # Required if any schema marks it required
+            is_required = any(pd.required for pd, _ in prop_defs)
+            type_expr = prop_result.type_expr
+
+            if is_required:
+                field_lines.append(f"    {prop_name}: {type_expr}")
+            else:
+                if not type_expr.endswith(" | None") and type_expr != "None":
+                    type_expr = f"{type_expr} | None"
+                field_lines.append(f"    {prop_name}: {type_expr} = None")
+
+    # Check additionalProperties - use most restrictive
+    forbid_extra = any(s.additional_properties is False for s in schemas)
+
+    class_lines: list[str] = [f"class {name}(BaseModel):"]
+
+    if forbid_extra:
+        imports.add("from pydantic import ConfigDict")
+        class_lines.append("    model_config = ConfigDict(extra='forbid')")
+
+    if field_lines:
+        class_lines.extend(field_lines)
+    elif not forbid_extra:
+        class_lines.append("    pass")
+
+    class_code = "\n".join(class_lines)
+    if nested_classes:
+        code = "\n\n\n".join(nested_classes) + "\n\n\n" + class_code
+    else:
+        code = class_code
+
+    return RenderResult(code=code, type_expr=name, imports=imports)
+
+
+def render_oneof(node: OneOfNode, name: str) -> RenderResult:
+    """Render OneOfNode (oneOf) to Pydantic type with exactly-one validation.
+
+    JSON Schema oneOf requires exactly one schema to match.
+    Pydantic's union tries schemas in order and accepts the first match.
+    We need a custom validator to ensure only one schema matches.
+    """
+    imports: set[str] = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator, TypeAdapter",
+    }
+    code_parts: list[str] = []
+
+    # Render all schemas
+    for i, schema in enumerate(node.schemas):
+        schema_result = render(schema, f"{name}Option{i}")
+        imports.update(schema_result.imports)
+        if schema_result.code:
+            code_parts.append(schema_result.code)
+
+    # Create validator that checks exactly one schema matches
+    validator_name = f"_oneof_{name.lower()}"
+    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines.append("    matches = []")
+
+    for i, schema in enumerate(node.schemas):
+        schema_result = render(schema, f"{name}Option{i}")
+        validator_lines.append(
+            f"    validator_{i} = TypeAdapter({schema_result.type_expr})"
+        )
+        validator_lines.append("    try:")
+        validator_lines.append(f"        validator_{i}.validate_python(v)")
+        validator_lines.append(f"        matches.append({i})")
+        validator_lines.append("    except Exception:")
+        validator_lines.append("        pass")
+
+    validator_lines.append("    if len(matches) == 0:")
+    validator_lines.append(
+        "        raise ValueError('Value must match at least one schema')"
+    )
+    validator_lines.append("    if len(matches) > 1:")
+    validator_lines.append(
+        f"        raise ValueError(f'Value must match exactly one schema, but matched {{len(matches)}} schemas')"
+    )
+    validator_lines.append("    return v")
+
+    code_parts.append("\n".join(validator_lines))
+
+    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    code = "\n\n\n".join(code_parts)
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+
+def render_not(node: NotNode, name: str) -> RenderResult:
+    """Render NotNode (not) to Pydantic type with negation validation.
+
+    JSON Schema not requires the value to NOT match the schema.
+    We use a custom validator that rejects values matching the schema.
+    """
+    imports: set[str] = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator, TypeAdapter",
+    }
+    code_parts: list[str] = []
+
+    # Render the schema to negate
+    schema_result = render(node.schema, f"{name}Not")
+    imports.update(schema_result.imports)
+    if schema_result.code:
+        code_parts.append(schema_result.code)
+
+    # Create validator that rejects matching values
+    validator_name = f"_not_{name.lower()}"
+    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines.append(f"    validator = TypeAdapter({schema_result.type_expr})")
+    validator_lines.append("    try:")
+    validator_lines.append("        validator.validate_python(v)")
+    validator_lines.append("        # Value matched the schema - reject it")
+    validator_lines.append(
+        "        raise ValueError('Value must NOT match the schema')"
+    )
+    validator_lines.append("    except ValueError as e:")
+    validator_lines.append("        if 'must NOT match' in str(e):")
+    validator_lines.append("            raise")
+    validator_lines.append("        # Value didn't match - that's what we want")
+    validator_lines.append("        return v")
+
+    code_parts.append("\n".join(validator_lines))
+
+    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    code = "\n\n\n".join(code_parts)
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
 
 
 def render_ref(node: RefNode, name: str) -> RenderResult:
