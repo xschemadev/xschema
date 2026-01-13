@@ -391,7 +391,7 @@ func TestResolveURI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.ref+"_"+tt.base, func(t *testing.T) {
-			got, err := resolveURI(tt.ref, tt.base)
+			got, err := fetcher.ResolveURI(tt.ref, tt.base)
 			if tt.wantErr {
 				if err == nil {
 					t.Error("expected error")
@@ -641,14 +641,18 @@ func TestValidateJSONPointer(t *testing.T) {
 func TestBundleInjectsSchemaForDraft(t *testing.T) {
 	ctx := context.Background()
 
+	// Note: Legacy drafts (3, 4, 6, 7) are normalized to 2020-12 syntax,
+	// so they all get the 2020-12 $schema URI after bundling.
 	tests := []struct {
 		draft      string
 		wantSchema string
 	}{
-		{"draft3", "http://json-schema.org/draft-03/schema#"},
-		{"draft4", "http://json-schema.org/draft-04/schema#"},
-		{"draft6", "http://json-schema.org/draft-06/schema#"},
-		{"draft7", "http://json-schema.org/draft-07/schema#"},
+		// Legacy drafts get normalized to 2020-12
+		{"draft3", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft4", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft6", "https://json-schema.org/draft/2020-12/schema"},
+		{"draft7", "https://json-schema.org/draft/2020-12/schema"},
+		// Modern drafts are not normalized
 		{"draft2019-09", "https://json-schema.org/draft/2019-09/schema"},
 		{"draft2020-12", "https://json-schema.org/draft/2020-12/schema"},
 	}
@@ -684,12 +688,12 @@ func TestBundleInjectsSchemaForDraft(t *testing.T) {
 func TestBundlePreservesExistingSchema(t *testing.T) {
 	ctx := context.Background()
 
-	// Schema already has $schema - should NOT be overwritten
-	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+	// Schema already has $schema for 2020-12 - should be preserved (no normalization needed)
+	schema := `{"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "string"}`
 
 	bundled, err := Bundle(ctx, BundleInput{
 		Schema: json.RawMessage(schema),
-		Draft:  "draft4", // trying to inject draft4
+		Draft:  "draft4", // Draft hint ignored when $schema is present
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -701,9 +705,34 @@ func TestBundlePreservesExistingSchema(t *testing.T) {
 	}
 
 	got := result["$schema"].(string)
-	// Should preserve the original draft7 schema, not inject draft4
-	if got != "http://json-schema.org/draft-07/schema#" {
+	// Should preserve the 2020-12 schema (no normalization needed)
+	if got != "https://json-schema.org/draft/2020-12/schema" {
 		t.Errorf("existing $schema should be preserved, got %q", got)
+	}
+}
+
+func TestBundleLegacySchemaGetsNormalized(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema has legacy draft7 $schema - gets normalized to 2020-12
+	schema := `{"$schema": "http://json-schema.org/draft-07/schema#", "type": "string"}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema: json.RawMessage(schema),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	got := result["$schema"].(string)
+	// Legacy draft gets normalized to 2020-12
+	if got != "https://json-schema.org/draft/2020-12/schema" {
+		t.Errorf("legacy $schema should be normalized to 2020-12, got %q", got)
 	}
 }
 
@@ -738,10 +767,10 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 			"quote\"field":  map[string]any{"type": "integer"},
 			"space field":   map[string]any{"type": "array"},
 			// Keys with literal JSON pointer escape sequences (edge cases)
-			"literal~1key":  map[string]any{"type": "string"}, // key is literally "~1"
-			"literal~0key":  map[string]any{"type": "number"}, // key is literally "~0"
-			"uri%2Fslash":   map[string]any{"type": "boolean"}, // key contains literal "%2F"
-			"combo~/field":  map[string]any{"type": "integer"}, // key has both ~ and /
+			"literal~1key": map[string]any{"type": "string"},  // key is literally "~1"
+			"literal~0key": map[string]any{"type": "number"},  // key is literally "~0"
+			"uri%2Fslash":  map[string]any{"type": "boolean"}, // key contains literal "%2F"
+			"combo~/field": map[string]any{"type": "integer"}, // key has both ~ and /
 		},
 	}
 

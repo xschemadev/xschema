@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/config"
 	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
@@ -72,18 +72,8 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Load env file for header variable substitution
-	if envFile != "" {
-		ui.Verbosef("loading env file: %s", envFile)
-		if err := godotenv.Load(envFile); err != nil {
-			return fmt.Errorf("failed to load env file %s: %w", envFile, err)
-		}
-	} else {
-		// Try to load .env from cwd if it exists
-		defaultEnvPath := filepath.Join(root, ".env")
-		if _, err := os.Stat(defaultEnvPath); err == nil {
-			ui.Verbosef("loading default .env file: %s", defaultEnvPath)
-			_ = godotenv.Load(defaultEnvPath) // ignore error if .env doesn't exist or is invalid
-		}
+	if err := config.LoadEnvFile(envFile, root); err != nil {
+		return err
 	}
 
 	// Make output directory absolute relative to project root

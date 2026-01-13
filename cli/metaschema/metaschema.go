@@ -172,3 +172,55 @@ func ClearCache() {
 	cache = make(map[string]*Metaschema)
 	cacheMu.Unlock()
 }
+
+// HasCustomMetaschema returns true if the schema uses a custom (non-standard) $schema URI.
+func HasCustomMetaschema(data json.RawMessage) bool {
+	var parsed struct {
+		Schema string `json:"$schema"`
+	}
+	if err := json.Unmarshal(data, &parsed); err != nil {
+		return false
+	}
+	if parsed.Schema == "" {
+		return false
+	}
+	return !IsStandardDraft(parsed.Schema)
+}
+
+// BuildMetaschemasMap extracts custom metaschemas from cache for validation.
+// Returns a map of URI → schema data for non-standard $schema references found in schemas.
+func BuildMetaschemasMap(schemas []json.RawMessage, cache fetcher.Cache) map[string]json.RawMessage {
+	result := make(map[string]json.RawMessage)
+
+	// Helper to extract and add custom $schema from a schema
+	addMetaschema := func(data json.RawMessage) {
+		var parsed map[string]any
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			return
+		}
+		schemaURI, ok := parsed["$schema"].(string)
+		if !ok || schemaURI == "" {
+			return
+		}
+		if IsStandardDraft(schemaURI) {
+			return
+		}
+		// Look up in cache
+		normalized := fetcher.NormalizeURI(schemaURI)
+		if metaData, ok := cache[normalized]; ok {
+			result[schemaURI] = metaData
+		}
+	}
+
+	// Check declared schemas
+	for _, schema := range schemas {
+		addMetaschema(schema)
+	}
+
+	// Check cached schemas (in case they reference custom metaschemas too)
+	for _, data := range cache {
+		addMetaschema(data)
+	}
+
+	return result
+}

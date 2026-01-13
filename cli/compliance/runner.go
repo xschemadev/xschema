@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/language"
 	"github.com/xschemadev/xschema/processor"
 	"github.com/xschemadev/xschema/retriever"
@@ -116,21 +117,21 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 		}
 
 		draftResult, err := runDraft(ctx, runDraftOptions{
-			draft:        draft,
-			draftNum:     i + 1,
-			draftTotal:   len(drafts),
-			keyword:      opts.Keyword,
-			suitePath:    opts.SuitePath,
-			adapterBin:   adapterBin,
-			runner:       opts.Runner,
-			runnerArgs:   opts.RunnerArgs,
-			language:     opts.Language,
-			workDir:      opts.AdapterPath,
-			verbose:      opts.Verbose,
-			jobs:         jobs,
-			outputFunc:   opts.OutputFunc,
-			progressFunc: opts.ProgressFunc,
-			timing:       opts.Timing,
+			draft:               draft,
+			draftNum:            i + 1,
+			draftTotal:          len(drafts),
+			keyword:             opts.Keyword,
+			suitePath:           opts.SuitePath,
+			adapterBin:          adapterBin,
+			runner:              opts.Runner,
+			runnerArgs:          opts.RunnerArgs,
+			language:            opts.Language,
+			workDir:             opts.AdapterPath,
+			verbose:             opts.Verbose,
+			jobs:                jobs,
+			outputFunc:          opts.OutputFunc,
+			progressFunc:        opts.ProgressFunc,
+			timing:              opts.Timing,
 			unsupportedFeatures: unsupportedFeatures,
 		})
 
@@ -154,20 +155,20 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 }
 
 type runDraftOptions struct {
-	draft        string
-	draftNum     int // 1-based
-	draftTotal   int
-	keyword      string // filter to specific keyword (empty = all)
-	suitePath    string
-	adapterBin   string
-	runner       string
-	runnerArgs   []string
-	language     *language.Language
-	workDir      string // directory to run harness from (for dependency resolution)
-	verbose      bool
-	jobs         int // parallel keyword processing (default 1)
-	outputFunc   func(string)
-	progressFunc func(ProgressUpdate)
+	draft               string
+	draftNum            int // 1-based
+	draftTotal          int
+	keyword             string // filter to specific keyword (empty = all)
+	suitePath           string
+	adapterBin          string
+	runner              string
+	runnerArgs          []string
+	language            *language.Language
+	workDir             string // directory to run harness from (for dependency resolution)
+	verbose             bool
+	jobs                int // parallel keyword processing (default 1)
+	outputFunc          func(string)
+	progressFunc        func(ProgressUpdate)
 	timing              *TimingSummary
 	unsupportedFeatures UnsupportedFeatures
 }
@@ -371,19 +372,64 @@ type bundledGroup struct {
 	bundleErr     error
 }
 
-// processKeyword batches adapter invocation and harness execution for all groups in a keyword
+// groupFilter holds pre-filtered test information for a group
+type groupFilter struct {
+	allKnown         bool
+	unsupportedItems []UnsupportedFeatureItem
+	filteredTests    []TestCase
+	filteredIndices  []int
+}
+
+// processKeyword batches adapter invocation and harness execution for all groups in a keyword.
+// Pipeline: filter → bundle → adapt → harness → results
 func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
 	if len(groups) == 0 {
 		return nil
 	}
 
-	// Pre-filter: identify which tests are known issues and which groups can be skipped entirely
-	type groupFilter struct {
-		allKnown        bool
-		unsupportedItems      []UnsupportedFeatureItem
-		filteredTests   []TestCase
-		filteredIndices []int
+	// Phase 1: Filter known issues
+	groupFilters := filterKnownIssues(groups, opts.draft, keywordResult.Keyword, opts.unsupportedFeatures, summary)
+
+	// Phase 2: Bundle schemas
+	bundled, err := bundleSchemas(ctx, groups, groupFilters, opts, keywordResult.Keyword)
+	if err != nil {
+		return err
 	}
+	markBundleErrors(bundled, groupFilters, keywordResult, summary)
+
+	// Phase 3: Call adapter
+	adapterOutputByGroup, err := callAdapter(ctx, bundled, opts)
+	if err != nil {
+		return err
+	}
+	if adapterOutputByGroup == nil {
+		return nil // all groups failed bundling
+	}
+
+	// Phase 4: Build harness items
+	harnessItems, groupByID, filteredTestsByGroup := buildHarnessItems(
+		bundled, groupFilters, adapterOutputByGroup, keywordResult, summary,
+	)
+	if len(harnessItems) == 0 {
+		return nil // all groups failed
+	}
+
+	// Phase 5: Execute harness
+	harnessResults, err := executeHarness(ctx, harnessItems, groupByID, opts, keywordResult, summary)
+	if err != nil {
+		return err
+	}
+	if harnessResults == nil {
+		return nil // harness failed, errors already recorded
+	}
+
+	// Phase 6: Process results
+	processHarnessResults(harnessResults, groupByID, filteredTestsByGroup, keywordResult, summary)
+	return nil
+}
+
+// filterKnownIssues identifies which tests are known issues and which groups can be skipped.
+func filterKnownIssues(groups []TestGroup, draft, keyword string, unsupportedFeatures UnsupportedFeatures, summary *DraftSummary) []groupFilter {
 	groupFilters := make([]groupFilter, len(groups))
 
 	for i, group := range groups {
@@ -392,8 +438,8 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		var unsupportedItems []UnsupportedFeatureItem
 
 		for j, tc := range group.Tests {
-			testPath := fmt.Sprintf("%s/%s/%s/%s", opts.draft, keywordResult.Keyword, group.Description, tc.Description)
-			if isUnsupported, reason := opts.unsupportedFeatures.Contains(testPath); isUnsupported {
+			testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, group.Description, tc.Description)
+			if isUnsupported, reason := unsupportedFeatures.Contains(testPath); isUnsupported {
 				unsupportedItems = append(unsupportedItems, UnsupportedFeatureItem{Path: testPath, Reason: reason})
 				continue
 			}
@@ -402,10 +448,10 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 
 		groupFilters[i] = groupFilter{
-			allKnown:        len(filteredTests) == 0 && len(unsupportedItems) > 0,
-			unsupportedItems:      unsupportedItems,
-			filteredTests:   filteredTests,
-			filteredIndices: filteredIndices,
+			allKnown:         len(filteredTests) == 0 && len(unsupportedItems) > 0,
+			unsupportedItems: unsupportedItems,
+			filteredTests:    filteredTests,
+			filteredIndices:  filteredIndices,
 		}
 
 		// Add known issues for groups we're skipping entirely
@@ -415,11 +461,14 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		}
 	}
 
-	// Phase 1: Process schemas (crawl, validate, bundle) using processor
-	// Process each schema individually to handle errors per-schema
+	return groupFilters
+}
+
+// bundleSchemas processes each schema through the processor pipeline.
+func bundleSchemas(ctx context.Context, groups []TestGroup, groupFilters []groupFilter, opts runDraftOptions, keyword string) ([]bundledGroup, error) {
 	bundled := make([]bundledGroup, len(groups))
 	remotesPath := filepath.Join(opts.suitePath, "remotes")
-	fetcher := NewLocalhostFetcher(remotesPath)
+	localhostFetcher := fetcher.NewLocalhostFetcher(remotesPath)
 
 	for i, group := range groups {
 		// Skip groups where all tests are known issues
@@ -433,7 +482,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return nil, ctx.Err()
 		default:
 		}
 
@@ -452,56 +501,52 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 			ID:        fmt.Sprintf("group_%d", i),
 			Schema:    schemaJSON,
 			Adapter:   "compliance",
-			SourceURI: fmt.Sprintf("compliance://%s/%s/group_%d", opts.draft, keywordResult.Keyword, i),
+			SourceURI: fmt.Sprintf("compliance://%s/%s/group_%d", opts.draft, keyword, i),
 		}}
 
 		processed, err := processor.Process(ctx, toProcess, processor.Options{
-			Fetcher: fetcher,
+			Fetcher: localhostFetcher,
 			Draft:   opts.draft,
 		})
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
 		if err != nil {
-			bundled[i] = bundledGroup{
-				group:     group,
-				bundleErr: err,
-			}
+			bundled[i] = bundledGroup{group: group, bundleErr: err}
 			continue
 		}
 
 		if len(processed) == 0 {
-			bundled[i] = bundledGroup{
-				group:     group,
-				bundleErr: fmt.Errorf("processor returned no results"),
-			}
+			bundled[i] = bundledGroup{group: group, bundleErr: fmt.Errorf("processor returned no results")}
 			continue
 		}
 
 		var schema RawSchema
 		if jsonErr := json.Unmarshal(processed[0].Schema, &schema); jsonErr != nil {
-			bundled[i] = bundledGroup{
-				group:     group,
-				bundleErr: fmt.Errorf("failed to unmarshal processed schema: %w", jsonErr),
-			}
+			bundled[i] = bundledGroup{group: group, bundleErr: fmt.Errorf("failed to unmarshal processed schema: %w", jsonErr)}
 			continue
 		}
 
-		bundled[i] = bundledGroup{
-			group:         group,
-			bundledSchema: schema,
-		}
+		bundled[i] = bundledGroup{group: group, bundledSchema: schema}
 	}
 
-	// Mark bundle errors as failed (but not known issue groups)
+	return bundled, nil
+}
+
+// markBundleErrors marks bundle failures as test failures.
+func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywordResult *KeywordResult, summary *DraftSummary) {
 	for i, bg := range bundled {
 		if bg.bundleErr != nil && !groupFilters[i].allKnown {
 			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
 		}
 	}
+}
 
-	// Phase 2: Batch adapter call for groups that bundled successfully
+// callAdapter calls the adapter for all successfully bundled schemas.
+// Returns nil map if all groups failed bundling.
+func callAdapter(ctx context.Context, bundled []bundledGroup, opts runDraftOptions) (map[int]*adapter.ConvertResult, error) {
 	var adapterInputs []adapter.ConvertInput
-	var inputIndexes []int // maps adapter input index to bundled group index
+	var inputIndexes []int
+
 	for i, bg := range bundled {
 		if bg.bundleErr == nil {
 			groupID := fmt.Sprintf("group_%d", i)
@@ -516,31 +561,38 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	if len(adapterInputs) == 0 {
-		return nil // all groups failed bundling
+		return nil, nil
 	}
 
 	adapterStart := time.Now()
 	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
 	opts.timing.addAdapterInvocation(time.Since(adapterStart))
 	if err != nil {
-		return fmt.Errorf("adapter call failed: %w", err)
+		return nil, fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	// Build map of group index -> adapter output
-	adapterOutputByGroup := make(map[int]*adapter.ConvertResult)
+	result := make(map[int]*adapter.ConvertResult)
 	for i, outIdx := range inputIndexes {
-		adapterOutputByGroup[outIdx] = &adapterOutputs[i]
+		result[outIdx] = &adapterOutputs[i]
 	}
+	return result, nil
+}
 
-	// Phase 3: Build harness items and execute single batch harness
-	// Use pre-computed filters for known issues
+// buildHarnessItems creates harness items from adapter outputs.
+func buildHarnessItems(
+	bundled []bundledGroup,
+	groupFilters []groupFilter,
+	adapterOutputByGroup map[int]*adapter.ConvertResult,
+	keywordResult *KeywordResult,
+	summary *DraftSummary,
+) ([]HarnessItem, map[string]*TestGroup, map[string][]int) {
 	var harnessItems []HarnessItem
-	groupByID := make(map[string]*TestGroup)       // for result processing
-	filteredTestsByGroup := make(map[string][]int) // maps groupID to original test indices
+	groupByID := make(map[string]*TestGroup)
+	filteredTestsByGroup := make(map[string][]int)
 
 	for i, bg := range bundled {
 		if bg.bundleErr != nil {
-			continue // already handled (either known issue skip or error)
+			continue
 		}
 
 		adapterOutput := adapterOutputByGroup[i]
@@ -551,13 +603,12 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 
 		gf := groupFilters[i]
 
-		// Add known issues for this group (mixed groups with some known, some not)
+		// Add known issues for mixed groups
 		if len(gf.unsupportedItems) > 0 && !gf.allKnown {
 			summary.UnsupportedFeatures.Count += len(gf.unsupportedItems)
 			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, gf.unsupportedItems...)
 		}
 
-		// Skip if no tests remain after filtering
 		if len(gf.filteredTests) == 0 {
 			continue
 		}
@@ -572,46 +623,49 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		filteredTestsByGroup[groupID] = gf.filteredIndices
 	}
 
-	if len(harnessItems) == 0 {
-		return nil // all groups failed
-	}
+	return harnessItems, groupByID, filteredTestsByGroup
+}
 
-	// Generate single batch harness
+// executeHarness generates and runs the test harness.
+// Returns nil results if harness failed (errors already recorded).
+func executeHarness(
+	ctx context.Context,
+	harnessItems []HarnessItem,
+	groupByID map[string]*TestGroup,
+	opts runDraftOptions,
+	keywordResult *KeywordResult,
+	summary *DraftSummary,
+) ([]HarnessResult, error) {
 	harnessStart := time.Now()
 	tempHarness, err := GenerateHarness(opts.language, harnessItems, opts.workDir)
 	opts.timing.addHarnessGeneration(time.Since(harnessStart))
 	if err != nil {
-		// Mark all groups as failed
 		for _, item := range harnessItems {
 			if group := groupByID[item.GroupID]; group != nil {
 				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness generation error: %v", err))
 			}
 		}
-		return nil
+		return nil, nil
 	}
 	defer os.Remove(tempHarness)
 
-	// Execute batch harness
 	execStart := time.Now()
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
 	opts.timing.addHarnessExecution(time.Since(execStart))
 
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return err
+			return nil, err
 		}
-		// Mark all groups as failed
 		for _, item := range harnessItems {
 			if group := groupByID[item.GroupID]; group != nil {
 				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness execution error: %v", err))
 			}
 		}
-		return nil
+		return nil, nil
 	}
 
-	// Process results by groupId
-	processHarnessResults(harnessResults, groupByID, filteredTestsByGroup, keywordResult, summary)
-	return nil
+	return harnessResults, nil
 }
 
 func markAllFailed(keywordResult *KeywordResult, summary *DraftSummary, group TestGroup, errorMsg string) {
@@ -725,64 +779,3 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 
 	return nil
 }
-
-// LocalhostFetcher implements fetcher.Fetcher for compliance testing.
-// It maps http://localhost:1234/* URLs to local files in the remotes/ directory.
-type LocalhostFetcher struct {
-	RemotesPath string // path to the remotes directory containing schema files
-}
-
-// NewLocalhostFetcher creates a LocalhostFetcher for the given remotes directory.
-func NewLocalhostFetcher(remotesPath string) *LocalhostFetcher {
-	return &LocalhostFetcher{RemotesPath: remotesPath}
-}
-
-// Fetch implements fetcher.Fetcher for compliance testing.
-//
-// The JSON Schema Test Suite has schemas that reference URLs in several ways:
-//
-// 1. localhost:1234/* URLs - These map to files in the remotes/ directory.
-//    Example: http://localhost:1234/integer.json → remotes/integer.json
-//
-// 2. example.com, urn:, etc URLs - These appear in test schemas as $ids that
-//    "claim" those URLs locally. The schema defines the content inline.
-//    Example: A schema with $id:"http://example.com/foo.json" and a nested
-//    $ref:"http://example.com/foo.json" should resolve to itself, not fetch.
-//
-// 3. localhost URLs without files - Some test schemas define $id like
-//    "http://localhost:1234/draft2020-12/tree" but no tree file exists.
-//    The schema claims that URL with a local $id, so the bundler won't fetch.
-//
-// The processor's crawl phase extracts ALL external-looking refs and tries to
-// fetch them upfront. It doesn't understand local $ids - that's the bundler's
-// job. So crawl may try to fetch URLs that the bundler would skip.
-//
-// Our solution: return stub schemas for unfetchable URLs. The bundler checks
-// local $ids first, so stubs for locally-defined refs are never used. For
-// truly missing external refs, the bundler will fail when it can't resolve.
-func (f *LocalhostFetcher) Fetch(_ context.Context, uri string) (json.RawMessage, error) {
-	const localhostPrefix = "http://localhost:1234/"
-
-	// Non-localhost URLs (example.com, urn:, etc) are never real external refs
-	// in the test suite - they're always claimed by local $ids.
-	if !strings.HasPrefix(uri, localhostPrefix) {
-		return json.RawMessage(`{}`), nil
-	}
-
-	// Try to read from remotes directory
-	path := strings.TrimPrefix(uri, localhostPrefix)
-	if idx := strings.Index(path, "?"); idx != -1 {
-		path = path[:idx]
-	}
-
-	localPath := filepath.Join(f.RemotesPath, path)
-	data, err := os.ReadFile(localPath)
-	if err != nil {
-		// File doesn't exist or is a directory - probably a localhost URL claimed
-		// by local $id. Return stub; bundler will resolve to local $id and never use this.
-		return json.RawMessage(`{}`), nil
-	}
-
-	return json.RawMessage(data), nil
-}
-

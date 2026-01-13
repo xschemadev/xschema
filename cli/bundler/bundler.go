@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -17,10 +16,10 @@ import (
 
 // BundleInput contains all inputs needed to bundle a schema.
 type BundleInput struct {
-	Schema    json.RawMessage  // the schema to bundle
-	SourceURI string           // base URI for resolving relative refs (empty if schema has no source)
-	Fetcher   fetcher.Fetcher  // fetcher for external refs (nil means external refs will error)
-	Draft     string           // JSON Schema draft for $schema injection if missing
+	Schema    json.RawMessage // the schema to bundle
+	SourceURI string          // base URI for resolving relative refs (empty if schema has no source)
+	Fetcher   fetcher.Fetcher // fetcher for external refs (nil means external refs will error)
+	Draft     string          // JSON Schema draft for $schema injection if missing
 }
 
 // keyInvalidChars matches characters not allowed in $defs keys
@@ -36,15 +35,15 @@ type bundleContext struct {
 	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
 	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
 	ctx        context.Context
-	draft      string            // JSON Schema draft for normalizing fetched schemas
+	draft      string // JSON Schema draft for normalizing fetched schemas
 }
 
 // draftToSchemaURI maps draft names to their canonical $schema URIs
 var draftToSchemaURI = map[string]string{
-	"draft3":      "http://json-schema.org/draft-03/schema#",
-	"draft4":      "http://json-schema.org/draft-04/schema#",
-	"draft6":      "http://json-schema.org/draft-06/schema#",
-	"draft7":      "http://json-schema.org/draft-07/schema#",
+	"draft3":       "http://json-schema.org/draft-03/schema#",
+	"draft4":       "http://json-schema.org/draft-04/schema#",
+	"draft6":       "http://json-schema.org/draft-06/schema#",
+	"draft7":       "http://json-schema.org/draft-07/schema#",
 	"draft2019-09": "https://json-schema.org/draft/2019-09/schema",
 	"draft2020-12": "https://json-schema.org/draft/2020-12/schema",
 }
@@ -222,7 +221,7 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, fullPath)
 			} else {
 				// Resolve relative $id against base URI
-				resolved, err := resolveURI(id, baseURI)
+				resolved, err := fetcher.ResolveURI(id, baseURI)
 				if err == nil && resolved != "" {
 					// Store without fragment
 					resolvedBase, _ := splitFragment(resolved)
@@ -308,7 +307,7 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 		id, ok = obj["id"].(string)
 	}
 	if ok {
-		newBase, err := resolveURI(id, baseURI)
+		newBase, err := fetcher.ResolveURI(id, baseURI)
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)
 			baseURI = newBase
@@ -401,7 +400,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	}
 
 	// Resolve relative URI against base
-	resolvedURI, err := resolveURI(refURI, baseURI)
+	resolvedURI, err := fetcher.ResolveURI(refURI, baseURI)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve ref %q against base %q: %w", ref, baseURI, err)
 	}
@@ -608,8 +607,8 @@ func parseDefFragment(fragment string) (string, bool) {
 
 // defEntry holds information about a definition to be flattened
 type defEntry struct {
-	newKey   string // flattened key (e.g., "parent__A__B")
-	schema   any    // the schema content (with nested $defs stripped)
+	newKey   string   // flattened key (e.g., "parent__A__B")
+	schema   any      // the schema content (with nested $defs stripped)
 	oldPaths []string // all old paths that should rewrite to this (e.g., "#/$defs/A", "#/$defs/A/$defs/B")
 }
 
@@ -827,7 +826,6 @@ func (b *bundleContext) uniqueDefKey(baseKey string) string {
 	}
 }
 
-
 // fetch retrieves a schema from a URI using the configured Fetcher
 func (b *bundleContext) fetch(uri string) (json.RawMessage, error) {
 	if b.fetcher == nil {
@@ -867,41 +865,6 @@ func splitFragment(uri string) (base, fragment string) {
 		return uri[:idx], uri[idx+1:]
 	}
 	return uri, ""
-}
-
-// resolveURI resolves a potentially relative URI against a base URI
-func resolveURI(ref, base string) (string, error) {
-	if base == "" {
-		// No base, ref must be absolute or we treat it as-is
-		return ref, nil
-	}
-
-	// Parse base
-	baseURL, err := url.Parse(base)
-	if err != nil {
-		// Base might be a file path
-		if filepath.IsAbs(ref) {
-			return ref, nil
-		}
-		// Resolve as file path
-		baseDir := filepath.Dir(base)
-		return filepath.Join(baseDir, ref), nil
-	}
-
-	// Parse ref
-	refURL, err := url.Parse(ref)
-	if err != nil {
-		return "", err
-	}
-
-	// If ref is absolute, use it directly
-	if refURL.IsAbs() {
-		return ref, nil
-	}
-
-	// Resolve relative URL
-	resolved := baseURL.ResolveReference(refURL)
-	return resolved.String(), nil
 }
 
 // copyObject creates a shallow copy of a map
