@@ -125,32 +125,14 @@ export function parseObject(
 		}
 	}
 
-	// Handle legacy dependencies (draft3-7)
+	// Note: legacy dependencies should be normalized by the Go CLI to draft2020-12 format
+	// (dependentRequired for property deps, dependentSchemas for schema deps).
+	// If we encounter the legacy 'dependencies' keyword, it indicates incomplete bundling.
 	if (schema.dependencies) {
-		for (const [prop, dep] of Object.entries(schema.dependencies)) {
-			// draft3 allows a single string as a shorthand for a 1-element dependency list
-			if (typeof dep === "string") {
-				dependencies.set(prop, {
-					kind: "property",
-					requiredProperties: [dep],
-				});
-				continue;
-			}
-
-			if (Array.isArray(dep)) {
-				dependencies.set(prop, {
-					kind: "property",
-					requiredProperties: dep,
-				});
-				continue;
-			}
-
-			// Schema dependencies
-			dependencies.set(prop, {
-				kind: "schema",
-				schema: parseSchema(dep, ctx),
-			});
-		}
+		throw new Error(
+			`Encountered legacy 'dependencies' keyword - schemas must be normalized to draft2020-12 by the Go CLI. ` +
+			`Run the schema through xschema generate to normalize the format.`
+		);
 	}
 
 	// Parse unevaluatedProperties (only valid for standalone use - Go CLI blocks applicator combinations)

@@ -16,7 +16,6 @@ import type {
 	NotNode,
 	LiteralNode,
 	EnumNode,
-	RefNode,
 	ConditionalNode,
 	TypeGuardedNode,
 	NullableNode,
@@ -88,14 +87,17 @@ export function render(node: SchemaNode): string {
 			return "type.unknown";
 		case "never":
 			return "type.never";
-		case "ref":
-			return renderRef(node);
+
 		case "conditional":
 			return renderConditional(node);
 		case "typeGuarded":
 			return renderTypeGuarded(node);
 		case "nullable":
 			return renderNullable(node);
+		default:
+			// Exhaustive check - should never reach here
+			const _exhaustive: never = node;
+			throw new Error(`Unhandled node kind: ${(node as any).kind}`);
 	}
 }
 
@@ -759,10 +761,7 @@ function renderEnum(node: EnumNode): string {
 	return `type.enumerated(${values.map((v) => JSON.stringify(v)).join(", ")})`;
 }
 
-function renderRef(node: RefNode): string {
-	// The resolved schema is already parsed, just render it
-	return render(node.resolved);
-}
+
 
 function renderConditional(node: ConditionalNode): string {
 	const ifSchema = render(node.if);

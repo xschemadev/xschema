@@ -28,7 +28,7 @@ export type {
   EnumNode,
   AnyNode,
   NeverNode,
-  RefNode,
+
   ConditionalNode,
   TypeGuardedNode,
   NullableNode,
@@ -61,7 +61,6 @@ export {
   hasPrototypeProperties,
 
   // JSON Pointer
-  resolveJsonPointer,
   getRefName,
 
   // Code builder

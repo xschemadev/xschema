@@ -104,7 +104,6 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 			keyword:      opts.Keyword,
 			suitePath:    opts.SuitePath,
 			adapterBin:   adapterBin,
-			adapterName:  opts.AdapterName,
 			runner:       opts.Runner,
 			runnerArgs:   opts.RunnerArgs,
 			language:     opts.Language,
@@ -142,7 +141,6 @@ type runDraftOptions struct {
 	keyword      string // filter to specific keyword (empty = all)
 	suitePath    string
 	adapterBin   string
-	adapterName  string // adapter name for limitation checking
 	runner       string
 	runnerArgs   []string
 	language     *language.Language
@@ -361,11 +359,9 @@ type bundledGroup struct {
 
 // groupFilter holds test information for a group
 type groupFilter struct {
-	allKnown           bool
-	adapterLimitation  bool   // true if group matches an adapter-specific unsupported pattern
-	adapterLimitReason string // reason for adapter limitation
-	filteredTests      []TestCase
-	filteredIndices    []int
+	allKnown        bool
+	filteredTests   []TestCase
+	filteredIndices []int
 }
 
 // processKeyword batches adapter invocation and harness execution for all groups in a keyword.
@@ -375,11 +371,8 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		return nil
 	}
 
-	// Phase 1: Initialize group filters (check adapter limitations, unsupported keyword detection happens in bundling)
-	groupFilters := initGroupFilters(groups, opts.adapterName)
-
-	// Phase 1b: Mark adapter limitations as unsupported (before bundling)
-	markAdapterLimitations(groups, groupFilters, keywordResult, summary, opts.draft, keywordResult.Keyword)
+	// Phase 1: Initialize group filters (unsupported keyword detection happens in bundling)
+	groupFilters := initGroupFilters(groups)
 
 	// Phase 2: Bundle schemas
 	bundled, err := bundleSchemas(ctx, groups, groupFilters, opts, keywordResult.Keyword)
@@ -420,8 +413,8 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 }
 
 // initGroupFilters creates groupFilter entries for each test group.
-// Checks for adapter-specific limitations. Unsupported keyword detection happens during bundling.
-func initGroupFilters(groups []TestGroup, adapterName string) []groupFilter {
+// Initialize group filters. Unsupported keyword detection happens during bundling.
+func initGroupFilters(groups []TestGroup) []groupFilter {
 	groupFilters := make([]groupFilter, len(groups))
 
 	for i, group := range groups {
@@ -436,35 +429,10 @@ func initGroupFilters(groups []TestGroup, adapterName string) []groupFilter {
 			filteredIndices: filteredIndices,
 		}
 
-		// Check for adapter-specific limitations
-		if matches, reason := MatchesUnsupportedPattern(adapterName, group.Description); matches {
-			gf.adapterLimitation = true
-			gf.adapterLimitReason = reason
-		}
-
 		groupFilters[i] = gf
 	}
 
 	return groupFilters
-}
-
-// markAdapterLimitations marks test groups that match adapter-specific unsupported patterns as unsupported.
-func markAdapterLimitations(groups []TestGroup, groupFilters []groupFilter, keywordResult *KeywordResult, summary *DraftSummary, draft, keyword string) {
-	for i, gf := range groupFilters {
-		if !gf.adapterLimitation {
-			continue
-		}
-
-		group := groups[i]
-		for _, tc := range group.Tests {
-			testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, group.Description, tc.Description)
-			summary.UnsupportedFeatures.Count++
-			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, UnsupportedFeatureItem{
-				Path:   testPath,
-				Reason: gf.adapterLimitReason,
-			})
-		}
-	}
 }
 
 // bundleSchemas processes each schema through the processor pipeline.
@@ -479,15 +447,6 @@ func bundleSchemas(ctx context.Context, groups []TestGroup, groupFilters []group
 			bundled[i] = bundledGroup{
 				group:     group,
 				bundleErr: fmt.Errorf("skipped: all tests are known issues"),
-			}
-			continue
-		}
-
-		// Skip groups with adapter-specific limitations (already marked as unsupported)
-		if groupFilters[i].adapterLimitation {
-			bundled[i] = bundledGroup{
-				group:     group,
-				bundleErr: fmt.Errorf("skipped: adapter limitation"),
 			}
 			continue
 		}
@@ -555,11 +514,6 @@ func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywor
 	for i, bg := range bundled {
 		// Skip groups where all tests were already marked as known issues
 		if groupFilters[i].allKnown {
-			continue
-		}
-
-		// Skip groups with adapter-specific limitations (already marked as unsupported in markAdapterLimitations)
-		if groupFilters[i].adapterLimitation {
 			continue
 		}
 

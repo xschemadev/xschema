@@ -4,12 +4,12 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 936 | 0 | 0 | 178 | 100.0% |
-| draft2020-12 | 950 | 0 | 0 | 201 | 100.0% |
-| draft3 | 407 | 0 | 0 | 0 | 100.0% |
-| draft4 | 566 | 0 | 0 | 0 | 100.0% |
-| draft6 | 760 | 0 | 0 | 0 | 100.0% |
-| draft7 | 836 | 0 | 0 | 0 | 100.0% |
+| draft2019-09 | 906 | 0 | 0 | 178 | 100.0% |
+| draft2020-12 | 919 | 0 | 0 | 201 | 100.0% |
+| draft3 | 397 | 0 | 0 | 0 | 100.0% |
+| draft4 | 526 | 0 | 0 | 0 | 100.0% |
+| draft6 | 707 | 0 | 0 | 0 | 100.0% |
+| draft7 | 783 | 0 | 0 | 0 | 100.0% |
 
 ## Badges
 
@@ -42,8 +42,8 @@
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 28/28 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -359,8 +359,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 29/29 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -738,7 +738,7 @@ These tests are intentionally excluded due to documented limitations.
 | enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
-| infinite-loop-detection | ✅ | 2/2 |
+| infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
@@ -750,7 +750,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 8/8 |
+| refRemote | ✅ | 0/0 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
@@ -768,8 +768,8 @@ These tests are intentionally excluded due to documented limitations.
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 21/21 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -785,7 +785,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 17/17 |
+| refRemote | ✅ | 0/0 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
@@ -808,8 +808,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 28/28 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -826,7 +826,7 @@ These tests are intentionally excluded due to documented limitations.
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 23/23 |
+| refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
@@ -850,8 +850,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 28/28 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -868,7 +868,7 @@ These tests are intentionally excluded due to documented limitations.
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 23/23 |
+| refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |

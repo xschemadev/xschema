@@ -66,17 +66,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 2,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 2
+      "total": 0
     },
     {
       "keyword": "items",
-      "passed": 21,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 21
+      "total": 0
     },
     {
       "keyword": "maxItems",
@@ -185,10 +185,10 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
@@ -213,10 +213,10 @@
     }
   ],
   "summary": {
-    "passed": 566,
+    "passed": 526,
     "failed": 0,
     "skipped": 0,
-    "total": 566,
+    "total": 526,
     "percentage": 100,
     "unsupportedFeatures": {
       "count": 0,

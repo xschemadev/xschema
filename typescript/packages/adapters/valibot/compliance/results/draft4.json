@@ -66,17 +66,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 2,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 2
+      "total": 0
     },
     {
       "keyword": "items",
-      "passed": 21,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 21
+      "total": 0
     },
     {
       "keyword": "maxItems",
@@ -171,10 +171,52 @@
     },
     {
       "keyword": "properties",
-      "passed": 17,
-      "failed": 0,
+      "passed": 19,
+      "failed": 5,
       "skipped": 0,
-      "total": 17
+      "total": 24,
+      "failures": [
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "__proto__ not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "all present and valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "constructor not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "properties whose names are Javascript object property names",
+          "test": "toString not valid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "ref",
@@ -185,17 +227,59 @@
     },
     {
       "keyword": "refRemote",
-      "passed": 17,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 17
+      "total": 0
     },
     {
       "keyword": "required",
-      "passed": 8,
-      "failed": 0,
+      "passed": 10,
+      "failed": 5,
       "skipped": 0,
-      "total": 8
+      "total": 15,
+      "failures": [
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "__proto__ present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "all present",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "constructor present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "none of the properties mentioned",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        },
+        {
+          "group": "required properties whose names are Javascript object property names",
+          "test": "toString present",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
+        }
+      ]
     },
     {
       "keyword": "type",
@@ -213,71 +297,14 @@
     }
   ],
   "summary": {
-    "passed": 552,
-    "failed": 0,
+    "passed": 516,
+    "failed": 10,
     "skipped": 0,
-    "total": 552,
-    "percentage": 100,
+    "total": 526,
+    "percentage": 98.09885931558935,
     "unsupportedFeatures": {
-      "count": 14,
-      "items": [
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/__proto__ not valid",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/all present and valid",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/constructor not valid",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/ignores arrays",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/ignores other non-objects",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/properties/properties whose names are Javascript object property names/toString not valid",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/__proto__ present",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/all present",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/constructor present",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/ignores arrays",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/ignores other non-objects",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/none of the properties mentioned",
-          "reason": "valibot library limitation: JS prototype property names"
-        },
-        {
-          "path": "draft4/required/required properties whose names are Javascript object property names/toString present",
-          "reason": "valibot library limitation: JS prototype property names"
-        }
-      ]
+      "count": 0,
+      "items": null
     }
   }
 }

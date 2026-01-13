@@ -148,12 +148,6 @@ export interface NeverNode {
 }
 
 /** Reference schema node */
-export interface RefNode {
-	kind: "ref";
-	path: string;
-	resolved: SchemaNode;
-}
-
 /** Conditional schema node (if/then/else) */
 export interface ConditionalNode {
 	kind: "conditional";
@@ -205,7 +199,6 @@ export type SchemaNode =
 	| EnumNode
 	| AnyNode
 	| NeverNode
-	| RefNode
 	| ConditionalNode
 	| TypeGuardedNode
 	| NullableNode;

@@ -16,7 +16,6 @@ import type {
 	NotNode,
 	LiteralNode,
 	EnumNode,
-	RefNode,
 	ConditionalNode,
 	TypeGuardedNode,
 	NullableNode,
@@ -80,8 +79,7 @@ export function render(node: SchemaNode): string {
 			return renderLiteral(node);
 		case "enum":
 			return renderEnum(node);
-		case "ref":
-			return renderRef(node);
+
 		case "conditional":
 			return renderConditional(node);
 		case "typeGuarded":
@@ -776,7 +774,7 @@ function renderIntersection(node: IntersectionNode): string {
 	// Effect/Schema doesn't have a generic intersection type like valibot
 	// Use S.extend for objects, or filter validation for general case
 	const allObjects = filtered.every(
-		(s) => s.kind === "object" || (s.kind === "ref" && s.resolved.kind === "object")
+		(s) => s.kind === "object"
 	);
 
 	if (allObjects) {
@@ -886,9 +884,7 @@ function renderEnum(node: EnumNode): string {
     }, { message: () => "Value must match one of the enum values" }))`;
 }
 
-function renderRef(node: RefNode): string {
-	return render(node.resolved);
-}
+
 
 function renderConditional(node: ConditionalNode): string {
 	const ifSchema = render(node.if);

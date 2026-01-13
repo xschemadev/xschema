@@ -5,7 +5,7 @@
 
 import type { JSONSchema } from "../schema/json-schema.js";
 import type { SchemaNode, TypeGuard } from "../ir/nodes.js";
-import { resolveJsonPointer } from "../utils/json-pointer.js";
+// Note: $ref resolution is handled by the Go CLI bundler
 import { isEmptyObject } from "../utils/primitives.js";
 import { createContext, type ParseContext } from "./context.js";
 import { parseString, parseNumber } from "./primitives.js";
@@ -48,9 +48,12 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Handle $ref
+	// Handle $ref - schemas must be bundled by Go CLI
 	if (schema.$ref) {
-		return parseRef(schema, ctx);
+		throw new Error(
+			`Encountered $ref "${schema.$ref}" - schemas must be bundled by the Go CLI before processing. ` +
+			`Run the schema through xschema generate to bundle all references.`
+		);
 	}
 
 	// Handle not - check before composition since { not: {} } = never
@@ -187,66 +190,7 @@ export function parseSchema(
 	return result;
 }
 
-function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
-	const refPath = schema.$ref!;
 
-	// Check cache
-	const cached = ctx.refs.get(refPath);
-	if (cached) {
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: cached,
-		};
-	}
-
-	// Check for circular reference
-	if (ctx.processing.has(refPath)) {
-		// Circular ref - return a lazy any
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: { kind: "any" },
-		};
-	}
-
-	// Resolve and parse
-	ctx.processing.add(refPath);
-
-	const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
-	const parsed = parseSchema(resolved, ctx);
-	ctx.refs.set(refPath, parsed);
-	ctx.processing.delete(refPath);
-
-	// Handle sibling keywords (draft2020-12 supports ref siblings)
-	const siblingSchema = { ...schema };
-	delete siblingSchema.$ref;
-	delete siblingSchema.$id;
-	delete siblingSchema.$anchor;
-	delete siblingSchema.$defs;
-	delete siblingSchema.definitions;
-	delete siblingSchema.$schema;
-	delete siblingSchema.$comment;
-	delete siblingSchema.$dynamicRef;
-	delete siblingSchema.$dynamicAnchor;
-
-	if (Object.keys(siblingSchema).length > 0) {
-		const siblingNode = parseSchema(siblingSchema, ctx);
-		return {
-			kind: "intersection",
-			schemas: [
-				{ kind: "ref", path: refPath, resolved: parsed },
-				siblingNode,
-			],
-		};
-	}
-
-	return {
-		kind: "ref",
-		path: refPath,
-		resolved: parsed,
-	};
-}
 
 function parseComposition(
 	schema: JSONSchema,

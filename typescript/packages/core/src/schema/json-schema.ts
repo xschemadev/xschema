@@ -56,8 +56,8 @@ export interface JSONSchema {
 	// Number
 	minimum?: number;
 	maximum?: number;
-	exclusiveMinimum?: number | boolean; // boolean for draft4
-	exclusiveMaximum?: number | boolean; // boolean for draft4
+	exclusiveMinimum?: number; // pre-normalized to draft2020-12 by Go CLI
+	exclusiveMaximum?: number; // pre-normalized to draft2020-12 by Go CLI
 	multipleOf?: number;
 
 	// Metadata

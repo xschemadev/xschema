@@ -129,17 +129,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 2,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 2
+      "total": 0
     },
     {
       "keyword": "items",
-      "passed": 29,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 29
+      "total": 0
     },
     {
       "keyword": "maxContains",
@@ -325,10 +325,10 @@
     }
   ],
   "summary": {
-    "passed": 950,
+    "passed": 919,
     "failed": 0,
     "skipped": 0,
-    "total": 950,
+    "total": 919,
     "percentage": 100,
     "unsupportedFeatures": {
       "count": 201,
