@@ -28,8 +28,8 @@
         "`go vet ./unsupported/` passes",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "UnsupportedKeywordError struct added at lines 24-29. Error() method formats like: '$dynamicRef is not supported: requires runtime resolution (at /properties/foo)'"
     },
     {
       "id": "US-003",

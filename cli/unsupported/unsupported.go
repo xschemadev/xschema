@@ -21,6 +21,22 @@ type FeatureGroup struct {
 	Tests    []string `json:"tests"`
 }
 
+// UnsupportedKeywordError is returned when a schema contains an unsupported keyword
+type UnsupportedKeywordError struct {
+	Keyword string // the unsupported keyword (e.g., "$dynamicRef")
+	Reason  string // why this keyword is unsupported
+	Path    string // JSON pointer path to the keyword (e.g., "/properties/foo")
+}
+
+// Error implements the error interface
+func (e *UnsupportedKeywordError) Error() string {
+	loc := "root"
+	if e.Path != "" {
+		loc = e.Path
+	}
+	return fmt.Sprintf("%s is not supported: %s (at %s)", e.Keyword, e.Reason, loc)
+}
+
 // Features is a list of unsupported feature groups
 type Features []FeatureGroup
 
@@ -92,13 +108,13 @@ func (f Features) TestCount() int {
 }
 
 // ValidateKeywords checks a parsed schema for unsupported keywords.
-// Returns an error if any unsupported keyword is found.
-func ValidateKeywords(node any) error {
+// Returns *UnsupportedKeywordError if any unsupported keyword is found, nil otherwise.
+func ValidateKeywords(node any) *UnsupportedKeywordError {
 	load()
 	return validateNode(node, "")
 }
 
-func validateNode(node any, path string) error {
+func validateNode(node any, path string) *UnsupportedKeywordError {
 	switch v := node.(type) {
 	case map[string]any:
 		return validateObject(v, path)
@@ -112,14 +128,14 @@ func validateNode(node any, path string) error {
 	return nil
 }
 
-func validateObject(obj map[string]any, path string) error {
+func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 	for keyword, reason := range keywords {
 		if _, ok := obj[keyword]; ok {
-			loc := "root"
-			if path != "" {
-				loc = path
+			return &UnsupportedKeywordError{
+				Keyword: keyword,
+				Reason:  reason,
+				Path:    path,
 			}
-			return fmt.Errorf("%s is not supported: %s (at %s)", keyword, reason, loc)
 		}
 	}
 

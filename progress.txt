@@ -198,3 +198,16 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - 73 unsupported tests are from dynamic/recursive refs - these are inherently runtime features
   - Valibot failures are adapter-specific, not related to unsupported keyword detection
 ---
+
+## 2026-01-13 - US-002
+- Implemented UnsupportedKeywordError typed error for unsupported keyword detection
+- Error type allows callers to use errors.As() to distinguish from other errors
+- Files changed:
+  - cli/unsupported/unsupported.go - added UnsupportedKeywordError struct (Keyword, Reason, Path fields)
+  - cli/unsupported/unsupported.go - added Error() method implementing error interface
+  - cli/unsupported/unsupported.go - updated ValidateKeywords(), validateNode(), validateObject() return types
+- **Learnings for future iterations:**
+  - Return *UnsupportedKeywordError (pointer) not UnsupportedKeywordError - allows nil checks and errors.As()
+  - Error message format preserved: "$keyword is not supported: reason (at path)"
+  - Path field stores empty string for root, not "root" - Error() method handles display
+---
