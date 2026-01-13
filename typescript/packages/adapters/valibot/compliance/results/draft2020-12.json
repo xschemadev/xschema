@@ -539,7 +539,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef without a matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid",
-          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/items)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
         },
         {
           "path": "draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of numbers is valid",
@@ -559,7 +559,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid",
-          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/items)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items)"
         },
         {
           "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",

@@ -257,6 +257,7 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 - Runner auto-detected from lockfiles: `bun.lock` -> bunx, `pnpm-lock.yaml` -> pnpm exec
 - Always run `bun run build` from typescript/ dir before testing adapters
 - Language registry is global; tests that register languages must call `language.ResetForTests()` (and `t.Cleanup(language.ResetForTests)`)
+- **Compliance must be deterministic**: when iterating over Go maps, always sort keys first. Map iteration order is random by design. This affects error messages, report output, and test paths. See `unsupported/unsupported.go` for the pattern.
 
 ## Key File Locations
 

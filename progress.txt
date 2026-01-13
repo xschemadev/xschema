@@ -480,3 +480,20 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Simple UX changes like this are low risk and quick wins
   - Function signature change approach (adding param) is cleaner than checking global var inside function
 ---
+
+## 2026-01-13 - US-016
+- Updated web app to use new keyword-based unsupported features format
+- Changes to generate-unsupported-features.ts:
+  - Changed import path from cli/compliance/ to cli/unsupported/unsupported-features.json
+  - Changed interface from `tests: string[]` to `keywords: string[]`
+  - Updated generateUnsupportedFeaturesMdx() to display keywords per group
+  - Groups with keywords show them as code (e.g., `$dynamicRef`, `$dynamicAnchor`)
+  - Groups without keywords show "context-dependent"
+  - Removed test count/listing (no longer relevant with keyword-based approach)
+- Files changed:
+  - web/scripts/generate-unsupported-features.ts - updated path, interface, and display logic
+- **Learnings for future iterations:**
+  - The unsupported features system now uses keyword detection during schema bundling
+  - Test path matching is completely deprecated - keyword detection in bundleSchemas() handles all unsupported schema detection
+  - The web page now shows which keywords trigger each limitation, not which tests are affected
+---

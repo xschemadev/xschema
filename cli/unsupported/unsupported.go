@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"sync"
 )
 
@@ -127,11 +128,18 @@ func validateNode(node any, path string) *UnsupportedKeywordError {
 
 func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 	// Check for absolutely unsupported keywords (always error)
-	for keyword, reason := range keywords {
+	// Sort keywords for deterministic error reporting (same keyword detected on every run)
+	sortedKeywords := make([]string, 0, len(keywords))
+	for kw := range keywords {
+		sortedKeywords = append(sortedKeywords, kw)
+	}
+	sort.Strings(sortedKeywords)
+
+	for _, keyword := range sortedKeywords {
 		if _, ok := obj[keyword]; ok {
 			return &UnsupportedKeywordError{
 				Keyword: keyword,
-				Reason:  reason,
+				Reason:  keywords[keyword],
 				Path:    path,
 			}
 		}
@@ -156,9 +164,15 @@ func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 		}
 	}
 
-	// Recurse into nested schemas
-	for k, v := range obj {
-		if err := validateNode(v, path+"/"+k); err != nil {
+	// Recurse into nested schemas in sorted key order for deterministic traversal
+	sortedKeys := make([]string, 0, len(obj))
+	for k := range obj {
+		sortedKeys = append(sortedKeys, k)
+	}
+	sort.Strings(sortedKeys)
+
+	for _, k := range sortedKeys {
+		if err := validateNode(obj[k], path+"/"+k); err != nil {
 			return err
 		}
 	}
