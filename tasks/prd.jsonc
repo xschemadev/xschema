@@ -125,8 +125,8 @@
         "Zod adapter compliance still 100% (bun run compliance in zod adapter folder)",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Fixed rewriteAnchorPath to handle deeply nested $defs paths. Original code only handled single-level flattening (/$defs/X). New algorithm extracts all nested def names from path and builds fully flattened key (key__L1__L2__Target). Added TestBundleDeeplyNestedAnchorRef and TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef tests."
     },
     {
       "id": "US-009",

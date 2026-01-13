@@ -132,3 +132,20 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Must protect shared maps (visited, newFrontier) with mutex when accessed from goroutines
   - mockFetcher needed sync.Mutex for fetchCalls slice to pass -race tests
 ---
+
+## 2026-01-13 - US-008
+- Fixed anchor path rewriting for deeply nested $defs (3+ levels)
+- Root cause: rewriteAnchorPath only handled single-level flattening (/$defs/X → key__X)
+- New algorithm:
+  - Parse entire path to extract all nested def names (L1, L2, L3, ...)
+  - Build fully flattened key: key__L1__L2__L3
+  - Preserve any trailing path suffix (e.g., /properties/foo)
+- Files changed:
+  - cli/bundler/bundler.go - rewrote rewriteAnchorPath to iterate through all nested /$defs/ and /definitions/
+  - cli/bundler/bundler_test.go - added TestBundleDeeplyNestedAnchorRef, TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef, getMapKeys helper
+  - cli/bundler/testdata/schema-deep-anchor.json - test fixture with 3-level nested $defs and $anchor
+- **Learnings for future iterations:**
+  - Anchor paths are collected before flattening, so rewriteAnchorPath must compute the flattened key from the nested path
+  - Pattern: extract all /$defs/Name segments, concatenate with __, preserve remaining path
+  - Example: /$defs/key/$defs/L1/$defs/L2/$defs/Target → /$defs/key__L1__L2__Target
+---

@@ -2160,3 +2160,127 @@ func TestFlattenDefsLinearScaling(t *testing.T) {
 		t.Errorf("scaling appears quadratic: ratio %.2f (expected ~2 for linear)", ratio)
 	}
 }
+
+// =============================================================================
+// Anchor Rewriting After Flattening (US-008)
+// =============================================================================
+
+func TestBundleDeeplyNestedAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs an anchor in a deeply nested $def (3+ levels)
+	// The external schema has: $defs/Level1/$defs/Level2/$defs/Target with $anchor: "deepAnchor"
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "$ref": "schema-deep-anchor.json#deepAnchor" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The ref should point to the flattened location of the deeply nested Target
+	props := result["properties"].(map[string]any)
+	valueProp := props["value"].(map[string]any)
+	ref := valueProp["$ref"].(string)
+
+	// Should be #/$defs/key__Level1__Level2__Target (fully flattened)
+	if !strings.HasPrefix(ref, "#/$defs/") {
+		t.Errorf("expected ref to be #/$defs/..., got %s", ref)
+	}
+	if !strings.Contains(ref, "Target") {
+		t.Errorf("expected ref to contain 'Target', got %s", ref)
+	}
+
+	// The flattened def must exist
+	defs := result["$defs"].(map[string]any)
+	refKey := strings.TrimPrefix(ref, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened def %s not found in $defs. Available keys: %v", refKey, getMapKeys(defs))
+	}
+}
+
+func TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema that refs a remote schema. The remote schema has a deeply nested anchor
+	// and an internal $ref to that anchor.
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "schema-deep-anchor.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: testdataPath("test.json"),
+		Fetcher:   testFileFetcher(),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Find the embedded schema and its internal anchor ref
+	var embeddedRef string
+	for _, def := range defs {
+		defObj, ok := def.(map[string]any)
+		if !ok {
+			continue
+		}
+		props, ok := defObj["properties"].(map[string]any)
+		if !ok {
+			continue
+		}
+		valueProp, ok := props["value"].(map[string]any)
+		if !ok {
+			continue
+		}
+		if ref, ok := valueProp["$ref"].(string); ok {
+			embeddedRef = ref
+			break
+		}
+	}
+
+	if embeddedRef == "" {
+		t.Fatal("could not find embedded schema with properties.value.$ref")
+	}
+
+	// The internal anchor ref should be rewritten to point to the flattened location
+	if !strings.HasPrefix(embeddedRef, "#/$defs/") {
+		t.Errorf("expected anchor ref to be rewritten to #/$defs/..., got %s", embeddedRef)
+	}
+
+	// The flattened def must exist
+	refKey := strings.TrimPrefix(embeddedRef, "#/$defs/")
+	if _, ok := defs[refKey]; !ok {
+		t.Errorf("flattened def %s not found in $defs. Available keys: %v", refKey, getMapKeys(defs))
+	}
+}
+
+func getMapKeys(m map[string]any) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}

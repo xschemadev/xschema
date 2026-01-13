@@ -490,7 +490,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 }
 
 // rewriteAnchorPath rewrites an anchor path that may point to a location that got flattened.
-// For example, /$defs/key/$defs/Target → /$defs/key__Target
+// Handles deeply nested paths like /$defs/key/$defs/L1/$defs/L2/$defs/Target → /$defs/key__L1__L2__Target
 func (b *bundleContext) rewriteAnchorPath(anchorPath string, embeddedKey string) string {
 	prefix := "/$defs/" + embeddedKey
 
@@ -501,26 +501,54 @@ func (b *bundleContext) rewriteAnchorPath(anchorPath string, embeddedKey string)
 
 	// Get the part after /$defs/key
 	rest := anchorPath[len(prefix):]
-
-	// Check if rest points to a definition that got flattened
-	if strings.HasPrefix(rest, "/$defs/") {
-		defName := rest[len("/$defs/"):]
-		// Strip any trailing path (e.g., /$defs/Target/properties/foo → Target)
-		if idx := strings.Index(defName, "/"); idx >= 0 {
-			defName = defName[:idx]
-		}
-		return "/$defs/" + embeddedKey + "__" + defName
-	}
-	if strings.HasPrefix(rest, "/definitions/") {
-		defName := rest[len("/definitions/"):]
-		if idx := strings.Index(defName, "/"); idx >= 0 {
-			defName = defName[:idx]
-		}
-		return "/$defs/" + embeddedKey + "__" + defName
+	if rest == "" {
+		return anchorPath
 	}
 
-	// Not a flattened location, return original path
-	return anchorPath
+	// Extract all nested def names from the path
+	// rest could be: /$defs/L1/$defs/L2/$defs/Target or /$defs/Target/properties/foo
+	var defNames []string
+	remaining := rest
+
+	for remaining != "" {
+		// Check for $defs or definitions prefix
+		var defPrefix string
+		if strings.HasPrefix(remaining, "/$defs/") {
+			defPrefix = "/$defs/"
+		} else if strings.HasPrefix(remaining, "/definitions/") {
+			defPrefix = "/definitions/"
+		} else {
+			// No more def prefixes - any remaining path is preserved as suffix
+			break
+		}
+
+		// Extract the def name
+		afterPrefix := remaining[len(defPrefix):]
+		nextSlash := strings.Index(afterPrefix, "/")
+		var defName string
+		if nextSlash >= 0 {
+			defName = afterPrefix[:nextSlash]
+			remaining = afterPrefix[nextSlash:]
+		} else {
+			defName = afterPrefix
+			remaining = ""
+		}
+		defNames = append(defNames, defName)
+	}
+
+	// If no def names extracted, return original
+	if len(defNames) == 0 {
+		return anchorPath
+	}
+
+	// Build the flattened path: key__L1__L2__Target
+	flattenedKey := embeddedKey
+	for _, name := range defNames {
+		flattenedKey += "__" + name
+	}
+
+	// Append any remaining path (e.g., /properties/foo)
+	return "/$defs/" + flattenedKey + remaining
 }
 
 // parseDefFragment checks if a fragment points to a definition and returns the def name.
