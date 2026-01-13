@@ -63,7 +63,7 @@
         "Test CLI still works: echo '[{\"namespace\":\"test\",\"id\":\"X\",\"varName\":\"test_x\",\"schema\":{\"type\":\"string\"}}]' | uv run xschema-pydantic",
         "Verify output is valid JSON with schema/type/imports fields"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Quick verification that refactored IR doesn't break existing functionality."
     },
     // ============================================

@@ -17,7 +17,12 @@ from xschema_core import (
     TupleNode,
     ObjectNode,
     UnionNode,
+    OneOfNode,
     IntersectionNode,
+    NotNode,
+    ConditionalNode,
+    TypeGuardedNode,
+    NullableNode,
     RefNode,
 )
 
@@ -66,22 +71,52 @@ def render(node: SchemaNode, name: str) -> RenderResult:
             return render_object(node, name)
         case "union":
             return render_union(node, name)
+        case "oneOf":
+            # Placeholder: treat like union for now
+            return render_union(UnionNode(variants=node.schemas), name)
         case "intersection":
             return render_intersection(node, name)
+        case "not":
+            # Placeholder: will implement in later task
+            return RenderResult(
+                code="", type_expr="Any", imports={"from typing import Any"}
+            )
+        case "conditional":
+            # Placeholder: will implement in later task
+            return RenderResult(
+                code="", type_expr="Any", imports={"from typing import Any"}
+            )
+        case "typeGuarded":
+            # Placeholder: will implement in later task
+            return RenderResult(
+                code="", type_expr="Any", imports={"from typing import Any"}
+            )
+        case "nullable":
+            # Handle nullable by wrapping inner type with | None
+            inner_result = render(node.inner, name)
+            if inner_result.type_expr.endswith(" | None"):
+                return inner_result
+            return RenderResult(
+                code=inner_result.code,
+                type_expr=f"{inner_result.type_expr} | None",
+                imports=inner_result.imports,
+            )
         case "ref":
             return render_ref(node, name)
         case _:
             # Fallback for unknown node types
-            return RenderResult(code="", type_expr="Any", imports={"from typing import Any"})
+            return RenderResult(
+                code="", type_expr="Any", imports={"from typing import Any"}
+            )
 
 
 def render_string(node: StringNode) -> RenderResult:
     """Render StringNode to Pydantic type."""
     imports: set[str] = set()
-    has_constraints = (
-        node.min_length is not None
-        or node.max_length is not None
-        or node.pattern is not None
+    has_constraints = node.constraints is not None and (
+        node.constraints.min_length is not None
+        or node.constraints.max_length is not None
+        or node.constraints.pattern is not None
     )
 
     if has_constraints:
@@ -90,13 +125,15 @@ def render_string(node: StringNode) -> RenderResult:
         imports.add("from pydantic import StringConstraints")
 
         constraints: list[str] = []
-        if node.min_length is not None:
-            constraints.append(f"min_length={node.min_length}")
-        if node.max_length is not None:
-            constraints.append(f"max_length={node.max_length}")
-        if node.pattern is not None:
+        if node.constraints.min_length is not None:
+            constraints.append(f"min_length={node.constraints.min_length}")
+        if node.constraints.max_length is not None:
+            constraints.append(f"max_length={node.constraints.max_length}")
+        if node.constraints.pattern is not None:
             # Escape the pattern for Python string
-            escaped_pattern = node.pattern.replace("\\", "\\\\").replace("'", "\\'")
+            escaped_pattern = node.constraints.pattern.replace("\\", "\\\\").replace(
+                "'", "\\'"
+            )
             constraints.append(f"pattern=r'{escaped_pattern}'")
 
         constraint_str = ", ".join(constraints)
@@ -112,12 +149,12 @@ def render_number(node: NumberNode) -> RenderResult:
     imports: set[str] = set()
     base_type = "int" if node.integer else "float"
 
-    has_constraints = (
-        node.minimum is not None
-        or node.maximum is not None
-        or node.exclusive_minimum is not None
-        or node.exclusive_maximum is not None
-        or node.multiple_of is not None
+    has_constraints = node.constraints is not None and (
+        node.constraints.minimum is not None
+        or node.constraints.maximum is not None
+        or node.constraints.exclusive_minimum is not None
+        or node.constraints.exclusive_maximum is not None
+        or node.constraints.multiple_of is not None
     )
 
     if has_constraints:
@@ -125,21 +162,21 @@ def render_number(node: NumberNode) -> RenderResult:
         imports.add("from typing import Annotated")
         annotations: list[str] = []
 
-        if node.minimum is not None:
+        if node.constraints.minimum is not None:
             imports.add("from annotated_types import Ge")
-            annotations.append(f"Ge({node.minimum})")
-        if node.exclusive_minimum is not None:
+            annotations.append(f"Ge({node.constraints.minimum})")
+        if node.constraints.exclusive_minimum is not None:
             imports.add("from annotated_types import Gt")
-            annotations.append(f"Gt({node.exclusive_minimum})")
-        if node.maximum is not None:
+            annotations.append(f"Gt({node.constraints.exclusive_minimum})")
+        if node.constraints.maximum is not None:
             imports.add("from annotated_types import Le")
-            annotations.append(f"Le({node.maximum})")
-        if node.exclusive_maximum is not None:
+            annotations.append(f"Le({node.constraints.maximum})")
+        if node.constraints.exclusive_maximum is not None:
             imports.add("from annotated_types import Lt")
-            annotations.append(f"Lt({node.exclusive_maximum})")
-        if node.multiple_of is not None:
+            annotations.append(f"Lt({node.constraints.exclusive_maximum})")
+        if node.constraints.multiple_of is not None:
             imports.add("from annotated_types import MultipleOf")
-            annotations.append(f"MultipleOf({node.multiple_of})")
+            annotations.append(f"MultipleOf({node.constraints.multiple_of})")
 
         annotation_str = ", ".join(annotations)
         type_expr = f"Annotated[{base_type}, {annotation_str}]"
@@ -225,13 +262,14 @@ def render_never(node: NeverNode) -> RenderResult:
     }
     # The validator function needs to be defined in the generated code
     # We generate it inline since we need it to be available
-    code = '''def _never_validator(v):
-    raise ValueError("Never type: no value is valid")'''
+    code = """def _never_validator(v):
+    raise ValueError("Never type: no value is valid")"""
     type_expr = "Annotated[Any, BeforeValidator(_never_validator)]"
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
 
 
 # Placeholder implementations for complex types (to be implemented in subsequent tasks)
+
 
 def render_array(node: ArrayNode, name: str) -> RenderResult:
     """Render ArrayNode to Pydantic type (placeholder)."""
@@ -284,38 +322,20 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         # Build the field definition
         type_expr = prop_result.type_expr
 
-        # Handle property description with Field
-        has_field_args = prop_def.description is not None
-
         if is_required:
             if is_nullable:
                 # Required but nullable: field: Type | None (no default)
                 if not type_expr.endswith(" | None"):
                     type_expr = f"{type_expr} | None"
-                if has_field_args:
-                    imports.add("from pydantic import Field")
-                    desc_escaped = prop_def.description.replace('"', '\\"')
-                    field_lines.append(f'    {prop_name}: {type_expr} = Field(description="{desc_escaped}")')
-                else:
-                    field_lines.append(f"    {prop_name}: {type_expr}")
+                field_lines.append(f"    {prop_name}: {type_expr}")
             else:
                 # Required and not nullable: field: Type
-                if has_field_args:
-                    imports.add("from pydantic import Field")
-                    desc_escaped = prop_def.description.replace('"', '\\"')
-                    field_lines.append(f'    {prop_name}: {type_expr} = Field(description="{desc_escaped}")')
-                else:
-                    field_lines.append(f"    {prop_name}: {type_expr}")
+                field_lines.append(f"    {prop_name}: {type_expr}")
         else:
             # Optional: field: Type | None = None
             if not type_expr.endswith(" | None") and type_expr != "None":
                 type_expr = f"{type_expr} | None"
-            if has_field_args:
-                imports.add("from pydantic import Field")
-                desc_escaped = prop_def.description.replace('"', '\\"')
-                field_lines.append(f'    {prop_name}: {type_expr} = Field(default=None, description="{desc_escaped}")')
-            else:
-                field_lines.append(f"    {prop_name}: {type_expr} = None")
+            field_lines.append(f"    {prop_name}: {type_expr} = None")
 
     # Handle additionalProperties
     config_line = None
@@ -327,17 +347,15 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         config_line = "    model_config = ConfigDict(extra='allow')"
     # If additional_properties is a schema, we allow extra but don't constrain type
     # (Pydantic doesn't support typed extra fields directly in model_config)
-    elif node.additional_properties is not None and node.additional_properties is not False:
+    elif (
+        node.additional_properties is not None
+        and node.additional_properties is not False
+    ):
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
 
     # Build the class definition
     class_lines: list[str] = [f"class {name}(BaseModel):"]
-
-    # Add docstring if description present
-    if node.description:
-        desc_escaped = node.description.replace('"""', '\\"\\"\\"')
-        class_lines.append(f'    """{desc_escaped}"""')
 
     # Add config if present
     if config_line:
@@ -346,7 +364,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     # Add fields or pass if empty
     if field_lines:
         class_lines.extend(field_lines)
-    elif not config_line and not node.description:
+    elif not config_line:
         class_lines.append("    pass")
 
     # Combine nested classes and main class
