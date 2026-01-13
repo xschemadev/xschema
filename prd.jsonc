@@ -109,8 +109,8 @@
         "DO NOT remove ContainsTest/TestPaths/TestCount methods yet - cleanup in US-011",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Emptied tests arrays in all 3 feature groups. Updated tests to expect empty arrays. ContainsTest/TestPaths/TestCount methods preserved for US-011 cleanup."
     },
     {
       "id": "US-008",

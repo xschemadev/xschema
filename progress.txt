@@ -277,3 +277,17 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - UnsupportedKeywordError comes through the processor→bundler pipeline, so catching it at bundleSchemas error handling is correct
   - Test paths must be constructed at mark time (need draft/keyword context) not at bundle time
 ---
+
+## 2026-01-13 - US-007
+- Emptied all `tests` arrays in unsupported-features.json
+- Keyword detection now handles all unsupported schema detection (no need for test path matching)
+- Updated tests to expect empty arrays (TestContainsTest, TestTestCount, TestLoad)
+- Added comprehensive explanation to `unevaluated-with-applicators` group
+- Files changed:
+  - cli/unsupported/unsupported-features.json - emptied `tests` arrays in all 3 feature groups
+  - cli/unsupported/unsupported_test.go - updated TestLoad, TestContainsTest, TestTestCount to expect empty arrays
+- **Learnings for future iterations:**
+  - The test path matching system is now legacy - keyword detection is the new approach
+  - ContainsTest/TestPaths/TestCount methods are kept for backwards compat until US-011 cleanup
+  - The `tests` field is retained (not deleted) to allow gradual migration
+---
