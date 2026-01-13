@@ -736,6 +736,11 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 			"tilde~field":   map[string]any{"type": "boolean"},
 			"quote\"field":  map[string]any{"type": "integer"},
 			"space field":   map[string]any{"type": "array"},
+			// Keys with literal JSON pointer escape sequences (edge cases)
+			"literal~1key":  map[string]any{"type": "string"}, // key is literally "~1"
+			"literal~0key":  map[string]any{"type": "number"}, // key is literally "~0"
+			"uri%2Fslash":   map[string]any{"type": "boolean"}, // key contains literal "%2F"
+			"combo~/field":  map[string]any{"type": "integer"}, // key has both ~ and /
 		},
 	}
 
@@ -756,6 +761,18 @@ func TestValidateJSONPointerURIEncoded(t *testing.T) {
 		{"space encoded", "#/$defs/space%20field", false},
 		// Direct keys (not encoded) should also work
 		{"direct percent - should fail", "#/$defs/percent%field", true},
+
+		// RFC 6901 order test cases: URI decode first, then JSON pointer unescape
+		// Key "literal~1key" - the ~1 is literal, so we need ~01 (escape the ~)
+		{"literal tilde-one in key", "#/$defs/literal~01key", false},
+		// Key "literal~0key" - the ~0 is literal, so we need ~00 (escape the ~)
+		{"literal tilde-zero in key", "#/$defs/literal~00key", false},
+		// Key "uri%2Fslash" - contains literal %2F, URI encode the % as %25
+		{"literal percent-2F in key", "#/$defs/uri%252Fslash", false},
+		// Key "combo~/field" - has ~ (needs ~0) and / (needs ~1)
+		{"combo tilde and slash", "#/$defs/combo~0~1field", false},
+		// Wrong: using %2F for a key that literally contains / would fail
+		{"wrong slash encoding for literal percent2F", "#/$defs/uri%2Fslash", true},
 	}
 
 	for _, tt := range tests {

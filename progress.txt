@@ -29,3 +29,15 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - metaschema still has internal parsed cache (map[string]*Metaschema) for vocabulary extraction - SharedCache is raw JSON only
   - validateAll/bundleAll use `cache.ToCache()` to get snapshot for iteration
 ---
+
+## 2026-01-13 - US-005
+- Verified RFC 6901 JSON pointer unescaping order
+- Implementation was already correct: URI decode first, then JSON pointer unescape (~1→/, ~0→~)
+- Files changed:
+  - cli/bundler/bundler_test.go - added edge case tests for RFC 6901 compliance
+- **Learnings for future iterations:**
+  - RFC 6901 §6: when JSON pointer is in URI fragment, percent-decode first, then apply tilde unescaping
+  - For key "literal~1key", encode as `~01` (escape the tilde)
+  - For key "uri%2Fslash" (literal percent-2-F), encode as `%252Fslash` (double-encode the percent)
+  - The PRD acceptance criteria was wrong - corrected to match actual RFC 6901 spec
+---
