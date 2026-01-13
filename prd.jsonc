@@ -259,8 +259,8 @@
         "Run compliance on all adapters - 'unevaluatedProperties + single cyclic ref' should move from failed to unsupported",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed in progress.txt US-018"
     },
     {
       "id": "US-019",

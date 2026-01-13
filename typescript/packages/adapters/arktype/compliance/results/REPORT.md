@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 955 | 1 | 0 | 158 | 99.9% |
-| draft2020-12 | 969 | 1 | 0 | 181 | 99.9% |
+| draft2019-09 | 949 | 0 | 0 | 165 | 100.0% |
+| draft2020-12 | 963 | 0 | 0 | 188 | 100.0% |
 | draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 566 | 0 | 0 | 0 | 100.0% |
 | draft6 | 760 | 0 | 0 | 0 | 100.0% |
@@ -13,8 +13,8 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.9%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.9%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-100.0%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-100.0%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-100.0%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-100.0%25-brightgreen)
@@ -67,7 +67,7 @@
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 15/15 |
-| unevaluatedProperties | ⚠️ | 43/44 |
+| unevaluatedProperties | ✅ | 37/37 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -197,6 +197,19 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
+<summary>unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root) (7 tests)</summary>
+
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
+
+</details>
+
+<details>
 <summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not) (2 tests)</summary>
 
 - `draft2019-09/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'`
@@ -287,17 +300,6 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-### Unexpected Failures
-
-<details>
-<summary>unevaluatedProperties - 1 failure</summary>
-
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 3rd level is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -345,7 +347,7 @@ These tests are intentionally excluded due to documented limitations.
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 15/15 |
-| unevaluatedProperties | ⚠️ | 45/46 |
+| unevaluatedProperties | ✅ | 39/39 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -546,6 +548,19 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
+<summary>unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root) (7 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
+
+</details>
+
+<details>
 <summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not) (2 tests)</summary>
 
 - `draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'`
@@ -633,17 +648,6 @@ These tests are intentionally excluded due to documented limitations.
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties with not/with unevaluated properties`
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with no unevaluated properties`
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with unevaluated properties`
-
-</details>
-
-### Unexpected Failures
-
-<details>
-<summary>unevaluatedProperties - 1 failure</summary>
-
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 3rd level is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 

@@ -516,3 +516,27 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - The "cousins" case also got fixed by the change - annotation tracking through nested schemas works correctly when using S.Tuple()
   - Remaining failure (cyclic ref) is a known limitation requiring recursive annotation tracking
 
+## 2026-01-13 - US-018
+- Implemented cyclic $ref + unevaluatedProperties detection in Go CLI
+- Pattern: when a schema has `unevaluatedProperties` AND contains `$ref: "#"` or refs through $defs that cycle back to root
+- Detection algorithm:
+  - After normal validateNode() completes, check root for unevaluatedProperties
+  - If present, call hasCyclicRef() which recursively searches for cyclic patterns
+  - Handles direct `#` refs, refs through `$defs`, refs through `definitions` (legacy), and multi-hop cycles (A→B→#)
+  - Uses visiting map to detect cycles through self-referencing $defs
+- Files changed:
+  - cli/unsupported/unsupported.go - added hasCyclicRef(), checkForCyclicRef(), isCyclicRef() functions
+  - cli/unsupported/unsupported_test.go - added TestCyclicRefWithUnevaluatedProperties with 8 test cases
+- Compliance results (cyclic ref test moved from failed to unsupported):
+  | Adapter  | Passed | Failed | Unsupported | Rate   |
+  |----------|--------|--------|-------------|--------|
+  | zod      | 4481   | 0      | 353         | 100.0% |
+  | arktype  | 4481   | 0      | 353         | 100.0% |
+  | effect   | 4481   | 0      | 353         | 100.0% |
+  | valibot  | 4429   | 52     | 353         | 98.8%  |
+- **Learnings for future iterations:**
+  - Cyclic detection must happen at root level only (after full validation pass)
+  - `#` ref is direct cycle, `#/$defs/X` needs lookup and recursive check
+  - visiting map prevents infinite loops when $defs reference each other
+  - Valibot still has ~10 failures per draft (JS property names + propertyNames issues) - separate stories
+

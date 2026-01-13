@@ -304,19 +304,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 43,
-      "failed": 1,
+      "passed": 37,
+      "failed": 0,
       "skipped": 0,
-      "total": 44,
-      "failures": [
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 3rd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 37
     },
     {
       "keyword": "uniqueItems",
@@ -334,13 +325,13 @@
     }
   ],
   "summary": {
-    "passed": 955,
-    "failed": 1,
+    "passed": 949,
+    "failed": 0,
     "skipped": 0,
-    "total": 956,
-    "percentage": 99.89539748953975,
+    "total": 949,
+    "percentage": 100,
     "unsupportedFeatures": {
-      "count": 158,
+      "count": 165,
       "items": [
         {
           "path": "draft2019-09/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'",
@@ -817,6 +808,34 @@
         {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/x and y are invalid",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
         },
         {
           "path": "draft2019-09/unevaluatedProperties/unevaluatedProperties before $ref/with no unevaluated properties",

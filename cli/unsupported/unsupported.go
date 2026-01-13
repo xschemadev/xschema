@@ -109,7 +109,119 @@ func hasItemApplicators(obj map[string]any) bool {
 // Returns *UnsupportedKeywordError if any unsupported keyword is found, nil otherwise.
 func ValidateKeywords(node any) *UnsupportedKeywordError {
 	load()
-	return validateNode(node, "")
+	if err := validateNode(node, ""); err != nil {
+		return err
+	}
+
+	// Check for cyclic $ref combined with unevaluatedProperties at root
+	if obj, ok := node.(map[string]any); ok {
+		if _, hasUnevalProps := obj["unevaluatedProperties"]; hasUnevalProps {
+			if hasCyclicRef(obj) {
+				return &UnsupportedKeywordError{
+					Keyword: "unevaluatedProperties",
+					Reason:  "cyclic $ref with unevaluatedProperties requires recursive annotation tracking",
+					Path:    "",
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+// hasCyclicRef checks if a schema contains a $ref that cycles back to the root.
+// This includes direct "#" refs and refs through $defs that eventually reference root.
+func hasCyclicRef(root map[string]any) bool {
+	// Track which $defs we're currently visiting to detect cycles through $defs
+	visiting := make(map[string]bool)
+	return checkForCyclicRef(root, root, visiting)
+}
+
+// checkForCyclicRef recursively checks for cyclic refs
+func checkForCyclicRef(node any, root map[string]any, visiting map[string]bool) bool {
+	switch v := node.(type) {
+	case map[string]any:
+		// Check if this object has a $ref
+		if ref, ok := v["$ref"].(string); ok {
+			if isCyclicRef(ref, root, visiting) {
+				return true
+			}
+		}
+		// Recurse into all nested objects
+		for _, child := range v {
+			if checkForCyclicRef(child, root, visiting) {
+				return true
+			}
+		}
+	case []any:
+		for _, item := range v {
+			if checkForCyclicRef(item, root, visiting) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isCyclicRef checks if a $ref value creates a cycle
+func isCyclicRef(ref string, root map[string]any, visiting map[string]bool) bool {
+	// Direct root reference
+	if ref == "#" {
+		return true
+	}
+
+	// Check refs to $defs - these might eventually cycle back
+	if len(ref) > 8 && ref[:8] == "#/$defs/" {
+		defName := ref[8:]
+		// Check if there's a slash (nested path) and extract just the def name
+		for i := 0; i < len(defName); i++ {
+			if defName[i] == '/' {
+				defName = defName[:i]
+				break
+			}
+		}
+
+		// If we're already visiting this def, we found a cycle
+		if visiting[defName] {
+			return true
+		}
+
+		// Look up the definition and check it for cycles
+		if defs, ok := root["$defs"].(map[string]any); ok {
+			if defSchema, ok := defs[defName]; ok {
+				visiting[defName] = true
+				result := checkForCyclicRef(defSchema, root, visiting)
+				visiting[defName] = false
+				return result
+			}
+		}
+	}
+
+	// Also check legacy definitions keyword
+	if len(ref) > 14 && ref[:14] == "#/definitions/" {
+		defName := ref[14:]
+		for i := 0; i < len(defName); i++ {
+			if defName[i] == '/' {
+				defName = defName[:i]
+				break
+			}
+		}
+
+		if visiting[defName] {
+			return true
+		}
+
+		if defs, ok := root["definitions"].(map[string]any); ok {
+			if defSchema, ok := defs[defName]; ok {
+				visiting[defName] = true
+				result := checkForCyclicRef(defSchema, root, visiting)
+				visiting[defName] = false
+				return result
+			}
+		}
+	}
+
+	return false
 }
 
 func validateNode(node any, path string) *UnsupportedKeywordError {

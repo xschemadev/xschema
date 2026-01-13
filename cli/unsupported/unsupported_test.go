@@ -336,6 +336,127 @@ func TestValidateKeywords_RealTestSuiteSchemas(t *testing.T) {
 	}
 }
 
+// TestCyclicRefWithUnevaluatedProperties tests detection of cyclic $ref combined with unevaluatedProperties
+func TestCyclicRefWithUnevaluatedProperties(t *testing.T) {
+	tests := []struct {
+		name    string
+		schema  map[string]any
+		wantErr bool
+	}{
+		{
+			name: "direct cyclic $ref: # with unevaluatedProperties",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "non-cyclic ref with unevaluatedProperties is allowed",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#/$defs/StringType"},
+				},
+				"$defs": map[string]any{
+					"StringType": map[string]any{"type": "string"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "cyclic ref through $defs with unevaluatedProperties",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#/$defs/Recursive"},
+				},
+				"$defs": map[string]any{
+					"Recursive": map[string]any{"$ref": "#"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "cyclic ref through multiple $defs",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#/$defs/A"},
+				},
+				"$defs": map[string]any{
+					"A": map[string]any{"$ref": "#/$defs/B"},
+					"B": map[string]any{"$ref": "#"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "self-referencing $defs (cycle within defs)",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#/$defs/Self"},
+				},
+				"$defs": map[string]any{
+					"Self": map[string]any{"$ref": "#/$defs/Self"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "standalone unevaluatedProperties without refs still allowed",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"type": "string"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "cyclic ref without unevaluatedProperties is allowed",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#"},
+				},
+				"additionalProperties": false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "cyclic ref with legacy definitions keyword",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"x": map[string]any{"$ref": "#/definitions/Recursive"},
+				},
+				"definitions": map[string]any{
+					"Recursive": map[string]any{"$ref": "#"},
+				},
+				"unevaluatedProperties": false,
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateKeywords(tt.schema)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr && err != nil {
+				// Check that the error mentions cyclic
+				if err.Keyword != "unevaluatedProperties" {
+					t.Errorf("expected keyword 'unevaluatedProperties', got %q", err.Keyword)
+				}
+			}
+		})
+	}
+}
+
 // TestValidateKeywords_SpecificUnsupportedSchemas tests specific schemas that MUST be detected
 func TestValidateKeywords_SpecificUnsupportedSchemas(t *testing.T) {
 	homeDir, err := os.UserHomeDir()
