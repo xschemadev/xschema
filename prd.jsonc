@@ -248,8 +248,8 @@
         "`bun run build` succeeds in web/ directory",
         "No build errors in web app"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated generate-unsupported-features.ts: (1) Changed path from cli/compliance/ to cli/unsupported/, (2) Changed interface from 'tests' array to 'keywords' array, (3) Changed display to show keywords per group (e.g., '$dynamicRef', '$dynamicAnchor') or 'context-dependent' for groups without specific keywords. Page renders correctly with 3 accordions showing keyword info and explanations."
     },
     {
       "id": "US-017",
