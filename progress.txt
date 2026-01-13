@@ -229,3 +229,24 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - The applicator keywords indicate that annotation tracking would be needed at runtime
   - Reason messages include the specific applicators: "requires annotation tracking when combined with applicators (allOf, anyOf, ...)"
 ---
+
+## 2026-01-13 - US-004
+- Verified all unit tests for keyword detection already exist (implemented in US-002 and US-003)
+- Test coverage:
+  - TestValidateKeywords: covers $dynamicRef at root, nested, and valid schemas
+  - TestContextAwareUnevaluatedProperties: covers standalone and all 7 applicator combinations
+  - TestContextAwareUnevaluatedItems: covers standalone and all 6 applicator combinations
+- All acceptance criteria met:
+  - $dynamicRef at root: `schema_with_$dynamicRef`
+  - $dynamicRef nested: `nested_unsupported_keyword`
+  - unevaluatedProperties standalone: `standalone_unevaluatedProperties_is_allowed`
+  - unevaluatedProperties + allOf: `unevaluatedProperties_+_allOf_is_unsupported`
+  - unevaluatedProperties + $ref: `unevaluatedProperties_+_$ref_is_unsupported`
+  - unevaluatedItems standalone: `standalone_unevaluatedItems_is_allowed`
+  - unevaluatedItems + prefixItems: `unevaluatedItems_+_prefixItems_is_unsupported`
+  - fully supported schema: `valid_schema`
+- Files changed: none (tests already exist)
+- **Learnings for future iterations:**
+  - Test coverage was completed as part of the implementation stories (US-002, US-003)
+  - Table-driven tests with t.Run provide clear test case identification
+---

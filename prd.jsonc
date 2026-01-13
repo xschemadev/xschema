@@ -64,8 +64,8 @@
         "Test: fully supported schema returns nil",
         "`go test ./unsupported/ -v` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "All tests already implemented in US-002 and US-003. TestValidateKeywords covers $dynamicRef at root and nested. TestContextAwareUnevaluatedProperties/Items cover all unevaluated keyword combinations."
     },
     {
       "id": "US-005",
