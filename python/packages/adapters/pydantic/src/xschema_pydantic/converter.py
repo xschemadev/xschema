@@ -4,6 +4,7 @@ from typing import Any
 
 from xschema_core import parse
 
+from .import_collector import ImportCollector
 from .renderer import render
 
 
@@ -38,8 +39,10 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     # Render the IR to Pydantic code
     result = render(ir_node, class_name)
 
-    # Convert imports set to sorted list for consistent output
-    imports = sorted(result.imports)
+    # Collect and deduplicate imports using ImportCollector
+    collector = ImportCollector()
+    for import_stmt in result.imports:
+        collector.add(import_stmt)
 
     # Determine if this is a class definition or a type expression
     # Class definitions (objects) have code that starts with "class "
@@ -49,8 +52,7 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         schema_code = result.code
     else:
         # Non-object types get TypeAdapter
-        imports.append("from pydantic import TypeAdapter")
-        imports = sorted(set(imports))
+        collector.add("from pydantic import TypeAdapter")
 
         # If there's helper code (like for Never type), prepend it
         type_adapter_stmt = f"{var_name} = TypeAdapter({result.type_expr})"
@@ -58,6 +60,9 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
             schema_code = f"{result.code}\n\n{type_adapter_stmt}"
         else:
             schema_code = type_adapter_stmt
+
+    # Convert imports to sorted, deduplicated list
+    imports = collector.to_list()
 
     return {
         "namespace": namespace,

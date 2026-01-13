@@ -184,7 +184,7 @@
         "Test no duplicate imports in output",
         "Test correct imports for complex schema using multiple features"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "renderer-unit-tests",
