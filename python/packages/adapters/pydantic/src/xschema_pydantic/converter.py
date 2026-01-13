@@ -4,6 +4,8 @@ from typing import Any
 
 from xschema_core import parse
 
+from .renderer import render
+
 
 def to_pascal_case(name: str) -> str:
     """Convert a variable name to PascalCase for class names."""
@@ -33,11 +35,29 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     # Generate class name from varName
     class_name = to_pascal_case(var_name)
 
-    # TODO: Call renderer to generate Pydantic code (implemented in adapter-renderer-* tasks)
-    # For now, generate a placeholder that shows the converter is working
-    imports = ["from pydantic import BaseModel"]
-    schema_code = f"class {class_name}(BaseModel):\n    pass  # TODO: implement rendering"
-    type_expr = class_name
+    # Render the IR to Pydantic code
+    result = render(ir_node, class_name)
+
+    # Convert imports set to sorted list for consistent output
+    imports = sorted(result.imports)
+
+    # Determine if this is a class definition or a type expression
+    # Class definitions (objects) have code that starts with "class "
+    is_class_definition = result.code.startswith("class ")
+
+    if is_class_definition:
+        schema_code = result.code
+    else:
+        # Non-object types get TypeAdapter
+        imports.append("from pydantic import TypeAdapter")
+        imports = sorted(set(imports))
+
+        # If there's helper code (like for Never type), prepend it
+        type_adapter_stmt = f"{var_name} = TypeAdapter({result.type_expr})"
+        if result.code:
+            schema_code = f"{result.code}\n\n{type_adapter_stmt}"
+        else:
+            schema_code = type_adapter_stmt
 
     return {
         "namespace": namespace,
@@ -45,5 +65,5 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         "varName": var_name,
         "imports": imports,
         "schema": schema_code,
-        "type": type_expr,
+        "type": result.type_expr,
     }
