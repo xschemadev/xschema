@@ -38,7 +38,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: validation failed for compliance://draft6/additionalItems/group_6: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '': validation failed\n    - at '/items': got array, want boolean or object\n    - at '/allOf/0': 'allOf' failed\n      - at '/allOf/0/items': got array, want boolean or object"
+          "error": "bundling error: validation failed for compliance://draft6/additionalItems/group_6: invalid JSON Schema: \"file:///home/trapani/dev/xschema/cli/schema.json#\" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'\n- at '': 'allOf' failed\n  - at '': validation failed\n    - at '/allOf/0': 'allOf' failed\n      - at '/allOf/0/items': got array, want boolean or object\n    - at '/items': got array, want boolean or object"
         },
         {
           "group": "additionalItems with heterogeneous array",

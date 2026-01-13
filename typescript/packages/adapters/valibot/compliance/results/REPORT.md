@@ -1934,9 +1934,9 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `error: bundling error: validation failed for compliance://draft7/additionalItems/group_6: invalid JSON Schema: "file:///home/trapani/dev/xschema/cli/schema.json#" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'
 - at '': 'allOf' failed
   - at '': validation failed
+    - at '/items': got array, want boolean or object
     - at '/allOf/0': 'allOf' failed
-      - at '/allOf/0/items': got array, want boolean or object
-    - at '/items': got array, want boolean or object`
+      - at '/allOf/0/items': got array, want boolean or object`
 - **additionalItems with heterogeneous array**
   - Test: heterogeneous invalid instance
   - Expected: `invalid`, Got: `error: bundling error: validation failed for compliance://draft7/additionalItems/group_8: invalid JSON Schema: "file:///home/trapani/dev/xschema/cli/schema.json#" is not valid against metaschema: jsonschema validation failed with 'https://json-schema.org/draft/2020-12/schema#'

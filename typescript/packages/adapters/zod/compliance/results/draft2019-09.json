@@ -334,14 +334,6 @@
       "count": 40,
       "items": [
         {
-          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
-          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
-          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
-        },
-        {
           "path": "draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
@@ -475,6 +467,14 @@
         },
         {
           "path": "draft2019-09/recursiveRef/dynamic $recursiveRef destination (not predictable at schema compile time)/integer node",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays",
+          "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
+        },
+        {
+          "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking"
         },
         {
