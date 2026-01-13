@@ -1,0 +1,347 @@
+{
+  "project": "xschema",
+  "description": "Centralized Unsupported Keyword Detection - Move detection from TS adapters to Go CLI",
+  "userStories": [
+    {
+      "id": "US-007",
+      "title": "Establish compliance baseline",
+      "description": "As a maintainer, I need to capture current compliance state before changes to detect regressions.",
+      "acceptanceCriteria": [
+        "Run `bun run compliance` on ALL adapters BEFORE any changes",
+        "Save/note the current passed/failed/unsupported counts per adapter per draft",
+        "Adapters: zod, arktype, valibot, effect",
+        "This establishes the baseline for regression detection"
+      ],
+      "passes": true,
+      "notes": "Baseline captured in progress.txt US-001"
+    },
+    {
+      "id": "US-001",
+      "title": "Define UnsupportedKeywordError type",
+      "description": "As a developer, I need a typed error for unsupported keywords so callers can distinguish it from other errors.",
+      "acceptanceCriteria": [
+        "Add `UnsupportedKeywordError` struct in `cli/unsupported/unsupported.go`",
+        "Contains: Keyword string, Reason string, Path string (location in schema)",
+        "Implements `error` interface with descriptive message",
+        "`ValidateKeywords()` returns `*UnsupportedKeywordError` (not generic error)",
+        "`go vet ./...` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-002"
+    },
+    {
+      "id": "US-002",
+      "title": "Add context-aware unevaluated detection",
+      "description": "As a user, I want unevaluatedProperties to work standalone but error when combined with applicators.",
+      "acceptanceCriteria": [
+        "`ValidateKeywords()` checks for unevaluated keywords at each schema level",
+        "`unevaluatedProperties` standalone: allowed (no error)",
+        "`unevaluatedProperties` with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not): returns UnsupportedKeywordError",
+        "Same logic for `unevaluatedItems` with array applicators (prefixItems, contains)",
+        "Detection is recursive (checks nested schemas)",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-003"
+    },
+    {
+      "id": "US-003",
+      "title": "Update unsupported-features.json to keywords-only",
+      "description": "As a maintainer, I want unsupported features defined by keywords only, not hardcoded test paths.",
+      "acceptanceCriteria": [
+        "Remove all entries from `tests` arrays in `unsupported-features.json`",
+        "Add `unevaluated-with-applicators` group with keywords array",
+        "Remove `ContainsTest()`, `TestPaths()`, `TestCount()` methods",
+        "Update tests to not rely on test paths",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-007"
+    },
+    {
+      "id": "US-009",
+      "title": "Unit tests for keyword detection",
+      "description": "As a developer, I need comprehensive tests for the keyword detection logic.",
+      "acceptanceCriteria": [
+        "Test: `$dynamicRef` detected at root",
+        "Test: `$dynamicRef` detected when nested in properties",
+        "Test: `unevaluatedProperties` standalone allowed",
+        "Test: `unevaluatedProperties` + allOf rejected",
+        "Test: `unevaluatedProperties` + $ref rejected",
+        "Test: `unevaluatedItems` standalone allowed",
+        "Test: `unevaluatedItems` + prefixItems rejected",
+        "Test: supported schema passes validation",
+        "`go test ./unsupported/ -v` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-004"
+    },
+    {
+      "id": "US-004",
+      "title": "Integrate validation into processor",
+      "description": "As a user running xschema generate, I want early errors when my schema contains unsupported keywords.",
+      "acceptanceCriteria": [
+        "`processor.Process()` calls `unsupported.ValidateKeywords()` on each schema",
+        "Validation happens AFTER bundling (so we validate the resolved schema)",
+        "`UnsupportedKeywordError` propagates up to caller unchanged",
+        "Existing processor tests pass",
+        "`go test ./processor/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-005"
+    },
+    {
+      "id": "US-005",
+      "title": "Compliance catches UnsupportedKeywordError and skips",
+      "description": "As a compliance runner, I want tests with unsupported keywords automatically skipped (not failed).",
+      "acceptanceCriteria": [
+        "`bundleSchemas()` in `cli/compliance/runner.go` catches `UnsupportedKeywordError`",
+        "When caught, mark group as unsupported (not failed)",
+        "Add to `summary.UnsupportedFeatures` with keyword and reason",
+        "All tests in that group counted as unsupported",
+        "No adapter call for unsupported groups",
+        "`go test ./compliance/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-006"
+    },
+    {
+      "id": "US-010",
+      "title": "Opposite compliance test",
+      "description": "As a maintainer, I want a test that verifies unsupported schemas actually produce errors.",
+      "acceptanceCriteria": [
+        "Add test in `cli/unsupported/`",
+        "Test loads schemas known to be unsupported (from JSON Schema Test Suite)",
+        "Calls `unsupported.ValidateKeywords()` on each",
+        "Asserts all return `UnsupportedKeywordError`",
+        "Covers: dynamicRef, recursiveRef, unevaluatedProperties+allOf",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-008"
+    },
+    {
+      "id": "US-006",
+      "title": "Remove TypeScript parser checks",
+      "description": "As a maintainer, I want the TS parser to not check for unsupported keywords since Go handles it.",
+      "acceptanceCriteria": [
+        "Remove `unevaluatedItems` check from `typescript/packages/core/src/parser/index.ts`",
+        "Remove `unevaluatedProperties` check (the hasApplicators block)",
+        "`bun run build` passes (from `typescript/` directory)",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-009"
+    },
+    {
+      "id": "US-008",
+      "title": "Verify compliance exhaustiveness",
+      "description": "As a maintainer, I want compliance to pass with 0 unexpected failures after changes.",
+      "acceptanceCriteria": [
+        "Run `bun run compliance` on ALL adapters: zod, arktype, valibot, effect",
+        "All drafts show failed=0 in summary for each adapter (except known baseline)",
+        "Unsupported count includes dynamic refs, recursive refs, and unevaluated-with-applicators",
+        "No regressions from baseline"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-010"
+    },
+    {
+      "id": "US-011",
+      "title": "Remove deprecated test path matching",
+      "description": "As a maintainer, I want to clean up the deprecated test path matching system.",
+      "acceptanceCriteria": [
+        "Remove `tests` field from FeatureGroup struct",
+        "Remove `tests` key from all feature groups in JSON",
+        "Remove related tests that checked test paths",
+        "Update compliance runner to not use test path filtering",
+        "`go test ./...` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-011"
+    },
+    {
+      "id": "US-012",
+      "title": "Fix zod adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the zod adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "`unevaluatedProperties: false` generates `.strict()` or equivalent",
+        "`unevaluatedProperties: { type: \"string\" }` generates `.catchall(z.string())`",
+        "`unevaluatedItems: false` generates tuple that rejects extra items",
+        "`unevaluatedItems: { type: \"string\" }` generates tuple with string rest",
+        "Run `bun run compliance` from zod adapter",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-012"
+    },
+    {
+      "id": "US-013",
+      "title": "Fix arktype adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the arktype adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same patterns as zod but using arktype syntax",
+        "Run `bun run compliance` from arktype adapter",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-013"
+    },
+    {
+      "id": "US-014",
+      "title": "Fix valibot adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the valibot adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same patterns as zod but using valibot syntax",
+        "Run `bun run compliance` from valibot adapter",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions beyond baseline failures",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-014"
+    },
+    {
+      "id": "US-015",
+      "title": "Fix effect adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the effect adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same patterns as zod but using effect schema syntax",
+        "Run `bun run compliance` from effect adapter",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-015"
+    },
+    {
+      "id": "US-016",
+      "title": "Update web app for new unsupported features format",
+      "description": "As a user viewing the docs, I want the unsupported features page to display correctly with keyword-based format.",
+      "acceptanceCriteria": [
+        "Update `web/scripts/generate-unsupported-features.ts` to read from `cli/unsupported/unsupported-features.json`",
+        "Update script to use `keywords` array instead of `tests` array",
+        "Generate page showing keyword groups with explanations",
+        "Show which keywords trigger each limitation",
+        "No build errors in web app"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-016"
+    },
+    {
+      "id": "US-017",
+      "title": "Make unsupported features output verbose-only",
+      "description": "As a CLI user, I want the detailed unsupported features list to only show with --verbose flag.",
+      "acceptanceCriteria": [
+        "Move 'Unsupported Features:' print block in `cli/cmd/compliance.go` behind verbose check",
+        "Summary line still shows unsupported count (e.g., '181 unsupported')",
+        "With `--verbose`, show the detailed breakdown by reason",
+        "`go build -o xschema . && go vet ./...` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-017"
+    },
+    {
+      "id": "US-018",
+      "title": "Mark cyclic $ref + unevaluatedProperties as unsupported",
+      "description": "As a compliance runner, I want schemas with cyclic $ref combined with unevaluatedProperties to be marked as unsupported.",
+      "acceptanceCriteria": [
+        "Add detection for cyclic $ref patterns combined with unevaluatedProperties in `cli/unsupported/unsupported.go`",
+        "Pattern: schema has `unevaluatedProperties` AND contains `$ref` that creates a cycle",
+        "Return `UnsupportedKeywordError` with reason 'cyclic $ref with unevaluatedProperties requires recursive annotation tracking'",
+        "Test: schema with cyclic ref + unevaluatedProperties returns error",
+        "Test: schema with non-cyclic ref + unevaluatedProperties still works",
+        "Run compliance on all adapters - 'unevaluatedProperties + single cyclic ref' should move from failed to unsupported",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": true,
+      "notes": "Completed in progress.txt US-018"
+    },
+    {
+      "id": "US-019",
+      "title": "Mark valibot JS property names tests as unsupported",
+      "description": "As a compliance runner, I want tests using JavaScript prototype property names to be marked as unsupported for valibot.",
+      "acceptanceCriteria": [
+        "Add adapter-specific unsupported test patterns to compliance runner",
+        "Create `cli/compliance/adapter-limitations.json` config file",
+        "Structure: `{ \"valibot\": { \"unsupported_patterns\": [\"Javascript object property names\"] } }`",
+        "Compliance runner checks test group description against adapter's unsupported patterns",
+        "Matching tests marked as unsupported with reason 'valibot library limitation: JS prototype property names'",
+        "Run `bun run compliance` on valibot - 10 'Javascript object property names' tests per draft should be unsupported",
+        "Other adapters unaffected",
+        "`go test ./compliance/` passes"
+      ],
+      "passes": true,
+      "notes": "Created adapter-limitations.json with @xschemadev/valibot entry. Actually 14 tests per draft (7 properties + 7 required) are now unsupported. Valibot at 100% pass rate."
+    },
+    {
+      "id": "US-020",
+      "title": "Fix effect adapter unevaluatedItems false handling",
+      "description": "As a user, I want the effect adapter to correctly handle unevaluatedItems: false without errors.",
+      "acceptanceCriteria": [
+        "Fix `renderArray` in `typescript/packages/adapters/effect/src/renderer.ts`",
+        "For `unevaluatedItems: false` with no items: use `S.Tuple()` or `S.Array(S.Never)` instead of `S.maxItems(0)`",
+        "'unevaluatedItems false / with no unevaluated items' test passes",
+        "'unevaluatedItems false / with unevaluated items' test passes",
+        "Run `bun run compliance` from effect adapter",
+        "Effect failures should drop from 8 to 4 (cousins and cyclic ref remain)",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Fixed by using S.Tuple() instead of S.maxItems(0). Failures dropped from 4 to 1 per draft (only cyclic ref remains). 'unevaluatedItems false' tests now pass."
+    },
+    {
+      "id": "US-020b",
+      "title": "Mark unevaluatedItems in allOf subschema as unsupported",
+      "description": "As a compliance runner, I want schemas where unevaluatedItems appears inside an allOf subschema to be marked as unsupported.",
+      "acceptanceCriteria": [
+        "Update `validateNode` in `cli/unsupported/unsupported.go` to track 'inside applicator' context",
+        "When recursing into allOf/anyOf/oneOf children, set flag indicating applicator context",
+        "If unevaluatedItems found while in applicator context, return UnsupportedKeywordError",
+        "Test: `{allOf: [{items: true}, {unevaluatedItems: false}]}` returns unsupported",
+        "Test: `{unevaluatedItems: false}` alone still works",
+        "'unevaluatedItems can't see inside cousins' moves from failed to unsupported",
+        "Effect failures should drop from 4 to 2 (only cyclic ref remains)",
+        "`go test ./unsupported/` passes"
+      ],
+      "passes": true,
+      "notes": "Added insideApplicator context tracking. Effect/zod/arktype now at 100% (0 failures). Valibot still has 11 failures (JS property names, propertyNames issues)."
+    },
+    {
+      "id": "US-021",
+      "title": "Fix valibot propertyNames + unevaluatedProperties handling",
+      "description": "As a user, I want valibot to correctly handle schemas with both propertyNames and unevaluatedProperties.",
+      "acceptanceCriteria": [
+        "Investigate the failure in `typescript/packages/adapters/valibot/src/renderer.ts`",
+        "propertyNames validates keys only; unevaluatedProperties should still validate values",
+        "Fix `renderObject` to properly apply unevaluatedProperties even when propertyNames is present",
+        "Test 'unevaluatedProperties not affected by propertyNames / string property is invalid' passes",
+        "Run `bun run compliance` from valibot adapter",
+        "`bun run typecheck` passes"
+      ],
+      "passes": true,
+      "notes": "Fixed renderObjectWithPatternProps to handle unevaluatedProperties schema when additionalProperties is not set. Failures dropped from 11 to 10 per draft."
+    },
+    {
+      "id": "US-022",
+      "title": "Final compliance verification",
+      "description": "As a maintainer, I want to verify all adapters have zero failures after all fixes.",
+      "acceptanceCriteria": [
+        "Run `bun run compliance` on all adapters after US-018 through US-021 complete",
+        "zod: 0 failed (cyclic ref moved to unsupported)",
+        "arktype: 0 failed (cyclic ref moved to unsupported)",
+        "effect: 0 failed (unevaluatedItems fixed, cyclic ref unsupported)",
+        "valibot: 0 failed (JS names unsupported, propertyNames fixed, cyclic ref unsupported)",
+        "Update progress.txt with final compliance numbers",
+        "All adapters at 100% pass rate (excluding unsupported)"
+      ],
+      "passes": true,
+      "notes": "All 4 adapters at 100% pass rate. zod/arktype/effect: 4455 passed, 379 unsupported. valibot: 4385 passed, 449 unsupported."
+    }
+  ]
+}
