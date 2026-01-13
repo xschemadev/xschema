@@ -7,21 +7,30 @@ from xschema_core.ir import (
     ArrayConstraints,
     ArrayNode,
     BooleanNode,
+    ConditionalNode,
+    ContainsConstraint,
+    Dependency,
     EnumNode,
     IntersectionNode,
     LiteralNode,
     NeverNode,
+    NotNode,
     NullNode,
+    NullableNode,
     NumberConstraints,
     NumberNode,
     ObjectNode,
     OneOfNode,
+    PatternPropertyDef,
     PropertyDef,
-    RefNode,
+    PropertyDependency,
     SchemaNode,
+    SchemaDependency,
     StringConstraints,
     StringNode,
     TupleNode,
+    TypeGuard,
+    TypeGuardedNode,
     UnionNode,
 )
 
@@ -51,6 +60,27 @@ def parse(schema: dict | bool) -> SchemaNode:
     # Handle enum
     if "enum" in schema:
         return EnumNode(values=tuple(schema["enum"]))
+
+    # Handle not keyword
+    if "not" in schema:
+        inner = parse(schema["not"])
+        return NotNode(schema=inner)
+
+    # Handle conditional (if/then/else)
+    if "if" in schema:
+        if_schema = parse(schema["if"])
+        then_schema = parse(schema["then"]) if "then" in schema else None
+        else_schema = parse(schema["else"]) if "else" in schema else None
+        return ConditionalNode(
+            if_schema=if_schema, then_schema=then_schema, else_schema=else_schema
+        )
+
+    # Handle nullable (OpenAPI 3.0 style)
+    if schema.get("nullable") is True:
+        # Remove nullable and parse the rest
+        inner_schema = {k: v for k, v in schema.items() if k != "nullable"}
+        inner = parse(inner_schema)
+        return NullableNode(inner=inner)
 
     # Handle composition keywords
     if "allOf" in schema:
@@ -82,6 +112,11 @@ def parse(schema: dict | bool) -> SchemaNode:
 
     # Infer type from keywords if not specified
     if schema_type is None:
+        # Check if this is a type-guarded schema (multiple type-specific keywords without type)
+        guards = _detect_type_guards(schema)
+        if len(guards) > 1:
+            return TypeGuardedNode(guards=tuple(guards))
+
         schema_type = _infer_type(schema)
 
     # Parse based on type
@@ -194,9 +229,53 @@ def _parse_object(schema: dict) -> ObjectNode:
     else:
         additional_node = parse(additional)
 
+    # Handle patternProperties
+    pattern_props: list[PatternPropertyDef] = []
+    for pattern, prop_schema in schema.get("patternProperties", {}).items():
+        prop_node = (
+            parse(prop_schema)
+            if isinstance(prop_schema, dict)
+            else (AnyNode() if prop_schema is True else NeverNode())
+        )
+        pattern_props.append(PatternPropertyDef(pattern=pattern, schema=prop_node))
+
+    # Handle propertyNames
+    property_names_node = None
+    if "propertyNames" in schema:
+        property_names_node = parse(schema["propertyNames"])
+
+    # Handle dependencies
+    dependencies: list[tuple[str, Dependency]] = []
+    for prop_name, dep_value in schema.get("dependencies", {}).items():
+        if isinstance(dep_value, list):
+            # Property dependency
+            dependencies.append(
+                (prop_name, PropertyDependency(required_properties=tuple(dep_value)))
+            )
+        elif isinstance(dep_value, dict):
+            # Schema dependency
+            dependencies.append((prop_name, SchemaDependency(schema=parse(dep_value))))
+
+    # Handle unevaluatedProperties
+    unevaluated = schema.get("unevaluatedProperties")
+    if unevaluated is None:
+        unevaluated_node: SchemaNode | bool | None = None
+    elif unevaluated is False:
+        unevaluated_node = False
+    elif isinstance(unevaluated, bool):
+        unevaluated_node = AnyNode() if unevaluated else False
+    else:
+        unevaluated_node = parse(unevaluated)
+
     return ObjectNode(
         properties=tuple(properties),
         additional_properties=additional_node,
+        pattern_properties=tuple(pattern_props),
+        property_names=property_names_node,
+        min_properties=schema.get("minProperties"),
+        max_properties=schema.get("maxProperties"),
+        dependencies=tuple(dependencies),
+        unevaluated_properties=unevaluated_node,
     )
 
 
@@ -214,15 +293,40 @@ def _parse_array(schema: dict) -> ArrayNode | TupleNode:
     else:
         items_node = parse(items)
 
+    # Handle contains constraint
+    contains_constraint = None
+    if "contains" in schema:
+        contains_schema = parse(schema["contains"])
+        min_contains = schema.get("minContains", 1)
+        max_contains = schema.get("maxContains")
+        contains_constraint = ContainsConstraint(
+            schema=contains_schema,
+            min_contains=min_contains,
+            max_contains=max_contains,
+        )
+
     constraints = ArrayConstraints(
         min_items=schema.get("minItems"),
         max_items=schema.get("maxItems"),
         unique_items=schema.get("uniqueItems", False),
+        contains=contains_constraint,
     )
+
+    # Handle unevaluatedItems
+    unevaluated = schema.get("unevaluatedItems")
+    if unevaluated is None:
+        unevaluated_node: SchemaNode | bool | None = None
+    elif unevaluated is False:
+        unevaluated_node = False
+    elif isinstance(unevaluated, bool):
+        unevaluated_node = AnyNode() if unevaluated else False
+    else:
+        unevaluated_node = parse(unevaluated)
 
     return ArrayNode(
         items=items_node,
         constraints=constraints,
+        unevaluated_items=unevaluated_node,
     )
 
 
@@ -247,10 +351,22 @@ def _parse_tuple(schema: dict) -> TupleNode:
         unique_items=schema.get("uniqueItems", False),
     )
 
+    # Handle unevaluatedItems
+    unevaluated = schema.get("unevaluatedItems")
+    if unevaluated is None:
+        unevaluated_node: SchemaNode | bool | None = None
+    elif unevaluated is False:
+        unevaluated_node = False
+    elif isinstance(unevaluated, bool):
+        unevaluated_node = AnyNode() if unevaluated else False
+    else:
+        unevaluated_node = parse(unevaluated)
+
     return TupleNode(
         prefix_items=prefix_items,
         rest_items=rest_node,
         constraints=constraints,
+        unevaluated_items=unevaluated_node,
     )
 
 
@@ -279,10 +395,22 @@ def _parse_legacy_tuple(schema: dict) -> TupleNode:
         unique_items=schema.get("uniqueItems", False),
     )
 
+    # Handle unevaluatedItems
+    unevaluated = schema.get("unevaluatedItems")
+    if unevaluated is None:
+        unevaluated_node: SchemaNode | bool | None = None
+    elif unevaluated is False:
+        unevaluated_node = False
+    elif isinstance(unevaluated, bool):
+        unevaluated_node = AnyNode() if unevaluated else False
+    else:
+        unevaluated_node = parse(unevaluated)
+
     return TupleNode(
         prefix_items=prefix_items,
         rest_items=rest_node,
         constraints=constraints,
+        unevaluated_items=unevaluated_node,
     )
 
 
@@ -358,3 +486,56 @@ def _detect_discriminator(variants: list[Any]) -> str | None:
     if common_discriminators:
         return next(iter(common_discriminators))
     return None
+
+
+def _detect_type_guards(schema: dict) -> list[TypeGuard]:
+    """Detect type-specific constraints and create type guards.
+
+    For schemas without an explicit type that have type-specific keywords,
+    create guards that apply those constraints only to matching runtime types.
+    """
+    guards = []
+
+    # Check for string-specific keywords
+    if any(k in schema for k in ("minLength", "maxLength", "pattern", "format")):
+        string_schema = _parse_string(schema)
+        guards.append(TypeGuard(check="string", schema=string_schema))
+
+    # Check for number-specific keywords
+    if any(
+        k in schema
+        for k in (
+            "minimum",
+            "maximum",
+            "exclusiveMinimum",
+            "exclusiveMaximum",
+            "multipleOf",
+        )
+    ):
+        number_schema = _parse_number(schema, integer=False)
+        guards.append(TypeGuard(check="number", schema=number_schema))
+
+    # Check for object-specific keywords
+    if any(
+        k in schema
+        for k in (
+            "properties",
+            "required",
+            "additionalProperties",
+            "patternProperties",
+            "minProperties",
+            "maxProperties",
+        )
+    ):
+        object_schema = _parse_object(schema)
+        guards.append(TypeGuard(check="object", schema=object_schema))
+
+    # Check for array-specific keywords
+    if any(
+        k in schema
+        for k in ("items", "minItems", "maxItems", "uniqueItems", "contains")
+    ):
+        array_schema = _parse_array(schema)
+        guards.append(TypeGuard(check="array", schema=array_schema))
+
+    return guards

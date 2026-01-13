@@ -47,7 +47,7 @@
         "Run 'uv run pytest tests/' and fix any failing tests",
         "Add new tests for new node types (NotNode, ConditionalNode, TypeGuardedNode, NullableNode)"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Parser should be simpler than TS version since CLI does normalization. Throw on $ref since schemas should be pre-bundled."
     },
     {
