@@ -87,7 +87,7 @@
         "Test tuple with 3 elements validates correctly",
         "Test generated code executes without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "renderer-unions-intersections",
@@ -146,7 +146,7 @@
         "Test email format rejects invalid emails",
         "Test uuid format accepts valid UUIDs"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Some formats use Pydantic types, others need Annotated with validators."
     },
     {

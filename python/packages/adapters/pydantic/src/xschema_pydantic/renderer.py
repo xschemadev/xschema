@@ -111,8 +111,17 @@ def render(node: SchemaNode, name: str) -> RenderResult:
 
 
 def render_string(node: StringNode) -> RenderResult:
-    """Render StringNode to Pydantic type."""
+    """Render StringNode to Pydantic type with format support."""
     imports: set[str] = set()
+
+    # Handle format first - format types override base str type
+    if node.format is not None:
+        format_result = _render_format(node.format, node.constraints)
+        if format_result is not None:
+            return format_result
+        # Unknown formats fall through to str with constraints
+
+    # No format or unknown format - use str with constraints
     has_constraints = node.constraints is not None and (
         node.constraints.min_length is not None
         or node.constraints.max_length is not None
@@ -142,6 +151,118 @@ def render_string(node: StringNode) -> RenderResult:
         type_expr = "str"
 
     return RenderResult(code="", type_expr=type_expr, imports=imports)
+
+
+def _render_format(fmt: str, constraints) -> RenderResult | None:
+    """Render format string types to Pydantic types.
+
+    Returns None for unknown formats (caller should use str).
+    """
+    imports: set[str] = set()
+
+    # Email format
+    if fmt == "email":
+        imports.add("from pydantic import EmailStr")
+        return RenderResult(code="", type_expr="EmailStr", imports=imports)
+
+    # URI/URL formats
+    if fmt == "uri" or fmt == "uri-reference":
+        imports.add("from pydantic import AnyUrl")
+        return RenderResult(code="", type_expr="AnyUrl", imports=imports)
+
+    if fmt == "iri" or fmt == "iri-reference":
+        # IRI is like URI but allows international characters
+        imports.add("from pydantic import AnyUrl")
+        return RenderResult(code="", type_expr="AnyUrl", imports=imports)
+
+    if fmt == "uri-template":
+        # URI template - no built-in Pydantic type, use str
+        return None
+
+    # UUID format
+    if fmt == "uuid":
+        imports.add("from uuid import UUID")
+        return RenderResult(code="", type_expr="UUID", imports=imports)
+
+    # Date/time formats
+    if fmt == "date":
+        imports.add("from datetime import date")
+        return RenderResult(code="", type_expr="date", imports=imports)
+
+    if fmt == "date-time":
+        imports.add("from datetime import datetime")
+        return RenderResult(code="", type_expr="datetime", imports=imports)
+
+    if fmt == "time":
+        imports.add("from datetime import time")
+        return RenderResult(code="", type_expr="time", imports=imports)
+
+    if fmt == "duration":
+        # ISO 8601 duration - no built-in Python type, use str
+        # Could use timedelta but duration is more complex
+        return None
+
+    # IP address formats
+    if fmt == "ipv4":
+        imports.add("from pydantic import IPvAnyAddress")
+        imports.add("from typing import Annotated")
+        imports.add("from pydantic import AfterValidator")
+        code = """def _ipv4_validator(v):
+    if v.version != 4:
+        raise ValueError("Must be IPv4 address")
+    return v"""
+        return RenderResult(
+            code=code,
+            type_expr="Annotated[IPvAnyAddress, AfterValidator(_ipv4_validator)]",
+            imports=imports,
+        )
+
+    if fmt == "ipv6":
+        imports.add("from pydantic import IPvAnyAddress")
+        imports.add("from typing import Annotated")
+        imports.add("from pydantic import AfterValidator")
+        code = """def _ipv6_validator(v):
+    if v.version != 6:
+        raise ValueError("Must be IPv6 address")
+    return v"""
+        return RenderResult(
+            code=code,
+            type_expr="Annotated[IPvAnyAddress, AfterValidator(_ipv6_validator)]",
+            imports=imports,
+        )
+
+    # Hostname format
+    if fmt == "hostname" or fmt == "idn-hostname":
+        # RFC 1123 hostname validation via regex
+        # Note: Simplified regex without lookahead/lookbehind (not supported by pydantic_core)
+        imports.add("from typing import Annotated")
+        imports.add("from pydantic import StringConstraints")
+        # Hostname: labels separated by dots, each label 1-63 chars alphanumeric+hyphen
+        hostname_pattern = r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$"
+        return RenderResult(
+            code="",
+            type_expr=f"Annotated[str, StringConstraints(pattern=r'{hostname_pattern}')]",
+            imports=imports,
+        )
+
+    # Email with internationalization
+    if fmt == "idn-email":
+        # Pydantic EmailStr handles IDN
+        imports.add("from pydantic import EmailStr")
+        return RenderResult(code="", type_expr="EmailStr", imports=imports)
+
+    # JSON Pointer
+    if fmt == "json-pointer" or fmt == "relative-json-pointer":
+        # No built-in type, use str
+        return None
+
+    # Regex format (string containing a regex)
+    if fmt == "regex":
+        # Could validate with re.compile, but just use str for now
+        return None
+
+    # Unknown format - return None to fall back to str
+    return None
 
 
 def render_number(node: NumberNode) -> RenderResult:
@@ -272,27 +393,270 @@ def render_never(node: NeverNode) -> RenderResult:
 
 
 def render_array(node: ArrayNode, name: str) -> RenderResult:
-    """Render ArrayNode to Pydantic type (placeholder)."""
-    # Will be fully implemented in adapter-renderer-arrays task
+    """Render ArrayNode to Pydantic type with constraints."""
+    # Render item type
     item_result = render(node.items, f"{name}Item")
     imports = item_result.imports.copy()
-    type_expr = f"list[{item_result.type_expr}]"
-    return RenderResult(code=item_result.code, type_expr=type_expr, imports=imports)
+    code_parts = [item_result.code] if item_result.code else []
+
+    base_type = f"list[{item_result.type_expr}]"
+
+    # Check if we have constraints to apply
+    has_length_constraints = (
+        node.constraints.min_items is not None or node.constraints.max_items is not None
+    )
+    needs_validators = (
+        node.constraints.unique_items or node.constraints.contains is not None
+    )
+
+    if has_length_constraints or needs_validators:
+        # Need Annotated type with Field or validators
+        imports.add("from typing import Annotated")
+        annotations = []
+
+        # Length constraints via Field
+        if has_length_constraints:
+            imports.add("from pydantic import Field")
+            field_args = []
+            if node.constraints.min_items is not None:
+                field_args.append(f"min_length={node.constraints.min_items}")
+            if node.constraints.max_items is not None:
+                field_args.append(f"max_length={node.constraints.max_items}")
+            annotations.append(f"Field({', '.join(field_args)})")
+
+        # uniqueItems constraint via custom validator
+        if node.constraints.unique_items:
+            imports.add("from pydantic import AfterValidator")
+            validator_name = f"_unique_{name.lower()}"
+            validator_code = f"""def {validator_name}(v: list) -> list:
+    if len(v) != len(set(map(lambda x: x if isinstance(x, (str, int, float, bool)) else id(x), v))):
+        raise ValueError("Items must be unique")
+    return v"""
+            code_parts.append(validator_code)
+            annotations.append(f"AfterValidator({validator_name})")
+
+        # contains constraint via custom validator
+        if node.constraints.contains is not None:
+            imports.add("from pydantic import AfterValidator")
+            contains_result = render(
+                node.constraints.contains.schema, f"{name}Contains"
+            )
+            imports.update(contains_result.imports)
+            if contains_result.code:
+                code_parts.append(contains_result.code)
+
+            validator_name = f"_contains_{name.lower()}"
+            min_c = node.constraints.contains.min_contains
+            max_c = node.constraints.contains.max_contains
+
+            # Generate validator based on whether we need TypeAdapter
+            imports.add("from pydantic import TypeAdapter")
+            validator_code = f"""def {validator_name}(v: list) -> list:
+    validator = TypeAdapter({contains_result.type_expr})
+    matching = sum(1 for item in v if _validates_against(validator, item))
+    if matching < {min_c}:
+        raise ValueError(f"At least {min_c} items must match contains schema, found {{matching}}")"""
+            if max_c is not None:
+                validator_code += f"""
+    if matching > {max_c}:
+        raise ValueError(f"At most {max_c} items must match contains schema, found {{matching}}")"""
+            validator_code += "\n    return v"
+
+            code_parts.append(validator_code)
+            annotations.append(f"AfterValidator({validator_name})")
+
+            # Add helper for validation checking
+            if "_validates_against" not in [
+                part for part in code_parts if "_validates_against" in part
+            ]:
+                helper_code = """def _validates_against(validator, value):
+    try:
+        validator.validate_python(value)
+        return True
+    except Exception:
+        return False"""
+                code_parts.insert(0, helper_code)
+
+        type_expr = f"Annotated[{base_type}, {', '.join(annotations)}]"
+    else:
+        type_expr = base_type
+
+    # Handle unevaluatedItems (simple case: treat like items for now)
+    # In full JSON Schema, this is complex; we simplify since CLI filters hard cases
+
+    code = "\n\n\n".join(code_parts) if code_parts else ""
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
 
 
 def render_tuple(node: TupleNode, name: str) -> RenderResult:
-    """Render TupleNode to Pydantic type (placeholder)."""
-    # Will be fully implemented in adapter-renderer-arrays task
+    """Render TupleNode to Pydantic type with rest items."""
     imports: set[str] = set()
+    code_parts: list[str] = []
     item_types: list[str] = []
 
+    # Render prefix items (fixed positions)
     for i, item in enumerate(node.prefix_items):
         item_result = render(item, f"{name}Item{i}")
         imports.update(item_result.imports)
+        if item_result.code:
+            code_parts.append(item_result.code)
         item_types.append(item_result.type_expr)
 
-    type_expr = f"tuple[{', '.join(item_types)}]"
-    return RenderResult(code="", type_expr=type_expr, imports=imports)
+    # Handle rest_items (additional items beyond prefix)
+    if node.rest_items is not None and node.rest_items is not False:
+        # rest_items is a schema - means variable length tuple
+        rest_result = render(node.rest_items, f"{name}Rest")
+        imports.update(rest_result.imports)
+        if rest_result.code:
+            code_parts.append(rest_result.code)
+
+        # For variable-length tuples with heterogeneous types, use tuple[Any, ...]
+        # and validate each position in custom validator
+        imports.add("from typing import Annotated, Any")
+        imports.add("from pydantic import BeforeValidator, TypeAdapter")
+
+        validator_name = f"_tuple_{name.lower()}"
+
+        # Build validator that checks prefix items and rest items
+        validator_lines = [f"def {validator_name}(v) -> tuple:"]
+        validator_lines.append("    if not isinstance(v, tuple):")
+        validator_lines.append(
+            "        v = tuple(v) if hasattr(v, '__iter__') else (v,)"
+        )
+        validator_lines.append(f"    if len(v) < {len(node.prefix_items)}:")
+        validator_lines.append(
+            f"        raise ValueError(f'Tuple must have at least {len(node.prefix_items)} items, got {{len(v)}}')"
+        )
+        validator_lines.append("    validated = []")
+
+        # Validate prefix items
+        for i, item_type in enumerate(item_types):
+            validator_lines.append(f"    # Validate item {i}")
+            validator_lines.append(
+                f"    prefix_{i}_validator = TypeAdapter({item_type})"
+            )
+            validator_lines.append(f"    try:")
+            validator_lines.append(
+                f"        validated.append(prefix_{i}_validator.validate_python(v[{i}]))"
+            )
+            validator_lines.append(f"    except Exception as e:")
+            validator_lines.append(
+                f"        raise ValueError(f'Item at index {i} invalid: {{e}}')"
+            )
+
+        # Validate rest items
+        validator_lines.append(f"    # Validate rest items")
+        validator_lines.append(
+            f"    rest_validator = TypeAdapter({rest_result.type_expr})"
+        )
+        validator_lines.append(f"    for i in range({len(node.prefix_items)}, len(v)):")
+        validator_lines.append(f"        try:")
+        validator_lines.append(
+            f"            validated.append(rest_validator.validate_python(v[i]))"
+        )
+        validator_lines.append(f"        except Exception as e:")
+        validator_lines.append(
+            f"            raise ValueError(f'Item at index {{i}} must match rest schema: {{e}}')"
+        )
+        validator_lines.append("    return tuple(validated)")
+
+        code_parts.append("\n".join(validator_lines))
+
+        # Type as tuple[Any, ...] with validator doing the actual type checking
+        type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
+    elif node.rest_items is False:
+        # rest_items is False - no additional items allowed (strict tuple)
+        if item_types:
+            type_expr = f"tuple[{', '.join(item_types)}]"
+        else:
+            type_expr = "tuple[()]"  # Empty tuple
+    else:
+        # rest_items is None - default behavior (fixed-size tuple)
+        if item_types:
+            type_expr = f"tuple[{', '.join(item_types)}]"
+        else:
+            type_expr = "tuple[()]"
+
+    # Handle tuple constraints (min/max items, uniqueItems, contains)
+    needs_validators = (
+        node.constraints.min_items is not None
+        or node.constraints.max_items is not None
+        or node.constraints.unique_items
+        or node.constraints.contains is not None
+    )
+
+    if needs_validators:
+        imports.add("from typing import Annotated")
+        imports.add("from pydantic import AfterValidator")
+
+        constraint_validator_name = f"_tuple_constraints_{name.lower()}"
+        validator_lines = [f"def {constraint_validator_name}(v: tuple) -> tuple:"]
+
+        if node.constraints.min_items is not None:
+            validator_lines.append(f"    if len(v) < {node.constraints.min_items}:")
+            validator_lines.append(
+                f"        raise ValueError(f'Tuple must have at least {node.constraints.min_items} items, got {{len(v)}}')"
+            )
+
+        if node.constraints.max_items is not None:
+            validator_lines.append(f"    if len(v) > {node.constraints.max_items}:")
+            validator_lines.append(
+                f"        raise ValueError(f'Tuple must have at most {node.constraints.max_items} items, got {{len(v)}}')"
+            )
+
+        if node.constraints.unique_items:
+            validator_lines.append("    if len(v) != len(set(v)):")
+            validator_lines.append(
+                "        raise ValueError('Tuple items must be unique')"
+            )
+
+        if node.constraints.contains is not None:
+            imports.add("from pydantic import TypeAdapter")
+            contains_result = render(
+                node.constraints.contains.schema, f"{name}Contains"
+            )
+            imports.update(contains_result.imports)
+            if contains_result.code:
+                code_parts.append(contains_result.code)
+
+            min_c = node.constraints.contains.min_contains
+            max_c = node.constraints.contains.max_contains
+
+            validator_lines.append(
+                f"    validator = TypeAdapter({contains_result.type_expr})"
+            )
+            validator_lines.append(
+                "    matching = sum(1 for item in v if _validates_against(validator, item))"
+            )
+            validator_lines.append(f"    if matching < {min_c}:")
+            validator_lines.append(
+                f"        raise ValueError(f'At least {min_c} items must match contains schema, found {{matching}}')"
+            )
+            if max_c is not None:
+                validator_lines.append(f"    if matching > {max_c}:")
+                validator_lines.append(
+                    f"        raise ValueError(f'At most {max_c} items must match contains schema, found {{matching}}')"
+                )
+
+            # Add helper if not already present
+            if not any("_validates_against" in part for part in code_parts):
+                helper_code = """def _validates_against(validator, value):
+    try:
+        validator.validate_python(value)
+        return True
+    except Exception:
+        return False"""
+                code_parts.insert(0, helper_code)
+
+        validator_lines.append("    return v")
+        code_parts.append("\n".join(validator_lines))
+
+        type_expr = (
+            f"Annotated[{type_expr}, AfterValidator({constraint_validator_name})]"
+        )
+
+    code = "\n\n\n".join(code_parts) if code_parts else ""
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
 
 
 def render_object(node: ObjectNode, name: str) -> RenderResult:
