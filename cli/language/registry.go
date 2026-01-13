@@ -81,6 +81,21 @@ func (r *Registry) ByName(name string) *Language {
 	return r.byName[name]
 }
 
+// Unregister removes a language from the registry by name.
+func (r *Registry) Unregister(name string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	lang, exists := r.byName[name]
+	if !exists {
+		return
+	}
+
+	delete(r.byName, name)
+	delete(r.bySchemaURL, lang.SchemaURL)
+	delete(r.bySchemaExt, lang.SchemaExt)
+}
+
 func (r *Registry) BySchemaURL(url string) *Language {
 	if !IsXSchemaURL(url) {
 		return nil
@@ -126,6 +141,12 @@ func ResetForTests() {
 
 func Register(lang Language) error {
 	return defaultRegistry.Register(lang)
+}
+
+// Unregister removes a language from the registry by name.
+// Used in tests to cleanup after registering test languages.
+func Unregister(name string) {
+	defaultRegistry.Unregister(name)
 }
 
 func SupportedLanguages() []string {

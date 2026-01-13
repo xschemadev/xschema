@@ -163,3 +163,21 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Empty $vocabulary {} disables all vocabularies for that subtree
   - This pattern works because filterObject modifies local copies of validationEnabled/formatEnabled before recursing
 ---
+
+## 2026-01-13 - US-010
+- Implemented multiple output files per language support
+- Added OutputFileSpec type with Path and Template fields
+- Language.OutputFiles []OutputFileSpec is the preferred way (legacy OutputFile/Template still works via fallback)
+- Files changed:
+  - cli/language/language.go - added OutputFileSpec type, OutputFiles field to Language struct
+  - cli/language/registry.go - added Unregister() method and package function for test cleanup
+  - cli/injector/injector.go - Inject() now iterates over OutputFiles, executes each template, collects GeneratedFiles
+  - cli/injector/injector.go - InjectClient() uses first OutputFile for import path (primary file)
+  - cli/language/langs/typescript/typescript.go - migrated to use OutputFiles with single entry
+  - cli/injector/injector_test.go - added testMultiFileLang(), TestInject_MultipleOutputFiles, TestInject_MultipleOutputFiles_StaleCleanup
+- **Learnings for future iterations:**
+  - Manifest-based stale cleanup already works for multi-file: each run writes all paths to manifest, next run compares
+  - Fallback pattern: if len(OutputFiles) == 0, create synthetic slice from legacy OutputFile/Template
+  - Test languages need SchemaURL to pass Register() validation
+  - Unregister() useful for test cleanup to avoid registry pollution between tests
+---

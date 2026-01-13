@@ -160,8 +160,8 @@
         "TypeScript still works: Zod adapter compliance still 100% (bun run compliance in zod adapter folder)",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added OutputFileSpec type with Path and Template fields. Language.OutputFiles []OutputFileSpec is preferred over legacy OutputFile/Template. Injector iterates over OutputFiles, executes each template with shared TemplateData, produces multiple GeneratedFiles. Manifest tracks all files for cleanup. TypeScript migrated to use OutputFiles with single entry. Added Unregister function for test cleanup. Two new tests: TestInject_MultipleOutputFiles (3 files including nested), TestInject_MultipleOutputFiles_StaleCleanup (verifies old files removed)."
     }
   ]
 }
