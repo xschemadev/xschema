@@ -460,6 +460,9 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			}
 			if needsNormalization(fetchedDraft) {
 				parsed = normalizeLegacySyntax(parsed)
+				if obj, ok := parsed.(map[string]any); ok {
+					obj["$schema"] = draftToSchemaURI["draft2020-12"]
+				}
 				ui.Verbosef("bundler: normalized fetched schema %s from %s to draft2020-12", resolvedURI, fetchedDraft)
 			}
 		}

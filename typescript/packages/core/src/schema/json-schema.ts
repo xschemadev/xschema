@@ -91,13 +91,3 @@ export interface JSONSchema {
 	// Allow additional properties for extensibility
 	[key: string]: unknown;
 }
-
-/** JSON Schema version identifiers */
-export type JSONSchemaVersion =
-	| "draft-2020-12"
-	| "draft-2019-09"
-	| "draft-7"
-	| "draft-6"
-	| "draft-4"
-	| "draft-3"
-	| "openapi-3.0";

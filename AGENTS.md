@@ -177,12 +177,54 @@ No test framework - validation via `bun run typecheck` and `bun run build`
 
 ## Architecture Notes
 
+### Design Principle
+
+**Commands orchestrate, packages execute.** The `cmd` package (generate, compliance) handles core logic and orchestration—calling packages in sequence, handling errors, coordinating data flow. Sub-packages are single-responsibility units that do one thing well and expose clean interfaces.
+
+### Package Reference
+
+Each package's role and how it connects to others:
+
+| Package | Responsibility | Depends On | Called By |
+|---------|---------------|------------|-----------|
+| `cmd` | CLI entry points, orchestrates pipeline | all packages | `main.go` |
+| `parser` | Finds config files, extracts declarations, detects language | `language`, `ui` | `cmd` |
+| `retriever` | Fetches schemas from URL/file/inline with caching | `fetcher`, `ui` | `cmd` |
+| `processor` | Validates, crawls refs, bundles schemas into self-contained units | `bundler`, `fetcher`, `validator`, `refextractor`, `metaschema`, `vocabulary` | `cmd`, `compliance` |
+| `generator` | Calls adapter CLIs via stdin/stdout, groups by adapter | `adapter`, `language`, `ui` | `cmd` |
+| `injector` | Writes output files using language templates | `adapter`, `language`, `ui` | `cmd` |
+| `bundler` | Resolves `$ref`, flattens `$defs`, normalizes drafts | `fetcher`, `ui` | `processor` |
+| `language` | Language config registry (TS, Python), templates, adapters | (none, leaf) | `parser`, `generator`, `injector`, `compliance` |
+| `compliance` | Runs JSON Schema Test Suite against adapters | `adapter`, `fetcher`, `language`, `processor` | `cmd` |
+| `ui` | Terminal output, colors, spinners, verbose logging | (external only) | all packages |
+| `adapter` | Protocol types for adapter communication | (none, pure types) | `generator`, `injector`, `compliance` |
+| `fetcher` | Fetcher interface, URI resolution, caching | (none, leaf) | `processor`, `bundler`, `retriever` |
+| `validator` | Validates schemas against meta-schemas | `unsupported` | `processor` |
+| `refextractor` | Discovers external `$ref` URIs for fetching | `fetcher`, `metaschema` | `processor` |
+| `metaschema` | Fetches/caches meta-schemas, extracts `$vocabulary` | `fetcher` | `processor`, `bundler` |
+| `vocabulary` | Filters schemas by enabled vocabularies | (none, leaf) | `processor` |
+| `unsupported` | Defines keywords that can't be statically compiled | (none, embeds data) | `validator`, `compliance` |
+| `config` | Loads .env files for header variable substitution | `ui` | `cmd` |
+
 ### Pipeline Flow
 
-1. **Parser**: finds JSON/JSONC files with xschema.dev `$schema`, extracts declarations
-2. **Retriever**: fetches schemas from URL/file or passes inline JSON through
-3. **Generator**: calls adapter CLIs via stdin/stdout with schema batches
-4. **Injector**: writes generated code using language templates
+```
+cmd/generate orchestrates:
+
+  parse → retriever → processor → generator → injector
+    │         │           │            │          │
+    │         │           ├─ bundler   │          │
+    │         │           ├─ validator │          │
+    │         │           └─ refs...   │          │
+    │         │                        │          │
+    └─language                    language     language
+```
+
+1. **Parser**: finds config files with xschema.dev `$schema`, extracts declarations
+2. **Retriever**: fetches raw schemas from URL/file/inline
+3. **Processor**: validates, crawls external refs, bundles into self-contained schemas
+4. **Generator**: calls adapter CLIs via stdin/stdout with schema batches
+5. **Injector**: writes output files using language templates
 
 ### Bundler vs Adapters (responsibilities)
 
@@ -201,7 +243,8 @@ Adapters receive JSON array via stdin, output JSON array via stdout:
 ### Key Types
 
 - `parser.Declaration`: Namespace, ID, Adapter, ConfigPath, SourceType, Source
-- `generator.GenerateOutput`: Namespace, ID, Schema (code), Type (expression), Imports
+- `processor.ProcessedSchema`: Namespace, ID, bundled schema, adapter, sourceURI
+- `adapter.ConvertResult`: Namespace, ID, Schema (code), Type (expression), Imports
 
 ## Common Gotchas
 

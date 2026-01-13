@@ -2,7 +2,6 @@ package compliance
 
 import (
 	"context"
-	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,10 +18,8 @@ import (
 	"github.com/xschemadev/xschema/language"
 	"github.com/xschemadev/xschema/processor"
 	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/unsupported"
 )
-
-//go:embed unsupported-features.json
-var unsupportedFeaturesData []byte
 
 // ProgressUpdate contains info about current test progress
 type ProgressUpdate struct {
@@ -53,14 +50,9 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
-// LoadUnsupportedFeatures loads unsupported features from the embedded global unsupported-features.json
-func LoadUnsupportedFeatures() (UnsupportedFeatures, error) {
-	var features UnsupportedFeatures
-	if err := json.Unmarshal(unsupportedFeaturesData, &features); err != nil {
-		return nil, fmt.Errorf("failed to parse unsupported-features.json: %w", err)
-	}
-
-	return features, nil
+// LoadUnsupportedFeatures loads unsupported features from the unsupported package
+func LoadUnsupportedFeatures() unsupported.Features {
+	return unsupported.Load()
 }
 
 // Run executes compliance tests for an adapter
@@ -89,10 +81,7 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	}
 
 	// Load unsupported features
-	unsupportedFeatures, err := LoadUnsupportedFeatures()
-	if err != nil {
-		return nil, err
-	}
+	unsupportedFeatures := LoadUnsupportedFeatures()
 
 	report := ComplianceReport{
 		Adapter: opts.AdapterName,
@@ -170,7 +159,7 @@ type runDraftOptions struct {
 	outputFunc          func(string)
 	progressFunc        func(ProgressUpdate)
 	timing              *TimingSummary
-	unsupportedFeatures UnsupportedFeatures
+	unsupportedFeatures unsupported.Features
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -434,7 +423,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 }
 
 // filterKnownIssues identifies which tests are known issues and which groups can be skipped.
-func filterKnownIssues(groups []TestGroup, draft, keyword string, unsupportedFeatures UnsupportedFeatures, summary *DraftSummary) []groupFilter {
+func filterKnownIssues(groups []TestGroup, draft, keyword string, unsupportedFeatures unsupported.Features, summary *DraftSummary) []groupFilter {
 	groupFilters := make([]groupFilter, len(groups))
 
 	for i, group := range groups {
@@ -444,7 +433,7 @@ func filterKnownIssues(groups []TestGroup, draft, keyword string, unsupportedFea
 
 		for j, tc := range group.Tests {
 			testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, group.Description, tc.Description)
-			if isUnsupported, reason := unsupportedFeatures.Contains(testPath); isUnsupported {
+			if isUnsupported, reason := unsupportedFeatures.ContainsTest(testPath); isUnsupported {
 				unsupportedItems = append(unsupportedItems, UnsupportedFeatureItem{Path: testPath, Reason: reason})
 				continue
 			}

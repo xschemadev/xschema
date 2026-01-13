@@ -22,9 +22,9 @@ type CompiledCache struct {
 
 // CacheStats tracks cache statistics for testing/debugging
 type CacheStats struct {
-	Hits       int
-	Misses     int
-	Compiles   int
+	Hits     int
+	Misses   int
+	Compiles int
 }
 
 // NewCompiledCache creates a new compiled schema cache.

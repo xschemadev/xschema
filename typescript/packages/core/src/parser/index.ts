@@ -5,8 +5,6 @@
 
 import type { JSONSchema } from "../schema/json-schema.js";
 import type { SchemaNode, TypeGuard } from "../ir/nodes.js";
-import { detectVersion, supportsRefSiblings } from "../schema/version.js";
-import { normalizeDeep } from "../schema/normalizer.js";
 import { resolveJsonPointer } from "../utils/json-pointer.js";
 import { isEmptyObject } from "../utils/primitives.js";
 import { createContext, type ParseContext } from "./context.js";
@@ -25,6 +23,7 @@ export type { ParseContext } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
+ * Expects schemas to be pre-normalized to draft2020-12 by the bundler.
  * @param schema The JSON Schema to parse
  */
 export function parse(schema: JSONSchema | boolean): SchemaNode {
@@ -33,10 +32,8 @@ export function parse(schema: JSONSchema | boolean): SchemaNode {
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	const version = detectVersion(schema);
-	const normalized = normalizeDeep(schema, version);
-	const ctx = createContext(normalized, version);
-	return parseSchema(normalized, ctx);
+	const ctx = createContext(schema);
+	return parseSchema(schema, ctx);
 }
 
 /**
@@ -51,7 +48,7 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Fail on unsupported keywords that require evaluation semantics
+	// Fail on unevaluated keywords - they require annotation tracking we can't do statically
 	if (schema.unevaluatedItems !== undefined) {
 		throw new Error("unevaluatedItems is not supported");
 	}
@@ -65,21 +62,10 @@ export function parseSchema(
 			schema.dependentSchemas ||
 			schema.not;
 		if (hasApplicators) {
-			throw new Error("unevaluatedProperties with applicators is not supported");
+			throw new Error(
+				"unevaluatedProperties with applicators is not supported",
+			);
 		}
-	}
-	// Fail on dynamic/recursive ref keywords
-	if (schema.$dynamicRef !== undefined) {
-		throw new Error("$dynamicRef is not supported");
-	}
-	if (schema.$dynamicAnchor !== undefined) {
-		throw new Error("$dynamicAnchor is not supported");
-	}
-	if (schema.$recursiveRef !== undefined) {
-		throw new Error("$recursiveRef is not supported");
-	}
-	if (schema.$recursiveAnchor !== undefined) {
-		throw new Error("$recursiveAnchor is not supported");
 	}
 
 	// Handle $ref
@@ -250,29 +236,27 @@ function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	ctx.refs.set(refPath, parsed);
 	ctx.processing.delete(refPath);
 
-	// Handle sibling keywords in draft-2019-09+
-	if (supportsRefSiblings(ctx.version)) {
-		const siblingSchema = { ...schema };
-		delete siblingSchema.$ref;
-		delete siblingSchema.$id;
-		delete siblingSchema.$anchor;
-		delete siblingSchema.$defs;
-		delete siblingSchema.definitions;
-		delete siblingSchema.$schema;
-		delete siblingSchema.$comment;
-		delete siblingSchema.$dynamicRef;
-		delete siblingSchema.$dynamicAnchor;
+	// Handle sibling keywords (draft2020-12 supports ref siblings)
+	const siblingSchema = { ...schema };
+	delete siblingSchema.$ref;
+	delete siblingSchema.$id;
+	delete siblingSchema.$anchor;
+	delete siblingSchema.$defs;
+	delete siblingSchema.definitions;
+	delete siblingSchema.$schema;
+	delete siblingSchema.$comment;
+	delete siblingSchema.$dynamicRef;
+	delete siblingSchema.$dynamicAnchor;
 
-		if (Object.keys(siblingSchema).length > 0) {
-			const siblingNode = parseSchema(siblingSchema, ctx);
-			return {
-				kind: "intersection",
-				schemas: [
-					{ kind: "ref", path: refPath, resolved: parsed },
-					siblingNode,
-				],
-			};
-		}
+	if (Object.keys(siblingSchema).length > 0) {
+		const siblingNode = parseSchema(siblingSchema, ctx);
+		return {
+			kind: "intersection",
+			schemas: [
+				{ kind: "ref", path: refPath, resolved: parsed },
+				siblingNode,
+			],
+		};
 	}
 
 	return {

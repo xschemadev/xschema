@@ -2,15 +2,8 @@
 export type { ConvertInput, ConvertResult } from "./types.js";
 export { createAdapterCLI } from "./cli.js";
 
-// JSON Schema types and utilities
-export type { JSONSchema, JSONSchemaVersion } from "./schema/index.js";
-export {
-  detectVersion,
-  supportsRefSiblings,
-  usesBooleanExclusive,
-  normalizeSchema,
-  normalizeDeep,
-} from "./schema/index.js";
+// JSON Schema types
+export type { JSONSchema } from "./schema/index.js";
 
 // Intermediate Representation (IR)
 export type {

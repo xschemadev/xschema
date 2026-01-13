@@ -3,12 +3,9 @@
  */
 
 import type { SchemaNode } from "../ir/nodes.js";
-import type { JSONSchema, JSONSchemaVersion } from "../schema/json-schema.js";
+import type { JSONSchema } from "../schema/json-schema.js";
 
 export interface ParseContext {
-	/** Detected JSON Schema version */
-	version: JSONSchemaVersion;
-
 	/** Root schema (for $ref resolution) */
 	rootSchema: JSONSchema;
 
@@ -19,12 +16,8 @@ export interface ParseContext {
 	processing: Set<string>;
 }
 
-export function createContext(
-	rootSchema: JSONSchema,
-	version: JSONSchemaVersion,
-): ParseContext {
+export function createContext(rootSchema: JSONSchema): ParseContext {
 	return {
-		version,
 		rootSchema,
 		refs: new Map(),
 		processing: new Set(),
