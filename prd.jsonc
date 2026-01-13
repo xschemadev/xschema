@@ -224,7 +224,7 @@
         "Validate test data against generated schemas",
         "Verify valid data passes, invalid data fails"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "compliance-baseline",
