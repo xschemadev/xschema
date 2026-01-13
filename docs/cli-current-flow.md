@@ -3,6 +3,7 @@
 ## Overview
 
 The CLI has two main commands:
+
 - **generate** - converts JSON Schemas to native validators
 - **compliance** - runs JSON Schema Test Suite against adapters
 
