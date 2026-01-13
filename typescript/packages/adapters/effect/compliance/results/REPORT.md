@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 952 | 4 | 0 | 158 | 99.6% |
-| draft2020-12 | 966 | 4 | 0 | 181 | 99.6% |
+| draft2019-09 | 955 | 1 | 0 | 158 | 99.9% |
+| draft2020-12 | 969 | 1 | 0 | 181 | 99.9% |
 | draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 566 | 0 | 0 | 0 | 100.0% |
 | draft6 | 760 | 0 | 0 | 0 | 100.0% |
@@ -13,8 +13,8 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.6%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.6%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.9%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.9%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-100.0%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-100.0%25-brightgreen)
@@ -66,7 +66,7 @@
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ⚠️ | 12/15 |
+| unevaluatedItems | ✅ | 15/15 |
 | unevaluatedProperties | ⚠️ | 43/44 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
@@ -290,24 +290,6 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>unevaluatedItems - 3 failures</summary>
-
-- **unevaluatedItems can't see inside cousins**
-  - Test: always fails
-  - Expected: `invalid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-- **unevaluatedItems false**
-  - Test: with no unevaluated items
-  - Expected: `valid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-- **unevaluatedItems false**
-  - Test: with unevaluated items
-  - Expected: `invalid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-
-</details>
-
-<details>
 <summary>unevaluatedProperties - 1 failure</summary>
 
 - **unevaluatedProperties + single cyclic ref**
@@ -362,7 +344,7 @@ details: Expected an integer greater than or equal to 1, actual 0`
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ⚠️ | 12/15 |
+| unevaluatedItems | ✅ | 15/15 |
 | unevaluatedProperties | ⚠️ | 45/46 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
@@ -655,24 +637,6 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 ### Unexpected Failures
-
-<details>
-<summary>unevaluatedItems - 3 failures</summary>
-
-- **unevaluatedItems can't see inside cousins**
-  - Test: always fails
-  - Expected: `invalid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-- **unevaluatedItems false**
-  - Test: with no unevaluated items
-  - Expected: `valid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-- **unevaluatedItems false**
-  - Test: with unevaluated items
-  - Expected: `invalid`, Got: `error: Invalid Argument
-details: Expected an integer greater than or equal to 1, actual 0`
-
-</details>
 
 <details>
 <summary>unevaluatedProperties - 1 failure</summary>

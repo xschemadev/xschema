@@ -585,7 +585,8 @@ function renderArray(node: ArrayNode): string {
 
 	if (!hasRealItems && node.unevaluatedItems === false) {
 		// Schema like { "unevaluatedItems": false } - empty array only
-		let result = "S.Array(S.Never).pipe(S.maxItems(0))";
+		// S.Tuple() is a zero-element tuple that only accepts empty arrays
+		let result = "S.Tuple()";
 		const filters = renderArrayConstraints(node.constraints);
 		if (filters.length > 0) {
 			result = `${result}.pipe(${filters.join(", ")})`;

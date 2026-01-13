@@ -297,36 +297,10 @@
     },
     {
       "keyword": "unevaluatedItems",
-      "passed": 12,
-      "failed": 3,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "unevaluatedItems can't see inside cousins",
-          "test": "always fails",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
-        },
-        {
-          "group": "unevaluatedItems false",
-          "test": "with no unevaluated items",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
-        },
-        {
-          "group": "unevaluatedItems false",
-          "test": "with unevaluated items",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "unevaluatedProperties",
@@ -360,11 +334,11 @@
     }
   ],
   "summary": {
-    "passed": 966,
-    "failed": 4,
+    "passed": 969,
+    "failed": 1,
     "skipped": 0,
     "total": 970,
-    "percentage": 99.58762886597938,
+    "percentage": 99.89690721649484,
     "unsupportedFeatures": {
       "count": 181,
       "items": [

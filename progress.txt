@@ -497,3 +497,22 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Test path matching is completely deprecated - keyword detection in bundleSchemas() handles all unsupported schema detection
   - The web page now shows which keywords trigger each limitation, not which tests are affected
 ---
+
+## 2026-01-13 - US-020
+- Fixed effect adapter unevaluatedItems: false handling
+- Changed `renderArray()` to use `S.Tuple()` instead of `S.Array(S.Never).pipe(S.maxItems(0))`
+- Effect's `S.maxItems(0)` throws "Expected an integer >= 1, actual 0"
+- `S.Tuple()` creates a zero-element tuple that only accepts empty arrays (semantically correct)
+- Files changed:
+  - typescript/packages/adapters/effect/src/renderer.ts - line 588, changed empty array handling
+- Compliance results:
+  - Before: 4 failures per draft (unevaluatedItems false x2, cousins x1, cyclic ref x1)
+  - After: 1 failure per draft (only cyclic ref remains)
+  - unevaluatedItems false tests now pass (both valid and invalid cases)
+  - "unevaluatedItems can't see inside cousins" also now passes (unexpected bonus fix)
+- **Learnings for future iterations:**
+  - Effect/Schema has stricter validation than other libraries - `S.maxItems(0)` is rejected
+  - `S.Tuple()` is the correct approach for zero-length tuples (empty arrays only)
+  - The "cousins" case also got fixed by the change - annotation tracking through nested schemas works correctly when using S.Tuple()
+  - Remaining failure (cyclic ref) is a known limitation requiring recursive annotation tracking
+
