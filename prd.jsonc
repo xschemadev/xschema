@@ -330,7 +330,7 @@
         "Include schema path in error messages for debugging",
         "Test error handling with various malformed inputs"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "code-quality",

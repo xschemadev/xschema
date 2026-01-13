@@ -4,6 +4,7 @@ from typing import Any
 
 from xschema_core import parse
 
+from .errors import ConversionError, InvalidSchemaError
 from .import_collector import ImportCollector
 from .renderer import render
 
@@ -24,20 +25,57 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
 
     Returns:
         Dict with namespace, id, varName, imports, schema, type keys
+
+    Raises:
+        InvalidSchemaError: When required fields are missing or schema is malformed
+        ConversionError: When schema cannot be converted to Pydantic code
     """
+    # Validate required fields
     namespace = input_data.get("namespace", "")
     schema_id = input_data.get("id", "")
     var_name = input_data.get("varName", "")
-    schema = input_data.get("schema", {})
+
+    if not schema_id:
+        raise InvalidSchemaError("Missing required field 'id'")
+    if not var_name:
+        raise InvalidSchemaError("Missing required field 'varName'")
+
+    # Build schema path for error messages (do this before schema validation)
+    schema_path = f"$.{namespace}.{schema_id}" if namespace else f"$.{schema_id}"
+
+    schema = input_data.get("schema")
+    if schema is None:
+        raise InvalidSchemaError(
+            f"Missing required field 'schema' for {schema_id}", schema_path=schema_path
+        )
+
+    # Validate schema is dict or bool (JSON Schema allows true/false)
+    if not isinstance(schema, (dict, bool)):
+        raise InvalidSchemaError(
+            f"Schema must be a dict or bool, got {type(schema).__name__} for {schema_id}",
+            schema_path=schema_path,
+        )
 
     # Parse the JSON Schema to IR
-    ir_node = parse(schema)
+    try:
+        ir_node = parse(schema)
+    except ValueError as e:
+        raise InvalidSchemaError(str(e), schema_path=schema_path) from e
+    except Exception as e:
+        raise ConversionError(
+            f"Failed to parse schema: {e}", schema_path=schema_path
+        ) from e
 
     # Generate class name from varName
     class_name = to_pascal_case(var_name)
 
     # Render the IR to Pydantic code
-    result = render(ir_node, class_name)
+    try:
+        result = render(ir_node, class_name)
+    except Exception as e:
+        raise ConversionError(
+            f"Failed to render Pydantic code: {e}", schema_path=schema_path
+        ) from e
 
     # Collect and deduplicate imports using ImportCollector
     collector = ImportCollector()
