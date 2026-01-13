@@ -25,6 +25,8 @@ from xschema_core import (
     TypeGuardedNode,
     NullableNode,
     RefNode,
+    PropertyDependency,
+    SchemaDependency,
 )
 
 
@@ -655,6 +657,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     imports: set[str] = {"from pydantic import BaseModel"}
     nested_classes: list[str] = []
     field_lines: list[str] = []
+    validators: list[str] = []
 
     # Process each property
     for prop_name, prop_def in node.properties:
@@ -709,6 +712,191 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
 
+    # Generate validators for advanced object features
+    needs_validator = (
+        node.pattern_properties
+        or node.property_names is not None
+        or node.min_properties is not None
+        or node.max_properties is not None
+        or node.dependencies
+        or node.unevaluated_properties is not None
+    )
+
+    if needs_validator:
+        imports.add("from pydantic import model_validator")
+        validator_lines = ["    @model_validator(mode='after')"]
+        validator_lines.append("    def _validate_advanced(self):")
+        validator_lines.append("        # Advanced object validations")
+
+        # patternProperties: validate extra properties against regex patterns
+        if node.pattern_properties:
+            imports.add("import re")
+            imports.add("from pydantic import TypeAdapter")
+
+            for pattern_def in node.pattern_properties:
+                # Render the pattern schema
+                pattern_result = render(
+                    pattern_def.schema, f"{name}Pattern{len(nested_classes)}"
+                )
+                imports.update(pattern_result.imports)
+                if pattern_result.code:
+                    nested_classes.append(pattern_result.code)
+
+                # Generate validation code for this pattern
+                escaped_pattern = pattern_def.pattern.replace("\\", "\\\\").replace(
+                    "'", "\\'"
+                )
+                validator_lines.append(
+                    f"        # Validate properties matching pattern: {escaped_pattern}"
+                )
+                validator_lines.append(
+                    f"        pattern_{len(validators)} = re.compile(r'{escaped_pattern}')"
+                )
+                validator_lines.append(
+                    f"        validator_{len(validators)} = TypeAdapter({pattern_result.type_expr})"
+                )
+                validator_lines.append(
+                    "        for key, value in self.__dict__.items():"
+                )
+                validator_lines.append(
+                    f"            if pattern_{len(validators)}.search(key):"
+                )
+                validator_lines.append("                try:")
+                validator_lines.append(
+                    f"                    validator_{len(validators)}.validate_python(value)"
+                )
+                validator_lines.append("                except Exception as e:")
+                validator_lines.append(
+                    f"                    raise ValueError(f'Property {{key}} must match pattern {escaped_pattern}: {{e}}')"
+                )
+
+        # propertyNames: validate all property keys against schema
+        if node.property_names is not None:
+            imports.add("from pydantic import TypeAdapter")
+            names_result = render(node.property_names, f"{name}PropertyNames")
+            imports.update(names_result.imports)
+            if names_result.code:
+                nested_classes.append(names_result.code)
+
+            validator_lines.append("        # Validate all property names")
+            validator_lines.append(
+                f"        names_validator = TypeAdapter({names_result.type_expr})"
+            )
+            validator_lines.append("        for key in self.__dict__.keys():")
+            validator_lines.append("            try:")
+            validator_lines.append(
+                "                names_validator.validate_python(key)"
+            )
+            validator_lines.append("            except Exception as e:")
+            validator_lines.append(
+                "                raise ValueError(f'Property name {key} invalid: {e}')"
+            )
+
+        # minProperties / maxProperties: count properties
+        if node.min_properties is not None or node.max_properties is not None:
+            validator_lines.append("        # Validate property count")
+            validator_lines.append("        prop_count = len(self.__dict__)")
+
+            if node.min_properties is not None:
+                validator_lines.append(
+                    f"        if prop_count < {node.min_properties}:"
+                )
+                validator_lines.append(
+                    f"            raise ValueError(f'Object must have at least {node.min_properties} properties, got {{prop_count}}')"
+                )
+
+            if node.max_properties is not None:
+                validator_lines.append(
+                    f"        if prop_count > {node.max_properties}:"
+                )
+                validator_lines.append(
+                    f"            raise ValueError(f'Object must have at most {node.max_properties} properties, got {{prop_count}}')"
+                )
+
+        # dependencies: if property exists, require other properties or validate schema
+        if node.dependencies:
+            imports.add("from pydantic import TypeAdapter")
+
+            for prop_name, dependency in node.dependencies:
+                validator_lines.append(
+                    f"        # Dependency for property: {prop_name}"
+                )
+                validator_lines.append(
+                    f"        if '{prop_name}' in self.__dict__ and self.__dict__['{prop_name}'] is not None:"
+                )
+
+                if dependency.kind == "property":
+                    # Property dependency: require other properties
+                    for required_prop in dependency.required_properties:
+                        validator_lines.append(
+                            f"            if '{required_prop}' not in self.__dict__ or self.__dict__['{required_prop}'] is None:"
+                        )
+                        validator_lines.append(
+                            f"                raise ValueError(f'When {prop_name} is present, {required_prop} is required')"
+                        )
+                elif dependency.kind == "schema":
+                    # Schema dependency: validate entire object against schema
+                    dep_result = render(
+                        dependency.schema, f"{name}Dependency{len(nested_classes)}"
+                    )
+                    imports.update(dep_result.imports)
+                    if dep_result.code:
+                        nested_classes.append(dep_result.code)
+
+                    validator_lines.append(
+                        f"            dep_validator = TypeAdapter({dep_result.type_expr})"
+                    )
+                    validator_lines.append("            try:")
+                    validator_lines.append(
+                        "                dep_validator.validate_python(self.__dict__)"
+                    )
+                    validator_lines.append("            except Exception as e:")
+                    validator_lines.append(
+                        f"                raise ValueError(f'When {prop_name} is present, object must match dependency schema: {{e}}')"
+                    )
+
+        # unevaluatedProperties: treat like additionalProperties for now (simple case)
+        # Full JSON Schema semantics are complex; CLI filters hard cases
+        if node.unevaluated_properties is not None:
+            if node.unevaluated_properties is False:
+                # Already handled by additionalProperties=forbid
+                pass
+            else:
+                # unevaluatedProperties is a schema - validate extra properties
+                imports.add("from pydantic import TypeAdapter")
+                unevaluated_result = render(
+                    node.unevaluated_properties, f"{name}Unevaluated"
+                )
+                imports.update(unevaluated_result.imports)
+                if unevaluated_result.code:
+                    nested_classes.append(unevaluated_result.code)
+
+                # Get declared property names
+                declared_props = {prop_name for prop_name, _ in node.properties}
+
+                validator_lines.append("        # Validate unevaluated properties")
+                validator_lines.append(
+                    f"        declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+                )
+                validator_lines.append(
+                    f"        unevaluated_validator = TypeAdapter({unevaluated_result.type_expr})"
+                )
+                validator_lines.append(
+                    "        for key, value in self.__dict__.items():"
+                )
+                validator_lines.append("            if key not in declared_props:")
+                validator_lines.append("                try:")
+                validator_lines.append(
+                    "                    unevaluated_validator.validate_python(value)"
+                )
+                validator_lines.append("                except Exception as e:")
+                validator_lines.append(
+                    "                    raise ValueError(f'Unevaluated property {key} invalid: {e}')"
+                )
+
+        validator_lines.append("        return self")
+        validators.append("\n".join(validator_lines))
+
     # Build the class definition
     class_lines: list[str] = [f"class {name}(BaseModel):"]
 
@@ -719,8 +907,14 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     # Add fields or pass if empty
     if field_lines:
         class_lines.extend(field_lines)
-    elif not config_line:
+    elif not config_line and not validators:
         class_lines.append("    pass")
+
+    # Add validators
+    if validators:
+        class_lines.append("")  # Blank line before validators
+        for validator in validators:
+            class_lines.append(validator)
 
     # Combine nested classes and main class
     class_code = "\n".join(class_lines)

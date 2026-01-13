@@ -164,7 +164,7 @@
         "Test object with minProperties rejects too few properties",
         "Test dependencies trigger correctly"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Complex features need superRefine-style validators. Pydantic's model_validator(mode='after') is the equivalent."
     },
     // ============================================
