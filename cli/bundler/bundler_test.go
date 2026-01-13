@@ -1781,3 +1781,106 @@ func TestBundleDeeplyNestedRefChain(t *testing.T) {
 		t.Errorf("expected ref to be rewritten to #/$defs/..., got %s", valueRef)
 	}
 }
+
+// TestBundleSiblingRefAfterID verifies that $id in one property doesn't affect
+// refs in sibling properties. Per JSON Schema spec, $id creates a new scope only
+// for its descendants, not for siblings at the same level.
+func TestBundleSiblingRefAfterID(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema where "nested" has $id but "sibling" should still resolve refs
+	// relative to the root, not relative to nested's scope
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"Target": { "type": "string" }
+		},
+		"properties": {
+			"nested": {
+				"$id": "http://example.com/nested",
+				"type": "object"
+			},
+			"sibling": {
+				"$ref": "#/$defs/Target"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/root.json",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The sibling's $ref should remain unchanged - it should still point to
+	// #/$defs/Target (root scope), not be affected by nested's $id
+	props := result["properties"].(map[string]any)
+	sibling := props["sibling"].(map[string]any)
+	siblingRef := sibling["$ref"].(string)
+
+	if siblingRef != "#/$defs/Target" {
+		t.Errorf("sibling ref should remain #/$defs/Target, got %s", siblingRef)
+	}
+}
+
+// TestBundleSiblingRefToParentPath tests that refs in sibling properties can
+// reference paths that would be invalid if resolved against a sibling's $id scope.
+func TestBundleSiblingRefToParentPath(t *testing.T) {
+	ctx := context.Background()
+
+	// Schema with nested $id that establishes new scope, but sibling refs
+	// should resolve against the parent (root) scope, not the $id's scope
+	schema := `{
+		"type": "object",
+		"$defs": {
+			"Local": { "type": "string" }
+		},
+		"properties": {
+			"nested": {
+				"$id": "http://example.com/nested.json",
+				"type": "object",
+				"properties": {
+					"innerProp": { "type": "number" }
+				}
+			},
+			"sibling": {
+				"$ref": "#/$defs/Local"
+			}
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/root.json",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// The sibling's $ref should remain #/$defs/Local, unchanged
+	props := result["properties"].(map[string]any)
+	sibling := props["sibling"].(map[string]any)
+	siblingRef := sibling["$ref"].(string)
+
+	if siblingRef != "#/$defs/Local" {
+		t.Errorf("sibling ref should remain #/$defs/Local, got %s", siblingRef)
+	}
+
+	// The root $defs should still contain Local
+	defs := result["$defs"].(map[string]any)
+	if _, ok := defs["Local"]; !ok {
+		t.Error("root $defs should still contain Local definition")
+	}
+}

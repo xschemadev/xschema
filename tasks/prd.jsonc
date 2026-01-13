@@ -110,8 +110,8 @@
         "Zod adapter compliance still 100% (bun run compliance in zod adapter folder)",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Scope handling was already correct. Go pass-by-value semantics ensure baseURI changes in nested processObject calls don't affect siblings. Added TestBundleSiblingRefAfterID and TestBundleSiblingRefToParentPath tests to verify behavior."
     },
     {
       "id": "US-008",

@@ -41,3 +41,15 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - For key "uri%2Fslash" (literal percent-2-F), encode as `%252Fslash` (double-encode the percent)
   - The PRD acceptance criteria was wrong - corrected to match actual RFC 6901 spec
 ---
+
+## 2026-01-13 - US-007
+- Verified $id scope handling was already correct
+- Go's pass-by-value semantics ensure baseURI changes in nested processObject calls don't affect siblings
+- Files changed:
+  - cli/bundler/bundler_test.go - added TestBundleSiblingRefAfterID and TestBundleSiblingRefToParentPath
+- **Learnings for future iterations:**
+  - In processObject, when $id is found, baseURI is updated locally for that call only
+  - Each property's children are processed with their own recursive call, so sibling branches don't share state
+  - collectIDsAndAnchors has same pattern - baseURI mutations are local to each recursive call
+  - PRD concern was unfounded - the implementation was already spec-compliant
+---
