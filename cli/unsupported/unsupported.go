@@ -111,7 +111,7 @@ func (f Features) TestCount() int {
 var propertyApplicators = []string{"allOf", "anyOf", "oneOf", "if", "$ref", "dependentSchemas", "not"}
 
 // Item applicators that require annotation tracking when combined with unevaluatedItems
-var itemApplicators = []string{"prefixItems", "contains", "allOf", "anyOf", "oneOf", "if"}
+var itemApplicators = []string{"prefixItems", "contains", "allOf", "anyOf", "oneOf", "if", "$ref", "items", "additionalItems", "not"}
 
 // hasPropertyApplicators checks if an object has any keyword that applies schemas to properties.
 // When unevaluatedProperties is combined with these, it needs annotation tracking.

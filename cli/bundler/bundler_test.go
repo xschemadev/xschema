@@ -3,6 +3,7 @@ package bundler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/xschemadev/xschema/fetcher"
+	"github.com/xschemadev/xschema/unsupported"
 )
 
 func testdataPath(name string) string {
@@ -532,8 +534,11 @@ func TestBundleRejectsRecursiveRef(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for $recursiveRef")
 	}
-	if !strings.Contains(err.Error(), "$recursiveRef") {
-		t.Errorf("expected '$recursiveRef' in error, got: %v", err)
+	var ukErr *unsupported.UnsupportedKeywordError
+	if !errors.As(err, &ukErr) {
+		t.Errorf("expected UnsupportedKeywordError, got: %T", err)
+	} else if ukErr.Keyword != "$recursiveRef" {
+		t.Errorf("expected keyword '$recursiveRef', got: %s", ukErr.Keyword)
 	}
 }
 
@@ -548,8 +553,11 @@ func TestBundleRejectsRecursiveAnchor(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for $recursiveAnchor")
 	}
-	if !strings.Contains(err.Error(), "$recursiveAnchor") {
-		t.Errorf("expected '$recursiveAnchor' in error, got: %v", err)
+	var ukErr *unsupported.UnsupportedKeywordError
+	if !errors.As(err, &ukErr) {
+		t.Errorf("expected UnsupportedKeywordError, got: %T", err)
+	} else if ukErr.Keyword != "$recursiveAnchor" {
+		t.Errorf("expected keyword '$recursiveAnchor', got: %s", ukErr.Keyword)
 	}
 }
 

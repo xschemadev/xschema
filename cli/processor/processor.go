@@ -264,8 +264,8 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *
 			}
 		}
 
-		// Check for unsupported keywords
-		var parsed map[string]any
+		// Check for unsupported keywords (skip for boolean schemas which have no keywords)
+		var parsed any
 		if err := json.Unmarshal(bundled, &parsed); err != nil {
 			return nil, fmt.Errorf("failed to parse bundled schema for %s: %w", s.SourceURI, err)
 		}

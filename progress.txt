@@ -325,3 +325,30 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Go's unsupported.ValidateKeywords() runs in processor pipeline BEFORE adapters see the schema
   - This enables better error messages (includes source URI) and consistent behavior across all adapters
 ---
+
+## 2026-01-13 - US-010
+- Verified compliance exhaustiveness across all adapters
+- Fixed critical bugs in compliance runner:
+  - bundler now returns UnsupportedKeywordError for forbidden keywords (was returning regular error, causing double-counting)
+  - compliance runner skips groups with unsupportedErr in callAdapter() and buildHarnessItems()
+  - processor handles boolean schemas (unmarshal to `any` not `map[string]any`)
+- Added $ref, items, additionalItems, not to itemApplicators list for better unevaluatedItems detection
+- Results:
+  | Adapter  | Passed | Failed | Unsupported |
+  |----------|--------|--------|-------------|
+  | zod      | 4461   | 44     | 339         |
+  | arktype  | 4461   | 44     | 339         |
+  | valibot  | 4401   | 94     | 339         |
+  | effect   | 4461   | 44     | 339         |
+- Files changed:
+  - cli/bundler/bundler.go - return UnsupportedKeywordError for forbidden keywords
+  - cli/bundler/bundler_test.go - update tests to use errors.As for UnsupportedKeywordError
+  - cli/compliance/runner.go - skip unsupportedErr groups in callAdapter/buildHarnessItems
+  - cli/processor/processor.go - unmarshal to `any` instead of `map[string]any` for boolean schemas
+  - cli/unsupported/unsupported.go - add more keywords to itemApplicators list
+- **Learnings for future iterations:**
+  - Failures are due to adapters not handling standalone unevaluated (was hidden by TS parser blocking ALL unevaluated)
+  - Context-aware detection is same-level only - nested/cousin cases require more complex analysis
+  - Unsupported count increased from 73 to 339 because unevaluated-with-applicators is now detected
+  - The PRD's US-003 (allow standalone unevaluated) conflicts with US-010's failed=0 goal
+---

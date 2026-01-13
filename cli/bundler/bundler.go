@@ -12,6 +12,7 @@ import (
 
 	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/ui"
+	"github.com/xschemadev/xschema/unsupported"
 )
 
 // BundleInput contains all inputs needed to bundle a schema.
@@ -277,9 +278,6 @@ func (b *bundleContext) processNode(node any, baseURI string, scopePath string) 
 	}
 }
 
-// forbiddenKeywords are keywords that require evaluation semantics we can't provide
-var forbiddenKeywords = []string{"$dynamicRef", "$dynamicAnchor", "$recursiveRef", "$recursiveAnchor"}
-
 // isMetaschema checks if a URI is an official JSON Schema metaschema URL.
 // These should not be fetched/bundled - they reference complex recursive schemas
 // that use $recursiveAnchor and other features adapters can't handle.
@@ -291,10 +289,15 @@ func isMetaschema(uri string) bool {
 // processObject handles object nodes, looking for $ref
 // scopePath is the JSON pointer path of the nearest ancestor with $id (for rewriting scoped refs)
 func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopePath string) (any, error) {
-	// Reject forbidden keywords (dynamic/recursive refs)
-	for _, kw := range forbiddenKeywords {
+	// Reject forbidden keywords (dynamic/recursive refs) with proper UnsupportedKeywordError
+	keywords := unsupported.Keywords()
+	for kw, reason := range keywords {
 		if _, exists := obj[kw]; exists {
-			return nil, fmt.Errorf("unsupported keyword %q: dynamic and recursive references are not supported", kw)
+			return nil, &unsupported.UnsupportedKeywordError{
+				Keyword: kw,
+				Reason:  reason,
+				Path:    scopePath,
+			}
 		}
 	}
 

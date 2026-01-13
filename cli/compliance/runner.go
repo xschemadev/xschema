@@ -568,7 +568,8 @@ func callAdapter(ctx context.Context, bundled []bundledGroup, opts runDraftOptio
 	var inputIndexes []int
 
 	for i, bg := range bundled {
-		if bg.bundleErr == nil {
+		// Skip groups with bundle errors or unsupported keyword errors
+		if bg.bundleErr == nil && bg.unsupportedErr == nil {
 			groupID := fmt.Sprintf("group_%d", i)
 			adapterInputs = append(adapterInputs, adapter.ConvertInput{
 				Namespace: "compliance",
@@ -611,7 +612,8 @@ func buildHarnessItems(
 	filteredTestsByGroup := make(map[string][]int)
 
 	for i, bg := range bundled {
-		if bg.bundleErr != nil {
+		// Skip groups with bundle errors or unsupported keyword errors
+		if bg.bundleErr != nil || bg.unsupportedErr != nil {
 			continue
 		}
 
