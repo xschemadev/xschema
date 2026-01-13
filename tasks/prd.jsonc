@@ -140,8 +140,8 @@
         "Zod adapter compliance still 100% (bun run compliance in zod adapter folder)",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented scope tracking in filterObject - checks for $vocabulary on each object and updates validationEnabled/formatEnabled for that subtree. Four new tests: TestFilterSchema_NestedVocabOverride (parent disables, child re-enables), TestFilterSchema_NestedVocabFormat (format vs validation switching), TestFilterSchema_DeepNestedVocab (3-level scope changes)."
     },
     {
       "id": "US-010",

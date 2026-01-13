@@ -149,3 +149,17 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Pattern: extract all /$defs/Name segments, concatenate with __, preserve remaining path
   - Example: /$defs/key/$defs/L1/$defs/L2/$defs/Target → /$defs/key__L1__L2__Target
 ---
+
+## 2026-01-13 - US-009
+- Implemented vocabulary scope tracking in FilterSchema
+- When nested $vocabulary is found in a subschema, it overrides parent scope for that subtree
+- Implementation: filterObject checks for $vocabulary, updates validationEnabled/formatEnabled before filtering children
+- Files changed:
+  - cli/vocabulary/vocabulary.go - added parseVocab(), modified filterObject() to check for nested $vocabulary
+  - cli/vocabulary/vocabulary_test.go - added 3 new tests: TestFilterSchema_NestedVocabOverride, TestFilterSchema_NestedVocabFormat, TestFilterSchema_DeepNestedVocab
+- **Learnings for future iterations:**
+  - Scope tracking is implicit via recursion - no explicit stack needed because Go's pass-by-value for bools means each recursive call gets its own copy
+  - parseVocab() creates a fresh vocab map from $vocabulary field, then isVocabEnabled() determines what's enabled
+  - Empty $vocabulary {} disables all vocabularies for that subtree
+  - This pattern works because filterObject modifies local copies of validationEnabled/formatEnabled before recursing
+---
