@@ -361,9 +361,10 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 
 // bundledGroup holds a test group with its pre-bundled schema
 type bundledGroup struct {
-	group         TestGroup
-	bundledSchema RawSchema
-	bundleErr     error
+	group          TestGroup
+	bundledSchema  RawSchema
+	bundleErr      error
+	unsupportedErr *unsupported.UnsupportedKeywordError
 }
 
 // groupFilter holds pre-filtered test information for a group
@@ -389,7 +390,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	if err != nil {
 		return err
 	}
-	markBundleErrors(bundled, groupFilters, keywordResult, summary)
+	markBundleErrors(bundled, groupFilters, keywordResult, summary, opts.draft, keywordResult.Keyword)
 
 	// Phase 3: Call adapter
 	adapterOutputByGroup, err := callAdapter(ctx, bundled, opts)
@@ -505,7 +506,13 @@ func bundleSchemas(ctx context.Context, groups []TestGroup, groupFilters []group
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
 		if err != nil {
-			bundled[i] = bundledGroup{group: group, bundleErr: err}
+			// Check if this is an UnsupportedKeywordError - these should be skipped, not failed
+			var unsupportedErr *unsupported.UnsupportedKeywordError
+			if errors.As(err, &unsupportedErr) {
+				bundled[i] = bundledGroup{group: group, unsupportedErr: unsupportedErr}
+			} else {
+				bundled[i] = bundledGroup{group: group, bundleErr: err}
+			}
 			continue
 		}
 
@@ -526,10 +533,29 @@ func bundleSchemas(ctx context.Context, groups []TestGroup, groupFilters []group
 	return bundled, nil
 }
 
-// markBundleErrors marks bundle failures as test failures.
-func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywordResult *KeywordResult, summary *DraftSummary) {
+// markBundleErrors marks bundle failures as test failures and unsupported keyword errors as unsupported features.
+func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywordResult *KeywordResult, summary *DraftSummary, draft, keyword string) {
 	for i, bg := range bundled {
-		if bg.bundleErr != nil && !groupFilters[i].allKnown {
+		// Skip groups where all tests were already marked as known issues
+		if groupFilters[i].allKnown {
+			continue
+		}
+
+		// Handle unsupported keyword errors - mark as unsupported features, not failures
+		if bg.unsupportedErr != nil {
+			for _, tc := range bg.group.Tests {
+				testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, bg.group.Description, tc.Description)
+				summary.UnsupportedFeatures.Count++
+				summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, UnsupportedFeatureItem{
+					Path:   testPath,
+					Reason: bg.unsupportedErr.Error(),
+				})
+			}
+			continue
+		}
+
+		// Handle regular bundle errors - mark as failures
+		if bg.bundleErr != nil {
 			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
 		}
 	}

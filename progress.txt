@@ -262,3 +262,18 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Error wraps source URI for clear error messages: "schema X contains unsupported keyword: $dynamicRef is not supported: ..."
   - UnsupportedKeywordError can be used with errors.As() by callers (e.g., compliance runner)
 ---
+
+## 2026-01-13 - US-006
+- Compliance runner now catches UnsupportedKeywordError and marks tests as unsupported instead of failed
+- Implementation:
+  - Added `unsupportedErr *unsupported.UnsupportedKeywordError` field to `bundledGroup` struct
+  - In `bundleSchemas()`: uses `errors.As()` to detect UnsupportedKeywordError, sets `unsupportedErr` instead of `bundleErr`
+  - Rewrote `markBundleErrors()` to handle unsupported errors separately - adds all tests in group to `summary.UnsupportedFeatures`
+  - Added draft/keyword params to `markBundleErrors()` to construct proper test paths
+- Files changed:
+  - cli/compliance/runner.go - added unsupportedErr field, updated bundleSchemas() error handling, rewrote markBundleErrors()
+- **Learnings for future iterations:**
+  - `errors.As()` is the idiomatic way to type-check errors in Go (vs type assertion)
+  - UnsupportedKeywordError comes through the processor→bundler pipeline, so catching it at bundleSchemas error handling is correct
+  - Test paths must be constructed at mark time (need draft/keyword context) not at bundle time
+---

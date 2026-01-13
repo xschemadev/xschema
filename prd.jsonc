@@ -95,8 +95,8 @@
         "For bundleErr: call markAllFailed as before",
         "`go test ./compliance/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added unsupportedErr field to bundledGroup. bundleSchemas() uses errors.As to detect UnsupportedKeywordError and sets unsupportedErr. markBundleErrors() now handles unsupported errors separately - adding tests to UnsupportedFeatures instead of marking as failed."
     },
     {
       "id": "US-007",
