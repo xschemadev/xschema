@@ -457,6 +457,7 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 
 		processed, err := processor.Process(ctx, toProcess, processor.Options{
 			Fetcher: fetcher,
+			Draft:   opts.draft,
 		})
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 

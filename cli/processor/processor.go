@@ -43,6 +43,7 @@ type Options struct {
 	OnVerbose   func(msg string)     // callback for verbose logging (optional)
 	Cache       *fetcher.SharedCache // shared cache (optional, creates internal if nil)
 	Concurrency int                  // max concurrent fetches (0 = default: min(NumCPU, 8))
+	Draft       string               // JSON Schema draft hint (e.g., "draft7") for schemas without $schema
 }
 
 // Process runs the full processing pipeline on retrieved schemas:
@@ -75,6 +76,9 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose(fmt.Sprintf("processor: starting with %d schemas", len(schemas)))
 
+	// Phase 0: Normalize legacy draft schemas to draft 2020-12
+	schemas = normalizeDeclared(schemas, opts.Draft, verbose)
+
 	// Phase 1: Validate declared schemas early (fail fast before fetching)
 	if err := validateDeclared(schemas, verbose); err != nil {
 		return nil, err
@@ -89,6 +93,9 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose(fmt.Sprintf("processor: crawl complete, cache has %d external schemas", cache.Len()))
 
+	// Phase 2.5: Normalize external schemas if needed (before validation)
+	normalizeExternal(cache, opts.Draft, verbose)
+
 	// Phase 3: Validate external schemas
 	if err := validateExternal(schemas, cache, verbose); err != nil {
 		return nil, err
@@ -97,7 +104,7 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 	verbose("processor: validation complete")
 
 	// Phase 4: Bundle all schemas using the cache
-	result, err := bundleAll(ctx, schemas, cache, verbose)
+	result, err := bundleAll(ctx, schemas, cache, verbose, opts.Draft)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +112,33 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 	verbose(fmt.Sprintf("processor: bundling complete, produced %d schemas", len(result)))
 
 	return result, nil
+}
+
+// normalizeDeclared normalizes legacy draft schemas to draft 2020-12.
+// Returns a new slice with normalized schemas (original schemas are not modified).
+func normalizeDeclared(schemas []retriever.RetrievedSchema, draft string, verbose func(string)) []retriever.RetrievedSchema {
+	if !bundler.NeedsNormalization(draft) {
+		return schemas
+	}
+
+	result := make([]retriever.RetrievedSchema, len(schemas))
+	for i, s := range schemas {
+		normalized, err := bundler.NormalizeSchema(s.Schema, draft)
+		if err != nil {
+			// If normalization fails, keep original (validation will catch errors)
+			result[i] = s
+			continue
+		}
+		result[i] = retriever.RetrievedSchema{
+			Namespace: s.Namespace,
+			ID:        s.ID,
+			Schema:    normalized,
+			Adapter:   s.Adapter,
+			SourceURI: s.SourceURI,
+		}
+	}
+	verbose(fmt.Sprintf("processor: normalized %d schemas from %s to draft2020-12", len(schemas), draft))
+	return result
 }
 
 // validateDeclared validates declared schemas early, before any external fetching.
@@ -137,6 +171,30 @@ func hasCustomMetaschema(data json.RawMessage) bool {
 		return false
 	}
 	return !metaschema.IsStandardDraft(parsed.Schema)
+}
+
+// normalizeExternal normalizes legacy draft schemas in the cache to draft 2020-12.
+// This must happen before validation since the validator uses 2020-12 rules.
+func normalizeExternal(cache *fetcher.SharedCache, draft string, verbose func(string)) {
+	if !bundler.NeedsNormalization(draft) {
+		return
+	}
+
+	cacheSnapshot := cache.ToCache()
+	normalized := 0
+
+	for uri, data := range cacheSnapshot {
+		result, err := bundler.NormalizeSchema(data, draft)
+		if err != nil {
+			continue // Skip schemas that fail to normalize
+		}
+		cache.Set(uri, result)
+		normalized++
+	}
+
+	if normalized > 0 {
+		verbose(fmt.Sprintf("processor: normalized %d external schemas from %s to draft2020-12", normalized, draft))
+	}
 }
 
 // validateExternal validates external schemas and declared schemas with custom metaschemas.
@@ -215,7 +273,7 @@ func buildMetaschemasMap(schemas []retriever.RetrievedSchema, cache fetcher.Cach
 
 // bundleAll bundles each declared schema using a cache fetcher.
 // No I/O occurs during bundling - all refs resolve from the pre-populated cache.
-func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string)) ([]ProcessedSchema, error) {
+func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string), draft string) ([]ProcessedSchema, error) {
 	// Add declared schemas to cache so bundler can resolve circular refs back to them
 	for _, s := range schemas {
 		if s.SourceURI != "" {
@@ -234,7 +292,7 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *
 			Schema:    s.Schema,
 			SourceURI: s.SourceURI,
 			Fetcher:   cacheFetcher,
-			Draft:     "", // let bundler detect draft from $schema
+			Draft:     draft,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("bundling failed for %s: %w", s.SourceURI, err)

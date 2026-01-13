@@ -36,6 +36,7 @@ type bundleContext struct {
 	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
 	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
 	ctx        context.Context
+	draft      string            // JSON Schema draft for normalizing fetched schemas
 }
 
 // draftToSchemaURI maps draft names to their canonical $schema URIs
@@ -67,6 +68,23 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		}
 	}
 
+	// Normalize legacy syntax to draft 2020-12
+	// Detect draft from schema or input, apply normalization if needed
+	draft := input.Draft
+	if draft == "" {
+		if obj, ok := parsed.(map[string]any); ok {
+			draft = detectDraftFromSchema(obj)
+		}
+	}
+	if needsNormalization(draft) {
+		parsed = normalizeLegacySyntax(parsed)
+		// Update $schema to 2020-12 after normalization
+		if obj, ok := parsed.(map[string]any); ok {
+			obj["$schema"] = draftToSchemaURI["draft2020-12"]
+		}
+		ui.Verbosef("bundler: normalized %s syntax to draft2020-12", draft)
+	}
+
 	bctx := &bundleContext{
 		sourceURI:  input.SourceURI,
 		fetcher:    input.Fetcher,
@@ -76,6 +94,7 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		localIDs:   make(map[string]bool),
 		anchors:    make(map[string]string),
 		ctx:        ctx,
+		draft:      draft,
 	}
 
 	// First pass: collect all $id and $anchor declarations in the schema
@@ -431,6 +450,19 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		var parsed any
 		if err := json.Unmarshal(fetched, &parsed); err != nil {
 			return nil, fmt.Errorf("failed to parse schema from %q: %w", resolvedURI, err)
+		}
+
+		// Normalize legacy syntax in fetched schema
+		if obj, ok := parsed.(map[string]any); ok {
+			fetchedDraft := detectDraftFromSchema(obj)
+			// If fetched schema has no $schema, use parent's draft
+			if fetchedDraft == "" {
+				fetchedDraft = b.draft
+			}
+			if needsNormalization(fetchedDraft) {
+				parsed = normalizeLegacySyntax(parsed)
+				ui.Verbosef("bundler: normalized fetched schema %s from %s to draft2020-12", resolvedURI, fetchedDraft)
+			}
 		}
 
 		// Flatten nested $defs/definitions and rewrite internal refs
