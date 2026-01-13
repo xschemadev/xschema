@@ -164,9 +164,9 @@ Move unsupported keyword detection from TypeScript adapters to the Go CLI, creat
 ## Non-Goals
 
 - No changes to adapter protocol
-- No changes to how adapters handle schemas (they receive only supported schemas)
 - No support for `$dynamicRef`/`$dynamicAnchor` (fundamentally incompatible with static codegen)
 - No support for `$recursiveRef`/`$recursiveAnchor` (same limitation)
+- No support for `unevaluatedProperties`/`unevaluatedItems` WITH applicators (requires annotation tracking)
 - No context-aware detection beyond unevaluated keywords (other keywords are either always supported or always unsupported)
 
 ## Risks and Mitigations
@@ -196,7 +196,17 @@ US-010 (opposite test)      # After US-005
     ↓
 US-006 (remove TS)          # ONLY after Go path fully working
     ↓
-US-008 (final compliance)   # LAST: verify no regressions
+US-008 (final compliance)   # Verify detection works
+    ↓
+US-011 (cleanup)            # Remove deprecated methods
+    ↓
+US-012 (zod adapter)        # Fix adapters in parallel
+US-013 (arktype adapter)    # Can run in parallel
+US-014 (valibot adapter)    # Can run in parallel
+US-015 (effect adapter)     # Can run in parallel
+    ↓
+US-016 (web app)            # After adapters fixed
+US-017 (verbose output)     # Independent, can be done anytime
 ```
 
 ## Technical Design
@@ -553,9 +563,87 @@ func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywor
 | `cli/compliance/runner.go` | 529-536 | Update `markBundleErrors()` to handle unsupported |
 | `typescript/.../parser/index.ts` | 51-68 | Delete unevaluated checks |
 
+### US-012: Fix zod adapter for standalone unevaluated keywords
+
+**Description:** As a user, I want the zod adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.
+
+**Acceptance Criteria:**
+
+- [ ] `unevaluatedProperties: false` → generates `z.object({}).strict()` or equivalent
+- [ ] `unevaluatedProperties: { type: "string" }` → generates `z.object({}).catchall(z.string())`
+- [ ] `{ properties: {...}, unevaluatedProperties: false }` → generates `.strict()` on the object
+- [ ] `unevaluatedItems: false` → generates tuple that rejects extra items
+- [ ] `unevaluatedItems: { type: "string" }` → generates tuple with string rest
+- [ ] Run `bun run compliance` from `typescript/packages/adapters/zod/`
+- [ ] Verify unevaluatedProperties/unevaluatedItems tests that don't involve applicators now pass
+- [ ] No regressions in other tests
+
+### US-013: Fix arktype adapter for standalone unevaluated keywords
+
+**Description:** As a user, I want the arktype adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.
+
+**Acceptance Criteria:**
+
+- [ ] Same patterns as US-012 but using arktype syntax
+- [ ] Run `bun run compliance` from `typescript/packages/adapters/arktype/`
+- [ ] Verify unevaluatedProperties/unevaluatedItems standalone tests pass
+- [ ] No regressions in other tests
+
+### US-014: Fix valibot adapter for standalone unevaluated keywords
+
+**Description:** As a user, I want the valibot adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.
+
+**Acceptance Criteria:**
+
+- [ ] Same patterns as US-012 but using valibot syntax
+- [ ] Run `bun run compliance` from `typescript/packages/adapters/valibot/`
+- [ ] Verify unevaluatedProperties/unevaluatedItems standalone tests pass
+- [ ] No regressions in other tests (valibot baseline had 50 failures)
+
+### US-015: Fix effect adapter for standalone unevaluated keywords
+
+**Description:** As a user, I want the effect adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.
+
+**Acceptance Criteria:**
+
+- [ ] Same patterns as US-012 but using effect schema syntax
+- [ ] Run `bun run compliance` from `typescript/packages/adapters/effect/`
+- [ ] Verify unevaluatedProperties/unevaluatedItems standalone tests pass
+- [ ] No regressions in other tests
+
+### US-016: Update web app for new unsupported features format
+
+**Description:** As a user viewing the docs, I want the unsupported features page to display correctly with the new keyword-based format.
+
+**Acceptance Criteria:**
+
+- [ ] Update `web/scripts/generate-unsupported-features.ts` to read from `cli/unsupported/unsupported-features.json`
+- [ ] Update script to use `keywords` array instead of `tests` array
+- [ ] Generate page showing keyword groups with explanations
+- [ ] Show which keywords trigger each limitation (e.g., "$dynamicRef, $dynamicAnchor")
+- [ ] Verify in browser using chrome-devtools that the page renders correctly
+- [ ] `bun run generate:schemas` (or equivalent) succeeds
+- [ ] No build errors in web app
+
+### US-017: Make unsupported features output verbose-only
+
+**Description:** As a CLI user, I want the detailed unsupported features list to only show with --verbose flag.
+
+**Acceptance Criteria:**
+
+- [ ] Move "Unsupported Features:" print block in `cli/cmd/compliance.go` behind verbose check
+- [ ] Summary line still shows unsupported count (e.g., "181 unsupported")
+- [ ] With `--verbose`, show the detailed breakdown by reason
+- [ ] `go build -o xschema . && go vet ./...` passes
+- [ ] Test: run compliance without --verbose, confirm no "Unsupported Features:" section
+- [ ] Test: run compliance with --verbose, confirm "Unsupported Features:" section appears
+
 ## Success Metrics
 
-- Compliance shows 0 failed tests across all drafts
+- Compliance shows 0 failed tests across all drafts for zod, arktype, effect
+- Valibot shows ≤50 failed tests (baseline failures, not unevaluated-related)
 - Unsupported count correctly includes all dynamic/recursive/unevaluated-with-applicators tests
 - `xschema generate` with unsupported schema shows clear error message
 - No TS parser changes needed when adding new unsupported keywords
+- Web app unsupported features page renders correctly with new format
+- CLI output is clean by default, detailed with --verbose

@@ -174,6 +174,97 @@
       ],
       "passes": true,
       "notes": "Removed deprecated test path matching system. Changes: (1) Removed Tests field from FeatureGroup struct, (2) Removed ContainsTest/TestPaths/TestCount methods, (3) Removed tests key from unsupported-features.json, (4) Removed TestContainsTest/TestTestCount from tests, (5) Replaced filterKnownIssues with initGroupFilters in compliance runner - all tests now pass through, unsupported detection happens during bundling, (6) Removed LoadUnsupportedFeatures function and unsupportedFeatures from runDraftOptions."
+    },
+    {
+      "id": "US-012",
+      "title": "Fix zod adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the zod adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "`unevaluatedProperties: false` generates `z.object({}).strict()` or equivalent",
+        "`unevaluatedProperties: { type: 'string' }` generates `z.object({}).catchall(z.string())`",
+        "`{ properties: {...}, unevaluatedProperties: false }` generates `.strict()` on the object",
+        "`unevaluatedItems: false` generates tuple that rejects extra items",
+        "`unevaluatedItems: { type: 'string' }` generates tuple with string rest",
+        "Run `bun run compliance` from typescript/packages/adapters/zod/",
+        "unevaluatedProperties/unevaluatedItems tests without applicators now pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Fix arktype adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the arktype adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same unevaluated patterns as US-012 but using arktype syntax",
+        "Run `bun run compliance` from typescript/packages/adapters/arktype/",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Fix valibot adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the valibot adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same unevaluated patterns as US-012 but using valibot syntax",
+        "Run `bun run compliance` from typescript/packages/adapters/valibot/",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests (valibot baseline had 50 failures)",
+        "`bun run typecheck` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Fix effect adapter for standalone unevaluated keywords",
+      "description": "As a user, I want the effect adapter to properly handle standalone unevaluatedProperties/unevaluatedItems.",
+      "acceptanceCriteria": [
+        "Same unevaluated patterns as US-012 but using effect schema syntax",
+        "Run `bun run compliance` from typescript/packages/adapters/effect/",
+        "unevaluatedProperties/unevaluatedItems standalone tests pass",
+        "No regressions in other tests",
+        "`bun run typecheck` passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Update web app for new unsupported features format",
+      "description": "As a user viewing the docs, I want the unsupported features page to display correctly with the new keyword-based format.",
+      "acceptanceCriteria": [
+        "Update `web/scripts/generate-unsupported-features.ts` to read from `cli/unsupported/unsupported-features.json`",
+        "Update script to use `keywords` array instead of `tests` array",
+        "Generate page showing keyword groups with explanations",
+        "Show which keywords trigger each limitation (e.g., '$dynamicRef, $dynamicAnchor')",
+        "Verify in browser using chrome-devtools that the page renders correctly",
+        "`bun run build` succeeds in web/ directory",
+        "No build errors in web app"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Make unsupported features output verbose-only",
+      "description": "As a CLI user, I want the detailed unsupported features list to only show with --verbose flag.",
+      "acceptanceCriteria": [
+        "Move 'Unsupported Features:' print block in `cli/cmd/compliance.go` behind verbose check",
+        "Summary line still shows unsupported count (e.g., '181 unsupported')",
+        "With `--verbose`, show the detailed breakdown by reason",
+        "`go build -o xschema . && go vet ./...` passes in cli/",
+        "Test: run compliance without --verbose, confirm no 'Unsupported Features:' section",
+        "Test: run compliance with --verbose, confirm 'Unsupported Features:' section appears"
+      ],
+      "passes": false,
+      "notes": ""
     }
   ]
 }
