@@ -309,8 +309,8 @@
         "Effect failures should drop from 4 to 2 (only cyclic ref remains)",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added insideApplicator context tracking. Effect/zod/arktype now at 100% (0 failures). Valibot still has 11 failures (JS property names, propertyNames issues)."
     },
     {
       "id": "US-021",

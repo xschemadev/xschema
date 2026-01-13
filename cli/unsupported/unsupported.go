@@ -109,7 +109,7 @@ func hasItemApplicators(obj map[string]any) bool {
 // Returns *UnsupportedKeywordError if any unsupported keyword is found, nil otherwise.
 func ValidateKeywords(node any) *UnsupportedKeywordError {
 	load()
-	if err := validateNode(node, ""); err != nil {
+	if err := validateNode(node, "", false); err != nil {
 		return err
 	}
 
@@ -224,13 +224,13 @@ func isCyclicRef(ref string, root map[string]any, visiting map[string]bool) bool
 	return false
 }
 
-func validateNode(node any, path string) *UnsupportedKeywordError {
+func validateNode(node any, path string, insideApplicator bool) *UnsupportedKeywordError {
 	switch v := node.(type) {
 	case map[string]any:
-		return validateObject(v, path)
+		return validateObject(v, path, insideApplicator)
 	case []any:
 		for i, item := range v {
-			if err := validateNode(item, fmt.Sprintf("%s/%d", path, i)); err != nil {
+			if err := validateNode(item, fmt.Sprintf("%s/%d", path, i), insideApplicator); err != nil {
 				return err
 			}
 		}
@@ -238,7 +238,12 @@ func validateNode(node any, path string) *UnsupportedKeywordError {
 	return nil
 }
 
-func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
+// applicatorKeywords are keywords that contain subschemas where unevaluated* can't see sibling annotations
+var applicatorKeywords = map[string]bool{
+	"allOf": true, "anyOf": true, "oneOf": true, "if": true, "then": true, "else": true,
+}
+
+func validateObject(obj map[string]any, path string, insideApplicator bool) *UnsupportedKeywordError {
 	// Check for absolutely unsupported keywords (always error)
 	// Sort keywords for deterministic error reporting (same keyword detected on every run)
 	sortedKeywords := make([]string, 0, len(keywords))
@@ -257,7 +262,27 @@ func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 		}
 	}
 
-	// Check for context-aware unevaluated detection
+	// Check for unevaluated keywords inside applicator subschemas (cousins problem)
+	// When unevaluatedItems/unevaluatedProperties appears inside an allOf/anyOf/oneOf/if subschema,
+	// it can't see annotations from sibling subschemas
+	if insideApplicator {
+		if _, hasUnevalProps := obj["unevaluatedProperties"]; hasUnevalProps {
+			return &UnsupportedKeywordError{
+				Keyword: "unevaluatedProperties",
+				Reason:  "inside applicator subschema cannot see sibling annotations (cousins problem)",
+				Path:    path,
+			}
+		}
+		if _, hasUnevalItems := obj["unevaluatedItems"]; hasUnevalItems {
+			return &UnsupportedKeywordError{
+				Keyword: "unevaluatedItems",
+				Reason:  "inside applicator subschema cannot see sibling annotations (cousins problem)",
+				Path:    path,
+			}
+		}
+	}
+
+	// Check for context-aware unevaluated detection at same level
 	// unevaluatedProperties is only unsupported when combined with property applicators
 	if _, hasUnevalProps := obj["unevaluatedProperties"]; hasUnevalProps && hasPropertyApplicators(obj) {
 		return &UnsupportedKeywordError{
@@ -284,7 +309,9 @@ func validateObject(obj map[string]any, path string) *UnsupportedKeywordError {
 	sort.Strings(sortedKeys)
 
 	for _, k := range sortedKeys {
-		if err := validateNode(obj[k], path+"/"+k); err != nil {
+		// Set insideApplicator=true when entering applicator keyword children
+		childInsideApplicator := insideApplicator || applicatorKeywords[k]
+		if err := validateNode(obj[k], path+"/"+k, childInsideApplicator); err != nil {
 			return err
 		}
 	}

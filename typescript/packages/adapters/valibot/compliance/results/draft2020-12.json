@@ -381,17 +381,17 @@
     },
     {
       "keyword": "unevaluatedItems",
-      "passed": 15,
+      "passed": 14,
       "failed": 0,
       "skipped": 0,
-      "total": 15
+      "total": 14
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 38,
+      "passed": 26,
       "failed": 1,
       "skipped": 0,
-      "total": 39,
+      "total": 27,
       "failures": [
         {
           "group": "unevaluatedProperties not affected by propertyNames",
@@ -418,13 +418,13 @@
     }
   ],
   "summary": {
-    "passed": 952,
+    "passed": 939,
     "failed": 11,
     "skipped": 0,
-    "total": 963,
-    "percentage": 98.85773624091381,
+    "total": 950,
+    "percentage": 98.8421052631579,
     "unsupportedFeatures": {
-      "count": 188,
+      "count": 201,
       "items": [
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
@@ -671,6 +671,10 @@
           "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
         },
         {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails",
+          "reason": "unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1)"
+        },
+        {
           "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/contains fails, second item is not evaluated",
           "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
         },
@@ -835,6 +839,22 @@
           "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
         },
         {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
           "path": "draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't consider dependentSchemas",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
         },
@@ -929,6 +949,30 @@
         {
           "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx is valid",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
         },
         {
           "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with nested unevaluated properties",
@@ -1037,6 +1081,14 @@
         {
           "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/valid in case if is evaluated",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1)"
         },
         {
           "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with $dynamicRef/with no unevaluated properties",

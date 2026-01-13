@@ -540,3 +540,30 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - visiting map prevents infinite loops when $defs reference each other
   - Valibot still has ~10 failures per draft (JS property names + propertyNames issues) - separate stories
 
+## 2026-01-13 - US-020b
+- Implemented "cousins problem" detection - unevaluatedItems/unevaluatedProperties inside applicator subschemas
+- Pattern: when unevaluatedItems appears inside allOf/anyOf/oneOf/if/then/else subschema, it can't see sibling annotations
+- Example: `{allOf: [{prefixItems: [true]}, {unevaluatedItems: false}]}` - unevaluatedItems in second element can't see prefixItems annotations from first element
+- Implementation:
+  - Added `insideApplicator` boolean parameter to `validateNode()` and `validateObject()`
+  - Created `applicatorKeywords` map: allOf, anyOf, oneOf, if, then, else
+  - When recursing into applicator children, set `insideApplicator=true`
+  - If unevaluatedItems/unevaluatedProperties found while insideApplicator, return UnsupportedKeywordError
+- Files changed:
+  - cli/unsupported/unsupported.go - added insideApplicator context, applicatorKeywords map
+  - cli/unsupported/unsupported_test.go - added TestUnevaluatedInsideApplicator with 8 test cases
+- Compliance results after change:
+  | Adapter  | Passed | Failed | Unsupported | Rate   |
+  |----------|--------|--------|-------------|--------|
+  | zod      | 950/draft | 0 | 201 | 100.0% |
+  | arktype  | 950/draft | 0 | 201 | 100.0% |
+  | effect   | 950/draft | 0 | 201 | 100.0% |
+  | valibot  | 939/draft | 11 | 201 | 98.8%  |
+- Effect's "unevaluatedItems can't see inside cousins" test moved from failed to unsupported
+- **Learnings for future iterations:**
+  - The "cousins problem" is different from "same level with applicator" - it's about subschemas in applicator arrays
+  - insideApplicator flag propagates down the tree - once inside an applicator, all descendants are affected
+  - properties/items/$defs don't count as applicators - unevaluated keywords inside these are still valid
+  - Then/else are also applicator subschemas where cousins can't see each other's annotations
+---
+

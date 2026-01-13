@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 949 | 0 | 0 | 165 | 100.0% |
-| draft2020-12 | 963 | 0 | 0 | 188 | 100.0% |
+| draft2019-09 | 936 | 0 | 0 | 178 | 100.0% |
+| draft2020-12 | 950 | 0 | 0 | 201 | 100.0% |
 | draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 566 | 0 | 0 | 0 | 100.0% |
 | draft6 | 760 | 0 | 0 | 0 | 100.0% |
@@ -66,8 +66,8 @@
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ✅ | 15/15 |
-| unevaluatedProperties | ✅ | 37/37 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ✅ | 25/25 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -146,6 +146,13 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
+<summary>unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
+
+- `draft2019-09/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails`
+
+</details>
+
+<details>
 <summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo) (2 tests)</summary>
 
 - `draft2019-09/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/no extra items`
@@ -206,6 +213,36 @@ These tests are intentionally excluded due to documented limitations.
 - `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
 - `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
 - `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0) (8 tests)</summary>
+
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
+
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0) (3 tests)</summary>
+
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing`
 
 </details>
 
@@ -346,8 +383,8 @@ These tests are intentionally excluded due to documented limitations.
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ✅ | 15/15 |
-| unevaluatedProperties | ✅ | 39/39 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ✅ | 27/27 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -482,6 +519,13 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
+<summary>unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
+
+- `draft2020-12/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails`
+
+</details>
+
+<details>
 <summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo) (2 tests)</summary>
 
 - `draft2020-12/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/no extra items`
@@ -557,6 +601,36 @@ These tests are intentionally excluded due to documented limitations.
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
 - `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0) (8 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
+
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0) (3 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing`
 
 </details>
 

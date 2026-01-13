@@ -457,6 +457,111 @@ func TestCyclicRefWithUnevaluatedProperties(t *testing.T) {
 	}
 }
 
+// TestUnevaluatedInsideApplicator tests the "cousins problem" - unevaluated keywords inside applicator subschemas
+func TestUnevaluatedInsideApplicator(t *testing.T) {
+	tests := []struct {
+		name    string
+		schema  map[string]any
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name: "unevaluatedItems inside allOf subschema is unsupported (cousins)",
+			schema: map[string]any{
+				"allOf": []any{
+					map[string]any{"prefixItems": []any{true}},
+					map[string]any{"unevaluatedItems": false},
+				},
+			},
+			wantErr: true,
+			errMsg:  "cousins problem",
+		},
+		{
+			name: "unevaluatedProperties inside allOf subschema is unsupported",
+			schema: map[string]any{
+				"allOf": []any{
+					map[string]any{"properties": map[string]any{"x": true}},
+					map[string]any{"unevaluatedProperties": false},
+				},
+			},
+			wantErr: true,
+			errMsg:  "cousins problem",
+		},
+		{
+			name: "unevaluatedItems inside anyOf subschema is unsupported",
+			schema: map[string]any{
+				"anyOf": []any{
+					map[string]any{"items": map[string]any{"type": "string"}},
+					map[string]any{"unevaluatedItems": false},
+				},
+			},
+			wantErr: true,
+			errMsg:  "cousins problem",
+		},
+		{
+			name: "unevaluatedItems inside oneOf subschema is unsupported",
+			schema: map[string]any{
+				"oneOf": []any{
+					map[string]any{"items": map[string]any{"type": "string"}},
+					map[string]any{"unevaluatedItems": false},
+				},
+			},
+			wantErr: true,
+			errMsg:  "cousins problem",
+		},
+		{
+			name: "unevaluatedItems inside if/then is unsupported",
+			schema: map[string]any{
+				"if":   map[string]any{"type": "array"},
+				"then": map[string]any{"unevaluatedItems": false},
+			},
+			wantErr: true,
+			errMsg:  "cousins problem",
+		},
+		{
+			name:    "unevaluatedItems at root (not inside applicator) is allowed",
+			schema:  map[string]any{"unevaluatedItems": false},
+			wantErr: false,
+		},
+		{
+			name: "unevaluatedItems in nested property (not applicator) is allowed",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"foo": map[string]any{"unevaluatedItems": false},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "unevaluatedItems deeply nested in properties is allowed",
+			schema: map[string]any{
+				"properties": map[string]any{
+					"a": map[string]any{
+						"properties": map[string]any{
+							"b": map[string]any{"unevaluatedItems": false},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateKeywords(tt.schema)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr && err != nil && tt.errMsg != "" {
+				if err.Reason == "" || len(err.Reason) < 5 {
+					t.Errorf("expected meaningful error reason containing %q, got %q", tt.errMsg, err.Reason)
+				}
+			}
+		})
+	}
+}
+
 // TestValidateKeywords_SpecificUnsupportedSchemas tests specific schemas that MUST be detected
 func TestValidateKeywords_SpecificUnsupportedSchemas(t *testing.T) {
 	homeDir, err := os.UserHomeDir()
