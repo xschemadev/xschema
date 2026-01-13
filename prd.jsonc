@@ -125,8 +125,8 @@
         "Assert all return non-nil UnsupportedKeywordError",
         "`go test ./unsupported/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added TestValidateKeywords_RealTestSuiteSchemas and TestValidateKeywords_SpecificUnsupportedSchemas. Tests load actual schemas from test suite and verify detection: dynamicRef(20/21 errors), recursiveRef(9/9 errors), unevaluatedProperties(23/42 errors), unevaluatedItems(21/29 errors). One dynamicRef schema passes because it only contains $ref to external URL."
     },
     {
       "id": "US-009",

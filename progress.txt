@@ -291,3 +291,24 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - ContainsTest/TestPaths/TestCount methods are kept for backwards compat until US-011 cleanup
   - The `tests` field is retained (not deleted) to allow gradual migration
 ---
+
+## 2026-01-13 - US-008
+- Implemented "opposite compliance test" - verifies ValidateKeywords catches real unsupported schemas
+- Two new test functions added to cli/unsupported/unsupported_test.go:
+  - TestValidateKeywords_RealTestSuiteSchemas: loads schemas from JSON Schema Test Suite
+  - TestValidateKeywords_SpecificUnsupportedSchemas: tests specific known-unsupported schema
+- Test results from actual test suite:
+  | File                     | Errors | Allowed | Total |
+  |--------------------------|--------|---------|-------|
+  | dynamicRef.json          | 20     | 1       | 21    |
+  | recursiveRef.json        | 9      | 0       | 9     |
+  | unevaluatedProperties.json | 23   | 19      | 42    |
+  | unevaluatedItems.json    | 21     | 8       | 29    |
+- Files changed:
+  - cli/unsupported/unsupported_test.go - added testSuiteSchema type, two new test functions
+- **Learnings for future iterations:**
+  - Test suite path: ~/.cache/xschema/json-schema-test-suite/tests/{draft}/
+  - One dynamicRef test (#18) passes because its schema only contains $ref to external URL - the dynamicRef keyword is in the remote schema, not inline
+  - Use minimum thresholds instead of exact counts for robustness against test suite updates
+  - ValidateKeywords returns *UnsupportedKeywordError directly (not error interface) - no type assertion needed
+---

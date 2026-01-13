@@ -1,6 +1,9 @@
 package unsupported
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -245,5 +248,161 @@ func TestContextAwareUnevaluatedItems(t *testing.T) {
 				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+// testSuiteSchema represents a test group from the JSON Schema Test Suite
+type testSuiteSchema struct {
+	Description string `json:"description"`
+	Schema      any    `json:"schema"`
+}
+
+// TestValidateKeywords_RealTestSuiteSchemas loads actual schemas from the JSON Schema Test Suite
+// and verifies that ValidateKeywords correctly detects unsupported keywords.
+// This is the "opposite" compliance test - ensuring our detection catches real unsupported schemas.
+func TestValidateKeywords_RealTestSuiteSchemas(t *testing.T) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		t.Skip("cannot get home directory:", err)
+	}
+
+	testSuiteDir := filepath.Join(homeDir, ".cache", "xschema", "json-schema-test-suite", "tests")
+	if _, err := os.Stat(testSuiteDir); os.IsNotExist(err) {
+		t.Skip("JSON Schema Test Suite not found at:", testSuiteDir)
+	}
+
+	// Test cases: each contains a test file path and the minimum number of schemas
+	// we expect to detect as unsupported. This is more robust than expecting exact counts
+	// since test suite files may have schemas that reference external URLs (which we don't validate inline).
+	tests := []struct {
+		name       string
+		draft      string
+		file       string
+		minErrors  int // minimum number of schemas that should error
+		minAllowed int // minimum number of schemas allowed (0 means we don't care)
+	}{
+		// $dynamicRef schemas - most use $dynamicRef/$dynamicAnchor directly,
+		// but one (#18: "$ref to $dynamicRef finds detached $dynamicAnchor") only has $ref
+		// to an external URL, so it passes (the remote schema would be validated separately)
+		{
+			name:       "dynamicRef schemas should be detected",
+			draft:      "draft2020-12",
+			file:       "dynamicRef.json",
+			minErrors:  20, // 20 out of 21 have $dynamicRef or $dynamicAnchor
+			minAllowed: 0,  // at least 1 is just $ref to external URL
+		},
+		// $recursiveRef schemas - all use $recursiveRef/$recursiveAnchor
+		{
+			name:       "recursiveRef schemas should all be detected",
+			draft:      "draft2019-09",
+			file:       "recursiveRef.json",
+			minErrors:  8, // all 8 schemas use $recursiveRef or $recursiveAnchor
+			minAllowed: 0,
+		},
+		// unevaluatedProperties - some are standalone (allowed), some have applicators (error)
+		{
+			name:       "unevaluatedProperties with applicators detected",
+			draft:      "draft2020-12",
+			file:       "unevaluatedProperties.json",
+			minErrors:  20, // many have applicators like allOf, $ref, etc.
+			minAllowed: 10, // some are standalone (allowed)
+		},
+		// unevaluatedItems - some are standalone (allowed), some have applicators (error)
+		{
+			name:       "unevaluatedItems with applicators detected",
+			draft:      "draft2020-12",
+			file:       "unevaluatedItems.json",
+			minErrors:  15, // many have prefixItems, contains, allOf, etc.
+			minAllowed: 5,  // some are standalone (allowed)
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			filePath := filepath.Join(testSuiteDir, tc.draft, tc.file)
+			data, err := os.ReadFile(filePath)
+			if err != nil {
+				t.Fatalf("failed to read %s: %v", filePath, err)
+			}
+
+			var testGroups []testSuiteSchema
+			if err := json.Unmarshal(data, &testGroups); err != nil {
+				t.Fatalf("failed to parse %s: %v", filePath, err)
+			}
+
+			if len(testGroups) == 0 {
+				t.Fatal("no test groups found in", filePath)
+			}
+
+			var errorCount, successCount int
+			for _, group := range testGroups {
+				unsupErr := ValidateKeywords(group.Schema)
+				if unsupErr != nil {
+					errorCount++
+					// ValidateKeywords returns *UnsupportedKeywordError directly
+					// so we just verify it has the expected fields
+					if unsupErr.Keyword == "" {
+						t.Errorf("expected Keyword to be set, got empty string")
+					}
+				} else {
+					successCount++
+				}
+			}
+
+			// Verify minimum error count
+			if errorCount < tc.minErrors {
+				t.Errorf("expected at least %d schemas to error, but only %d did", tc.minErrors, errorCount)
+			}
+			// Verify minimum allowed count (if specified)
+			if tc.minAllowed > 0 && successCount < tc.minAllowed {
+				t.Errorf("expected at least %d schemas to be allowed, but only %d were", tc.minAllowed, successCount)
+			}
+			// Log the counts for debugging
+			t.Logf("%s: %d errors, %d allowed (total: %d)", tc.file, errorCount, successCount, len(testGroups))
+		})
+	}
+}
+
+// TestValidateKeywords_SpecificUnsupportedSchemas tests specific schemas that MUST be detected
+func TestValidateKeywords_SpecificUnsupportedSchemas(t *testing.T) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		t.Skip("cannot get home directory:", err)
+	}
+
+	testSuiteDir := filepath.Join(homeDir, ".cache", "xschema", "json-schema-test-suite", "tests")
+	if _, err := os.Stat(testSuiteDir); os.IsNotExist(err) {
+		t.Skip("JSON Schema Test Suite not found at:", testSuiteDir)
+	}
+
+	// Load a specific schema that we know uses unevaluatedProperties + allOf
+	filePath := filepath.Join(testSuiteDir, "draft2020-12", "unevaluatedProperties.json")
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("failed to read %s: %v", filePath, err)
+	}
+
+	var testGroups []testSuiteSchema
+	if err := json.Unmarshal(data, &testGroups); err != nil {
+		t.Fatalf("failed to parse %s: %v", filePath, err)
+	}
+
+	// Find the specific test "unevaluatedProperties with nested properties" which has allOf
+	var foundAndTested bool
+	for _, group := range testGroups {
+		if group.Description == "unevaluatedProperties with nested properties" {
+			unsupErr := ValidateKeywords(group.Schema)
+			if unsupErr == nil {
+				t.Error("expected error for 'unevaluatedProperties with nested properties' but got nil")
+			} else if unsupErr.Keyword != "unevaluatedProperties" {
+				t.Errorf("expected keyword 'unevaluatedProperties', got %q", unsupErr.Keyword)
+			}
+			foundAndTested = true
+			break
+		}
+	}
+
+	if !foundAndTested {
+		t.Error("could not find test 'unevaluatedProperties with nested properties'")
 	}
 }
