@@ -18,6 +18,13 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
 - `CacheStats` tracks hits/misses/compiles for testing
 - Thread-safe via `sync.RWMutex`
 
+### Parallel Crawl Pattern (US-004)
+- Wave-based: collect frontier → parallel fetch → extract refs → repeat
+- Use `errgroup.WithContext()` + `g.SetLimit(concurrency)`
+- Protect shared state (visited, newFrontier) with `sync.Mutex`
+- Pass `Concurrency` via `processor.Options.Concurrency`
+- Default: `min(runtime.NumCPU(), 8)`
+
 ---
 
 ## 2026-01-13 - US-001
@@ -107,4 +114,21 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Schemas with custom metaschemas must be skipped in early validation (metaschema not fetched yet)
   - hasCustomMetaschema() checks if $schema is non-standard using metaschema.IsStandardDraft()
   - validateExternal now validates both external schemas and declared schemas with custom metaschemas
+---
+
+## 2026-01-13 - US-004
+- Implemented parallel crawl/fetch using wave-based errgroup pattern
+- Wave flow: collect frontier URIs → parallel fetch all → extract refs → repeat
+- Files changed:
+  - cli/processor/processor.go - added Concurrency to Options, rewrote crawlAndFetch with errgroup.SetLimit
+  - cli/processor/processor.go - added sync.Mutex for thread-safe visited/newFrontier maps
+  - cli/processor/processor_test.go - made mockFetcher thread-safe with sync.Mutex
+  - cli/processor/processor_test.go - added TestParallelCrawl_FiveExternalRefs, TestParallelCrawl_ConcurrentSafe, TestParallelCrawl_WaveBasedFetch
+  - cli/cmd/generate.go - passes Concurrency to processor.Options
+- **Learnings for future iterations:**
+  - errgroup.SetLimit(n) controls max concurrent goroutines - same pattern as retriever
+  - Default concurrency: min(runtime.NumCPU(), 8)
+  - Wave-based approach: first wave may have N URIs, each fetched schema may discover more refs for next wave
+  - Must protect shared maps (visited, newFrontier) with mutex when accessed from goroutines
+  - mockFetcher needed sync.Mutex for fetchCalls slice to pass -race tests
 ---

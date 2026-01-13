@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"net/url"
 	"path/filepath"
+	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/xschemadev/xschema/bundler"
 	"github.com/xschemadev/xschema/fetcher"
@@ -18,6 +20,7 @@ import (
 	"github.com/xschemadev/xschema/ui"
 	"github.com/xschemadev/xschema/validator"
 	"github.com/xschemadev/xschema/vocabulary"
+	"golang.org/x/sync/errgroup"
 )
 
 // ProcessedSchema contains a fully processed schema ready for code generation.
@@ -36,9 +39,10 @@ func (p ProcessedSchema) Key() string {
 
 // Options configures processing behavior.
 type Options struct {
-	Fetcher   fetcher.Fetcher       // fetcher for external refs (required)
-	OnVerbose func(msg string)      // callback for verbose logging (optional)
-	Cache     *fetcher.SharedCache  // shared cache (optional, creates internal if nil)
+	Fetcher     fetcher.Fetcher      // fetcher for external refs (required)
+	OnVerbose   func(msg string)     // callback for verbose logging (optional)
+	Cache       *fetcher.SharedCache // shared cache (optional, creates internal if nil)
+	Concurrency int                  // max concurrent fetches (0 = default: min(NumCPU, 8))
 }
 
 // Process runs the full processing pipeline on retrieved schemas:
@@ -63,6 +67,12 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 		cache = fetcher.NewSharedCache()
 	}
 
+	// Default concurrency: min(NumCPU, 8)
+	concurrency := opts.Concurrency
+	if concurrency <= 0 {
+		concurrency = min(runtime.NumCPU(), 8)
+	}
+
 	verbose(fmt.Sprintf("processor: starting with %d schemas", len(schemas)))
 
 	// Phase 1: Validate declared schemas early (fail fast before fetching)
@@ -72,8 +82,8 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 
 	verbose(fmt.Sprintf("processor: declared schemas validated (%d schemas)", len(schemas)))
 
-	// Phase 2: Crawl and fetch all external refs
-	if err := crawlAndFetch(ctx, schemas, opts.Fetcher, cache, verbose); err != nil {
+	// Phase 2: Crawl and fetch all external refs (parallel)
+	if err := crawlAndFetch(ctx, schemas, opts.Fetcher, cache, concurrency, verbose); err != nil {
 		return nil, err
 	}
 
@@ -302,7 +312,9 @@ func extractVocabulary(ctx context.Context, schema json.RawMessage, cache *fetch
 // Returns error immediately on any fetch failure (fail fast).
 // The cache is checked before fetching to avoid duplicate requests for URIs
 // already fetched by retriever or metaschema.
-func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f fetcher.Fetcher, cache *fetcher.SharedCache, verbose func(string)) error {
+// Uses wave-based parallel fetching: collect frontier -> parallel fetch -> extract refs -> repeat.
+func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f fetcher.Fetcher, cache *fetcher.SharedCache, concurrency int, verbose func(string)) error {
+	var visitedMu sync.Mutex
 	visited := make(map[string]bool) // tracks URIs we've processed (including declared schemas)
 
 	// Mark declared schema source URIs as visited (they're already fetched)
@@ -338,8 +350,13 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 
 		verbose(fmt.Sprintf("processor: crawl iteration %d, %d new refs to fetch", iteration, len(frontier)))
 
-		// Fetch all URIs in current frontier
-		newFrontier := make(map[string]string)
+		// Build list of URIs to fetch in this wave (resolve and dedupe)
+		type fetchItem struct {
+			resolved string
+			baseURI  string
+		}
+		var toFetch []fetchItem
+
 		for uri, baseURI := range frontier {
 			// Resolve relative URI against base
 			resolved, err := resolveURI(uri, baseURI)
@@ -353,37 +370,58 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 			}
 			visited[normalized] = true
 
-			// Check shared cache first (may have been fetched by retriever or metaschema)
-			if cached, ok := cache.Get(resolved); ok {
-				ui.Verbosef("processor: cache hit for %s", resolved)
-				// Still need to extract refs from cached schema
-				newRefs := extractExternalRefs(cached, resolved)
+			toFetch = append(toFetch, fetchItem{resolved: resolved, baseURI: resolved})
+		}
+
+		if len(toFetch) == 0 {
+			break
+		}
+
+		// Parallel fetch all URIs in this wave
+		var newFrontierMu sync.Mutex
+		newFrontier := make(map[string]string)
+
+		g, gctx := errgroup.WithContext(ctx)
+		g.SetLimit(concurrency)
+
+		for _, item := range toFetch {
+			item := item // capture for closure
+			g.Go(func() error {
+				var raw json.RawMessage
+
+				// Check cache again (concurrent fetch may have populated it)
+				if cached, ok := cache.Get(item.resolved); ok {
+					ui.Verbosef("processor: cache hit for %s", item.resolved)
+					raw = cached
+				} else {
+					ui.Verbosef("processor: fetching %s", item.resolved)
+					var err error
+					raw, err = f.Fetch(gctx, item.resolved)
+					if err != nil {
+						return fmt.Errorf("processor: failed to fetch %q: %w", item.resolved, err)
+					}
+					cache.Set(item.resolved, raw)
+				}
+
+				// Extract refs from this schema and add to next frontier
+				newRefs := extractExternalRefs(raw, item.resolved)
+				newFrontierMu.Lock()
 				for _, ref := range newRefs {
 					refNorm := fetcher.NormalizeURI(ref)
-					if !visited[refNorm] {
-						newFrontier[ref] = resolved
+					visitedMu.Lock()
+					alreadyVisited := visited[refNorm]
+					visitedMu.Unlock()
+					if !alreadyVisited {
+						newFrontier[ref] = item.resolved
 					}
 				}
-				continue
-			}
+				newFrontierMu.Unlock()
+				return nil
+			})
+		}
 
-			ui.Verbosef("processor: fetching %s", resolved)
-
-			raw, err := f.Fetch(ctx, resolved)
-			if err != nil {
-				return fmt.Errorf("processor: failed to fetch %q: %w", resolved, err)
-			}
-
-			cache.Set(resolved, raw)
-
-			// Extract refs from this schema and add to next frontier
-			newRefs := extractExternalRefs(raw, resolved)
-			for _, ref := range newRefs {
-				refNorm := fetcher.NormalizeURI(ref)
-				if !visited[refNorm] {
-					newFrontier[ref] = resolved
-				}
-			}
+		if err := g.Wait(); err != nil {
+			return err
 		}
 
 		frontier = newFrontier

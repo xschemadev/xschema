@@ -149,9 +149,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	err = ui.RunWithSpinner("Processing schemas...", func() error {
 		var procErr error
 		processed, procErr = processor.Process(ctx, schemas, processor.Options{
-			Fetcher:   newRetrieverFetcher(ctx, retrieverOpts),
-			OnVerbose: verboseCallback(),
-			Cache:     sharedCache, // reuse cache from retriever
+			Fetcher:     newRetrieverFetcher(ctx, retrieverOpts),
+			OnVerbose:   verboseCallback(),
+			Cache:       sharedCache, // reuse cache from retriever
+			Concurrency: concurrency,
 		})
 		return procErr
 	})

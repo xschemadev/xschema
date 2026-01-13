@@ -65,8 +65,8 @@
         "Existing processor tests pass",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented wave-based parallel fetch using errgroup with SetLimit. Added Concurrency field to Options (default: min(NumCPU,8)). Thread-safe via sync.Mutex for visited map and frontier map. Three new tests: TestParallelCrawl_FiveExternalRefs (6 refs), TestParallelCrawl_ConcurrentSafe (10 refs with -race), TestParallelCrawl_WaveBasedFetch (chained refs in waves)."
     },
     {
       "id": "US-005",

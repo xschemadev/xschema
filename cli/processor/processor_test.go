@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -11,12 +13,13 @@ import (
 	"github.com/xschemadev/xschema/retriever"
 )
 
-// mockFetcher tracks fetch calls and returns predefined responses
+// mockFetcher tracks fetch calls and returns predefined responses (thread-safe)
 type mockFetcher struct {
 	responses  map[string]json.RawMessage
 	errors     map[string]error
 	fetchCalls []string
 	callCount  int32
+	mu         sync.Mutex
 }
 
 func newMockFetcher() *mockFetcher {
@@ -28,7 +31,9 @@ func newMockFetcher() *mockFetcher {
 
 func (m *mockFetcher) Fetch(ctx context.Context, uri string) (json.RawMessage, error) {
 	atomic.AddInt32(&m.callCount, 1)
+	m.mu.Lock()
 	m.fetchCalls = append(m.fetchCalls, uri)
+	m.mu.Unlock()
 
 	if err, ok := m.errors[uri]; ok {
 		return nil, err
@@ -45,6 +50,14 @@ func (m *mockFetcher) addResponse(uri string, schema string) {
 
 func (m *mockFetcher) addError(uri string, err error) {
 	m.errors[uri] = err
+}
+
+func (m *mockFetcher) getFetchCalls() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	result := make([]string, len(m.fetchCalls))
+	copy(result, m.fetchCalls)
+	return result
 }
 
 func TestCrawlAndFetch_NoExternalRefs(t *testing.T) {
@@ -1299,5 +1312,188 @@ func TestSharedCache_CustomMetaschemaFetchedOnce(t *testing.T) {
 	if metaFetchCount != 1 {
 		t.Errorf("expected custom metaschema to be fetched exactly once, got %d times. All calls: %v",
 			metaFetchCount, mockFetch.fetchCalls)
+	}
+}
+
+// TestParallelCrawl_FiveExternalRefs tests US-004:
+// Schema with 5+ external refs should have all refs fetched (via parallel wave).
+func TestParallelCrawl_FiveExternalRefs(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Set up 6 external schemas (leaf nodes, no further refs)
+	for i := 1; i <= 6; i++ {
+		mockFetch.addResponse(
+			fmt.Sprintf("http://example.com/schema%d.json", i),
+			fmt.Sprintf(`{"type": "string", "title": "Schema %d"}`, i),
+		)
+	}
+
+	// Root schema references all 6 external schemas
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"prop1": { "$ref": "http://example.com/schema1.json" },
+			"prop2": { "$ref": "http://example.com/schema2.json" },
+			"prop3": { "$ref": "http://example.com/schema3.json" },
+			"prop4": { "$ref": "http://example.com/schema4.json" },
+			"prop5": { "$ref": "http://example.com/schema5.json" },
+			"prop6": { "$ref": "http://example.com/schema6.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	result, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 4, // parallel fetches
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	// All 6 external schemas should have been fetched
+	fetchCalls := mockFetch.getFetchCalls()
+	if len(fetchCalls) != 6 {
+		t.Errorf("expected 6 fetches, got %d: %v", len(fetchCalls), fetchCalls)
+	}
+
+	// Verify each external schema was fetched
+	fetched := make(map[string]bool)
+	for _, call := range fetchCalls {
+		fetched[call] = true
+	}
+	for i := 1; i <= 6; i++ {
+		uri := fmt.Sprintf("http://example.com/schema%d.json", i)
+		if !fetched[uri] {
+			t.Errorf("expected %s to be fetched", uri)
+		}
+	}
+}
+
+// TestParallelCrawl_ConcurrentSafe tests that parallel crawl is race-safe.
+func TestParallelCrawl_ConcurrentSafe(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Set up 10 external schemas
+	for i := 1; i <= 10; i++ {
+		mockFetch.addResponse(
+			fmt.Sprintf("http://example.com/s%d.json", i),
+			`{"type": "string"}`,
+		)
+	}
+
+	// Root schema references all 10
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"a": { "$ref": "http://example.com/s1.json" },
+			"b": { "$ref": "http://example.com/s2.json" },
+			"c": { "$ref": "http://example.com/s3.json" },
+			"d": { "$ref": "http://example.com/s4.json" },
+			"e": { "$ref": "http://example.com/s5.json" },
+			"f": { "$ref": "http://example.com/s6.json" },
+			"g": { "$ref": "http://example.com/s7.json" },
+			"h": { "$ref": "http://example.com/s8.json" },
+			"i": { "$ref": "http://example.com/s9.json" },
+			"j": { "$ref": "http://example.com/s10.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	// Run with -race flag to detect data races
+	_, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 8, // high concurrency to stress test
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Verify all 10 were fetched
+	if int(mockFetch.callCount) != 10 {
+		t.Errorf("expected 10 fetches, got %d", mockFetch.callCount)
+	}
+}
+
+// TestParallelCrawl_WaveBasedFetch tests that chained refs work with wave-based parallel fetch.
+// Wave 1: fetch B, C (refs from root)
+// Wave 2: fetch D (ref from B)
+func TestParallelCrawl_WaveBasedFetch(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// B refs D
+	mockFetch.addResponse("http://example.com/b.json", `{
+		"type": "object",
+		"properties": {
+			"d": { "$ref": "http://example.com/d.json" }
+		}
+	}`)
+	// C is a leaf
+	mockFetch.addResponse("http://example.com/c.json", `{"type": "string"}`)
+	// D is a leaf
+	mockFetch.addResponse("http://example.com/d.json", `{"type": "integer"}`)
+
+	// Root refs B and C
+	rootSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"b": { "$ref": "http://example.com/b.json" },
+			"c": { "$ref": "http://example.com/c.json" }
+		}
+	}`)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "root",
+			Schema:    rootSchema,
+			SourceURI: "http://test.com/root.json",
+		},
+	}
+
+	var iterations int
+	_, err := Process(ctx, schemas, Options{
+		Fetcher:     mockFetch,
+		Concurrency: 2,
+		OnVerbose: func(msg string) {
+			if len(msg) > 20 && msg[:20] == "processor: crawl ite" {
+				iterations++
+			}
+		},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should have 2 waves: first for B,C, second for D
+	if iterations != 2 {
+		t.Errorf("expected 2 crawl iterations (waves), got %d", iterations)
+	}
+
+	// All 3 should be fetched
+	if int(mockFetch.callCount) != 3 {
+		t.Errorf("expected 3 fetches (B, C, D), got %d", mockFetch.callCount)
 	}
 }
