@@ -82,15 +82,19 @@ export function parseObject(
 	}
 
 	// Parse additionalProperties
-	let additionalProperties: SchemaNode | boolean = true;
+	// Keep track of whether it was explicitly set to true vs not specified
+	let additionalProperties: SchemaNode | boolean | undefined;
 	if (schema.additionalProperties === false) {
 		additionalProperties = false;
+	} else if (schema.additionalProperties === true) {
+		additionalProperties = true; // Explicitly true
 	} else if (
 		schema.additionalProperties &&
 		typeof schema.additionalProperties === "object"
 	) {
 		additionalProperties = parseSchema(schema.additionalProperties, ctx);
 	}
+	// If not specified, leave as undefined (not defaulting to true)
 
 	// Parse propertyNames
 	const propertyNames =
@@ -149,6 +153,17 @@ export function parseObject(
 		}
 	}
 
+	// Parse unevaluatedProperties (only valid for standalone use - Go CLI blocks applicator combinations)
+	let unevaluatedProperties: SchemaNode | false | undefined;
+	if (schema.unevaluatedProperties === false) {
+		unevaluatedProperties = false;
+	} else if (
+		schema.unevaluatedProperties !== undefined &&
+		typeof schema.unevaluatedProperties === "object"
+	) {
+		unevaluatedProperties = parseSchema(schema.unevaluatedProperties, ctx);
+	}
+
 	return {
 		kind: "object",
 		properties,
@@ -158,6 +173,7 @@ export function parseObject(
 		minProperties: schema.minProperties,
 		maxProperties: schema.maxProperties,
 		dependencies,
+		unevaluatedProperties,
 	};
 }
 
@@ -189,6 +205,7 @@ export function parseArray(
 			prefixItems: [],
 			restItems: false,
 			constraints: buildArrayConstraints(schema, ctx, parseSchema),
+			unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 		};
 	}
 
@@ -196,6 +213,7 @@ export function parseArray(
 		kind: "array",
 		items: itemSchema,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -226,6 +244,7 @@ function parseTuple(
 		prefixItems: parsedPrefixItems,
 		restItems,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -253,6 +272,7 @@ function parseTupleFromItems(
 		prefixItems: parsedItems,
 		restItems,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -277,4 +297,21 @@ function buildArrayConstraints(
 		uniqueItems: schema.uniqueItems,
 		contains,
 	};
+}
+
+function parseUnevaluatedItems(
+	schema: JSONSchema,
+	ctx: ParseContext,
+	parseSchema: ParseSchemaFn,
+): SchemaNode | false | undefined {
+	if (schema.unevaluatedItems === false) {
+		return false;
+	}
+	if (
+		schema.unevaluatedItems !== undefined &&
+		typeof schema.unevaluatedItems === "object"
+	) {
+		return parseSchema(schema.unevaluatedItems, ctx);
+	}
+	return undefined;
 }

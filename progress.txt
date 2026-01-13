@@ -366,3 +366,35 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - The compliance pipeline is now: initGroupFilters → bundleSchemas (keyword detection here) → callAdapter → buildHarnessItems → executeHarness → processHarnessResults
   - Clean removal pattern: trace all usages of deprecated code (fields, methods, functions) and remove from leaf to root
 ---
+
+## 2026-01-13 - US-012
+- Fixed zod adapter for standalone unevaluatedProperties/unevaluatedItems
+- Compliance went from 44 failures to 2 (1 per draft) - 99.9% pass rate
+- Core IR changes:
+  - Added `unevaluatedProperties?: SchemaNode | false` to ObjectNode
+  - Added `unevaluatedItems?: SchemaNode | false` to ArrayNode and TupleNode
+  - Changed `additionalProperties` to be optional (undefined = not specified vs true = explicit)
+- Parser changes:
+  - Added unevaluatedProperties/unevaluatedItems to keyword detection lists (hasBaseSchema, hasObjectKeywords, hasArrayKeywords)
+  - Track whether additionalProperties was explicitly set (needed for semantic handling)
+  - Added parseUnevaluatedItems() helper
+- Renderer changes (zod):
+  - Objects: unevaluatedProperties behaves like additionalProperties when standalone
+  - Key insight: if additionalProperties is explicit, it "evaluates" extra props, so unevaluatedProperties doesn't apply
+  - Arrays with only unevaluatedItems: treat as constraint on all items (no items = all unevaluated)
+  - Tuples: unevaluatedItems constrains items beyond prefixItems
+  - Added handling for propertyNames + unevaluatedProperties combo
+  - Fixed patternProperties + unevaluatedProperties to reject non-matching props
+- Files changed:
+  - typescript/packages/core/src/ir/nodes.ts - added unevaluatedProperties/unevaluatedItems fields, made additionalProperties optional
+  - typescript/packages/core/src/parser/collections.ts - parse unevaluated keywords
+  - typescript/packages/core/src/parser/index.ts - add to keyword detection lists
+  - typescript/packages/adapters/zod/src/renderer.ts - render unevaluated keyword handling
+- **Learnings for future iterations:**
+  - additionalProperties and unevaluatedProperties have different semantics when both present
+  - additionalProperties evaluates (and permits/validates) extra properties, making them not "unevaluated"
+  - Need to track whether additionalProperties was explicitly set vs defaulted
+  - patternProperties evaluates only matching properties - non-matching are still subject to unevaluatedProperties
+  - propertyNames validates keys but does NOT evaluate property values
+  - Cyclic $ref with unevaluatedProperties requires recursive validator - left as edge case (1 failure)
+---

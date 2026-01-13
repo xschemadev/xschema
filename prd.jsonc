@@ -190,8 +190,8 @@
         "No regressions in other tests",
         "`bun run typecheck` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Compliance: 99.9% (4493 passed, 2 failed, 339 unsupported). Core IR extended with unevaluatedProperties/unevaluatedItems fields. Parser now tracks whether additionalProperties was explicit (allows proper semantic handling). Only 1 failure per draft: cyclic $ref with unevaluatedProperties - edge case requiring recursive validator generation. All other standalone unevaluated tests pass. Changes in @xschemadev/core (nodes.ts, collections.ts, index.ts) and @xschemadev/zod (renderer.ts)."
     },
     {
       "id": "US-013",

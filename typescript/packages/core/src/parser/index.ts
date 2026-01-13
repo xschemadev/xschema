@@ -87,6 +87,7 @@ export function parseSchema(
 		schema.dependentRequired !== undefined ||
 		schema.dependentSchemas !== undefined ||
 		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined ||
 		// array keywords
 		schema.items !== undefined ||
 		schema.prefixItems !== undefined ||
@@ -95,6 +96,7 @@ export function parseSchema(
 		schema.maxItems !== undefined ||
 		schema.uniqueItems !== undefined ||
 		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined ||
 		// primitive keywords
 		schema.minimum !== undefined ||
 		schema.maximum !== undefined ||
@@ -321,7 +323,8 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 		schema.maxProperties !== undefined ||
 		schema.dependentRequired !== undefined ||
 		schema.dependentSchemas !== undefined ||
-		schema.dependencies !== undefined;
+		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined;
 
 	// Check for array keywords
 	const hasArrayKeywords =
@@ -331,7 +334,8 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 		schema.minItems !== undefined ||
 		schema.maxItems !== undefined ||
 		schema.uniqueItems !== undefined ||
-		schema.contains !== undefined;
+		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined;
 
 	// Check for numeric keywords
 	const hasNumericKeywords =
