@@ -181,3 +181,20 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Test languages need SchemaURL to pass Register() validation
   - Unregister() useful for test cleanup to avoid registry pollution between tests
 ---
+
+## 2026-01-13 - US-001 (Centralized Unsupported Keyword Detection PRD)
+- Established compliance baseline for regression comparison
+- Results:
+  | Adapter  | Passed | Failed | Unsupported | Rate   |
+  |----------|--------|--------|-------------|--------|
+  | zod      | 4299   | 0      | 73          | 100.0% |
+  | arktype  | 4299   | 0      | 73          | 100.0% |
+  | valibot  | 4249   | 50     | 73          | 98.8%  |
+  | effect   | 4299   | 0      | 73          | 100.0% |
+- Unsupported breakdown: 33 dynamicRef + 40 recursiveRef = 73 total
+- Valibot has 10 failures per draft (draft2020-12, 2019-09, 7, 6, 4), draft3: 0 failures
+- **Learnings for future iterations:**
+  - Compliance baseline is critical for detecting regressions
+  - 73 unsupported tests are from dynamic/recursive refs - these are inherently runtime features
+  - Valibot failures are adapter-specific, not related to unsupported keyword detection
+---

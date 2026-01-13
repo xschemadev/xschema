@@ -13,8 +13,8 @@
         "Run `bun run compliance` on effect adapter, note passed/failed/unsupported counts",
         "Record baseline in notes field for regression comparison"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Baseline captured 2026-01-13: zod(4299p/0f/73u), arktype(4299p/0f/73u), valibot(4249p/50f/73u), effect(4299p/0f/73u). Unsupported=73 (33 dynamicRef + 40 recursiveRef). Valibot has 10 failures per draft except draft3."
     },
     {
       "id": "US-002",
