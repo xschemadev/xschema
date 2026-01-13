@@ -125,7 +125,7 @@
         "Test if/then/else validates correctly",
         "Test type-guarded schema applies constraints only to matching types"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "renderer-formats",

@@ -79,15 +79,9 @@ def render(node: SchemaNode, name: str) -> RenderResult:
         case "not":
             return render_not(node, name)
         case "conditional":
-            # Placeholder: will implement in later task
-            return RenderResult(
-                code="", type_expr="Any", imports={"from typing import Any"}
-            )
+            return render_conditional(node, name)
         case "typeGuarded":
-            # Placeholder: will implement in later task
-            return RenderResult(
-                code="", type_expr="Any", imports={"from typing import Any"}
-            )
+            return render_type_guarded(node, name)
         case "nullable":
             # Handle nullable by wrapping inner type with | None
             inner_result = render(node.inner, name)
@@ -1102,6 +1096,178 @@ def render_not(node: NotNode, name: str) -> RenderResult:
     type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
     code = "\n\n\n".join(code_parts)
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+
+def render_conditional(node: ConditionalNode, name: str) -> RenderResult:
+    """Render ConditionalNode (if/then/else) to Pydantic type.
+
+    JSON Schema if/then/else allows conditional validation:
+    - If 'if' matches and 'then' exists, validate against 'then'
+    - If 'if' doesn't match and 'else' exists, validate against 'else'
+    - Otherwise, the original value is valid
+
+    We use a custom validator to implement this logic.
+    """
+    imports: set[str] = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator, TypeAdapter",
+    }
+    code_parts: list[str] = []
+
+    # Render the if schema
+    if_result = render(node.if_schema, f"{name}If")
+    imports.update(if_result.imports)
+    if if_result.code:
+        code_parts.append(if_result.code)
+
+    # Render then schema if present
+    then_result = None
+    if node.then_schema is not None:
+        then_result = render(node.then_schema, f"{name}Then")
+        imports.update(then_result.imports)
+        if then_result.code:
+            code_parts.append(then_result.code)
+
+    # Render else schema if present
+    else_result = None
+    if node.else_schema is not None:
+        else_result = render(node.else_schema, f"{name}Else")
+        imports.update(else_result.imports)
+        if else_result.code:
+            code_parts.append(else_result.code)
+
+    # Create validator with if/then/else logic
+    validator_name = f"_conditional_{name.lower()}"
+    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines.append(f"    # Check if 'if' schema matches")
+    validator_lines.append(f"    if_validator = TypeAdapter({if_result.type_expr})")
+    validator_lines.append("    try:")
+    validator_lines.append("        if_validator.validate_python(v)")
+    validator_lines.append("        if_matches = True")
+    validator_lines.append("    except Exception:")
+    validator_lines.append("        if_matches = False")
+
+    # Handle then branch
+    if then_result is not None:
+        validator_lines.append(
+            "    # If 'if' matches and 'then' exists, validate against 'then'"
+        )
+        validator_lines.append("    if if_matches:")
+        validator_lines.append(
+            f"        then_validator = TypeAdapter({then_result.type_expr})"
+        )
+        validator_lines.append("        try:")
+        validator_lines.append("            return then_validator.validate_python(v)")
+        validator_lines.append("        except Exception as e:")
+        validator_lines.append(
+            "            raise ValueError(f'Value must match then schema: {e}')"
+        )
+
+    # Handle else branch
+    if else_result is not None:
+        validator_lines.append(
+            "    # If 'if' doesn't match and 'else' exists, validate against 'else'"
+        )
+        validator_lines.append("    if not if_matches:")
+        validator_lines.append(
+            f"        else_validator = TypeAdapter({else_result.type_expr})"
+        )
+        validator_lines.append("        try:")
+        validator_lines.append("            return else_validator.validate_python(v)")
+        validator_lines.append("        except Exception as e:")
+        validator_lines.append(
+            "            raise ValueError(f'Value must match else schema: {e}')"
+        )
+
+    # Default: value is valid
+    validator_lines.append("    # Otherwise, value is valid as-is")
+    validator_lines.append("    return v")
+
+    code_parts.append("\n".join(validator_lines))
+
+    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    code = "\n\n\n".join(code_parts)
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+
+def render_type_guarded(node: TypeGuardedNode, name: str) -> RenderResult:
+    """Render TypeGuardedNode to Pydantic type.
+
+    TypeGuardedNode represents schemas with multiple type-specific keywords but no
+    explicit type. Each guard checks the runtime type and applies the corresponding schema.
+
+    Example: {minLength: 1, minimum: 0} has guards for both string and number types.
+
+    We use a custom validator that applies the appropriate schema based on runtime type.
+    """
+    imports: set[str] = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator, TypeAdapter",
+    }
+    code_parts: list[str] = []
+
+    # Render each guard's schema
+    for i, guard in enumerate(node.guards):
+        guard_result = render(guard.schema, f"{name}Guard{i}")
+        imports.update(guard_result.imports)
+        if guard_result.code:
+            code_parts.append(guard_result.code)
+
+    # Create validator that applies schema based on runtime type
+    validator_name = f"_type_guarded_{name.lower()}"
+    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines.append("    # Apply schema based on runtime type")
+
+    for i, guard in enumerate(node.guards):
+        guard_result = render(guard.schema, f"{name}Guard{i}")
+
+        # Map type guard check to Python type check
+        check_code = _type_guard_check_to_python(guard.check)
+
+        validator_lines.append(f"    if {check_code}:")
+        validator_lines.append(
+            f"        validator = TypeAdapter({guard_result.type_expr})"
+        )
+        validator_lines.append("        try:")
+        validator_lines.append("            return validator.validate_python(v)")
+        validator_lines.append("        except Exception as e:")
+        validator_lines.append(
+            f"            raise ValueError(f'Value must match {guard.check} schema: {{e}}')"
+        )
+
+    # If no guard matches, value is valid as-is
+    validator_lines.append("    # No type guard matched, value is valid as-is")
+    validator_lines.append("    return v")
+
+    code_parts.append("\n".join(validator_lines))
+
+    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    code = "\n\n\n".join(code_parts)
+    return RenderResult(code=code, type_expr=type_expr, imports=imports)
+
+
+def _type_guard_check_to_python(check: str) -> str:
+    """Convert type guard check string to Python isinstance check.
+
+    Maps IR type names to Python runtime checks.
+    """
+    if check == "string":
+        return "isinstance(v, str)"
+    elif check == "number":
+        return "isinstance(v, (int, float)) and not isinstance(v, bool)"
+    elif check == "integer":
+        return "isinstance(v, int) and not isinstance(v, bool)"
+    elif check == "boolean":
+        return "isinstance(v, bool)"
+    elif check == "null":
+        return "v is None"
+    elif check == "array":
+        return "isinstance(v, list)"
+    elif check == "object":
+        return "isinstance(v, dict)"
+    else:
+        # Unknown check - always false
+        return "False"
 
 
 def render_ref(node: RefNode, name: str) -> RenderResult:
