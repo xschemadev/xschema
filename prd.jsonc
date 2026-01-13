@@ -238,7 +238,7 @@
         "Document known limitations in REPORT.md",
         "Target: establish baseline metrics for iterative improvement"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Initial run to understand where we stand. 100% is the goal but incremental progress is expected."
     },
     // ============================================

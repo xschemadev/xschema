@@ -2,6 +2,7 @@ package langs
 
 import (
 	"github.com/xschemadev/xschema/language"
+	_ "github.com/xschemadev/xschema/language/langs/python"
 	"github.com/xschemadev/xschema/language/langs/typescript"
 )
 
