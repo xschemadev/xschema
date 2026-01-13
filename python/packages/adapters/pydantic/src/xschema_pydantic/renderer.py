@@ -258,11 +258,124 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
 
 
 def render_object(node: ObjectNode, name: str) -> RenderResult:
-    """Render ObjectNode to Pydantic type (placeholder)."""
-    # Will be fully implemented in adapter-renderer-objects task
+    """Render ObjectNode to Pydantic BaseModel class."""
     imports: set[str] = {"from pydantic import BaseModel"}
-    code = f"class {name}(BaseModel):\n    pass  # TODO: implement properties"
+    nested_classes: list[str] = []
+    field_lines: list[str] = []
+
+    # Process each property
+    for prop_name, prop_def in node.properties:
+        # Render the property's schema
+        # Use PascalCase nested class name based on property name
+        nested_name = f"{name}{_to_pascal_case(prop_name)}"
+        prop_result = render(prop_def.schema, nested_name)
+        imports.update(prop_result.imports)
+
+        # Collect nested class definitions
+        if prop_result.code:
+            nested_classes.append(prop_result.code)
+
+        # Determine if property is required
+        is_required = prop_def.required
+
+        # Check if the property schema is a union containing null (nullable)
+        is_nullable = _is_nullable_type(prop_def.schema)
+
+        # Build the field definition
+        type_expr = prop_result.type_expr
+
+        # Handle property description with Field
+        has_field_args = prop_def.description is not None
+
+        if is_required:
+            if is_nullable:
+                # Required but nullable: field: Type | None (no default)
+                if not type_expr.endswith(" | None"):
+                    type_expr = f"{type_expr} | None"
+                if has_field_args:
+                    imports.add("from pydantic import Field")
+                    desc_escaped = prop_def.description.replace('"', '\\"')
+                    field_lines.append(f'    {prop_name}: {type_expr} = Field(description="{desc_escaped}")')
+                else:
+                    field_lines.append(f"    {prop_name}: {type_expr}")
+            else:
+                # Required and not nullable: field: Type
+                if has_field_args:
+                    imports.add("from pydantic import Field")
+                    desc_escaped = prop_def.description.replace('"', '\\"')
+                    field_lines.append(f'    {prop_name}: {type_expr} = Field(description="{desc_escaped}")')
+                else:
+                    field_lines.append(f"    {prop_name}: {type_expr}")
+        else:
+            # Optional: field: Type | None = None
+            if not type_expr.endswith(" | None") and type_expr != "None":
+                type_expr = f"{type_expr} | None"
+            if has_field_args:
+                imports.add("from pydantic import Field")
+                desc_escaped = prop_def.description.replace('"', '\\"')
+                field_lines.append(f'    {prop_name}: {type_expr} = Field(default=None, description="{desc_escaped}")')
+            else:
+                field_lines.append(f"    {prop_name}: {type_expr} = None")
+
+    # Handle additionalProperties
+    config_line = None
+    if node.additional_properties is False:
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='forbid')"
+    elif node.additional_properties is True:
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='allow')"
+    # If additional_properties is a schema, we allow extra but don't constrain type
+    # (Pydantic doesn't support typed extra fields directly in model_config)
+    elif node.additional_properties is not None and node.additional_properties is not False:
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='allow')"
+
+    # Build the class definition
+    class_lines: list[str] = [f"class {name}(BaseModel):"]
+
+    # Add docstring if description present
+    if node.description:
+        desc_escaped = node.description.replace('"""', '\\"\\"\\"')
+        class_lines.append(f'    """{desc_escaped}"""')
+
+    # Add config if present
+    if config_line:
+        class_lines.append(config_line)
+
+    # Add fields or pass if empty
+    if field_lines:
+        class_lines.extend(field_lines)
+    elif not config_line and not node.description:
+        class_lines.append("    pass")
+
+    # Combine nested classes and main class
+    class_code = "\n".join(class_lines)
+    if nested_classes:
+        code = "\n\n\n".join(nested_classes) + "\n\n\n" + class_code
+    else:
+        code = class_code
+
     return RenderResult(code=code, type_expr=name, imports=imports)
+
+
+def _to_pascal_case(name: str) -> str:
+    """Convert a name to PascalCase for nested class names."""
+    # Handle snake_case and camelCase
+    parts = name.replace("-", "_").split("_")
+    return "".join(part.capitalize() for part in parts if part)
+
+
+def _is_nullable_type(node: SchemaNode) -> bool:
+    """Check if a schema node represents a nullable type (union with null)."""
+    if node.kind == "null":
+        return True
+    if node.kind == "union":
+        # Check if any variant is null
+        for variant in node.variants:
+            if variant.kind == "null":
+                return True
+    return False
 
 
 def render_union(node: UnionNode, name: str) -> RenderResult:
