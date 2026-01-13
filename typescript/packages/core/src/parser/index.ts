@@ -48,26 +48,6 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Fail on unevaluated keywords - they require annotation tracking we can't do statically
-	if (schema.unevaluatedItems !== undefined) {
-		throw new Error("unevaluatedItems is not supported");
-	}
-	if (schema.unevaluatedProperties !== undefined) {
-		const hasApplicators =
-			schema.allOf ||
-			schema.anyOf ||
-			schema.oneOf ||
-			schema.if ||
-			schema.$ref ||
-			schema.dependentSchemas ||
-			schema.not;
-		if (hasApplicators) {
-			throw new Error(
-				"unevaluatedProperties with applicators is not supported",
-			);
-		}
-	}
-
 	// Handle $ref
 	if (schema.$ref) {
 		return parseRef(schema, ctx);

@@ -312,3 +312,16 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Use minimum thresholds instead of exact counts for robustness against test suite updates
   - ValidateKeywords returns *UnsupportedKeywordError directly (not error interface) - no type assertion needed
 ---
+
+## 2026-01-13 - US-009
+- Removed TypeScript parser unevaluated keyword checks (Go CLI now handles all detection)
+- Deleted 18 lines from typescript/packages/core/src/parser/index.ts (lines 51-68)
+  - unevaluatedItems check (threw "unevaluatedItems is not supported")
+  - unevaluatedProperties + applicators check (checked allOf/anyOf/oneOf/if/$ref/dependentSchemas/not)
+- Files changed:
+  - typescript/packages/core/src/parser/index.ts - removed lines 51-68
+- **Learnings for future iterations:**
+  - Centralized detection in Go means TS adapters don't need redundant checks
+  - Go's unsupported.ValidateKeywords() runs in processor pipeline BEFORE adapters see the schema
+  - This enables better error messages (includes source URI) and consistent behavior across all adapters
+---

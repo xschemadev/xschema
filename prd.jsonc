@@ -139,8 +139,8 @@
         "`bun run build` passes from typescript/ directory",
         "`bun run typecheck` passes from typescript/ directory"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Removed 18 lines of unevaluated keyword checks from parseSchema(). Go CLI now handles all unsupported keyword detection via unsupported.ValidateKeywords() in processor pipeline."
     },
     {
       "id": "US-010",
