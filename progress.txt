@@ -591,3 +591,31 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Must handle unevaluatedProperties schema in renderObjectWithPatternProps, not just additionalProperties
 ---
 
+## 2026-01-13 - US-019
+- Implemented adapter-specific unsupported test pattern matching
+- valibot "Javascript object property names" tests now marked as unsupported instead of failed
+- Implementation:
+  - Created `cli/compliance/adapter-limitations.json` with `@xschemadev/valibot` entry
+  - Structure: `{ unsupported_patterns: [...], reason: "..." }`
+  - Added `adapter_limitations.go` with `MatchesUnsupportedPattern()` and `GetAdapterLimitation()`
+  - Updated `runner.go` to pass adapter name through pipeline and check patterns in `initGroupFilters()`
+  - Added `markAdapterLimitations()` phase before bundling to mark matching groups as unsupported
+- Files changed:
+  - cli/compliance/adapter-limitations.json - new config file
+  - cli/compliance/adapter_limitations.go - new file with pattern matching logic
+  - cli/compliance/adapter_limitations_test.go - new test file
+  - cli/compliance/runner.go - added adapterName to runDraftOptions, updated groupFilter struct, added markAdapterLimitations()
+- Compliance results:
+  | Adapter  | Before | After | Unsupported Added |
+  |----------|--------|-------|-------------------|
+  | valibot  | 10 failures/draft | 0 failures | +14 (7 properties + 7 required) |
+  | zod      | 0 failures | 0 failures | none |
+  | arktype  | 0 failures | 0 failures | none |
+  | effect   | 0 failures | 0 failures | none |
+- **Learnings for future iterations:**
+  - Adapter name in compliance is the full package name (e.g., `@xschemadev/valibot`), not just `valibot`
+  - Pattern matching uses `strings.Contains()` on group description - substring match is sufficient
+  - Adapter limitations are checked early (before bundling) to avoid unnecessary processing
+  - PRD said "10 tests per draft" but actual count is 14 (7 from properties.json + 7 from required.json)
+---
+

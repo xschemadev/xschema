@@ -276,8 +276,8 @@
         "Other adapters unaffected",
         "`go test ./compliance/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapter-limitations.json with @xschemadev/valibot entry. Actually 14 tests per draft (7 properties + 7 required) are now unsupported. Valibot at 100% pass rate."
     },
     {
       "id": "US-020",

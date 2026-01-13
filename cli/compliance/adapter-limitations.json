@@ -1,0 +1,6 @@
+{
+  "@xschemadev/valibot": {
+    "unsupported_patterns": ["Javascript object property names"],
+    "reason": "valibot library limitation: JS prototype property names"
+  }
+}
