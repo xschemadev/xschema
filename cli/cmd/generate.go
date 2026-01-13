@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
@@ -108,8 +109,13 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Step 2: Fetch schemas (with spinner)
 	ui.Step(2, 5, "Fetching schemas")
+
+	// Create shared cache for all schema fetching (retriever, processor, metaschema)
+	sharedCache := fetcher.NewSharedCache()
+
 	retrieverOpts := retriever.DefaultOptions()
 	retrieverOpts.Concurrency = concurrency
+	retrieverOpts.Cache = sharedCache
 
 	var schemas []retriever.RetrievedSchema
 	err = ui.RunWithSpinner("Fetching schemas...", func() error {
@@ -145,6 +151,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		processed, procErr = processor.Process(ctx, schemas, processor.Options{
 			Fetcher:   newRetrieverFetcher(ctx, retrieverOpts),
 			OnVerbose: verboseCallback(),
+			Cache:     sharedCache, // reuse cache from retriever
 		})
 		return procErr
 	})

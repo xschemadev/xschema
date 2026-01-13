@@ -36,8 +36,9 @@ func (p ProcessedSchema) Key() string {
 
 // Options configures processing behavior.
 type Options struct {
-	Fetcher   fetcher.Fetcher   // fetcher for external refs (required)
-	OnVerbose func(msg string)  // callback for verbose logging (optional)
+	Fetcher   fetcher.Fetcher       // fetcher for external refs (required)
+	OnVerbose func(msg string)      // callback for verbose logging (optional)
+	Cache     *fetcher.SharedCache  // shared cache (optional, creates internal if nil)
 }
 
 // Process runs the full processing pipeline on retrieved schemas:
@@ -55,15 +56,20 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 		}
 	}
 
+	// Use provided cache or create a new one
+	cache := opts.Cache
+	if cache == nil {
+		cache = fetcher.NewSharedCache()
+	}
+
 	verbose(fmt.Sprintf("processor: starting with %d schemas", len(schemas)))
 
 	// Phase 1: Crawl and fetch all external refs
-	cache, err := crawlAndFetch(ctx, schemas, opts.Fetcher, verbose)
-	if err != nil {
+	if err := crawlAndFetch(ctx, schemas, opts.Fetcher, cache, verbose); err != nil {
 		return nil, err
 	}
 
-	verbose(fmt.Sprintf("processor: crawl complete, cache has %d external schemas", len(cache)))
+	verbose(fmt.Sprintf("processor: crawl complete, cache has %d external schemas", cache.Len()))
 
 	// Phase 2: Validate all schemas (declared + external)
 	if err := validateAll(schemas, cache, verbose); err != nil {
@@ -87,9 +93,12 @@ func Process(ctx context.Context, schemas []retriever.RetrievedSchema, opts Opti
 // Runs after crawlAndFetch to ensure all schemas are valid before bundling.
 // Custom metaschemas from cache are passed to the validator so schemas using
 // custom $schema URIs can be validated.
-func validateAll(schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbose func(string)) error {
+func validateAll(schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string)) error {
+	// Get snapshot of cache for iteration
+	cacheSnapshot := cache.ToCache()
+
 	// Build metaschemas map from cache for custom $schema validation
-	metaschemas := buildMetaschemasMap(schemas, cache)
+	metaschemas := buildMetaschemasMap(schemas, cacheSnapshot)
 
 	opts := &validator.ValidateOptions{
 		Metaschemas: metaschemas,
@@ -105,13 +114,13 @@ func validateAll(schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbo
 	verbose(fmt.Sprintf("processor: validated %d declared schemas", len(schemas)))
 
 	// Validate external schemas from cache
-	for uri, data := range cache {
+	for uri, data := range cacheSnapshot {
 		if err := validator.ValidateSchemaWithOptions(data, opts); err != nil {
 			return fmt.Errorf("validation failed for external schema %s: %w", uri, err)
 		}
 	}
 
-	verbose(fmt.Sprintf("processor: validated %d external schemas", len(cache)))
+	verbose(fmt.Sprintf("processor: validated %d external schemas", len(cacheSnapshot)))
 
 	return nil
 }
@@ -156,16 +165,16 @@ func buildMetaschemasMap(schemas []retriever.RetrievedSchema, cache fetcher.Cach
 
 // bundleAll bundles each declared schema using a cache fetcher.
 // No I/O occurs during bundling - all refs resolve from the pre-populated cache.
-func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache fetcher.Cache, verbose func(string)) ([]ProcessedSchema, error) {
+func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *fetcher.SharedCache, verbose func(string)) ([]ProcessedSchema, error) {
 	// Add declared schemas to cache so bundler can resolve circular refs back to them
 	for _, s := range schemas {
 		if s.SourceURI != "" {
-			normalized := fetcher.NormalizeURI(s.SourceURI)
-			cache[normalized] = s.Schema
+			cache.Set(s.SourceURI, s.Schema)
 		}
 	}
 
-	cacheFetcher := fetcher.NewCacheFetcher(cache)
+	// Create CacheFetcher from snapshot for bundling
+	cacheFetcher := fetcher.NewCacheFetcher(cache.ToCache())
 	result := make([]ProcessedSchema, len(schemas))
 
 	for i, s := range schemas {
@@ -182,7 +191,7 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache f
 		}
 
 		// Extract vocabulary from custom metaschema if present
-		vocab, err := extractVocabulary(ctx, bundled)
+		vocab, err := extractVocabulary(ctx, bundled, cache)
 		if err != nil {
 			// Non-fatal: log and continue without vocabulary filtering
 			ui.Verbosef("processor: could not extract vocabulary for %s: %v", s.SourceURI, err)
@@ -211,7 +220,7 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache f
 // extractVocabulary extracts $vocabulary from a bundled schema.
 // Checks embedded $vocabulary first, then fetches from custom metaschema if needed.
 // Returns nil if schema uses standard draft without embedded vocabulary.
-func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]bool, error) {
+func extractVocabulary(ctx context.Context, schema json.RawMessage, cache *fetcher.SharedCache) (map[string]bool, error) {
 	var parsed map[string]any
 	if err := json.Unmarshal(schema, &parsed); err != nil {
 		return nil, nil // not an object schema, no vocabulary
@@ -239,8 +248,8 @@ func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]
 		return nil, nil
 	}
 
-	// Fetch custom metaschema and extract vocabulary
-	meta, err := metaschema.Get(ctx, schemaURI)
+	// Fetch custom metaschema and extract vocabulary (using shared cache)
+	meta, err := metaschema.GetWithCache(ctx, schemaURI, cache)
 	if err != nil {
 		return nil, err
 	}
@@ -249,10 +258,11 @@ func extractVocabulary(ctx context.Context, schema json.RawMessage) (map[string]
 }
 
 // crawlAndFetch iteratively discovers external $refs in schemas and fetches them.
-// It continues until no new URIs are found, building a complete cache of external schemas.
+// It continues until no new URIs are found, populating the shared cache.
 // Returns error immediately on any fetch failure (fail fast).
-func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f fetcher.Fetcher, verbose func(string)) (fetcher.Cache, error) {
-	cache := make(fetcher.Cache)
+// The cache is checked before fetching to avoid duplicate requests for URIs
+// already fetched by retriever or metaschema.
+func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f fetcher.Fetcher, cache *fetcher.SharedCache, verbose func(string)) error {
 	visited := make(map[string]bool) // tracks URIs we've processed (including declared schemas)
 
 	// Mark declared schema source URIs as visited (they're already fetched)
@@ -282,7 +292,7 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 		// Check context
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return ctx.Err()
 		default:
 		}
 
@@ -294,7 +304,7 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 			// Resolve relative URI against base
 			resolved, err := resolveURI(uri, baseURI)
 			if err != nil {
-				return nil, fmt.Errorf("processor: failed to resolve %q against %q: %w", uri, baseURI, err)
+				return fmt.Errorf("processor: failed to resolve %q against %q: %w", uri, baseURI, err)
 			}
 
 			normalized := fetcher.NormalizeURI(resolved)
@@ -303,14 +313,28 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 			}
 			visited[normalized] = true
 
+			// Check shared cache first (may have been fetched by retriever or metaschema)
+			if cached, ok := cache.Get(resolved); ok {
+				ui.Verbosef("processor: cache hit for %s", resolved)
+				// Still need to extract refs from cached schema
+				newRefs := extractExternalRefs(cached, resolved)
+				for _, ref := range newRefs {
+					refNorm := fetcher.NormalizeURI(ref)
+					if !visited[refNorm] {
+						newFrontier[ref] = resolved
+					}
+				}
+				continue
+			}
+
 			ui.Verbosef("processor: fetching %s", resolved)
 
 			raw, err := f.Fetch(ctx, resolved)
 			if err != nil {
-				return nil, fmt.Errorf("processor: failed to fetch %q: %w", resolved, err)
+				return fmt.Errorf("processor: failed to fetch %q: %w", resolved, err)
 			}
 
-			cache[normalized] = raw
+			cache.Set(resolved, raw)
 
 			// Extract refs from this schema and add to next frontier
 			newRefs := extractExternalRefs(raw, resolved)
@@ -326,7 +350,7 @@ func crawlAndFetch(ctx context.Context, schemas []retriever.RetrievedSchema, f f
 	}
 
 	verbose(fmt.Sprintf("processor: crawl finished in %d iterations", iteration))
-	return cache, nil
+	return nil
 }
 
 // extractExternalRefs finds all external $ref URIs in a schema.

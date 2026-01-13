@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/xschemadev/xschema/fetcher"
 )
 
 const (
@@ -36,7 +38,14 @@ var HTTPClient = &http.Client{Timeout: defaultHTTPTimeout}
 // Get fetches and caches a metaschema by URI.
 // Returns cached result on subsequent calls for the same URI.
 func Get(ctx context.Context, uri string) (*Metaschema, error) {
-	// Check cache first
+	return GetWithCache(ctx, uri, nil)
+}
+
+// GetWithCache fetches and caches a metaschema by URI, using the shared cache if provided.
+// The shared cache is checked first for raw schema data, avoiding duplicate HTTP requests
+// for metaschemas that were already fetched by retriever or processor.
+func GetWithCache(ctx context.Context, uri string, sharedCache *fetcher.SharedCache) (*Metaschema, error) {
+	// Check internal parsed cache first
 	cacheMu.RLock()
 	if m, ok := cache[uri]; ok {
 		cacheMu.RUnlock()
@@ -44,10 +53,27 @@ func Get(ctx context.Context, uri string) (*Metaschema, error) {
 	}
 	cacheMu.RUnlock()
 
-	// Fetch from network
-	raw, err := fetchMetaschema(ctx, uri)
-	if err != nil {
-		return nil, err
+	var raw json.RawMessage
+	var err error
+
+	// Check shared cache for raw schema data
+	if sharedCache != nil {
+		if cached, ok := sharedCache.Get(uri); ok {
+			raw = cached
+		}
+	}
+
+	// Fetch from network if not in shared cache
+	if raw == nil {
+		raw, err = fetchMetaschema(ctx, uri)
+		if err != nil {
+			return nil, err
+		}
+
+		// Store in shared cache if provided
+		if sharedCache != nil {
+			sharedCache.Set(uri, raw)
+		}
 	}
 
 	// Parse to extract $vocabulary
@@ -64,7 +90,7 @@ func Get(ctx context.Context, uri string) (*Metaschema, error) {
 		Vocabulary: vocab,
 	}
 
-	// Store in cache
+	// Store in internal parsed cache
 	cacheMu.Lock()
 	cache[uri] = m
 	cacheMu.Unlock()

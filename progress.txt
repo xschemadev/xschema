@@ -1,0 +1,31 @@
+# Ralph Progress Log
+Started: Tue Jan 13 01:04:16 AM CET 2026
+---
+
+## Codebase Patterns
+
+### Shared Cache Architecture (US-001)
+- `fetcher.SharedCache` is the single source of truth for all fetched schemas
+- Create cache in `generate.go`, pass to `retriever.Options.Cache` and `processor.Options.Cache`
+- `metaschema.GetWithCache()` accepts cache parameter for deduplication
+- Cache normalizes URIs internally (strips fragments)
+- Thread-safe via `sync.RWMutex`
+
+---
+
+## 2026-01-13 - US-001
+- Implemented unified schema caching via `fetcher.SharedCache`
+- Files changed:
+  - cli/fetcher/fetcher.go - added SharedCache type with thread-safe Get/Set/Has/ToCache/Len
+  - cli/fetcher/fetcher_test.go - new tests for SharedCache including race detection
+  - cli/retriever/retriever.go - added Cache field to Options, uses SharedCache
+  - cli/processor/processor.go - added Cache field to Options, crawlAndFetch/validateAll/bundleAll use SharedCache
+  - cli/metaschema/metaschema.go - added GetWithCache() that checks shared cache before fetching
+  - cli/cmd/generate.go - creates SharedCache and passes to both retriever and processor
+  - cli/processor/processor_test.go - added TestSharedCache_DeclaredSchemaAlsoReferencedViaRef and TestSharedCache_CustomMetaschemaFetchedOnce
+- **Learnings for future iterations:**
+  - The old retriever had its own private `schemaCache` - removed in favor of injected SharedCache
+  - processor.crawlAndFetch now returns error instead of (cache, error) since cache is passed in
+  - metaschema still has internal parsed cache (map[string]*Metaschema) for vocabulary extraction - SharedCache is raw JSON only
+  - validateAll/bundleAll use `cache.ToCache()` to get snapshot for iteration
+---

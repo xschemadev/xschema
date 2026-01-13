@@ -1077,3 +1077,133 @@ func TestProcess_CustomMetaschema_FetchedViaDollarSchema(t *testing.T) {
 		t.Error("minLength should be stripped when validation vocab is disabled")
 	}
 }
+
+// TestSharedCache_DeclaredSchemaAlsoReferencedViaRef tests that when a declared schema
+// is also referenced via $ref from another schema, it's only fetched once
+// (from retriever via shared cache, not refetched by processor).
+func TestSharedCache_DeclaredSchemaAlsoReferencedViaRef(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// This is the address schema - it will be "declared" (pre-fetched by retriever)
+	// and also referenced via $ref in person schema
+	addressSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"street": { "type": "string" },
+			"city": { "type": "string" }
+		}
+	}`)
+
+	// Add to mock fetcher in case processor tries to fetch it (which it shouldn't)
+	mockFetch.addResponse("http://example.com/address.json", string(addressSchema))
+
+	// Person schema references address via $ref
+	personSchema := json.RawMessage(`{
+		"type": "object",
+		"properties": {
+			"name": { "type": "string" },
+			"address": { "$ref": "http://example.com/address.json" }
+		}
+	}`)
+
+	// Simulate retriever having already fetched both schemas
+	// and populated the shared cache
+	sharedCache := fetcher.NewSharedCache()
+	sharedCache.Set("http://example.com/address.json", addressSchema)
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "address",
+			Schema:    addressSchema,
+			SourceURI: "http://example.com/address.json",
+		},
+		{
+			Namespace: "test",
+			ID:        "person",
+			Schema:    personSchema,
+			SourceURI: "http://example.com/person.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{
+		Fetcher: mockFetch,
+		Cache:   sharedCache,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// The address schema should NOT be fetched again via the Fetcher
+	// because it's already in the shared cache
+	if mockFetch.callCount != 0 {
+		t.Errorf("expected 0 fetches (address should come from shared cache), got %d: %v",
+			mockFetch.callCount, mockFetch.fetchCalls)
+	}
+}
+
+// TestSharedCache_CustomMetaschemaFetchedOnce tests that when multiple schemas
+// use the same custom $schema URI, it's only fetched once via shared cache.
+func TestSharedCache_CustomMetaschemaFetchedOnce(t *testing.T) {
+	ctx := context.Background()
+	mockFetch := newMockFetcher()
+
+	// Custom metaschema
+	customMeta := `{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$vocabulary": {
+			"https://json-schema.org/draft/2020-12/vocab/core": true
+		}
+	}`
+	mockFetch.addResponse("http://example.com/custom-meta.json", customMeta)
+
+	// Two schemas using the same custom metaschema
+	schema1 := json.RawMessage(`{
+		"$schema": "http://example.com/custom-meta.json",
+		"type": "string"
+	}`)
+	schema2 := json.RawMessage(`{
+		"$schema": "http://example.com/custom-meta.json",
+		"type": "integer"
+	}`)
+
+	sharedCache := fetcher.NewSharedCache()
+
+	schemas := []retriever.RetrievedSchema{
+		{
+			Namespace: "test",
+			ID:        "schema1",
+			Schema:    schema1,
+			SourceURI: "http://test.com/schema1.json",
+		},
+		{
+			Namespace: "test",
+			ID:        "schema2",
+			Schema:    schema2,
+			SourceURI: "http://test.com/schema2.json",
+		},
+	}
+
+	_, err := Process(ctx, schemas, Options{
+		Fetcher: mockFetch,
+		Cache:   sharedCache,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Count how many times the custom metaschema was fetched
+	metaFetchCount := 0
+	for _, call := range mockFetch.fetchCalls {
+		if call == "http://example.com/custom-meta.json" {
+			metaFetchCount++
+		}
+	}
+
+	// Should be fetched exactly once (first schema triggers fetch, second uses cache)
+	if metaFetchCount != 1 {
+		t.Errorf("expected custom metaschema to be fetched exactly once, got %d times. All calls: %v",
+			metaFetchCount, mockFetch.fetchCalls)
+	}
+}
