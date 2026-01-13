@@ -16,6 +16,7 @@ import (
 	"github.com/xschemadev/xschema/refextractor"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
+	"github.com/xschemadev/xschema/unsupported"
 	"github.com/xschemadev/xschema/validator"
 	"github.com/xschemadev/xschema/vocabulary"
 	"golang.org/x/sync/errgroup"
@@ -261,6 +262,15 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *
 			if err != nil {
 				return nil, fmt.Errorf("filtering by vocabulary failed for %s: %w", s.SourceURI, err)
 			}
+		}
+
+		// Check for unsupported keywords
+		var parsed map[string]any
+		if err := json.Unmarshal(bundled, &parsed); err != nil {
+			return nil, fmt.Errorf("failed to parse bundled schema for %s: %w", s.SourceURI, err)
+		}
+		if ukErr := unsupported.ValidateKeywords(parsed); ukErr != nil {
+			return nil, fmt.Errorf("schema %s contains unsupported keyword: %w", s.SourceURI, ukErr)
 		}
 
 		result[i] = ProcessedSchema{

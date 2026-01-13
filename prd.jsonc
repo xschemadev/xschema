@@ -79,8 +79,8 @@
         "Existing processor tests still pass",
         "`go test ./processor/` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added unsupported.ValidateKeywords() call in bundleAll() after vocabulary filtering. Error wraps source URI for context."
     },
     {
       "id": "US-006",

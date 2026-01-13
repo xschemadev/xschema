@@ -250,3 +250,15 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Test coverage was completed as part of the implementation stories (US-002, US-003)
   - Table-driven tests with t.Run provide clear test case identification
 ---
+
+## 2026-01-13 - US-005
+- Integrated unsupported keyword validation into processor pipeline
+- Validation happens in bundleAll() after vocabulary filtering, before creating ProcessedSchema
+- Files changed:
+  - cli/processor/processor.go - added import for unsupported package
+  - cli/processor/processor.go - added ValidateKeywords() call after vocabulary filtering
+- **Learnings for future iterations:**
+  - Validation placement matters: after bundling and vocabulary filtering, before returning result
+  - Error wraps source URI for clear error messages: "schema X contains unsupported keyword: $dynamicRef is not supported: ..."
+  - UnsupportedKeywordError can be used with errors.As() by callers (e.g., compliance runner)
+---
