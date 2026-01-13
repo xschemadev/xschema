@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/xschemadev/xschema/fetcher"
 )
@@ -1830,6 +1831,138 @@ func TestBundleSiblingRefAfterID(t *testing.T) {
 	}
 }
 
+// TestBundle5LevelNestedDefs verifies that schemas with 5+ levels of nested $defs
+// are correctly flattened with all refs rewritten properly.
+func TestBundle5LevelNestedDefs(t *testing.T) {
+	ctx := context.Background()
+
+	// Remote schema with 5 levels of nesting: $defs/L1/$defs/L2/$defs/L3/$defs/L4/$defs/L5
+	remoteSchema := `{
+		"type": "object",
+		"$defs": {
+			"L1": {
+				"type": "object",
+				"$defs": {
+					"L2": {
+						"type": "object",
+						"$defs": {
+							"L3": {
+								"type": "object",
+								"$defs": {
+									"L4": {
+										"type": "object",
+										"$defs": {
+											"L5": {
+												"type": "string",
+												"description": "deepest level"
+											}
+										},
+										"properties": {
+											"l5ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3/$defs/L4/$defs/L5" }
+										}
+									}
+								},
+								"properties": {
+									"l4ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3/$defs/L4" }
+								}
+							}
+						},
+						"properties": {
+							"l3ref": { "$ref": "#/$defs/L1/$defs/L2/$defs/L3" }
+						}
+					}
+				},
+				"properties": {
+					"l2ref": { "$ref": "#/$defs/L1/$defs/L2" }
+				}
+			}
+		},
+		"properties": {
+			"l1ref": { "$ref": "#/$defs/L1" }
+		}
+	}`
+
+	fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+		return json.RawMessage(remoteSchema), nil
+	})
+
+	schema := `{
+		"type": "object",
+		"properties": {
+			"remote": { "$ref": "http://example.com/deep.json" }
+		}
+	}`
+
+	bundled, err := Bundle(ctx, BundleInput{
+		Schema:    json.RawMessage(schema),
+		SourceURI: "http://example.com/base.json",
+		Fetcher:   fetcher,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(bundled, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	defs := result["$defs"].(map[string]any)
+
+	// Should have flattened keys with __ separators for all 5 levels
+	var foundL1, foundL2, foundL3, foundL4, foundL5 bool
+	for key := range defs {
+		switch {
+		case strings.Contains(key, "__L1__L2__L3__L4__L5"):
+			foundL5 = true
+		case strings.Contains(key, "__L1__L2__L3__L4") && !strings.Contains(key, "__L5"):
+			foundL4 = true
+		case strings.Contains(key, "__L1__L2__L3") && !strings.Contains(key, "__L4"):
+			foundL3 = true
+		case strings.Contains(key, "__L1__L2") && !strings.Contains(key, "__L3"):
+			foundL2 = true
+		case strings.Contains(key, "__L1") && !strings.Contains(key, "__L2"):
+			foundL1 = true
+		}
+	}
+
+	if !foundL1 {
+		t.Error("expected flattened L1 definition")
+	}
+	if !foundL2 {
+		t.Error("expected flattened L2 definition")
+	}
+	if !foundL3 {
+		t.Error("expected flattened L3 definition")
+	}
+	if !foundL4 {
+		t.Error("expected flattened L4 definition")
+	}
+	if !foundL5 {
+		t.Error("expected flattened L5 definition")
+	}
+
+	// Verify refs were rewritten correctly - find L4 and check its l5ref
+	for key, def := range defs {
+		if strings.Contains(key, "__L1__L2__L3__L4") && !strings.Contains(key, "__L5") {
+			defObj := def.(map[string]any)
+			props, ok := defObj["properties"].(map[string]any)
+			if !ok {
+				continue
+			}
+			l5ref, ok := props["l5ref"].(map[string]any)
+			if !ok {
+				continue
+			}
+			ref := l5ref["$ref"].(string)
+			// Should point to flattened L5, not the nested path
+			if !strings.HasPrefix(ref, "#/$defs/") || !strings.Contains(ref, "__L5") {
+				t.Errorf("L4's l5ref should be rewritten to flattened L5, got %s", ref)
+			}
+		}
+	}
+}
+
 // TestBundleSiblingRefToParentPath tests that refs in sibling properties can
 // reference paths that would be invalid if resolved against a sibling's $id scope.
 func TestBundleSiblingRefToParentPath(t *testing.T) {
@@ -1882,5 +2015,148 @@ func TestBundleSiblingRefToParentPath(t *testing.T) {
 	defs := result["$defs"].(map[string]any)
 	if _, ok := defs["Local"]; !ok {
 		t.Error("root $defs should still contain Local definition")
+	}
+}
+
+// =============================================================================
+// Benchmark Tests for Linear Scaling (US-006)
+// =============================================================================
+
+// generateNestedDefsSchema generates a schema with N levels of nested $defs
+// where each level has refs to the next level down.
+func generateNestedDefsSchema(levels int) string {
+	if levels <= 0 {
+		return `{"type": "string"}`
+	}
+
+	// Build from innermost to outermost
+	inner := `{"type": "string", "description": "leaf"}`
+
+	for i := levels; i >= 1; i-- {
+		defName := fmt.Sprintf("L%d", i)
+		var refPath string
+		if i == levels {
+			// Innermost level has no ref
+			refPath = ""
+		} else {
+			// Build the ref path like #/$defs/L1/$defs/L2/.../$defs/L(i+1)
+			parts := []string{"#"}
+			for j := 1; j <= i+1; j++ {
+				parts = append(parts, fmt.Sprintf("$defs/L%d", j))
+			}
+			refPath = strings.Join(parts, "/")
+		}
+
+		var propsSection string
+		if refPath != "" {
+			propsSection = fmt.Sprintf(`,"properties":{"ref":{"$ref":"%s"}}`, refPath)
+		}
+
+		inner = fmt.Sprintf(`{
+			"type": "object",
+			"$defs": {
+				"%s": %s
+			}%s
+		}`, defName, inner, propsSection)
+	}
+
+	return inner
+}
+
+// BenchmarkFlattenDefs measures flattening performance with increasing nesting depth.
+// We verify linear scaling by checking that time grows linearly with depth.
+func BenchmarkFlattenDefs(b *testing.B) {
+	depths := []int{2, 4, 6, 8, 10}
+
+	for _, depth := range depths {
+		b.Run(fmt.Sprintf("depth_%d", depth), func(b *testing.B) {
+			schema := generateNestedDefsSchema(depth)
+			fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+				return json.RawMessage(schema), nil
+			})
+
+			rootSchema := `{
+				"type": "object",
+				"properties": {
+					"remote": { "$ref": "http://example.com/nested.json" }
+				}
+			}`
+
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_, err := Bundle(context.Background(), BundleInput{
+					Schema:    json.RawMessage(rootSchema),
+					SourceURI: "http://example.com/base.json",
+					Fetcher:   fetcher,
+				})
+				if err != nil {
+					b.Fatalf("unexpected error: %v", err)
+				}
+			}
+		})
+	}
+}
+
+// TestFlattenDefsLinearScaling verifies that flattening time scales linearly
+// with nesting depth (not quadratically).
+func TestFlattenDefsLinearScaling(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping linear scaling test in short mode")
+	}
+
+	ctx := context.Background()
+
+	// Test with depths 5 and 10 - if quadratic, 10 would be ~4x slower than 5
+	// With linear scaling, 10 should be ~2x slower than 5
+	depths := []int{5, 10}
+	iterations := 100
+	times := make(map[int]int64)
+
+	for _, depth := range depths {
+		schema := generateNestedDefsSchema(depth)
+		fetcher := fetcher.FetchFunc(func(_ context.Context, uri string) (json.RawMessage, error) {
+			return json.RawMessage(schema), nil
+		})
+
+		rootSchema := `{
+			"type": "object",
+			"properties": {
+				"remote": { "$ref": "http://example.com/nested.json" }
+			}
+		}`
+
+		// Warm up
+		for i := 0; i < 5; i++ {
+			_, _ = Bundle(ctx, BundleInput{
+				Schema:    json.RawMessage(rootSchema),
+				SourceURI: "http://example.com/base.json",
+				Fetcher:   fetcher,
+			})
+		}
+
+		// Time the iterations
+		start := time.Now()
+		for i := 0; i < iterations; i++ {
+			_, err := Bundle(ctx, BundleInput{
+				Schema:    json.RawMessage(rootSchema),
+				SourceURI: "http://example.com/base.json",
+				Fetcher:   fetcher,
+			})
+			if err != nil {
+				t.Fatalf("depth %d: unexpected error: %v", depth, err)
+			}
+		}
+		times[depth] = time.Since(start).Nanoseconds()
+	}
+
+	// With linear scaling: time(10) / time(5) should be approximately 2
+	// With quadratic scaling: time(10) / time(5) would be approximately 4
+	// Allow some margin for variance
+	ratio := float64(times[10]) / float64(times[5])
+	t.Logf("depth 5: %dns, depth 10: %dns, ratio: %.2f", times[5], times[10], ratio)
+
+	// If ratio > 3, it's likely quadratic
+	if ratio > 3.0 {
+		t.Errorf("scaling appears quadratic: ratio %.2f (expected ~2 for linear)", ratio)
 	}
 }

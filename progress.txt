@@ -53,3 +53,19 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - collectIDsAndAnchors has same pattern - baseURI mutations are local to each recursive call
   - PRD concern was unfounded - the implementation was already spec-compliant
 ---
+
+## 2026-01-13 - US-006
+- Fixed quadratic $defs flattening to O(n) linear time
+- Root cause: old algorithm iterated over ALL rewrites for each def, causing O(n²) behavior
+- New algorithm:
+  - `collectDefsRecursive` returns newly added rewrite keys (not iterating all)
+  - Single DFS pass collects all defs and builds complete rewrite map
+  - Single pass rewrites all refs after collection
+- Files changed:
+  - cli/bundler/bundler.go - rewrote flattenDefs, collectDefsRecursive, added rewriteRefs, lookupRewrite, stripDefs
+  - cli/bundler/bundler_test.go - added TestBundle5LevelNestedDefs, BenchmarkFlattenDefs, TestFlattenDefsLinearScaling
+- **Learnings for future iterations:**
+  - When building rewrite maps recursively, track newly added keys per call instead of iterating entire map
+  - Linear scaling test: compare ratio of time(depth=10)/time(depth=5) - should be ~2 (linear), not ~4 (quadratic)
+  - lookupRewrite uses longest prefix match for refs with sub-paths (e.g., #/$defs/X/properties/foo)
+---

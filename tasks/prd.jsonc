@@ -95,8 +95,8 @@
         "Zod adapter compliance still 100% (bun run compliance in zod adapter folder)",
         "Typecheck/lint passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Rewrote flattenDefs to use O(n) single-pass algorithm. collectDefsRecursive now returns newly added rewrites to avoid quadratic iteration. Linear scaling verified: depth 5→10 shows ~1.7x ratio (linear) instead of ~4x (quadratic)."
     },
     {
       "id": "US-007",
