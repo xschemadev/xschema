@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 934 | 22 | 0 | 158 | 97.7% |
-| draft2020-12 | 948 | 22 | 0 | 181 | 97.7% |
+| draft2019-09 | 952 | 4 | 0 | 158 | 99.6% |
+| draft2020-12 | 966 | 4 | 0 | 181 | 99.6% |
 | draft3 | 407 | 0 | 0 | 0 | 100.0% |
 | draft4 | 566 | 0 | 0 | 0 | 100.0% |
 | draft6 | 760 | 0 | 0 | 0 | 100.0% |
@@ -13,8 +13,8 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-97.7%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.7%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.6%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.6%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-100.0%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-100.0%25-brightgreen)
@@ -67,7 +67,7 @@
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/15 |
-| unevaluatedProperties | ⚠️ | 25/44 |
+| unevaluatedProperties | ⚠️ | 43/44 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -292,77 +292,26 @@ These tests are intentionally excluded due to documented limitations.
 <details>
 <summary>unevaluatedItems - 3 failures</summary>
 
-- **unevaluatedItems as schema**
-  - Test: with invalid unevaluated items
-  - Expected: `invalid`, Got: `true`
 - **unevaluatedItems can't see inside cousins**
   - Test: always fails
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
+- **unevaluatedItems false**
+  - Test: with no unevaluated items
+  - Expected: `valid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
 - **unevaluatedItems false**
   - Test: with unevaluated items
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
 
 </details>
 
 <details>
-<summary>unevaluatedProperties - 19 failures</summary>
+<summary>unevaluatedProperties - 1 failure</summary>
 
-- **Evaluated properties collection needs to consider instance location**
-  - Test: with an unevaluated property that exists at another location
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, false with properties**
-  - Test: with nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, true with properties**
-  - Test: with nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, true with properties**
-  - Test: with no nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, allOf has unevaluated**
-  - Test: base case: both properties present
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, allOf has unevaluated**
-  - Test: in place applicator siblings, foo is missing
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, anyOf has unevaluated**
-  - Test: base case: both properties present
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, anyOf has unevaluated**
-  - Test: in place applicator siblings, bar is missing
-  - Expected: `invalid`, Got: `true`
-- **property is evaluated in an uncle schema to unevaluatedProperties**
-  - Test: uncle keyword evaluation is not significant
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 1st level is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 2nd level is invalid
-  - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties + single cyclic ref**
   - Test: Unevaluated on 3rd level is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties can't see inside cousins**
-  - Test: always fails
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties can't see inside cousins (reverse order)**
-  - Test: always fails
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties false**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties schema**
-  - Test: with invalid unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent patternProperties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent properties**
-  - Test: with unevaluated properties
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -414,7 +363,7 @@ These tests are intentionally excluded due to documented limitations.
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/15 |
-| unevaluatedProperties | ⚠️ | 27/46 |
+| unevaluatedProperties | ⚠️ | 45/46 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -486,7 +435,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/third/$defs/length) (2 tests)</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length) (2 tests)</summary>
 
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length`
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length`
@@ -710,77 +659,26 @@ These tests are intentionally excluded due to documented limitations.
 <details>
 <summary>unevaluatedItems - 3 failures</summary>
 
-- **unevaluatedItems as schema**
-  - Test: with invalid unevaluated items
-  - Expected: `invalid`, Got: `true`
 - **unevaluatedItems can't see inside cousins**
   - Test: always fails
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
+- **unevaluatedItems false**
+  - Test: with no unevaluated items
+  - Expected: `valid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
 - **unevaluatedItems false**
   - Test: with unevaluated items
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: Invalid Argument
+details: Expected an integer greater than or equal to 1, actual 0`
 
 </details>
 
 <details>
-<summary>unevaluatedProperties - 19 failures</summary>
+<summary>unevaluatedProperties - 1 failure</summary>
 
-- **Evaluated properties collection needs to consider instance location**
-  - Test: with an unevaluated property that exists at another location
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, false with properties**
-  - Test: with nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, true with properties**
-  - Test: with nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **cousin unevaluatedProperties, true and false, true with properties**
-  - Test: with no nested unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, allOf has unevaluated**
-  - Test: base case: both properties present
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, allOf has unevaluated**
-  - Test: in place applicator siblings, foo is missing
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, anyOf has unevaluated**
-  - Test: base case: both properties present
-  - Expected: `invalid`, Got: `true`
-- **in-place applicator siblings, anyOf has unevaluated**
-  - Test: in place applicator siblings, bar is missing
-  - Expected: `invalid`, Got: `true`
-- **property is evaluated in an uncle schema to unevaluatedProperties**
-  - Test: uncle keyword evaluation is not significant
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 1st level is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties + single cyclic ref**
-  - Test: Unevaluated on 2nd level is invalid
-  - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties + single cyclic ref**
   - Test: Unevaluated on 3rd level is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties can't see inside cousins**
-  - Test: always fails
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties can't see inside cousins (reverse order)**
-  - Test: always fails
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties false**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties schema**
-  - Test: with invalid unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent patternProperties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent properties**
-  - Test: with unevaluated properties
   - Expected: `invalid`, Got: `true`
 
 </details>

@@ -303,164 +303,41 @@
       "total": 15,
       "failures": [
         {
-          "group": "unevaluatedItems as schema",
-          "test": "with invalid unevaluated items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
           "group": "unevaluatedItems can't see inside cousins",
           "test": "always fails",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
+        },
+        {
+          "group": "unevaluatedItems false",
+          "test": "with no unevaluated items",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
         },
         {
           "group": "unevaluatedItems false",
           "test": "with unevaluated items",
           "expected": false,
-          "actual": "true",
-          "passed": false
+          "actual": "error",
+          "passed": false,
+          "error": "Invalid Argument\ndetails: Expected an integer greater than or equal to 1, actual 0"
         }
       ]
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 27,
-      "failed": 19,
+      "passed": 45,
+      "failed": 1,
       "skipped": 0,
       "total": 46,
       "failures": [
         {
-          "group": "Evaluated properties collection needs to consider instance location",
-          "test": "with an unevaluated property that exists at another location",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, false with properties",
-          "test": "with nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, true with properties",
-          "test": "with nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "cousin unevaluatedProperties, true and false, true with properties",
-          "test": "with no nested unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, allOf has unevaluated",
-          "test": "base case: both properties present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, allOf has unevaluated",
-          "test": "in place applicator siblings, foo is missing",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "base case: both properties present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "in-place applicator siblings, anyOf has unevaluated",
-          "test": "in place applicator siblings, bar is missing",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
-          "test": "uncle keyword evaluation is not significant",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 1st level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties + single cyclic ref",
-          "test": "Unevaluated on 2nd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
           "group": "unevaluatedProperties + single cyclic ref",
           "test": "Unevaluated on 3rd level is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties can't see inside cousins",
-          "test": "always fails",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties can't see inside cousins (reverse order)",
-          "test": "always fails",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties false",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties not affected by propertyNames",
-          "test": "string property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties schema",
-          "test": "with invalid unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent patternProperties",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent properties",
-          "test": "with unevaluated properties",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -483,21 +360,21 @@
     }
   ],
   "summary": {
-    "passed": 948,
-    "failed": 22,
+    "passed": 966,
+    "failed": 4,
     "skipped": 0,
     "total": 970,
-    "percentage": 97.73195876288659,
+    "percentage": 99.58762886597938,
     "unsupportedFeatures": {
       "count": 181,
       "items": [
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/third/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/third/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",

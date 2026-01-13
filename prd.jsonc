@@ -232,8 +232,8 @@
         "No regressions in other tests",
         "`bun run typecheck` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Compliance: 99.6% (4487 passed, 8 failed, 339 unsupported). Updated renderObject to use additionalPropsExplicit pattern, isStrict considers unevaluatedProperties: false. Updated renderArray to handle standalone unevaluatedItems (false = empty array, schema = all items). Updated renderTuple to use unevaluatedItems when restItems not set. Same 4 failures per draft as other adapters: $recursiveRef edge cases with unevaluated keywords."
     },
     {
       "id": "US-016",

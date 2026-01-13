@@ -445,3 +445,27 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Valibot uses v.strictObject for strict mode, v.objectWithRest for catchall schema
   - Valibot's v.check returns boolean (vs superRefine which adds issues) - simpler pattern for validation
 ---
+
+## 2026-01-13 - US-015
+- Fixed effect adapter for standalone unevaluatedProperties/unevaluatedItems
+- Compliance improved to 99.6% (4487 passed, 8 failed, 339 unsupported)
+- Object changes:
+  - Added additionalPropsExplicit check (undefined vs explicit true/false/schema)
+  - isStrict now considers unevaluatedProperties: false when additionalProperties not set
+  - additionalSchema falls back to unevaluatedProperties when additionalProperties not set
+  - Updated renderObjectWithPatternProps to use same pattern
+- Array changes:
+  - unevaluatedItems: false -> S.Array(S.Never).pipe(S.maxItems(0))
+  - unevaluatedItems as schema -> use as item schema for all items
+  - Added unevaluatedItems filter when both items and unevaluatedItems present
+- Tuple changes:
+  - disallowExtraItems now includes unevaluatedItems: false
+  - extraItemsSchema falls back to unevaluatedItems when restItems is false or any
+- Files changed:
+  - typescript/packages/adapters/effect/src/renderer.ts - renderObject, renderArray, renderTuple, renderObjectWithPatternProps
+- **Learnings for future iterations:**
+  - Same semantic pattern as zod/arktype/valibot: additionalProperties evaluates props, unevaluatedProperties only applies when additionalProperties not set
+  - Effect uses S.filter for validation instead of superRefine
+  - Effect's S.decodeUnknownEither returns Either type (check _tag for "Right"/"Left")
+  - 4 failures per draft are $recursiveRef edge cases - same limitation across all adapters
+---

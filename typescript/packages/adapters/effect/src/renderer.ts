@@ -234,18 +234,42 @@ function renderObject(node: ObjectNode): string {
 	}
 
 	const hasPatternProps = node.patternProperties.length > 0;
-	const needsCustomValidation = hasPatternProps || node.propertyNames !== undefined ||
+	
+	// Determine strictness from additionalProperties and unevaluatedProperties
+	// Key insight: if additionalProperties is explicitly set, it handles extra props.
+	// unevaluatedProperties only takes effect when additionalProperties is NOT explicitly set.
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+	
+	// isStrict: reject extra properties
+	// - additionalProperties: false → strict
+	// - additionalProperties not set AND unevaluatedProperties: false → strict
+	const isStrict =
 		node.additionalProperties === false ||
-		(typeof node.additionalProperties === "object" && node.additionalProperties.kind !== "any");
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+	
+	// Schema for validating extra properties
+	// - additionalProperties as schema takes precedence
+	// - Then unevaluatedProperties as schema (only if additionalProperties not set)
+	const additionalSchema =
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+			? node.additionalProperties
+			: !additionalPropsExplicit &&
+				  typeof node.unevaluatedProperties === "object" &&
+				  node.unevaluatedProperties.kind !== "any"
+				? node.unevaluatedProperties
+				: null;
 
-	// If using record-style (no properties, just additionalProperties schema)
+	const needsCustomValidation = hasPatternProps || node.propertyNames !== undefined ||
+		isStrict || additionalSchema !== null;
+
+	// If using record-style (no properties, just additionalProperties/unevaluatedProperties schema)
 	if (
 		propKeys.length === 0 &&
 		!hasPatternProps &&
-		typeof node.additionalProperties === "object" &&
-		node.additionalProperties.kind !== "any"
+		additionalSchema
 	) {
-		const valueSchema = render(node.additionalProperties);
+		const valueSchema = render(additionalSchema);
 		let result = `S.Unknown.pipe(S.filter((val) => typeof val === "object" && val !== null && !Array.isArray(val), { message: () => "Expected object" }), S.filter((val) => {
       for (const [key, value] of Object.entries(val)) {
         const result = S.decodeUnknownEither(${valueSchema})(value);
@@ -394,9 +418,28 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		}
 	}
 
-	// Additional properties handling
+	// Determine strictness from additionalProperties and unevaluatedProperties
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+	
+	// isStrict: reject extra properties
+	const isStrict =
+		node.additionalProperties === false ||
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+	
+	// Schema for validating extra properties
+	const additionalSchema =
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+			? node.additionalProperties
+			: !additionalPropsExplicit &&
+				  typeof node.unevaluatedProperties === "object" &&
+				  node.unevaluatedProperties.kind !== "any"
+				? node.unevaluatedProperties
+				: null;
+
+	// Additional/unevaluated properties handling
 	let additionalCheck = "";
-	if (node.additionalProperties === false) {
+	if (isStrict) {
 		const definedPropsJson = JSON.stringify(propKeys);
 		const patternChecks = patterns.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
 		if (patterns.length > 0) {
@@ -415,11 +458,8 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
           if (!definedProps.has(key)) return false;
         }`;
 		}
-	} else if (
-		typeof node.additionalProperties === "object" &&
-		node.additionalProperties.kind !== "any"
-	) {
-		const additionalSchema = render(node.additionalProperties);
+	} else if (additionalSchema) {
+		const additionalSchemaCode = render(additionalSchema);
 		const definedPropsJson = JSON.stringify(propKeys);
 		const patternChecks = patterns.map(p => `new RegExp(${escapeString(p.pattern)})`).join(", ");
 		if (patterns.length > 0) {
@@ -430,7 +470,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
           if (definedProps.has(key)) continue;
           const matchesPattern = patterns.some(p => p.test(key));
           if (!matchesPattern) {
-            const result = S.decodeUnknownEither(${additionalSchema})(value);
+            const result = S.decodeUnknownEither(${additionalSchemaCode})(value);
             if (result._tag === "Left") return false;
           }
         }`;
@@ -439,7 +479,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
         const definedProps = new Set(${definedPropsJson});
         for (const [key, value] of Object.entries(val)) {
           if (!definedProps.has(key)) {
-            const result = S.decodeUnknownEither(${additionalSchema})(value);
+            const result = S.decodeUnknownEither(${additionalSchemaCode})(value);
             if (result._tag === "Left") return false;
           }
         }`;
@@ -539,13 +579,60 @@ function renderDependenciesFilters(node: ObjectNode): string[] {
 }
 
 function renderArray(node: ArrayNode): string {
-	const itemSchema = render(node.items);
-	const filters = renderArrayConstraints(node.constraints);
-	
-	if (filters.length > 0) {
-		return `S.Array(${itemSchema}).pipe(${filters.join(", ")})`;
+	// Check if this is a schema with only unevaluatedItems (no actual items schema)
+	// In that case, all items are "unevaluated" and subject to unevaluatedItems constraint
+	const hasRealItems = node.items.kind !== "any";
+
+	if (!hasRealItems && node.unevaluatedItems === false) {
+		// Schema like { "unevaluatedItems": false } - empty array only
+		let result = "S.Array(S.Never).pipe(S.maxItems(0))";
+		const filters = renderArrayConstraints(node.constraints);
+		if (filters.length > 0) {
+			result = `${result}.pipe(${filters.join(", ")})`;
+		}
+		return result;
 	}
-	return `S.Array(${itemSchema})`;
+
+	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
+		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
+		const unevalSchema = render(node.unevaluatedItems);
+		let result = `S.Array(${unevalSchema})`;
+		const filters = renderArrayConstraints(node.constraints);
+		if (filters.length > 0) {
+			result = `${result}.pipe(${filters.join(", ")})`;
+		}
+		return result;
+	}
+
+	// Normal array with items schema
+	const itemSchema = render(node.items);
+	let result = `S.Array(${itemSchema})`;
+
+	// If items is defined AND unevaluatedItems is also defined, we need both validations
+	// But typically items covers all items, so unevaluatedItems wouldn't have effect
+	// Just in case, add the filter
+	if (
+		hasRealItems &&
+		node.unevaluatedItems !== undefined &&
+		node.unevaluatedItems !== false &&
+		node.unevaluatedItems.kind !== "any"
+	) {
+		const unevalSchema = render(node.unevaluatedItems);
+		result += `.pipe(S.filter((arr) => {
+      const schema = ${unevalSchema};
+      for (const item of arr) {
+        const r = S.decodeUnknownEither(schema)(item);
+        if (r._tag === "Left") return false;
+      }
+      return true;
+    }, { message: () => "Unevaluated item validation failed" }))`;
+	}
+
+	const filters = renderArrayConstraints(node.constraints);
+	if (filters.length > 0) {
+		result = `${result}.pipe(${filters.join(", ")})`;
+	}
+	return result;
 }
 
 function renderArrayConstraints(constraints: ArrayNode["constraints"]): string[] {
@@ -614,13 +701,25 @@ function renderTuple(node: TupleNode): string {
       return true;
     }, { message: () => "Tuple item validation failed" }))`;
 
-	// Rest items handling
-	if (node.restItems === false) {
+	// Determine if extra items are allowed and what schema to use
+	// unevaluatedItems takes precedence for standalone schemas (no applicators)
+	const disallowExtraItems =
+		node.restItems === false || node.unevaluatedItems === false;
+	const extraItemsSchema =
+		node.restItems !== false && node.restItems.kind !== "any"
+			? node.restItems
+			: node.unevaluatedItems !== undefined &&
+				  node.unevaluatedItems !== false &&
+				  node.unevaluatedItems.kind !== "any"
+				? node.unevaluatedItems
+				: null;
+
+	if (disallowExtraItems) {
 		// No additional items beyond prefixItems length
 		result += `.pipe(S.filter((val) => val.length <= ${node.prefixItems.length}, { message: () => "Array must not have more than ${node.prefixItems.length} items" }))`;
-	} else if (node.restItems.kind !== "any") {
-		// Validate rest items against schema
-		const restSchema = render(node.restItems);
+	} else if (extraItemsSchema) {
+		// Validate rest/unevaluated items against schema
+		const restSchema = render(extraItemsSchema);
 		result += `.pipe(S.filter((val) => {
         const restSchema = ${restSchema};
         for (let i = ${node.prefixItems.length}; i < val.length; i++) {
@@ -630,7 +729,7 @@ function renderTuple(node: TupleNode): string {
         return true;
       }, { message: () => "Rest items validation failed" }))`;
 	}
-	// If restItems is any, no additional validation needed
+	// If neither, extra items are allowed with any type
 
 	const filters = renderArrayConstraints(node.constraints);
 	if (filters.length > 0) {
