@@ -398,3 +398,26 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - propertyNames validates keys but does NOT evaluate property values
   - Cyclic $ref with unevaluatedProperties requires recursive validator - left as edge case (1 failure)
 ---
+
+## 2026-01-13 - US-013
+- Fixed arktype adapter for standalone unevaluatedProperties/unevaluatedItems
+- Compliance went from 22 failures to 1 per draft (99.9% pass rate)
+- Changes to renderObject:
+  - Added additionalPropsExplicit check (same pattern as zod)
+  - isStrict now considers unevaluatedProperties: false when additionalProperties not set
+  - additionalSchema falls back to unevaluatedProperties when additionalProperties not set
+- Changes to renderArray:
+  - Added hasRealItems check for arrays without items schema
+  - unevaluatedItems: false -> empty array only (narrow with length === 0)
+  - unevaluatedItems as schema -> use as item schema for all items
+- Changes to renderTuple:
+  - disallowExtraItems now includes unevaluatedItems: false
+  - extraItemsSchema falls back to unevaluatedItems when restItems is false or any
+- Files changed:
+  - typescript/packages/adapters/arktype/src/renderer.ts - updated renderObject, renderArray, renderTuple, renderPatternPropsNarrow
+- **Learnings for future iterations:**
+  - bun caches compiled packages in ~/.cache/.bun/install/cache/@xschemadev* - must clear when debugging
+  - Symlinked workspace packages use the dist/ files, not source
+  - Same semantic pattern as zod: additionalProperties evaluates props, unevaluatedProperties only applies when additionalProperties not set
+  - Cyclic $ref with unevaluatedProperties remains edge case (1 failure) - requires recursive validator generation
+---

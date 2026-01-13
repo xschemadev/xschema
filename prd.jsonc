@@ -204,8 +204,8 @@
         "No regressions in other tests",
         "`bun run typecheck` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Compliance: 99.9% (969 passed draft2020-12, 955 passed draft2019-09, 1 failed per draft, 339 unsupported). Updated renderObject to handle unevaluatedProperties when additionalProperties not explicitly set. Updated renderArray to handle standalone unevaluatedItems. Updated renderTuple to handle unevaluatedItems as rest constraint. Only 1 failure per draft: cyclic $ref with unevaluatedProperties - same edge case as zod."
     },
     {
       "id": "US-014",
