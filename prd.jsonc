@@ -172,8 +172,8 @@
         "`go test ./...` passes",
         "`go vet ./...` passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Removed deprecated test path matching system. Changes: (1) Removed Tests field from FeatureGroup struct, (2) Removed ContainsTest/TestPaths/TestCount methods, (3) Removed tests key from unsupported-features.json, (4) Removed TestContainsTest/TestTestCount from tests, (5) Replaced filterKnownIssues with initGroupFilters in compliance runner - all tests now pass through, unsupported detection happens during bundling, (6) Removed LoadUnsupportedFeatures function and unsupportedFeatures from runDraftOptions."
     }
   ]
 }

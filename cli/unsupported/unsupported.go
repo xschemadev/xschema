@@ -18,7 +18,6 @@ type FeatureGroup struct {
 	Name     string   `json:"name"`
 	Reason   string   `json:"reason"`
 	Keywords []string `json:"keywords"`
-	Tests    []string `json:"tests"`
 }
 
 // UnsupportedKeywordError is returned when a schema contains an unsupported keyword
@@ -75,36 +74,6 @@ func Load() Features {
 func Keywords() map[string]string {
 	load()
 	return keywords
-}
-
-// ContainsTest checks if a test path is in the unsupported features list
-func (f Features) ContainsTest(testPath string) (bool, string) {
-	for _, group := range f {
-		for _, test := range group.Tests {
-			if test == testPath {
-				return true, group.Reason
-			}
-		}
-	}
-	return false, ""
-}
-
-// TestPaths returns all test paths as a flat list
-func (f Features) TestPaths() []string {
-	var paths []string
-	for _, group := range f {
-		paths = append(paths, group.Tests...)
-	}
-	return paths
-}
-
-// TestCount returns the total number of unsupported feature tests
-func (f Features) TestCount() int {
-	count := 0
-	for _, group := range f {
-		count += len(group.Tests)
-	}
-	return count
 }
 
 // Property applicators that require annotation tracking when combined with unevaluatedProperties

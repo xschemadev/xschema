@@ -21,7 +21,6 @@ func TestLoad(t *testing.T) {
 			if len(f.Keywords) == 0 {
 				t.Error("dynamic-refs should have keywords")
 			}
-			// Tests array is now empty - keyword detection handles this
 		}
 	}
 	if !found {
@@ -89,32 +88,6 @@ func TestValidateKeywords(t *testing.T) {
 				t.Errorf("ValidateKeywords() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
-	}
-}
-
-func TestContainsTest(t *testing.T) {
-	features := Load()
-
-	// Tests array is now empty - keyword detection handles unsupported schemas
-	// ContainsTest always returns false with empty tests arrays
-	found, _ := features.ContainsTest("draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema")
-	if found {
-		t.Error("expected test NOT to be found (tests arrays are empty)")
-	}
-
-	// Test path that should be supported - still returns false
-	found, _ = features.ContainsTest("draft2020-12/type/type is string")
-	if found {
-		t.Error("expected test to NOT be in unsupported list")
-	}
-}
-
-func TestTestCount(t *testing.T) {
-	features := Load()
-	count := features.TestCount()
-	// Tests arrays are now empty - keyword detection handles unsupported schemas
-	if count != 0 {
-		t.Errorf("expected zero test count (tests arrays are empty), got %d", count)
 	}
 }
 

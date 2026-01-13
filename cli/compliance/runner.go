@@ -50,11 +50,6 @@ type RunOptions struct {
 	DraftDoneFunc  func(draft DraftResult) // called when a draft completes
 }
 
-// LoadUnsupportedFeatures loads unsupported features from the unsupported package
-func LoadUnsupportedFeatures() unsupported.Features {
-	return unsupported.Load()
-}
-
 // Run executes compliance tests for an adapter
 func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 	// Determine which drafts to test
@@ -80,9 +75,6 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 		return nil, fmt.Errorf("adapter CLI not found at %s\nMake sure the adapter is built", adapterBin)
 	}
 
-	// Load unsupported features
-	unsupportedFeatures := LoadUnsupportedFeatures()
-
 	report := ComplianceReport{
 		Adapter: opts.AdapterName,
 		Drafts:  []DraftResult{},
@@ -106,22 +98,21 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 		}
 
 		draftResult, err := runDraft(ctx, runDraftOptions{
-			draft:               draft,
-			draftNum:            i + 1,
-			draftTotal:          len(drafts),
-			keyword:             opts.Keyword,
-			suitePath:           opts.SuitePath,
-			adapterBin:          adapterBin,
-			runner:              opts.Runner,
-			runnerArgs:          opts.RunnerArgs,
-			language:            opts.Language,
-			workDir:             opts.AdapterPath,
-			verbose:             opts.Verbose,
-			jobs:                jobs,
-			outputFunc:          opts.OutputFunc,
-			progressFunc:        opts.ProgressFunc,
-			timing:              opts.Timing,
-			unsupportedFeatures: unsupportedFeatures,
+			draft:        draft,
+			draftNum:     i + 1,
+			draftTotal:   len(drafts),
+			keyword:      opts.Keyword,
+			suitePath:    opts.SuitePath,
+			adapterBin:   adapterBin,
+			runner:       opts.Runner,
+			runnerArgs:   opts.RunnerArgs,
+			language:     opts.Language,
+			workDir:      opts.AdapterPath,
+			verbose:      opts.Verbose,
+			jobs:         jobs,
+			outputFunc:   opts.OutputFunc,
+			progressFunc: opts.ProgressFunc,
+			timing:       opts.Timing,
 		})
 
 		if draftResult != nil {
@@ -144,22 +135,21 @@ func Run(ctx context.Context, opts RunOptions) (*ComplianceReport, error) {
 }
 
 type runDraftOptions struct {
-	draft               string
-	draftNum            int // 1-based
-	draftTotal          int
-	keyword             string // filter to specific keyword (empty = all)
-	suitePath           string
-	adapterBin          string
-	runner              string
-	runnerArgs          []string
-	language            *language.Language
-	workDir             string // directory to run harness from (for dependency resolution)
-	verbose             bool
-	jobs                int // parallel keyword processing (default 1)
-	outputFunc          func(string)
-	progressFunc        func(ProgressUpdate)
-	timing              *TimingSummary
-	unsupportedFeatures unsupported.Features
+	draft        string
+	draftNum     int // 1-based
+	draftTotal   int
+	keyword      string // filter to specific keyword (empty = all)
+	suitePath    string
+	adapterBin   string
+	runner       string
+	runnerArgs   []string
+	language     *language.Language
+	workDir      string // directory to run harness from (for dependency resolution)
+	verbose      bool
+	jobs         int // parallel keyword processing (default 1)
+	outputFunc   func(string)
+	progressFunc func(ProgressUpdate)
+	timing       *TimingSummary
 }
 
 func runDraft(ctx context.Context, opts runDraftOptions) (*DraftResult, error) {
@@ -367,12 +357,11 @@ type bundledGroup struct {
 	unsupportedErr *unsupported.UnsupportedKeywordError
 }
 
-// groupFilter holds pre-filtered test information for a group
+// groupFilter holds test information for a group
 type groupFilter struct {
-	allKnown         bool
-	unsupportedItems []UnsupportedFeatureItem
-	filteredTests    []TestCase
-	filteredIndices  []int
+	allKnown        bool
+	filteredTests   []TestCase
+	filteredIndices []int
 }
 
 // processKeyword batches adapter invocation and harness execution for all groups in a keyword.
@@ -382,8 +371,8 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 		return nil
 	}
 
-	// Phase 1: Filter known issues
-	groupFilters := filterKnownIssues(groups, opts.draft, keywordResult.Keyword, opts.unsupportedFeatures, summary)
+	// Phase 1: Initialize group filters (all tests pass through - unsupported detection happens in bundling)
+	groupFilters := initGroupFilters(groups)
 
 	// Phase 2: Bundle schemas
 	bundled, err := bundleSchemas(ctx, groups, groupFilters, opts, keywordResult.Keyword)
@@ -423,36 +412,21 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	return nil
 }
 
-// filterKnownIssues identifies which tests are known issues and which groups can be skipped.
-func filterKnownIssues(groups []TestGroup, draft, keyword string, unsupportedFeatures unsupported.Features, summary *DraftSummary) []groupFilter {
+// initGroupFilters creates groupFilter entries for each test group.
+// All tests pass through - unsupported keyword detection happens during bundling.
+func initGroupFilters(groups []TestGroup) []groupFilter {
 	groupFilters := make([]groupFilter, len(groups))
 
 	for i, group := range groups {
-		var filteredTests []TestCase
-		var filteredIndices []int
-		var unsupportedItems []UnsupportedFeatureItem
-
-		for j, tc := range group.Tests {
-			testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, group.Description, tc.Description)
-			if isUnsupported, reason := unsupportedFeatures.ContainsTest(testPath); isUnsupported {
-				unsupportedItems = append(unsupportedItems, UnsupportedFeatureItem{Path: testPath, Reason: reason})
-				continue
-			}
-			filteredTests = append(filteredTests, tc)
-			filteredIndices = append(filteredIndices, j)
+		filteredIndices := make([]int, len(group.Tests))
+		for j := range group.Tests {
+			filteredIndices[j] = j
 		}
 
 		groupFilters[i] = groupFilter{
-			allKnown:         len(filteredTests) == 0 && len(unsupportedItems) > 0,
-			unsupportedItems: unsupportedItems,
-			filteredTests:    filteredTests,
-			filteredIndices:  filteredIndices,
-		}
-
-		// Add known issues for groups we're skipping entirely
-		if groupFilters[i].allKnown {
-			summary.UnsupportedFeatures.Count += len(unsupportedItems)
-			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, unsupportedItems...)
+			allKnown:        false,
+			filteredTests:   group.Tests,
+			filteredIndices: filteredIndices,
 		}
 	}
 
@@ -624,12 +598,6 @@ func buildHarnessItems(
 		}
 
 		gf := groupFilters[i]
-
-		// Add known issues for mixed groups
-		if len(gf.unsupportedItems) > 0 && !gf.allKnown {
-			summary.UnsupportedFeatures.Count += len(gf.unsupportedItems)
-			summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, gf.unsupportedItems...)
-		}
 
 		if len(gf.filteredTests) == 0 {
 			continue

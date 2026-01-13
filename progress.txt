@@ -352,3 +352,17 @@ Started: Tue Jan 13 01:04:16 AM CET 2026
   - Unsupported count increased from 73 to 339 because unevaluated-with-applicators is now detected
   - The PRD's US-003 (allow standalone unevaluated) conflicts with US-010's failed=0 goal
 ---
+
+## 2026-01-13 - US-011
+- Removed deprecated test path matching system (now handled by keyword detection in bundling)
+- Files changed:
+  - cli/unsupported/unsupported.go - removed Tests field from FeatureGroup, removed ContainsTest/TestPaths/TestCount methods
+  - cli/unsupported/unsupported-features.json - removed "tests" key from all feature groups
+  - cli/unsupported/unsupported_test.go - removed TestContainsTest and TestTestCount tests
+  - cli/compliance/runner.go - replaced filterKnownIssues with initGroupFilters, removed unsupportedFeatures from runDraftOptions, removed LoadUnsupportedFeatures function, cleaned up groupFilter struct (removed unsupportedItems field)
+- **Learnings for future iterations:**
+  - Test path matching is fully deprecated - keyword detection in bundleSchemas() handles all unsupported schema detection
+  - initGroupFilters now just passes through all tests; unsupported detection happens when processor calls unsupported.ValidateKeywords()
+  - The compliance pipeline is now: initGroupFilters → bundleSchemas (keyword detection here) → callAdapter → buildHarnessItems → executeHarness → processHarnessResults
+  - Clean removal pattern: trace all usages of deprecated code (fields, methods, functions) and remove from leaf to root
+---
