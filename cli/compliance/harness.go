@@ -146,10 +146,10 @@ func ExecuteHarness(ctx context.Context, harnessFile string, runner string, runn
 }
 
 // CallAdapter calls the adapter to convert a schema to code
-func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema) (*adapter.ConvertResult, error) {
+func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerArgs []string, schema RawSchema, workDir string) (*adapter.ConvertResult, error) {
 	outputs, err := CallAdapterBatch(ctx, adapterBin, runner, runnerArgs, []adapter.ConvertInput{
 		{Namespace: "compliance", ID: "Test", VarName: "compliance_Test", Schema: schema.Raw()},
-	})
+	}, workDir)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func CallAdapter(ctx context.Context, adapterBin string, runner string, runnerAr
 
 // CallAdapterBatch calls the adapter to convert multiple schemas in a single process invocation.
 // Each input must have a unique ID; outputs are returned in the same order as inputs.
-func CallAdapterBatch(ctx context.Context, adapterBin string, runner string, runnerArgs []string, inputs []adapter.ConvertInput) ([]adapter.ConvertResult, error) {
+func CallAdapterBatch(ctx context.Context, adapterBin string, runner string, runnerArgs []string, inputs []adapter.ConvertInput, workDir string) ([]adapter.ConvertResult, error) {
 	if len(inputs) == 0 {
 		return nil, nil
 	}
@@ -174,6 +174,9 @@ func CallAdapterBatch(ctx context.Context, adapterBin string, runner string, run
 	args := append(runnerArgs, adapterBin)
 	cmd := exec.CommandContext(ctx, runner, args...)
 	cmd.Stdin = bytes.NewReader(inputJSON)
+	if workDir != "" {
+		cmd.Dir = workDir
+	}
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout

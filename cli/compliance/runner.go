@@ -562,7 +562,7 @@ func callAdapter(ctx context.Context, bundled []bundledGroup, opts runDraftOptio
 	}
 
 	adapterStart := time.Now()
-	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
+	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs, opts.workDir)
 	opts.timing.addAdapterInvocation(time.Since(adapterStart))
 	if err != nil {
 		return nil, fmt.Errorf("adapter call failed: %w", err)

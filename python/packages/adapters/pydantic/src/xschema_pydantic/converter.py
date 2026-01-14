@@ -9,6 +9,30 @@ from .import_collector import ImportCollector
 from .renderer import render
 
 
+def _is_object_only_schema(ir_node: Any) -> bool:
+    """Check if schema only has object-specific keywords.
+
+    JSON Schema object keywords (properties, additionalProperties, etc.) should
+    ignore non-object inputs - they pass validation automatically. This function
+    detects schemas that need this "ignore non-objects" behavior.
+
+    Returns True if:
+    - The node is an ObjectNode (has object-specific constraints)
+    - AND the schema doesn't have a 'type' constraint requiring 'object'
+      (if it has type: object, Pydantic's rejection of non-objects is correct)
+    """
+    if not hasattr(ir_node, "kind"):
+        return False
+
+    # ObjectNode - check if it has actual constraints
+    if ir_node.kind == "object":
+        # Always return True for ObjectNode - JSON Schema object keywords
+        # (properties, additionalProperties, etc.) should ignore non-objects
+        return True
+
+    return False
+
+
 def to_pascal_case(name: str) -> str:
     """Convert a variable name to PascalCase for class names."""
     # Handle snake_case
@@ -92,10 +116,18 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         and result.type_expr == class_name
     )
 
+    # Check if this is an object-only schema that should ignore non-objects
+    # JSON Schema semantics: object keywords only apply to objects
+    is_object_only = _is_object_only_schema(ir_node)
+
     if is_simple_class:
         schema_code = result.code
-        # For simple class definitions, use model_validate directly
-        validate_expr = f"_try_validate({class_name}.model_validate)"
+        if is_object_only:
+            # Wrap with isinstance check - non-dicts pass validation
+            validate_expr = f"(lambda v: True if not isinstance(v, dict) else _try_validate({class_name}.model_validate)(v))"
+        else:
+            # For simple class definitions, use model_validate directly
+            validate_expr = f"_try_validate({class_name}.model_validate)"
     else:
         # For all other cases (primitives, unions, oneOf, etc.), use TypeAdapter
         collector.add("from pydantic import TypeAdapter")
@@ -106,8 +138,13 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
             schema_code = f"{result.code}\n\n{type_adapter_stmt}"
         else:
             schema_code = type_adapter_stmt
-        # For TypeAdapter, use validate_python
-        validate_expr = f"_try_validate({var_name}.validate_python)"
+
+        if is_object_only:
+            # Wrap with isinstance check - non-dicts pass validation
+            validate_expr = f"(lambda v: True if not isinstance(v, dict) else _try_validate({var_name}.validate_python)(v))"
+        else:
+            # For TypeAdapter, use validate_python
+            validate_expr = f"_try_validate({var_name}.validate_python)"
 
     # Convert imports to sorted, deduplicated list
     imports = collector.to_list()

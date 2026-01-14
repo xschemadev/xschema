@@ -30,8 +30,8 @@
         "Same fix needed for additionalProperties, patternProperties, propertyNames",
         "Run properties, additionalProperties compliance tests and verify improvement",
       ],
-      "passes": false,
-      "notes": "JSON Schema has different semantics than Pydantic: type keywords are filters, not requirements. Schema {properties: {x: {}}} accepts 5, [], {}, not just objects.",
+      "passes": true,
+      "notes": "Fixed in converter.py. Non-dicts now pass validation for object schemas. Properties keyword shows 0% due to pre-existing bug with escaped chars in property names (Group3 tests). additionalProperties=71.4%, propertyNames=75%, patternProperties=56.5%, required=68.8% - all improved.",
     },
     {
       "id": "fix-const-enum-validation",
