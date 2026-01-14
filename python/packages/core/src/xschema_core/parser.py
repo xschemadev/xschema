@@ -270,6 +270,7 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
 
     return ObjectNode(
         properties=tuple(properties),
+        required=tuple(schema.get("required", [])),
         additional_properties=additional_node,
         pattern_properties=tuple(pattern_props),
         property_names=property_names_node,

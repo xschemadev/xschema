@@ -227,3 +227,36 @@
 - No code changes needed - was a side effect of fix-type-keyword strict type implementation
 - The 2 previously failing tests were likely related to bool/int confusion that StrictBool resolved
 
+## Task: fix-required-validation (COMPLETED)
+
+**Objective:** Fix required keyword validation (was showing 0/16 in latest runs)
+
+**Root Cause:**
+- Property names with special characters (newlines, tabs, quotes, backslashes) in `required` array generated invalid Python code
+- The previous escaping only handled single quotes: `req_field.replace("'", "\\'")`
+- This failed for `foo\nbar` which became a literal newline in the generated string, causing SyntaxError
+
+**Solution:**
+- Added two new helper functions in `renderer.py`:
+  - `_escape_for_single_quotes(name)`: For use inside single-quoted Python strings (escapes backslashes, control chars, single quotes)
+  - `_escape_for_double_quotes(name)`: For use inside double-quoted Python strings (escapes backslashes, control chars, double quotes)
+- Both use `json.dumps()` for proper escaping of control characters, then adjust quote escaping based on context
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+- Added `_escape_for_single_quotes()` and `_escape_for_double_quotes()` helper functions
+- Updated required field validation code (lines ~1095-1110) to use proper escaping
+- Updated dependency validation code (lines ~1012-1054) to use proper escaping
+
+**Testing Results:**
+- ✅ required: 100% (16/16 tests passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- `json.dumps()` is the right tool for escaping control characters in strings for code generation
+- When embedding escaped strings in Python code, must consider the outer quote character
+- For single-quoted strings: keep `\"` as `"`, escape `'` as `\'`
+- For double-quoted strings: keep `\"` as `\"` (json.dumps output works directly)
+
+---

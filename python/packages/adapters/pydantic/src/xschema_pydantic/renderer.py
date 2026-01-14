@@ -30,6 +30,37 @@ from xschema_core import (
 )
 
 
+def _escape_for_single_quotes(name: str) -> str:
+    """Escape a string for use inside single-quoted Python string literals.
+
+    Escapes backslashes, single quotes, and control characters.
+    """
+    import json
+
+    # json.dumps gives us proper escaping for control chars, but uses double quotes
+    escaped = json.dumps(name)
+    # Remove surrounding double quotes
+    content = escaped[1:-1]
+    # json.dumps escapes " as \" - we need to unescape that for single-quoted strings
+    # But we do need to escape single quotes
+    content = content.replace('\\"', '"')  # unescape double quotes
+    content = content.replace("'", "\\'")  # escape single quotes
+    return content
+
+
+def _escape_for_double_quotes(name: str) -> str:
+    """Escape a string for use inside double-quoted Python string literals.
+
+    Escapes backslashes, double quotes, and control characters.
+    """
+    import json
+
+    # json.dumps gives us proper escaping already for double-quoted strings
+    escaped = json.dumps(name)
+    # Remove surrounding double quotes, but keep all internal escaping
+    return escaped[1:-1]
+
+
 @dataclass
 class RenderResult:
     """Result of rendering a schema node."""
@@ -852,6 +883,10 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 type_expr = f"{type_expr} | None"
             field_lines.append(f"    {prop_name}: {type_expr} = None")
 
+    # Determine if there are required fields not covered by properties
+    property_names = {prop_name for prop_name, _ in node.properties}
+    uncovered_required = [r for r in node.required if r not in property_names]
+
     # Handle additionalProperties
     config_line = None
     if node.additional_properties is False:
@@ -867,6 +902,10 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     ):
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
+    # If there are required fields without properties, allow extra fields to accept them
+    elif uncovered_required:
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='allow')"
 
     # Generate validators for advanced object features
     needs_validator = (
@@ -876,6 +915,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         or node.max_properties is not None
         or node.dependencies
         or node.unevaluated_properties is not None
+        or uncovered_required  # Need validator for required fields without properties
     )
 
     if needs_validator:
@@ -974,21 +1014,24 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
             imports.add("from pydantic import TypeAdapter")
 
             for prop_name, dependency in node.dependencies:
+                # Use single-quote escaping for conditions (in single-quoted strings)
+                escaped_prop_single = _escape_for_single_quotes(prop_name)
                 validator_lines.append(
-                    f"        # Dependency for property: {prop_name}"
+                    f"        # Dependency for property: {escaped_prop_single}"
                 )
                 validator_lines.append(
-                    f"        if '{prop_name}' in self.__dict__ and self.__dict__['{prop_name}'] is not None:"
+                    f"        if '{escaped_prop_single}' in self.__dict__ and self.__dict__['{escaped_prop_single}'] is not None:"
                 )
 
                 if dependency.kind == "property":
                     # Property dependency: require other properties
                     for required_prop in dependency.required_properties:
+                        escaped_req_single = _escape_for_single_quotes(required_prop)
                         validator_lines.append(
-                            f"            if '{required_prop}' not in self.__dict__ or self.__dict__['{required_prop}'] is None:"
+                            f"            if '{escaped_req_single}' not in self.__dict__ or self.__dict__['{escaped_req_single}'] is None:"
                         )
                         validator_lines.append(
-                            f"                raise ValueError(f'When {prop_name} is present, {required_prop} is required')"
+                            f"                raise ValueError(f'When {escaped_prop_single} is present, {escaped_req_single} is required')"
                         )
                 elif dependency.kind == "schema":
                     # Schema dependency: validate entire object against schema
@@ -1008,7 +1051,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     )
                     validator_lines.append("            except Exception as e:")
                     validator_lines.append(
-                        f"                raise ValueError(f'When {prop_name} is present, object must match dependency schema: {{e}}')"
+                        f"                raise ValueError(f'When {escaped_prop_single} is present, object must match dependency schema: {{e}}')"
                     )
 
         # unevaluatedProperties: treat like additionalProperties for now (simple case)
@@ -1048,6 +1091,25 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 validator_lines.append("                except Exception as e:")
                 validator_lines.append(
                     "                    raise ValueError(f'Unevaluated property {key} invalid: {e}')"
+                )
+
+        # required fields without corresponding properties
+        # Note: with extra='allow', extra fields go to model_extra, not __dict__
+        if uncovered_required:
+            validator_lines.append(
+                "        # Validate required fields (check model_extra for extra fields)"
+            )
+            validator_lines.append("        _extra = self.model_extra or {}")
+            for req_field in uncovered_required:
+                # For condition checks, use single-quoted strings
+                escaped_single = _escape_for_single_quotes(req_field)
+                # For error messages using double quotes, escape differently
+                escaped_double = _escape_for_double_quotes(req_field)
+                validator_lines.append(
+                    f"        if '{escaped_single}' not in self.__dict__ and '{escaped_single}' not in _extra:"
+                )
+                validator_lines.append(
+                    f"            raise ValueError(\"Missing required property: '{escaped_double}'\")"
                 )
 
         validator_lines.append("        return self")

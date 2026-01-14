@@ -188,6 +188,9 @@ class ObjectNode:
 
     kind: Literal["object"] = "object"
     properties: tuple[tuple[str, PropertyDef], ...] = ()
+    required: tuple[
+        str, ...
+    ] = ()  # Required property names (may include names not in properties)
     additional_properties: "SchemaNode | bool | None" = None
     pattern_properties: tuple[PatternPropertyDef, ...] = ()
     property_names: "SchemaNode | None" = None

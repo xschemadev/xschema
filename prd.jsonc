@@ -182,8 +182,8 @@
         "Required fields that exist with any value (including null) satisfy required",
         "Test required with property set to null should pass",
       ],
-      "passes": false,
-      "notes": "Required checks presence, not truthiness",
+      "passes": true,
+      "notes": "Fixed. 100% (16/16). Key fix: properly escape special characters (newlines, tabs, quotes, backslashes) in property names using _escape_for_single_quotes() and _escape_for_double_quotes() helper functions. The previous code only escaped single quotes, causing syntax errors when property names contained control characters.",
     },
     {
       "id": "fix-dependentRequired",
