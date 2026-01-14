@@ -367,3 +367,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - ArkType type extraction: `typeof schema.infer` (not z.infer pattern)
   - ArkType uses string syntax for types: `"string.email"`, `"integer >= 0"`, `"age?"` for optional
 ---
+
+## 2026-01-14 - US-020
+- Updated Effect adapter page at `web/content/docs/typescript/adapters/effect/index.mdx`
+- Changes made:
+  - Added overview table with package name (`@xschemadev/effect`), peer dep (`effect ^3.0.0`), compliance (100%)
+  - Updated installation instructions with all package managers (bun, npm, pnpm)
+  - Replaced inline JSON usage with framework mode example (config file + client usage)
+  - Fixed compliance claim from "95%+" to "100%" - Effect has full compliance
+  - Removed incorrect "Limitations" section - Effect has 100% compliance
+  - Added `prefixItems` and `unevaluatedProperties` to supported features list
+  - Added Next Steps cards linking to compliance, getting-started, configuration, adapters
+  - Added fumadocs imports for Cards, Card
+  - Updated generated output example to use current Effect Schema API (`Schema` import, not `Schema as S`)
+- **Learnings for future iterations:**
+  - Effect validation: use `Schema.decodeUnknownEither(schema)(data)` or `Schema.decodeUnknownSync(schema)(data)`
+  - Effect type extraction: `typeof schema.Type`
+  - Effect Schema uses pipe pattern: `Schema.String.pipe(Schema.pattern(/@/))`
+  - Package is just `effect` now (not `@effect/schema` separately) - Schema is re-exported from effect
+---

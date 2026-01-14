@@ -329,7 +329,7 @@
         "Link to compliance page",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/adapters/effect/package.json for package info."
     },
     {
