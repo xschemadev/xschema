@@ -24,6 +24,7 @@ from xschema_core.ir import (
     PatternPropertyDef,
     PropertyDef,
     PropertyDependency,
+    RefNode,
     SchemaNode,
     SchemaDependency,
     StringConstraints,
@@ -35,8 +36,282 @@ from xschema_core.ir import (
 )
 
 
+class _ParseContext:
+    """Context for parsing, holds root schema and current document for $ref resolution."""
+
+    def __init__(
+        self,
+        root: dict[str, Any] | None = None,
+        base_uri: str = "",
+        current_doc: dict[str, Any] | None = None,
+    ):
+        self.root = root
+        # Current base URI for relative ref resolution
+        self.base_uri = base_uri
+        # Current document root (for # refs when $id changes the document base)
+        # This is the schema that # refers to (different from root when inside nested $id)
+        self.current_doc = current_doc if current_doc is not None else root
+        # Track refs being resolved to detect cycles
+        self.resolving: set[str] = set()
+        # Index of $id to their schemas (built lazily)
+        self.id_index: dict[str, dict[str, Any]] | None = None
+        # Index of $anchor to their schemas
+        self.anchor_index: dict[str, dict[str, Any]] | None = None
+
+    def with_new_document(
+        self, new_base: str, new_doc: dict[str, Any]
+    ) -> "_ParseContext":
+        """Create a new context with an updated base URI and document."""
+        new_ctx = _ParseContext(self.root, new_base, new_doc)
+        new_ctx.resolving = self.resolving
+        new_ctx.id_index = self.id_index
+        new_ctx.anchor_index = self.anchor_index
+        return new_ctx
+
+
+def _build_id_index(
+    schema: dict[str, Any], base_uri: str = ""
+) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    """Build indexes mapping $id URIs and $anchors to their schemas.
+
+    Walks the schema tree and collects all $id and $anchor declarations.
+    Returns (id_index, anchor_index) where:
+    - id_index maps absolute URIs to schemas
+    - anchor_index maps "base_uri#anchor" to schemas
+    """
+    id_index: dict[str, dict[str, Any]] = {}
+    anchor_index: dict[str, dict[str, Any]] = {}
+
+    def _walk(node: Any, current_base: str) -> None:
+        if not isinstance(node, dict):
+            return
+
+        # Check for $id at this level
+        if "$id" in node:
+            node_id = node["$id"]
+            # Resolve relative URIs against current base
+            if node_id.startswith("#"):
+                # Fragment-only - doesn't change base
+                pass
+            elif ":" in node_id or node_id.startswith("/"):
+                # Absolute URI or absolute path - use as-is
+                current_base = node_id
+            else:
+                # Relative URI - resolve against base
+                if current_base:
+                    from urllib.parse import urljoin
+
+                    current_base = urljoin(current_base, node_id)
+                else:
+                    current_base = node_id
+            id_index[current_base] = node
+
+        # Check for $anchor at this level
+        if "$anchor" in node:
+            anchor_name = node["$anchor"]
+            # Anchor is relative to current base URI
+            anchor_uri = (
+                f"{current_base}#{anchor_name}" if current_base else f"#{anchor_name}"
+            )
+            anchor_index[anchor_uri] = node
+
+        # Recurse into child schemas
+        for key, value in node.items():
+            if key in (
+                "$defs",
+                "definitions",
+                "properties",
+                "patternProperties",
+                "additionalProperties",
+                "items",
+                "additionalItems",
+                "prefixItems",
+                "contains",
+                "if",
+                "then",
+                "else",
+                "allOf",
+                "anyOf",
+                "oneOf",
+                "not",
+                "dependentSchemas",
+            ):
+                if isinstance(value, dict):
+                    if key in (
+                        "$defs",
+                        "definitions",
+                        "properties",
+                        "patternProperties",
+                        "dependentSchemas",
+                    ):
+                        # These are object containers
+                        for v in value.values():
+                            _walk(v, current_base)
+                    else:
+                        _walk(value, current_base)
+                elif isinstance(value, list):
+                    for v in value:
+                        _walk(v, current_base)
+
+    _walk(schema, base_uri)
+    return id_index, anchor_index
+
+
 def parse(schema: dict[str, Any] | bool) -> SchemaNode:
     """Parse a JSON Schema dict into an IR SchemaNode."""
+    # Create context with root schema for $ref resolution
+    ctx = _ParseContext(root=schema if isinstance(schema, dict) else None)
+    # Build $id and $anchor indexes if schema has any declarations
+    if isinstance(schema, dict):
+        ctx.id_index, ctx.anchor_index = _build_id_index(schema)
+    return _parse_with_ctx(schema, ctx)
+
+
+def _resolve_json_pointer(ref: str, root: dict[str, Any]) -> Any:
+    """Resolve a JSON pointer (fragment starting with #/) to a schema node."""
+    from urllib.parse import unquote
+
+    path_parts = ref[2:].split("/")  # Remove "#/" prefix
+    current: Any = root
+
+    for part in path_parts:
+        # Handle URI percent-encoding first (e.g., %25 -> %)
+        part = unquote(part)
+        # Then handle JSON pointer escaping (~1 -> /, ~0 -> ~)
+        part = part.replace("~1", "/").replace("~0", "~")
+
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+        elif isinstance(current, list):
+            # Handle list index
+            try:
+                idx = int(part)
+                if 0 <= idx < len(current):
+                    current = current[idx]
+                else:
+                    raise ValueError(f"list index {idx} out of range")
+            except ValueError:
+                raise ValueError(f"invalid list index '{part}'")
+        else:
+            raise ValueError(f"path not found at '{part}'")
+
+    return current
+
+
+def _resolve_ref(ref: str, ctx: _ParseContext) -> SchemaNode:
+    """Resolve a $ref to a SchemaNode.
+
+    Handles:
+    - JSON pointer refs: #/$defs/Name, #/properties/foo
+    - $id refs: when the ref matches a local $id declaration
+    - Refs with fragments: urn:uuid:xxx#/$defs/bar
+    """
+    if ctx.root is None:
+        raise ValueError(
+            f"Unexpected $ref '{ref}' in schema - CLI should pre-bundle all schemas."
+        )
+
+    # Check for cycles
+    if ref in ctx.resolving:
+        # Return a RefNode for cyclic references
+        return RefNode(path=ref, resolved=None)
+
+    target_schema: Any = None
+
+    # Case 1: Pure JSON pointer (starts with #)
+    if ref.startswith("#"):
+        if ref == "#":
+            # Root ref - recursive to current document
+            return RefNode(path=ref, resolved=None)
+        try:
+            # Resolve against current document (which changes when $id is encountered)
+            doc = ctx.current_doc if ctx.current_doc is not None else ctx.root
+            target_schema = _resolve_json_pointer(ref, doc)
+        except ValueError as e:
+            raise ValueError(
+                f"Unexpected $ref '{ref}' in schema - {e}. "
+                "CLI should pre-bundle all schemas."
+            )
+
+    # Case 2: Check if ref is a metaschema - return AnyNode since we can't validate schemas
+    elif ref.startswith("https://json-schema.org/") or ref.startswith(
+        "http://json-schema.org/"
+    ):
+        # Metaschema ref - we can't statically compile JSON Schema validation
+        # Return AnyNode to accept any valid JSON
+        return AnyNode()
+
+    # Case 3: Check if ref matches a local $id or $anchor
+    elif ctx.id_index is not None:
+        from urllib.parse import urljoin
+
+        # Split ref into base URI and fragment
+        if "#" in ref:
+            ref_base, fragment = ref.split("#", 1)
+        else:
+            ref_base = ref
+            fragment = None
+
+        # Resolve relative/absolute-path refs against current base URI
+        if ref_base and ":" not in ref_base:
+            # No scheme - either absolute path or relative URI
+            # Both need to be resolved against base URI
+            if ctx.base_uri:
+                resolved_uri = urljoin(ctx.base_uri, ref_base)
+            else:
+                resolved_uri = ref_base
+        else:
+            # Full URI with scheme - use as-is
+            resolved_uri = ref_base
+
+        # Case 3a: Check if it's an anchor ref (fragment without / is an anchor)
+        if fragment and not fragment.startswith("/") and ctx.anchor_index:
+            # Build full anchor URI
+            anchor_uri = (
+                f"{resolved_uri}#{fragment}" if resolved_uri else f"#{fragment}"
+            )
+            if anchor_uri in ctx.anchor_index:
+                target_schema = ctx.anchor_index[anchor_uri]
+            else:
+                raise ValueError(
+                    f"Unexpected $ref '{ref}' in schema - anchor '{fragment}' not found. "
+                    "CLI should pre-bundle all schemas."
+                )
+        # Case 3b: Look up by $id
+        elif resolved_uri in ctx.id_index:
+            target_schema = ctx.id_index[resolved_uri]
+            # If there's a JSON pointer fragment, resolve it within the $id's schema
+            if fragment and fragment.startswith("/"):
+                try:
+                    target_schema = _resolve_json_pointer("#" + fragment, target_schema)
+                except ValueError as e:
+                    raise ValueError(
+                        f"Unexpected $ref '{ref}' in schema - {e}. "
+                        "CLI should pre-bundle all schemas."
+                    )
+        else:
+            raise ValueError(
+                f"Unexpected external $ref '{ref}' in schema. "
+                "CLI should pre-bundle all external schemas."
+            )
+    else:
+        raise ValueError(
+            f"Unexpected external $ref '{ref}' in schema. "
+            "CLI should pre-bundle all external schemas."
+        )
+
+    # Mark as resolving to detect cycles
+    ctx.resolving.add(ref)
+    try:
+        resolved = _parse_with_ctx(target_schema, ctx)
+    finally:
+        ctx.resolving.discard(ref)
+
+    return RefNode(path=ref, resolved=resolved)
+
+
+def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> SchemaNode:
+    """Parse a JSON Schema dict into an IR SchemaNode with context."""
     # Handle boolean schemas
     if schema is True:
         return AnyNode()
@@ -47,11 +322,27 @@ def parse(schema: dict[str, Any] | bool) -> SchemaNode:
     if not schema:
         return AnyNode()
 
-    # Handle $ref - CLI should bundle everything, throw if encountered
+    # Check for $id and update base URI and current document
+    if "$id" in schema:
+        from urllib.parse import urljoin
+
+        node_id = schema["$id"]
+        if node_id.startswith("#"):
+            # Fragment-only $id doesn't change base URI or document
+            pass
+        elif ":" in node_id or node_id.startswith("/"):
+            # Absolute URI or absolute path - this becomes a new document root
+            ctx = ctx.with_new_document(node_id, schema)
+        else:
+            # Relative URI - resolve against current base
+            new_base = urljoin(ctx.base_uri, node_id) if ctx.base_uri else node_id
+            ctx = ctx.with_new_document(new_base, schema)
+
+    # Handle $ref - resolve local refs and $id refs
     if "$ref" in schema:
-        raise ValueError(
-            "Unexpected $ref in schema. CLI should pre-bundle all schemas."
-        )
+        ref = schema["$ref"]
+        # _resolve_ref handles all ref types: #, #/path, $id refs
+        return _resolve_ref(ref, ctx)
 
     # Handle const (literal value)
     if "const" in schema:
@@ -63,14 +354,14 @@ def parse(schema: dict[str, Any] | bool) -> SchemaNode:
 
     # Handle not keyword
     if "not" in schema:
-        inner = parse(schema["not"])
+        inner = _parse_with_ctx(schema["not"], ctx)
         return NotNode(schema=inner)
 
     # Handle conditional (if/then/else)
     if "if" in schema:
-        if_schema = parse(schema["if"])
-        then_schema = parse(schema["then"]) if "then" in schema else None
-        else_schema = parse(schema["else"]) if "else" in schema else None
+        if_schema = _parse_with_ctx(schema["if"], ctx)
+        then_schema = _parse_with_ctx(schema["then"], ctx) if "then" in schema else None
+        else_schema = _parse_with_ctx(schema["else"], ctx) if "else" in schema else None
         return ConditionalNode(
             if_schema=if_schema, then_schema=then_schema, else_schema=else_schema
         )
@@ -79,20 +370,64 @@ def parse(schema: dict[str, Any] | bool) -> SchemaNode:
     if schema.get("nullable") is True:
         # Remove nullable and parse the rest
         inner_schema = {k: v for k, v in schema.items() if k != "nullable"}
-        inner = parse(inner_schema)
+        inner = _parse_with_ctx(inner_schema, ctx)
         return NullableNode(inner=inner)
 
     # Handle composition keywords
+    # Check if there are sibling validation keywords that need to be combined
+    composition_keys = {"allOf", "anyOf", "oneOf"}
+    meta_keys = {
+        "$schema",
+        "$id",
+        "$ref",
+        "$defs",
+        "definitions",
+        "$comment",
+        "title",
+        "description",
+        "examples",
+        "default",
+        "deprecated",
+        "readOnly",
+        "writeOnly",
+        "$anchor",
+    }
+    # Keys that are meaningful only with composition (not standalone validation)
+    composition_only_keys = composition_keys | meta_keys
+
+    has_composition = bool(composition_keys & set(schema.keys()))
+    has_sibling_validation = bool(set(schema.keys()) - composition_only_keys)
+
+    if has_composition and has_sibling_validation:
+        # Schema has both composition and other validation keywords
+        # Extract sibling keywords into a separate schema and combine with intersection
+        sibling_schema = {k: v for k, v in schema.items() if k not in composition_keys}
+        sibling_node = _parse_with_ctx(sibling_schema, ctx)
+
+        composition_nodes: list[SchemaNode] = []
+        if "allOf" in schema:
+            composition_nodes.extend(_parse_with_ctx(s, ctx) for s in schema["allOf"])
+        if "anyOf" in schema:
+            variants = tuple(_parse_with_ctx(s, ctx) for s in schema["anyOf"])
+            composition_nodes.append(UnionNode(variants=variants))
+        if "oneOf" in schema:
+            schemas_tuple = tuple(_parse_with_ctx(s, ctx) for s in schema["oneOf"])
+            composition_nodes.append(OneOfNode(schemas=schemas_tuple))
+
+        # Combine: all composition schemas + sibling validation schema
+        all_schemas = tuple(composition_nodes) + (sibling_node,)
+        return IntersectionNode(schemas=all_schemas)
+
     if "allOf" in schema:
-        schemas = tuple(parse(s) for s in schema["allOf"])
+        schemas = tuple(_parse_with_ctx(s, ctx) for s in schema["allOf"])
         return IntersectionNode(schemas=schemas)
 
     if "anyOf" in schema:
-        variants = tuple(parse(s) for s in schema["anyOf"])
+        variants = tuple(_parse_with_ctx(s, ctx) for s in schema["anyOf"])
         return UnionNode(variants=variants)
 
     if "oneOf" in schema:
-        schemas_tuple = tuple(parse(s) for s in schema["oneOf"])
+        schemas_tuple = tuple(_parse_with_ctx(s, ctx) for s in schema["oneOf"])
         return OneOfNode(schemas=schemas_tuple)
 
     # Get type - can be string or array
@@ -103,17 +438,17 @@ def parse(schema: dict[str, Any] | bool) -> SchemaNode:
         variant_list: list[SchemaNode] = []
         for t in schema_type:
             variant_schema = {**schema, "type": t}
-            variant_list.append(parse(variant_schema))
+            variant_list.append(_parse_with_ctx(variant_schema, ctx))
         return UnionNode(variants=tuple(variant_list))
 
     # Handle prefixItems (tuple)
     if "prefixItems" in schema:
-        return _parse_tuple(schema)
+        return _parse_tuple(schema, ctx)
 
     # Infer type from keywords if not specified
     if schema_type is None:
         # Check if this is a type-guarded schema (multiple type-specific keywords without type)
-        guards = _detect_type_guards(schema)
+        guards = _detect_type_guards(schema, ctx)
         if len(guards) > 1:
             return TypeGuardedNode(guards=tuple(guards))
 
@@ -136,10 +471,10 @@ def parse(schema: dict[str, Any] | bool) -> SchemaNode:
         return NullNode()
 
     if schema_type == "object":
-        return _parse_object(schema)
+        return _parse_object(schema, ctx)
 
     if schema_type == "array":
-        return _parse_array(schema)
+        return _parse_array(schema, ctx)
 
     # Unknown type - return AnyNode
     return AnyNode()
@@ -199,14 +534,14 @@ def _parse_number(schema: dict[str, Any], integer: bool) -> NumberNode:
     )
 
 
-def _parse_object(schema: dict[str, Any]) -> ObjectNode:
+def _parse_object(schema: dict[str, Any], ctx: _ParseContext) -> ObjectNode:
     """Parse an object schema."""
     properties: list[tuple[str, PropertyDef]] = []
     required_set = frozenset(schema.get("required", []))
 
     for prop_name, prop_schema in schema.get("properties", {}).items():
         prop_node = (
-            parse(prop_schema)
+            _parse_with_ctx(prop_schema, ctx)
             if isinstance(prop_schema, dict)
             else (AnyNode() if prop_schema is True else NeverNode())
         )
@@ -227,13 +562,13 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     elif isinstance(additional, bool):
         additional_node = additional
     else:
-        additional_node = parse(additional)
+        additional_node = _parse_with_ctx(additional, ctx)
 
     # Handle patternProperties
     pattern_props: list[PatternPropertyDef] = []
     for pattern, prop_schema in schema.get("patternProperties", {}).items():
         prop_node = (
-            parse(prop_schema)
+            _parse_with_ctx(prop_schema, ctx)
             if isinstance(prop_schema, dict)
             else (AnyNode() if prop_schema is True else NeverNode())
         )
@@ -242,7 +577,7 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     # Handle propertyNames
     property_names_node = None
     if "propertyNames" in schema:
-        property_names_node = parse(schema["propertyNames"])
+        property_names_node = _parse_with_ctx(schema["propertyNames"], ctx)
 
     # Handle dependencies (legacy draft-4/7 keyword)
     dependencies: list[tuple[str, Dependency]] = []
@@ -254,7 +589,9 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
             )
         elif isinstance(dep_value, dict):
             # Schema dependency
-            dependencies.append((prop_name, SchemaDependency(schema=parse(dep_value))))
+            dependencies.append(
+                (prop_name, SchemaDependency(schema=_parse_with_ctx(dep_value, ctx)))
+            )
 
     # Handle dependentRequired (draft 2019-09+ keyword)
     for prop_name, required_props in schema.get("dependentRequired", {}).items():
@@ -264,7 +601,9 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
 
     # Handle dependentSchemas (draft 2019-09+ keyword)
     for prop_name, dep_schema in schema.get("dependentSchemas", {}).items():
-        dependencies.append((prop_name, SchemaDependency(schema=parse(dep_schema))))
+        dependencies.append(
+            (prop_name, SchemaDependency(schema=_parse_with_ctx(dep_schema, ctx)))
+        )
 
     # Handle unevaluatedProperties
     unevaluated = schema.get("unevaluatedProperties")
@@ -276,7 +615,7 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     elif isinstance(unevaluated, bool):
         unevaluated_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_node = parse(unevaluated)
+        unevaluated_node = _parse_with_ctx(unevaluated, ctx)
 
     return ObjectNode(
         properties=tuple(properties),
@@ -291,7 +630,7 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     )
 
 
-def _parse_array(schema: dict[str, Any]) -> ArrayNode | TupleNode:
+def _parse_array(schema: dict[str, Any], ctx: _ParseContext) -> ArrayNode | TupleNode:
     """Parse an array schema."""
     items = schema.get("items")
 
@@ -302,14 +641,14 @@ def _parse_array(schema: dict[str, Any]) -> ArrayNode | TupleNode:
         items_node = AnyNode() if items else NeverNode()
     elif isinstance(items, list):
         # Legacy tuple syntax (items as array) - convert to tuple
-        return _parse_legacy_tuple(schema)
+        return _parse_legacy_tuple(schema, ctx)
     else:
-        items_node = parse(items)
+        items_node = _parse_with_ctx(items, ctx)
 
     # Handle contains constraint
     contains_constraint = None
     if "contains" in schema:
-        contains_schema = parse(schema["contains"])
+        contains_schema = _parse_with_ctx(schema["contains"], ctx)
         min_contains = schema.get("minContains", 1)
         max_contains = schema.get("maxContains")
         contains_constraint = ContainsConstraint(
@@ -335,7 +674,7 @@ def _parse_array(schema: dict[str, Any]) -> ArrayNode | TupleNode:
     elif isinstance(unevaluated, bool):
         unevaluated_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_node = parse(unevaluated)
+        unevaluated_node = _parse_with_ctx(unevaluated, ctx)
 
     return ArrayNode(
         items=items_node,
@@ -344,9 +683,11 @@ def _parse_array(schema: dict[str, Any]) -> ArrayNode | TupleNode:
     )
 
 
-def _parse_tuple(schema: dict[str, Any]) -> TupleNode:
+def _parse_tuple(schema: dict[str, Any], ctx: _ParseContext) -> TupleNode:
     """Parse a tuple schema (using prefixItems)."""
-    prefix_items = tuple(parse(item) for item in schema.get("prefixItems", []))
+    prefix_items = tuple(
+        _parse_with_ctx(item, ctx) for item in schema.get("prefixItems", [])
+    )
 
     # Rest items can be in 'items' when prefixItems is present
     rest = schema.get("items")
@@ -358,7 +699,7 @@ def _parse_tuple(schema: dict[str, Any]) -> TupleNode:
     elif isinstance(rest, bool):
         rest_node = AnyNode() if rest else False
     else:
-        rest_node = parse(rest)
+        rest_node = _parse_with_ctx(rest, ctx)
 
     constraints = ArrayConstraints(
         min_items=schema.get("minItems"),
@@ -376,7 +717,7 @@ def _parse_tuple(schema: dict[str, Any]) -> TupleNode:
     elif isinstance(unevaluated, bool):
         unevaluated_tuple_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_tuple_node = parse(unevaluated)
+        unevaluated_tuple_node = _parse_with_ctx(unevaluated, ctx)
 
     return TupleNode(
         prefix_items=prefix_items,
@@ -386,11 +727,13 @@ def _parse_tuple(schema: dict[str, Any]) -> TupleNode:
     )
 
 
-def _parse_legacy_tuple(schema: dict[str, Any]) -> TupleNode:
+def _parse_legacy_tuple(schema: dict[str, Any], ctx: _ParseContext) -> TupleNode:
     """Parse legacy tuple syntax where items is an array."""
     items_list = schema.get("items", [])
     prefix_items = tuple(
-        parse(item) if isinstance(item, dict) else (AnyNode() if item else NeverNode())
+        _parse_with_ctx(item, ctx)
+        if isinstance(item, dict)
+        else (AnyNode() if item else NeverNode())
         for item in items_list
     )
 
@@ -404,7 +747,7 @@ def _parse_legacy_tuple(schema: dict[str, Any]) -> TupleNode:
     elif isinstance(additional, bool):
         rest_legacy_node = AnyNode() if additional else False
     else:
-        rest_legacy_node = parse(additional)
+        rest_legacy_node = _parse_with_ctx(additional, ctx)
 
     constraints = ArrayConstraints(
         min_items=schema.get("minItems"),
@@ -422,7 +765,7 @@ def _parse_legacy_tuple(schema: dict[str, Any]) -> TupleNode:
     elif isinstance(unevaluated, bool):
         unevaluated_legacy_node = AnyNode() if unevaluated else False
     else:
-        unevaluated_legacy_node = parse(unevaluated)
+        unevaluated_legacy_node = _parse_with_ctx(unevaluated, ctx)
 
     return TupleNode(
         prefix_items=prefix_items,
@@ -530,7 +873,7 @@ def _detect_discriminator(variants: list[Any]) -> str | None:
     return None
 
 
-def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
+def _detect_type_guards(schema: dict[str, Any], ctx: _ParseContext) -> list[TypeGuard]:
     """Detect type-specific constraints and create type guards.
 
     For schemas without an explicit type that have type-specific keywords,
@@ -572,7 +915,7 @@ def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
             "dependentSchemas",
         )
     ):
-        object_schema = _parse_object(schema)
+        object_schema = _parse_object(schema, ctx)
         guards.append(TypeGuard(check="object", schema=object_schema))
 
     # Check for array-specific keywords
@@ -591,7 +934,7 @@ def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
             "unevaluatedItems",
         )
     ):
-        array_schema = _parse_array(schema)
+        array_schema = _parse_array(schema, ctx)
         guards.append(TypeGuard(check="array", schema=array_schema))
 
     return guards

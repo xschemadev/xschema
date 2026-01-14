@@ -566,3 +566,46 @@ This requires a fix in the core parser, not the renderer.
 - Draft 2020-12 introduced prefixItems to replace the "items as array" syntax
 
 ---
+
+## Task: fix-items-validation (COMPLETED)
+
+**Objective:** Fix items keyword validation (was 82.8%, now 100%)
+
+**Root Causes:**
+1. **Composition keywords ignoring siblings**: When parser encountered `allOf`, `anyOf`, or `oneOf`, it returned early without processing sibling validation keywords like `items`, `properties`, `type`. This meant a schema like `{allOf: [{prefixItems: [{minimum: 3}]}], items: {minimum: 5}}` would only apply the allOf, ignoring the items constraint.
+
+2. **Fixed-size tuples for items:false**: When `prefixItems` was combined with `items: false`, the renderer generated a fixed-size tuple type `tuple[T1, T2, T3]` which requires exactly 3 elements. But JSON Schema says `items: false` means "no items beyond prefix", not "exactly N items required". Valid inputs: 0, 1, 2, or 3 items.
+
+**Solution:**
+1. **Core parser fix**: Modified `_parse_with_ctx()` to detect when composition keywords have sibling validation keywords. When both are present:
+   - Parse the composition schemas into their nodes
+   - Parse the remaining keywords as a separate schema
+   - Wrap everything in an IntersectionNode
+
+2. **Renderer fix**: Modified `render_tuple()` for `rest_items is False` case:
+   - Generate custom validator that allows 0 to N items (where N = len(prefixItems))
+   - Validate only items that exist against their corresponding prefixItem schema
+   - Reject arrays longer than N items
+
+**Code Changes:**
+- File: `python/packages/core/src/xschema_core/parser.py`
+  - Added sibling validation detection in `_parse_with_ctx()`
+  - When composition + validation keywords coexist, create combined IntersectionNode
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Modified `render_tuple()` for `rest_items is False` to generate variable-length validator
+- File: `python/packages/adapters/pydantic/tests/test_renderer.py`
+  - Updated test_render_tuple_fixed to expect new validator structure
+
+**Testing Results:**
+- ✅ items: 100% (29/29 tests passing)
+- ✅ additionalItems (draft7): 100% (19/19 tests passing)
+- ✅ Overall draft2020-12: 748 passed (was ~660)
+- ✅ All 79 core package unit tests pass
+- ✅ All 85 pydantic adapter unit tests pass
+
+**Key Insights:**
+- JSON Schema composition keywords (`allOf`, `anyOf`, `oneOf`) are constraints that apply alongside other keywords, not replacements
+- `prefixItems + items: false` means "maximum N items", not "exactly N items"
+- The distinction between Python's `tuple[T1, T2, T3]` (exactly 3) and JSON Schema's behavior requires custom validation
+
+---

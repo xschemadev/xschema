@@ -333,9 +333,10 @@ def test_render_array_with_contains():
 
 
 def test_render_tuple_fixed():
-    """Test rendering fixed-size tuple.
+    """Test rendering tuple with items:false (no additional items beyond prefix).
 
-    Inner types use strict types.
+    JSON Schema: prefixItems + items:false allows 0 to N items, not exactly N.
+    Each item that exists must match its corresponding prefixItem schema.
     """
     node = TupleNode(
         prefix_items=(
@@ -347,7 +348,15 @@ def test_render_tuple_fixed():
         constraints=ArrayConstraints(),
     )
     result = render(node, "Test")
-    assert result.type_expr == "tuple[StrictStr, StrictInt, StrictBool]"
+    # Now generates a custom validator that allows 0 to 3 items
+    assert (
+        "Annotated[tuple[Any, ...], BeforeValidator(_tuple_test)]" in result.type_expr
+    )
+    # Validator enforces max items and validates each present item
+    assert "if len(v) > 3:" in result.code
+    assert "prefix_0_validator = TypeAdapter(StrictStr)" in result.code
+    assert "prefix_1_validator = TypeAdapter(StrictInt)" in result.code
+    assert "prefix_2_validator = TypeAdapter(StrictBool)" in result.code
 
 
 def test_render_tuple_with_rest():

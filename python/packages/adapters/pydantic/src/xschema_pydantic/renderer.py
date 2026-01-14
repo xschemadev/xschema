@@ -61,6 +61,75 @@ def _escape_for_double_quotes(name: str) -> str:
     return escaped[1:-1]
 
 
+def _is_valid_python_identifier(name: str) -> bool:
+    """Check if a string is a valid Python identifier for Pydantic fields.
+
+    A valid Python identifier for Pydantic:
+    - Starts with a letter (a-z, A-Z) or underscore
+    - Contains only letters, digits, or underscores
+    - Is not a Python keyword
+    - Does NOT start with double underscore (Pydantic treats dunder names specially)
+    """
+    import keyword
+
+    if not name:
+        return False
+    if not name.isidentifier():
+        return False
+    if keyword.iskeyword(name):
+        return False
+    # Pydantic treats dunder names specially, so they need aliases
+    if name.startswith("__"):
+        return False
+    return True
+
+
+def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> str:
+    """Sanitize a property name to be a valid Python identifier.
+
+    Replaces invalid characters with underscores and ensures the name
+    doesn't start with a digit. If used_names is provided, ensures uniqueness
+    by appending a counter suffix.
+
+    Args:
+        name: The original property name
+        used_names: Set of already used identifiers to avoid collisions
+    """
+    import re
+    import keyword
+
+    if not name:
+        base = "field_"
+    else:
+        # Replace any non-alphanumeric/underscore characters with underscore
+        base = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+
+        # If it starts with a digit, prefix with underscore
+        if base and base[0].isdigit():
+            base = "_" + base
+
+        # If empty after sanitization, use a placeholder
+        if not base:
+            base = "field_"
+
+        # If it's a Python keyword, append underscore
+        if keyword.iskeyword(base):
+            base = base + "_"
+
+    # Ensure uniqueness if used_names provided
+    if used_names is None:
+        return base
+
+    sanitized = base
+    counter = 2
+    while sanitized in used_names:
+        sanitized = f"{base}_{counter}"
+        counter += 1
+
+    used_names.add(sanitized)
+    return sanitized
+
+
 @dataclass
 class RenderResult:
     """Result of rendering a schema node."""
@@ -765,11 +834,52 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
         # Type as tuple[Any, ...] with validator doing the actual type checking
         type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
     elif node.rest_items is False:
-        # rest_items is False - no additional items allowed (strict tuple)
+        # rest_items is False - no additional items allowed beyond prefix
+        # JSON Schema: prefixItems + items:false means 0 to N items, where N = len(prefixItems)
+        # Each item that exists must match its corresponding prefixItem schema
         if item_types:
-            type_expr = f"tuple[{', '.join(item_types)}]"
+            imports.add("from typing import Annotated, Any")
+            imports.add("from pydantic import BeforeValidator, TypeAdapter")
+
+            validator_name = f"_tuple_{name.lower()}"
+            prefix_len = len(node.prefix_items)
+
+            # Build validator that allows 0 to N items
+            validator_lines = [f"def {validator_name}(v) -> tuple:"]
+            validator_lines.append("    if not isinstance(v, tuple):")
+            validator_lines.append(
+                "        v = tuple(v) if hasattr(v, '__iter__') else (v,)"
+            )
+            validator_lines.append(f"    if len(v) > {prefix_len}:")
+            validator_lines.append(
+                f"        raise ValueError(f'Tuple must have at most {prefix_len} items, got {{len(v)}}')"
+            )
+            validator_lines.append("    validated = []")
+
+            # Validate prefix items that exist
+            for i, item_type in enumerate(item_types):
+                validator_lines.append(f"    # Validate item {i} if present")
+                validator_lines.append(f"    if len(v) > {i}:")
+                validator_lines.append(
+                    f"        prefix_{i}_validator = TypeAdapter({item_type})"
+                )
+                validator_lines.append(f"        try:")
+                validator_lines.append(
+                    f"            validated.append(prefix_{i}_validator.validate_python(v[{i}]))"
+                )
+                validator_lines.append(f"        except Exception as e:")
+                validator_lines.append(
+                    f"            raise ValueError(f'Item at index {i} invalid: {{e}}')"
+                )
+
+            validator_lines.append("    return tuple(validated)")
+
+            code_parts.append("\n".join(validator_lines))
+
+            # Type as tuple[Any, ...] with validator doing the actual type checking
+            type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
         else:
-            type_expr = "tuple[()]"  # Empty tuple
+            type_expr = "tuple[()]"  # Empty tuple (no items allowed)
     else:
         # rest_items is None - JSON Schema default: additional items ARE allowed
         # When prefixItems is present without items=false, any additional items are valid
@@ -932,6 +1042,9 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     field_lines: list[str] = []
     validators: list[str] = []
 
+    # Track used field names to avoid collisions from sanitized names
+    used_field_names: set[str] = set()
+
     # Process each property
     for prop_name, prop_def in node.properties:
         # Render the property's schema
@@ -953,20 +1066,49 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         # Build the field definition
         type_expr = prop_result.type_expr
 
+        # Check if property name needs aliasing (not a valid Python identifier)
+        needs_alias = not _is_valid_python_identifier(prop_name)
+        if needs_alias:
+            field_name = _sanitize_property_name(prop_name, used_field_names)
+        else:
+            field_name = prop_name
+            used_field_names.add(prop_name)
+        escaped_alias = ""
+
+        if needs_alias:
+            imports.add("from pydantic import Field")
+            # Escape property name for alias string
+            escaped_alias = _escape_for_double_quotes(prop_name)
+
         if is_required:
             if is_nullable:
                 # Required but nullable: field: Type | None (no default)
                 if not type_expr.endswith(" | None"):
                     type_expr = f"{type_expr} | None"
-                field_lines.append(f"    {prop_name}: {type_expr}")
+                if needs_alias:
+                    field_lines.append(
+                        f'    {field_name}: {type_expr} = Field(alias="{escaped_alias}")'
+                    )
+                else:
+                    field_lines.append(f"    {field_name}: {type_expr}")
             else:
                 # Required and not nullable: field: Type
-                field_lines.append(f"    {prop_name}: {type_expr}")
+                if needs_alias:
+                    field_lines.append(
+                        f'    {field_name}: {type_expr} = Field(alias="{escaped_alias}")'
+                    )
+                else:
+                    field_lines.append(f"    {field_name}: {type_expr}")
         else:
             # Optional: field: Type | None = None
             if not type_expr.endswith(" | None") and type_expr != "None":
                 type_expr = f"{type_expr} | None"
-            field_lines.append(f"    {prop_name}: {type_expr} = None")
+            if needs_alias:
+                field_lines.append(
+                    f'    {field_name}: {type_expr} = Field(default=None, alias="{escaped_alias}")'
+                )
+            else:
+                field_lines.append(f"    {field_name}: {type_expr} = None")
 
     # Determine if there are required fields not covered by properties
     property_names = {prop_name for prop_name, _ in node.properties}
@@ -1816,6 +1958,29 @@ def render_ref(node: RefNode, name: str) -> RenderResult:
     # If resolved, render the resolved schema
     if node.resolved is not None:
         return render(node.resolved, name)
+
+    # Handle root reference (recursive schema)
+    if node.path == "#":
+        # For root references, we need to use forward reference to the parent type.
+        # The name follows pattern like "TFoo", "TFooBar", "Group0Foo" etc.
+        # Pattern: RootClassName + PascalCaseNestedPath
+        # E.g., "T" + "Foo" = "TFoo", "MyClass" + "Foo" = "MyClassFoo"
+        # E.g., "Group0" + "Foo" = "Group0Foo"
+        # The root name is the first PascalCase word (uppercase + lowercase/digits)
+        # stopping at the next uppercase letter.
+        root_name = ""
+        i = 0
+        # Take first character (must be uppercase for class names)
+        if name and name[0].isupper():
+            root_name = name[0]
+            i = 1
+            # Continue with lowercase letters or digits (part of same word)
+            while i < len(name) and (name[i].islower() or name[i].isdigit()):
+                root_name += name[i]
+                i += 1
+        if not root_name:
+            root_name = name or "Self"
+        return RenderResult(code="", type_expr=f"'{root_name}'", imports=set())
 
     # Otherwise, just use the path as a forward reference
     # Extract the type name from the path (last segment after /)

@@ -137,8 +137,8 @@
         "Verify items: false means no additional items allowed after prefixItems",
         "Test items with nested schema validates each element",
       ],
-      "passes": false,
-      "notes": "0/0 suggests tests are filtered - may need to check why",
+      "passes": true,
+      "notes": "Fixed. 100% (29/29). Key fixes: (1) Core parser now correctly handles composition keywords (allOf/anyOf/oneOf) with sibling validation keywords - wraps them in IntersectionNode. (2) Renderer now generates custom validator for prefixItems+items:false that allows 0 to N items (not exactly N).",
     },
     {
       "id": "fix-additionalItems",
@@ -151,8 +151,8 @@
         "Fix: 'no additionalItems permitted' edge cases with empty array",
         "Verify generated code handles both legacy (items array) and modern (prefixItems) syntax",
       ],
-      "passes": false,
-      "notes": "Need to handle interaction between items-as-array and additionalItems",
+      "passes": true,
+      "notes": "Fixed by fix-items-validation changes. 100% (19/19) in draft7. additionalItems doesn't exist in draft2020-12 (replaced by items with prefixItems).",
     },
     {
       "id": "fix-uniqueItems",
