@@ -128,3 +128,66 @@
 - Updated comments to guide users to xschema-client package
 
 **Result**: Python template updated, compatible with client, all tests pass.
+
+## 2026-01-14: python-example (COMPLETE)
+
+**Task**: Create example project demonstrating Python xschema usage
+
+**Implementation**:
+1. Created python/example/ structure
+   - pyproject.toml with xschema-pydantic and xschema-client deps
+   - Added to workspace in python/pyproject.toml members
+   - generate.py script wrapper for running xschema generate
+
+2. Created xschema config files
+   - user.xschema.jsonc with Calendar and User schemas
+   - subdir/another.xschema.jsonc with TSConfig and Native schemas
+   - All using adapter: "xschemadev/pydantic"
+   - Note: adapter ref format is xschemadev/<adapter-name> not full package name
+
+3. Created JSON Schema sources
+   - calendar.json - event schema (from TS example)
+   - source.json - user schema (from TS example)
+   - Reused same schemas as TypeScript example for consistency
+
+4. Fixed Python runner detection for workspace members
+   - Updated cli/language/langs/python/runner.go detectRunnerInDir()
+   - Detects workspace members by checking for "workspace = true" in pyproject.toml
+   - Workspace members use `uv run` instead of `uv tool run`
+   - This allows running workspace packages without publishing to PyPI
+
+5. Fixed Python template TypedDict syntax
+   - Updated cli/language/langs/python/templates.go outputTemplate
+   - Changed SchemaTypes from class syntax to functional syntax
+   - Functional syntax required because keys contain colons ("namespace:id")
+   - Old: `class SchemaTypes(TypedDict): "user:User": type[UserUser]` (syntax error)
+   - New: `SchemaTypes = TypedDict('SchemaTypes', {...}, total=False)` (valid)
+
+6. Created main.py demonstrating client usage
+   - Full key lookup: xschema("user:Calendar")
+   - Shorthand with default_namespace: xschema("User") -> "user:User"
+   - Validation using TypeAdapter.validate_python()
+   - Examples with Calendar, User, TSConfig, and Native schemas
+
+7. Verified end-to-end functionality
+   - Generated schemas with: go run . generate --project ../python/example
+   - Ran example: uv run python main.py
+   - All validations pass, client works correctly
+   - Output shows valid calendar, user, and native data
+
+**Decisions**:
+- Used adapter ref "xschemadev/pydantic" not "xschema-pydantic" (format: scope/adapter)
+- Adapter binary name constructed as "xschema-" + adapter (e.g. "xschema-pydantic")
+- Workspace members get `uv run` for local packages, standalone projects get `uv tool run`
+- TypedDict uses functional syntax to avoid Python syntax restrictions
+- Manual fix needed: added `user_user = TypeAdapter(UserUser)` (Pydantic adapter bug - doesn't consistently output TypeAdapters for simple models)
+- Used sys.path manipulation in main.py to import from .xschema directory
+
+**Known Issues**:
+- Pydantic adapter doesn't consistently create TypeAdapter assignments for all schemas
+  - Some schemas get TypeAdapter (Calendar, TSConfig, Native)
+  - Some schemas only get class definition (User)
+  - Workaround: manually added `user_user = TypeAdapter(UserUser)`
+  - This should be fixed in the Pydantic adapter
+
+**Result**: Python example functional, demonstrates full workflow from config to validation. All Go tests pass.

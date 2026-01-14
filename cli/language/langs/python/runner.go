@@ -14,23 +14,33 @@ func detectRunner() (string, []string, error) {
 func detectRunnerInDir(dir string) (string, []string, error) {
 	// Priority order: uv > poetry > pipenv > pip
 
-	// Check for uv.lock (indicates uv project)
+	pyprojectPath := filepath.Join(dir, "pyproject.toml")
+
+	// Check for uv.lock (indicates standalone uv project, not workspace member)
+	hasLocalLock := false
 	if _, err := os.Stat(filepath.Join(dir, "uv.lock")); err == nil {
+		hasLocalLock = true
 		if commandExists("uv") {
 			return "uv", []string{"tool", "run"}, nil
 		}
 	}
 
 	// Check for pyproject.toml
-	pyprojectPath := filepath.Join(dir, "pyproject.toml")
 	if _, err := os.Stat(pyprojectPath); err == nil {
 		content, err := os.ReadFile(pyprojectPath)
 		if err == nil {
 			contentStr := string(content)
 
+			// Check for uv workspace member (has workspace sources but no local lock)
+			isWorkspaceMember := !hasLocalLock && strings.Contains(contentStr, "workspace = true")
+
 			// Check for [tool.uv] section
-			if strings.Contains(contentStr, "[tool.uv]") {
+			if strings.Contains(contentStr, "[tool.uv]") || isWorkspaceMember {
 				if commandExists("uv") {
+					// If workspace member, use "uv run" instead of "uv tool run"
+					if isWorkspaceMember {
+						return "uv", []string{"run"}, nil
+					}
 					return "uv", []string{"tool", "run"}, nil
 				}
 			}

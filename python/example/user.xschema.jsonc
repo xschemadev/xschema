@@ -1,0 +1,21 @@
+{
+	// XSchema config file - detected by $schema URL
+	// Namespace defaults to filename: "user"
+	"$schema": "https://xschema.dev/schemas/python.jsonc",
+	"schemas": [
+		{
+			// Schema from a local file (relative to this config file)
+			"id": "Calendar",
+			"sourceType": "file",
+			"source": "./calendar.json",
+			"adapter": "xschemadev/pydantic"
+		},
+		{
+			// Schema from a local file
+			"id": "User",
+			"sourceType": "file",
+			"source": "./source.json",
+			"adapter": "xschemadev/pydantic"
+		}
+	]
+}

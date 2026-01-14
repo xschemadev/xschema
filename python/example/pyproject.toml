@@ -1,0 +1,16 @@
+[project]
+name = "xschema-python-example"
+version = "0.1.0"
+description = "Example project demonstrating Python xschema usage"
+requires-python = ">=3.12"
+dependencies = [
+    "xschema-pydantic",
+    "xschema-client",
+]
+
+[project.scripts]
+generate = "generate:main"
+
+[tool.uv.sources]
+xschema-pydantic = { workspace = true }
+xschema-client = { workspace = true }

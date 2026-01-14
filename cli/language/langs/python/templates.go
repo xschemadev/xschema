@@ -37,18 +37,20 @@ schemas: Dict[str, Any] = {
 }
 
 # Type registry for static type checking
-# Includes both runtime schemas and type-only schemas
+# Includes both runtime schemas and type-only schemas  
+# Note: Uses functional syntax because keys contain colons
 if TYPE_CHECKING:
     from typing import TypedDict
 
-    class SchemaTypes(TypedDict, total=False):
+    SchemaTypes = TypedDict('SchemaTypes', {
 {{- range .Schemas}}
 {{- if .Type}}
-        {{.Key | printf "%q"}}: type[{{.Type}}]
+        {{.Key | printf "%q"}}: type[{{.Type}}],
 {{- else if .Code}}
-        {{.Key | printf "%q"}}: Any
+        {{.Key | printf "%q"}}: Any,
 {{- end}}
 {{- end}}
+    }, total=False)
 {{- if .Footer}}
 {{.Footer}}
 {{- end}}

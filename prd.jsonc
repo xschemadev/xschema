@@ -50,7 +50,7 @@
         "add 'generate' script that runs xschema generate --project .",
         "verify example works end-to-end: generate then run main.py"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Example uses only Pydantic adapter (Python only has this adapter currently)"
     },
     {
