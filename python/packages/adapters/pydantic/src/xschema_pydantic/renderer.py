@@ -258,6 +258,11 @@ def _render_format(fmt: str, constraints: Any) -> RenderResult | None:
     return None
 
 
+def _is_integer_value(val: float | int) -> bool:
+    """Check if a numeric value is effectively an integer."""
+    return isinstance(val, int) or (isinstance(val, float) and val == int(val))
+
+
 def render_number(node: NumberNode) -> RenderResult:
     """Render NumberNode to Pydantic type."""
     imports: set[str] = set()
@@ -271,7 +276,50 @@ def render_number(node: NumberNode) -> RenderResult:
         or node.constraints.multiple_of is not None
     )
 
-    if has_constraints:
+    # Check if we have integer type with float multipleOf
+    # Pydantic's MultipleOf doesn't support non-integer multipleOf for int types
+    needs_custom_validator = (
+        node.integer
+        and node.constraints is not None
+        and node.constraints.multiple_of is not None
+        and not _is_integer_value(node.constraints.multiple_of)
+    )
+
+    if needs_custom_validator:
+        # Use float base type with custom integer+multipleOf check
+        # This handles edge cases like type:integer, multipleOf:0.123456789
+        imports.add("from typing import Annotated")
+        imports.add("from pydantic import BeforeValidator")
+
+        multiple_of = node.constraints.multiple_of
+        annotations: list[str] = []
+
+        # Add other constraints if present
+        if node.constraints.minimum is not None:
+            imports.add("from annotated_types import Ge")
+            annotations.append(f"Ge({node.constraints.minimum})")
+        if node.constraints.exclusive_minimum is not None:
+            imports.add("from annotated_types import Gt")
+            annotations.append(f"Gt({node.constraints.exclusive_minimum})")
+        if node.constraints.maximum is not None:
+            imports.add("from annotated_types import Le")
+            annotations.append(f"Le({node.constraints.maximum})")
+        if node.constraints.exclusive_maximum is not None:
+            imports.add("from annotated_types import Lt")
+            annotations.append(f"Lt({node.constraints.exclusive_maximum})")
+
+        # Create inline validator for integer + float multipleOf
+        # Uses float base to avoid Pydantic's integer multipleOf restriction
+        validator_code = (
+            f"BeforeValidator(lambda v: v if (isinstance(v, (int, float)) and "
+            f"not isinstance(v, bool) and float(v) == int(v) and "
+            f"(v / {multiple_of}) % 1 == 0) else (_ for _ in ()).throw(ValueError('not valid')))"
+        )
+        annotations.append(validator_code)
+
+        annotation_str = ", ".join(annotations)
+        type_expr = f"Annotated[float, {annotation_str}]"
+    elif has_constraints:
         # Use Annotated with annotated-types constraints
         imports.add("from typing import Annotated")
         annotations: list[str] = []

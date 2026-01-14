@@ -33,6 +33,90 @@ def _is_object_only_schema(ir_node: Any) -> bool:
     return False
 
 
+def _is_number_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
+    """Check if schema has number-specific keywords without explicit type.
+
+    JSON Schema number keywords (multipleOf, minimum, maximum, etc.) should
+    ignore non-number inputs when there's no explicit type constraint.
+
+    Args:
+        ir_node: The parsed IR node
+        original_schema: The original JSON Schema
+
+    Returns True if:
+    - The node is a NumberNode
+    - AND the original schema doesn't have explicit 'type' keyword
+    """
+    if not hasattr(ir_node, "kind"):
+        return False
+
+    # Must be a NumberNode (number or integer)
+    if ir_node.kind != "number":
+        return False
+
+    # Must not have explicit type in original schema
+    if isinstance(original_schema, bool):
+        return False
+
+    return "type" not in original_schema
+
+
+def _is_string_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
+    """Check if schema has string-specific keywords without explicit type.
+
+    JSON Schema string keywords (minLength, maxLength, pattern, format) should
+    ignore non-string inputs when there's no explicit type constraint.
+
+    Args:
+        ir_node: The parsed IR node
+        original_schema: The original JSON Schema
+
+    Returns True if:
+    - The node is a StringNode
+    - AND the original schema doesn't have explicit 'type' keyword
+    """
+    if not hasattr(ir_node, "kind"):
+        return False
+
+    # Must be a StringNode
+    if ir_node.kind != "string":
+        return False
+
+    # Must not have explicit type in original schema
+    if isinstance(original_schema, bool):
+        return False
+
+    return "type" not in original_schema
+
+
+def _is_array_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
+    """Check if schema has array-specific keywords without explicit type.
+
+    JSON Schema array keywords (items, minItems, maxItems, etc.) should
+    ignore non-array inputs when there's no explicit type constraint.
+
+    Args:
+        ir_node: The parsed IR node
+        original_schema: The original JSON Schema
+
+    Returns True if:
+    - The node is an ArrayNode
+    - AND the original schema doesn't have explicit 'type' keyword
+    """
+    if not hasattr(ir_node, "kind"):
+        return False
+
+    # Must be an ArrayNode
+    if ir_node.kind != "array":
+        return False
+
+    # Must not have explicit type in original schema
+    if isinstance(original_schema, bool):
+        return False
+
+    return "type" not in original_schema
+
+
 def to_pascal_case(name: str) -> str:
     """Convert a variable name to PascalCase for class names."""
     # Handle snake_case
@@ -116,15 +200,32 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         and result.type_expr == class_name
     )
 
-    # Check if this is an object-only schema that should ignore non-objects
-    # JSON Schema semantics: object keywords only apply to objects
+    # Check if this is a type-specific schema that should ignore non-matching types
+    # JSON Schema semantics: type-specific keywords only apply to their respective types
     is_object_only = _is_object_only_schema(ir_node)
+    is_number_only = _is_number_only_schema(ir_node, schema)
+    is_string_only = _is_string_only_schema(ir_node, schema)
+    is_array_only = _is_array_only_schema(ir_node, schema)
+
+    # Determine the type guard wrapper if needed
+    # These expressions check if a value IS the expected type (for validation)
+    type_guard_wrapper = None
+    if is_object_only:
+        type_guard_wrapper = "isinstance(v, dict)"
+    elif is_number_only:
+        # Numbers: int or float, but not bool (bool is subclass of int in Python)
+        # Wrap in parens so negation works correctly
+        type_guard_wrapper = "(isinstance(v, (int, float)) and not isinstance(v, bool))"
+    elif is_string_only:
+        type_guard_wrapper = "isinstance(v, str)"
+    elif is_array_only:
+        type_guard_wrapper = "isinstance(v, list)"
 
     if is_simple_class:
         schema_code = result.code
-        if is_object_only:
-            # Wrap with isinstance check - non-dicts pass validation
-            validate_expr = f"(lambda v: True if not isinstance(v, dict) else _try_validate({class_name}.model_validate)(v))"
+        if type_guard_wrapper:
+            # Wrap with isinstance check - non-matching types pass validation
+            validate_expr = f"(lambda v: True if not {type_guard_wrapper} else _try_validate({class_name}.model_validate)(v))"
         else:
             # For simple class definitions, use model_validate directly
             validate_expr = f"_try_validate({class_name}.model_validate)"
@@ -139,9 +240,9 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         else:
             schema_code = type_adapter_stmt
 
-        if is_object_only:
-            # Wrap with isinstance check - non-dicts pass validation
-            validate_expr = f"(lambda v: True if not isinstance(v, dict) else _try_validate({var_name}.validate_python)(v))"
+        if type_guard_wrapper:
+            # Wrap with isinstance check - non-matching types pass validation
+            validate_expr = f"(lambda v: True if not {type_guard_wrapper} else _try_validate({var_name}.validate_python)(v))"
         else:
             # For TypeAdapter, use validate_python
             validate_expr = f"_try_validate({var_name}.validate_python)"

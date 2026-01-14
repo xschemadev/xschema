@@ -64,8 +64,8 @@
         "Test multipleOf: 2 with value 4 passes",
         "Test multipleOf: 0.01 with value 1.1 passes",
       ],
-      "passes": false,
-      "notes": "Floating point edge cases need special handling",
+      "passes": true,
+      "notes": "Fixed. 100% (10/10). Key fixes: (1) Added type guards for number-only schemas without explicit type (ignores non-numbers), (2) Handle integer type with float multipleOf using custom BeforeValidator since Pydantic's MultipleOf doesn't support non-integer values for int types.",
     },
     {
       "id": "fix-format-validation",
