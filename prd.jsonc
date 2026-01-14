@@ -64,7 +64,7 @@
         "run compliance workflow locally: go run . compliance --lang python --adapter-path ../python/packages/adapters/pydantic",
         "verify no errors in setup phase"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "compliance.yml already supports python runtime detection, just need the files"
     },
     {

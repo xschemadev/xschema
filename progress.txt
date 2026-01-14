@@ -191,3 +191,45 @@
   - This should be fixed in the Pydantic adapter
 
 **Result**: Python example functional, demonstrates full workflow from config to validation. All Go tests pass.
+
+## 2026-01-14: python-ci-setup (COMPLETE)
+
+**Task**: Create python/.ci/ for compliance workflow integration
+
+**Implementation**:
+1. Created python/.ci/runtime.txt
+   - Contains "python" runtime identifier
+   - Matches pattern from typescript/.ci/runtime.txt (contains "bun")
+   - compliance.yml reads this to determine runtime setup
+
+2. Created python/.ci/setup.sh
+   - Bash script with set -euo pipefail for safety
+   - Changes to python/ dir and runs `uv sync`
+   - Made executable with chmod +x
+   - Matches TS pattern (bun install + bun run build)
+
+3. Verified compliance workflow integration
+   - compliance.yml already supports python runtime detection
+   - Workflow checks for {lang}/.ci/setup.sh and {lang}/.ci/runtime.txt
+   - python runtime triggers actions/setup-python@v5 and astral-sh/setup-uv@v4
+   - Adapter path format: {lang}/packages/adapters/{adapter}
+
+4. Tested locally
+   - Ran: go run . compliance --lang python --adapter-path ../python/packages/adapters/pydantic
+   - Results: 6 drafts tested (draft2020-12 through draft3)
+   - Pass rate: 96.8% - 97.4% across all drafts
+   - Total: 4647 passed, 141 failed, 379 unsupported
+   - Runtime: 7.3s
+   - No errors in setup phase
+
+5. Ran Go quality checks
+   - go build: compiles ✓
+   - go vet: no warnings ✓
+   - go test: all tests pass ✓
+
+**Decisions**:
+- Used exact TS pattern for consistency (.ci/runtime.txt + .ci/setup.sh)
+- setup.sh only runs `uv sync`, not build (Python packages already synced in workspace)
+- Runtime identifier "python" (not "uv") to match language name
+
+**Result**: CI integration complete, compliance testing works locally, ready for GitHub Actions.
