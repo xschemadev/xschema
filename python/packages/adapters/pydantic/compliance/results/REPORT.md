@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 626 | 280 | 0 | 178 | 69.1% |
-| draft2020-12 | 617 | 302 | 0 | 201 | 67.1% |
-| draft3 | 288 | 109 | 0 | 0 | 72.5% |
-| draft4 | 381 | 145 | 0 | 0 | 72.4% |
-| draft6 | 519 | 188 | 0 | 0 | 73.4% |
-| draft7 | 546 | 237 | 0 | 0 | 69.7% |
+| draft2019-09 | 682 | 224 | 0 | 178 | 75.3% |
+| draft2020-12 | 673 | 246 | 0 | 201 | 73.2% |
+| draft3 | 311 | 86 | 0 | 0 | 78.3% |
+| draft4 | 423 | 103 | 0 | 0 | 80.4% |
+| draft6 | 573 | 134 | 0 | 0 | 81.0% |
+| draft7 | 600 | 183 | 0 | 0 | 76.6% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-69.1%25-red)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-67.1%25-red)
-![draft3](https://img.shields.io/badge/draft3%20compliance-72.5%25-red)
-![draft4](https://img.shields.io/badge/draft4%20compliance-72.4%25-red)
-![draft6](https://img.shields.io/badge/draft6%20compliance-73.4%25-red)
-![draft7](https://img.shields.io/badge/draft7%20compliance-69.7%25-red)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-75.3%25-red)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-73.2%25-red)
+![draft3](https://img.shields.io/badge/draft3%20compliance-78.3%25-red)
+![draft4](https://img.shields.io/badge/draft4%20compliance-80.4%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-81.0%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-76.6%25-red)
 
 ## draft2019-09
 
@@ -35,8 +35,8 @@
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 14/20 |
-| dependentSchemas | ⚠️ | 10/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
@@ -47,28 +47,28 @@
 | maxContains | ⚠️ | 6/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
-| maxProperties | ⚠️ | 7/10 |
+| maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
 | minContains | ⚠️ | 14/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
-| minProperties | ⚠️ | 6/8 |
+| minProperties | ✅ | 8/8 |
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
-| not | ⚠️ | 37/38 |
-| oneOf | ⚠️ | 25/27 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 13/23 |
+| patternProperties | ✅ | 23/23 |
 | properties | ❌ | 0/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
-| unevaluatedProperties | ⚠️ | 18/25 |
-| uniqueItems | ⚠️ | 52/69 |
+| unevaluatedProperties | ⚠️ | 19/25 |
+| uniqueItems | ⚠️ | 63/69 |
 | vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
@@ -1583,66 +1583,6 @@ Unable to evaluate type annotation 'None | None'.
   - Expected: `invalid`, Got: `true`
 - **contains with false if subschema**
   - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentRequired - 6 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: CRLF missing dependent
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quotes missing dependent
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 10 failures</summary>
-
-- **boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted tab invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type other
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -6352,21 +6292,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties = 0 means the object is empty**
-  - Test: one property is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation with a decimal**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>minContains - 14 failures</summary>
 
 - **maxContains < minContains**
@@ -6410,75 +6335,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
   - Expected: `invalid`, Got: `true`
 - **minContains=2 with contains with a decimal value**
   - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minProperties - 2 failures</summary>
-
-- **minProperties validation**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-- **minProperties validation with a decimal**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>not - 1 failure</summary>
-
-- **double negation**
-  - Test: any value is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 2 failures</summary>
-
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 10 failures</summary>
-
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with a property matching both true and false is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with property matching schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -6714,48 +6570,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>unevaluatedItems - 2 failures</summary>
 
 - **unevaluatedItems as schema**
@@ -6768,7 +6582,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>unevaluatedProperties - 7 failures</summary>
+<summary>unevaluatedProperties - 6 failures</summary>
 
 - **Evaluated properties collection needs to consider instance location**
   - Test: with an unevaluated property that exists at another location
@@ -6778,9 +6592,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties false**
   - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties schema**
   - Test: with invalid unevaluated properties
@@ -6795,41 +6606,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>uniqueItems - 17 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: false is not equal to zero
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: objects are non-unique despite key order
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: property order of array of objects is ignored
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: true is not equal to one
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`
@@ -6865,8 +6643,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 14/20 |
-| dependentSchemas | ⚠️ | 10/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -6878,28 +6656,28 @@ SyntaxError: unterminated string literal (detected at line 155)
 | maxContains | ⚠️ | 6/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
-| maxProperties | ⚠️ | 7/10 |
+| maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
 | minContains | ⚠️ | 14/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
-| minProperties | ⚠️ | 6/8 |
+| minProperties | ✅ | 8/8 |
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
-| not | ⚠️ | 37/38 |
-| oneOf | ⚠️ | 25/27 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 13/23 |
+| patternProperties | ✅ | 23/23 |
 | prefixItems | ⚠️ | 4/11 |
 | properties | ❌ | 0/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
-| unevaluatedProperties | ⚠️ | 19/27 |
-| uniqueItems | ⚠️ | 52/69 |
+| unevaluatedProperties | ⚠️ | 20/27 |
+| uniqueItems | ⚠️ | 63/69 |
 | vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
@@ -8464,66 +8242,6 @@ Unable to evaluate type annotation 'None | None'.
   - Expected: `invalid`, Got: `true`
 - **contains with false if subschema**
   - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentRequired - 6 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: CRLF missing dependent
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quotes missing dependent
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependents required**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 10 failures</summary>
-
-- **boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted tab invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: wrong type other
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -14012,21 +13730,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties = 0 means the object is empty**
-  - Test: one property is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation with a decimal**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>minContains - 14 failures</summary>
 
 - **maxContains < minContains**
@@ -14070,75 +13773,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
   - Expected: `invalid`, Got: `true`
 - **minContains=2 with contains with a decimal value**
   - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minProperties - 2 failures</summary>
-
-- **minProperties validation**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-- **minProperties validation with a decimal**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>not - 1 failure</summary>
-
-- **double negation**
-  - Test: any value is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 2 failures</summary>
-
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 10 failures</summary>
-
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with a property matching both true and false is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with property matching schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -14401,48 +14035,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>propertyNames - 5 failures</summary>
-
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>unevaluatedItems - 2 failures</summary>
 
 - **unevaluatedItems as schema**
@@ -14455,7 +14047,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>unevaluatedProperties - 8 failures</summary>
+<summary>unevaluatedProperties - 7 failures</summary>
 
 - **Evaluated properties collection needs to consider instance location**
   - Test: with an unevaluated property that exists at another location
@@ -14465,9 +14057,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties false**
   - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties not affected by propertyNames**
-  - Test: string property is invalid
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties schema**
   - Test: with invalid unevaluated properties
@@ -14485,41 +14074,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>uniqueItems - 17 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: false is not equal to zero
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: objects are non-unique despite key order
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: property order of array of objects is ignored
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: true is not equal to one
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`
@@ -14548,7 +14104,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 | additionalItems | ⚠️ | 10/14 |
 | additionalProperties | ⚠️ | 11/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 11/18 |
+| dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
 | divisibleBy | ✅ | 8/8 |
 | enum | ✅ | 16/16 |
@@ -14563,13 +14119,13 @@ SyntaxError: unterminated string literal (detected at line 155)
 | minLength | ✅ | 5/5 |
 | minimum | ✅ | 13/13 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 10/17 |
-| properties | ⚠️ | 12/15 |
+| patternProperties | ✅ | 17/17 |
+| properties | ⚠️ | 14/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 49/62 |
+| uniqueItems | ⚠️ | 56/62 |
 
 ### Unexpected Failures
 
@@ -14609,33 +14165,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 - **non-ASCII pattern with additionalProperties**
   - Test: matching the pattern is valid
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependencies - 7 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -17502,71 +17031,17 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>patternProperties - 7 failures</summary>
+<summary>properties - 1 failure</summary>
 
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
+- **properties, patternProperties, additionalProperties interaction**
+  - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>properties - 3 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>uniqueItems - 13 failures</summary>
-
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`
@@ -17598,30 +17073,30 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
-| dependencies | ⚠️ | 16/29 |
+| dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ❌ | 0/36 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
-| maxProperties | ⚠️ | 6/8 |
+| maxProperties | ✅ | 8/8 |
 | maximum | ✅ | 14/14 |
 | minItems | ✅ | 4/4 |
 | minLength | ✅ | 5/5 |
-| minProperties | ⚠️ | 5/6 |
+| minProperties | ✅ | 6/6 |
 | minimum | ✅ | 17/17 |
 | multipleOf | ✅ | 10/10 |
-| not | ⚠️ | 19/20 |
-| oneOf | ⚠️ | 21/23 |
+| not | ✅ | 20/20 |
+| oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 11/18 |
+| patternProperties | ✅ | 18/18 |
 | properties | ❌ | 0/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 10/15 |
+| required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
-| uniqueItems | ⚠️ | 52/69 |
+| uniqueItems | ⚠️ | 63/69 |
 
 ### Unexpected Failures
 
@@ -18723,51 +18198,6 @@ stderr: Traceback (most recent call last):
 TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'
 Unable to evaluate type annotation 'None | None'.
 `
-
-</details>
-
-<details>
-<summary>dependencies - 13 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -20254,75 +19684,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxProperties - 2 failures</summary>
-
-- **maxProperties = 0 means the object is empty**
-  - Test: one property is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minProperties - 1 failure</summary>
-
-- **minProperties validation**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>not - 1 failure</summary>
-
-- **double negation**
-  - Test: any value is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 2 failures</summary>
-
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 7 failures</summary>
-
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>properties - 24 failures</summary>
 
 - **object properties validation**
@@ -20521,62 +19882,8 @@ SyntaxError: unterminated string literal (detected at line 146)
 </details>
 
 <details>
-<summary>required - 5 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 17 failures</summary>
-
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: false is not equal to zero
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: objects are non-unique despite key order
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: property order of array of objects is ignored
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: true is not equal to one
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`
@@ -20611,7 +19918,7 @@ SyntaxError: unterminated string literal (detected at line 146)
 | contains | ⚠️ | 13/19 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
-| dependencies | ⚠️ | 21/36 |
+| dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
@@ -20620,24 +19927,24 @@ SyntaxError: unterminated string literal (detected at line 146)
 | items | ✅ | 0/0 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
-| maxProperties | ⚠️ | 7/10 |
+| maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
-| minProperties | ⚠️ | 6/8 |
+| minProperties | ✅ | 8/8 |
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
-| not | ⚠️ | 37/38 |
-| oneOf | ⚠️ | 25/27 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 13/23 |
+| patternProperties | ✅ | 23/23 |
 | properties | ❌ | 0/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 52/69 |
+| uniqueItems | ⚠️ | 63/69 |
 
 ### Unexpected Failures
 
@@ -21879,57 +21186,6 @@ Unable to evaluate type annotation 'None | None'.
   - Expected: `invalid`, Got: `true`
 - **contains keyword with const keyword**
   - Test: array without item 5 is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 15 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -24155,90 +23411,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties = 0 means the object is empty**
-  - Test: one property is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation with a decimal**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minProperties - 2 failures</summary>
-
-- **minProperties validation**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-- **minProperties validation with a decimal**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>not - 1 failure</summary>
-
-- **double negation**
-  - Test: any value is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 2 failures</summary>
-
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 10 failures</summary>
-
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with a property matching both true and false is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with property matching schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>properties - 28 failures</summary>
 
 - **object properties validation**
@@ -24469,83 +23641,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>propertyNames - 5 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 17 failures</summary>
-
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: false is not equal to zero
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: objects are non-unique despite key order
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: property order of array of objects is ignored
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: true is not equal to one
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`
@@ -24580,7 +23677,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 | contains | ⚠️ | 14/21 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
-| dependencies | ⚠️ | 21/36 |
+| dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
@@ -24590,24 +23687,24 @@ SyntaxError: unterminated string literal (detected at line 155)
 | items | ✅ | 0/0 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
-| maxProperties | ⚠️ | 7/10 |
+| maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
-| minProperties | ⚠️ | 6/8 |
+| minProperties | ✅ | 8/8 |
 | minimum | ✅ | 11/11 |
 | multipleOf | ✅ | 10/10 |
-| not | ⚠️ | 37/38 |
-| oneOf | ⚠️ | 25/27 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
-| patternProperties | ⚠️ | 13/23 |
+| patternProperties | ✅ | 23/23 |
 | properties | ❌ | 0/28 |
-| propertyNames | ⚠️ | 15/20 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 52/69 |
+| uniqueItems | ⚠️ | 63/69 |
 
 ### Unexpected Failures
 
@@ -25852,57 +24949,6 @@ Unable to evaluate type annotation 'None | None'.
   - Expected: `invalid`, Got: `true`
 - **contains with false if subschema**
   - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 15 failures</summary>
-
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with boolean subschemas**
-  - Test: object with property having schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 1
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 2
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: invalid object 4
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches both
-  - Expected: `invalid`, Got: `true`
-- **dependent subschema incompatible with root**
-  - Test: matches root
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing both dependencies
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies**
-  - Test: missing other dependency
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type both
-  - Expected: `invalid`, Got: `true`
-- **multiple dependencies subschema**
-  - Test: wrong type other
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -30096,90 +29142,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties = 0 means the object is empty**
-  - Test: one property is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-- **maxProperties validation with a decimal**
-  - Test: too long is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minProperties - 2 failures</summary>
-
-- **minProperties validation**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-- **minProperties validation with a decimal**
-  - Test: too short is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>not - 1 failure</summary>
-
-- **double negation**
-  - Test: any value is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 2 failures</summary>
-
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 10 failures</summary>
-
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to both is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to one is invalid
-  - Expected: `invalid`, Got: `true`
-- **multiple simultaneous patternProperties are validated**
-  - Test: an invalid due to the other is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: a single invalid match is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties validates properties matching a regex**
-  - Test: multiple invalid matches is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with a property matching both true and false is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with both properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **patternProperties with boolean schemas**
-  - Test: object with property matching schema false is invalid
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: recognized members are accounted for
-  - Expected: `invalid`, Got: `true`
-- **regexes are not anchored by default and are case sensitive**
-  - Test: regexes are case sensitive, 2
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>properties - 28 failures</summary>
 
 - **object properties validation**
@@ -30410,83 +29372,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 </details>
 
 <details>
-<summary>propertyNames - 5 failures</summary>
+<summary>uniqueItems - 6 failures</summary>
 
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `true`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 17 failures</summary>
-
-- **uniqueItems validation**
-  - Test: 0 and false are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: 1 and true are unique
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: false is not equal to zero
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: non-unique array of arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of more than two arrays is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of nested objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: non-unique array of objects is invalid
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: objects are non-unique despite key order
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: property order of array of objects is ignored
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems validation**
-  - Test: true is not equal to one
-  - Expected: `valid`, Got: `false`
-- **uniqueItems validation**
-  - Test: unique heterogeneous types are valid
-  - Expected: `valid`, Got: `false`
 - **uniqueItems with an array of items**
   - Test: unique array extended from [false, true] is valid
   - Expected: `valid`, Got: `false`

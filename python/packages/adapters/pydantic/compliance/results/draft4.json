@@ -337,103 +337,10 @@
     },
     {
       "keyword": "dependencies",
-      "passed": 16,
-      "failed": 13,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "total": 29,
-      "failures": [
-        {
-          "group": "dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 1",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 3",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependencies with escaped characters",
-          "test": "invalid object 4",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "dependent subschema incompatible with root",
-          "test": "matches root",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing both dependencies",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies",
-          "test": "missing other dependency",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type both",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple dependencies subschema",
-          "test": "wrong type other",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 29
     },
     {
       "keyword": "enum",
@@ -769,26 +676,10 @@
     },
     {
       "keyword": "maxProperties",
-      "passed": 6,
-      "failed": 2,
+      "passed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "maxProperties = 0 means the object is empty",
-          "test": "one property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxProperties validation",
-          "test": "too long is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 8
     },
     {
       "keyword": "maximum",
@@ -813,19 +704,10 @@
     },
     {
       "keyword": "minProperties",
-      "passed": 5,
-      "failed": 1,
+      "passed": 6,
+      "failed": 0,
       "skipped": 0,
-      "total": 6,
-      "failures": [
-        {
-          "group": "minProperties validation",
-          "test": "too short is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 6
     },
     {
       "keyword": "minimum",
@@ -843,42 +725,17 @@
     },
     {
       "keyword": "not",
-      "passed": 19,
-      "failed": 1,
+      "passed": 20,
+      "failed": 0,
       "skipped": 0,
-      "total": 20,
-      "failures": [
-        {
-          "group": "double negation",
-          "test": "any value is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 20
     },
     {
       "keyword": "oneOf",
-      "passed": 21,
-      "failed": 2,
+      "passed": 23,
+      "failed": 0,
       "skipped": 0,
-      "total": 23,
-      "failures": [
-        {
-          "group": "oneOf with required",
-          "test": "first valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "oneOf with required",
-          "test": "second valid - valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 23
     },
     {
       "keyword": "pattern",
@@ -889,61 +746,10 @@
     },
     {
       "keyword": "patternProperties",
-      "passed": 11,
-      "failed": 7,
+      "passed": 18,
+      "failed": 0,
       "skipped": 0,
-      "total": 18,
-      "failures": [
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to both is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to one is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple simultaneous patternProperties are validated",
-          "test": "an invalid due to the other is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "a single invalid match is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "patternProperties validates properties matching a regex",
-          "test": "multiple invalid matches is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "recognized members are accounted for",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "regexes are not anchored by default and are case sensitive",
-          "test": "regexes are case sensitive, 2",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 18
     },
     {
       "keyword": "properties",
@@ -1162,47 +968,10 @@
     },
     {
       "keyword": "required",
-      "passed": 10,
-      "failed": 5,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "required with escaped characters",
-          "test": "object with some properties missing is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "type",
@@ -1213,88 +982,11 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 52,
-      "failed": 17,
+      "passed": 63,
+      "failed": 6,
       "skipped": 0,
       "total": 69,
       "failures": [
-        {
-          "group": "uniqueItems validation",
-          "test": "0 and false are unique",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "1 and true are unique",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "false is not equal to zero",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of arrays is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of more than two arrays is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of nested objects is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "non-unique array of objects is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "objects are non-unique despite key order",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "property order of array of objects is ignored",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "true is not equal to one",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems validation",
-          "test": "unique heterogeneous types are valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "uniqueItems with an array of items",
           "test": "unique array extended from [false, true] is valid",
@@ -1341,11 +1033,11 @@
     }
   ],
   "summary": {
-    "passed": 381,
-    "failed": 145,
+    "passed": 423,
+    "failed": 103,
     "skipped": 0,
     "total": 526,
-    "percentage": 72.43346007604563,
+    "percentage": 80.41825095057035,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

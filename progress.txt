@@ -495,3 +495,40 @@ This requires a fix in the core parser, not the renderer.
 - This is different from "property has non-null value"
 
 ---
+
+## Task: fix-uniqueItems (COMPLETED)
+
+**Objective:** Fix uniqueItems validation (was 75.4%, now 100%)
+
+**Root Causes:**
+1. **Broken equality check**: Using `set()` with `id()` fallback for unhashable types doesn't detect deep equality between objects/arrays
+2. **Bool/int coercion**: Python's `False == 0` and `True == 1`, but JSON Schema treats them as different
+3. **Fixed-size tuples**: When `prefixItems` was present without `items: false`, renderer generated fixed-size tuples that rejected extra items
+
+**Solution:**
+1. Replaced set-based uniqueness check with pairwise comparison using `_json_equals()`:
+   - Checks `isinstance(a, bool) != isinstance(b, bool)` to prevent bool/int coercion
+   - Recursively compares lists and dicts for deep equality
+   - Uses O(n²) comparison but correctness over performance for validation
+2. Fixed `rest_items is None` case in tuple rendering:
+   - When `prefixItems` is present without `items: false`, additional items ARE allowed (JSON Schema default)
+   - Generated variable-length tuple validator that validates prefix items but allows any additional items
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - `render_array()`: Replaced broken set-based uniqueness with `_json_equals()` pairwise comparison
+  - `render_tuple()`: Fixed `rest_items is None` case to allow additional items (not fixed-size)
+  - `render_tuple()`: Updated uniqueItems check to use `_json_equals_tuple()` for proper equality
+
+**Testing Results:**
+- ✅ uniqueItems: 100% (69/69 tests passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- JSON Schema's uniqueItems requires type-aware equality: `[0, false]` has 2 unique items (0 != false)
+- Python's set() can't be used for uniqueItems because: (a) unhashable types like lists/dicts, (b) bool/int coercion
+- `prefixItems` without `items: false` means "validate prefix, allow any additional items"
+- The difference between `items: false` (no extra) and no `items` (any extra) is crucial
+
+---

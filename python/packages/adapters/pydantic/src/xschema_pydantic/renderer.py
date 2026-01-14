@@ -609,9 +609,28 @@ def render_array(node: ArrayNode, name: str) -> RenderResult:
         if node.constraints.unique_items:
             imports.add("from pydantic import AfterValidator")
             validator_name = f"_unique_{name.lower()}"
-            validator_code = f"""def {validator_name}(v: list) -> list:
-    if len(v) != len(set(map(lambda x: x if isinstance(x, (str, int, float, bool)) else id(x), v))):
-        raise ValueError("Items must be unique")
+            # Generate a validator that uses proper JSON Schema equality semantics:
+            # - false != 0 and true != 1 (unlike Python's ==)
+            # - deep equality for objects/arrays regardless of order of keys
+            validator_code = f"""def _json_equals(a, b):
+    # JSON Schema treats false != 0 and true != 1
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b
+
+def {validator_name}(v: list) -> list:
+    for i in range(len(v)):
+        for j in range(i + 1, len(v)):
+            if _json_equals(v[i], v[j]):
+                raise ValueError("Items must be unique")
     return v"""
             code_parts.append(validator_code)
             annotations.append(f"AfterValidator({validator_name})")
@@ -752,9 +771,49 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
         else:
             type_expr = "tuple[()]"  # Empty tuple
     else:
-        # rest_items is None - default behavior (fixed-size tuple)
+        # rest_items is None - JSON Schema default: additional items ARE allowed
+        # When prefixItems is present without items=false, any additional items are valid
+        # We need a variable-length tuple that validates prefix items
         if item_types:
-            type_expr = f"tuple[{', '.join(item_types)}]"
+            imports.add("from typing import Annotated, Any")
+            imports.add("from pydantic import BeforeValidator, TypeAdapter")
+
+            validator_name = f"_tuple_{name.lower()}"
+
+            # Build validator that checks prefix items but allows any rest
+            validator_lines = [f"def {validator_name}(v) -> tuple:"]
+            validator_lines.append("    if not isinstance(v, tuple):")
+            validator_lines.append(
+                "        v = tuple(v) if hasattr(v, '__iter__') else (v,)"
+            )
+            validator_lines.append(f"    if len(v) < {len(node.prefix_items)}:")
+            validator_lines.append(
+                f"        raise ValueError(f'Tuple must have at least {len(node.prefix_items)} items, got {{len(v)}}')"
+            )
+            validator_lines.append("    validated = list(v)")  # Start with all items
+
+            # Validate prefix items
+            for i, item_type in enumerate(item_types):
+                validator_lines.append(f"    # Validate item {i}")
+                validator_lines.append(
+                    f"    prefix_{i}_validator = TypeAdapter({item_type})"
+                )
+                validator_lines.append(f"    try:")
+                validator_lines.append(
+                    f"        validated[{i}] = prefix_{i}_validator.validate_python(v[{i}])"
+                )
+                validator_lines.append(f"    except Exception as e:")
+                validator_lines.append(
+                    f"        raise ValueError(f'Item at index {i} invalid: {{e}}')"
+                )
+
+            # Rest items are allowed (any type) - no validation needed
+            validator_lines.append("    return tuple(validated)")
+
+            code_parts.append("\n".join(validator_lines))
+
+            # Type as tuple[Any, ...] with validator doing the actual type checking
+            type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
         else:
             type_expr = "tuple[()]"
 
@@ -786,9 +845,35 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
             )
 
         if node.constraints.unique_items:
-            validator_lines.append("    if len(v) != len(set(v)):")
+            # Use pairwise comparison with JSON Schema equality semantics
+            # (false != 0, true != 1, deep equality for objects/arrays)
+            validator_lines.append("    def _json_equals_tuple(a, b):")
             validator_lines.append(
-                "        raise ValueError('Tuple items must be unique')"
+                "        if isinstance(a, bool) != isinstance(b, bool):"
+            )
+            validator_lines.append("            return False")
+            validator_lines.append("        if isinstance(a, (list, tuple)):")
+            validator_lines.append(
+                "            if not isinstance(b, (list, tuple)) or len(a) != len(b):"
+            )
+            validator_lines.append("                return False")
+            validator_lines.append(
+                "            return all(_json_equals_tuple(x, y) for x, y in zip(a, b))"
+            )
+            validator_lines.append("        if isinstance(a, dict):")
+            validator_lines.append(
+                "            if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):"
+            )
+            validator_lines.append("                return False")
+            validator_lines.append(
+                "            return all(_json_equals_tuple(a[k], b[k]) for k in a)"
+            )
+            validator_lines.append("        return a == b")
+            validator_lines.append("    for i in range(len(v)):")
+            validator_lines.append("        for j in range(i + 1, len(v)):")
+            validator_lines.append("            if _json_equals_tuple(v[i], v[j]):")
+            validator_lines.append(
+                "                raise ValueError('Tuple items must be unique')"
             )
 
         if node.constraints.contains is not None:

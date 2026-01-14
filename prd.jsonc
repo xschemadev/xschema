@@ -165,8 +165,8 @@
         "Handle edge case: 1 and 1.0 should be considered equal",
         "Test unique detection for nested objects",
       ],
-      "passes": false,
-      "notes": "Python set() won't work for unhashable types. Need custom comparison.",
+      "passes": true,
+      "notes": "Fixed. 100% (69/69). Key fixes: (1) Replaced set() with pairwise comparison using _json_equals() that properly handles bool/int distinction (False != 0, True != 1) and deep object/array equality. (2) Fixed prefixItems without items=false to allow additional items (variable-length tuple with validated prefix).",
     },
     // ============================================
     // PHASE 4: Object Keyword Fixes
