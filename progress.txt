@@ -49,3 +49,16 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Cards/Card are from same import
   - Keep intro focused on "why" and quick orientation, not deep technical details
 ---
+
+## 2026-01-14 - US-012
+- Updated TypeScript overview page at `web/content/docs/typescript/index.mdx`
+- Content includes:
+  - Two ways to use xschema (framework vs library mode) with links
+  - Adapter comparison table with compliance percentages
+  - Quick example showing config -> generate -> usage with client
+  - Next steps cards linking to framework, config, adapters, compliance
+- **Learnings for future iterations:**
+  - Cards import: `import { Cards, Card } from "fumadocs-ui/components/card"`
+  - Adapter compliance data: zod 100%, arktype 100%, effect 100%, valibot 98.9%
+  - Client package is `@xschemadev/client`
+---

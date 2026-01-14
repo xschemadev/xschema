@@ -196,7 +196,7 @@
         "List available adapters: zod, arktype, effect, valibot",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/adapters/ for adapter list. typescript/packages/client/ for client info."
     },
     {

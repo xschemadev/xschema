@@ -1,91 +1,137 @@
 ---
 title: TypeScript
-description: Using XSchema with TypeScript projects
+description: Generate type-safe validators from JSON Schema with full TypeScript inference
 icon: FileCode
 ---
 
-XSchema provides first-class support for TypeScript, generating type-safe validation schemas from JSON Schema definitions.
+import { Cards, Card } from "fumadocs-ui/components/card";
 
-## Overview
+xschema provides first-class TypeScript support, generating native validators with complete type inference from your JSON Schema definitions.
 
-When you run XSchema on a TypeScript project, it:
+## Two Ways to Use xschema
 
-1. Reads your JSON Schema definitions from config files
-2. Converts them to native TypeScript validation libraries (like Zod)
-3. Generates fully typed schemas with inferred TypeScript types
+### Framework Mode (Recommended)
 
-## Getting Started
+Use the full xschema framework with the CLI and runtime client:
 
-### Installation
+- CLI generates code from `.xschema.jsonc` config files
+- Runtime client provides type-safe schema lookup
+- Automatic output management and stale file cleanup
+- Best for: new projects, teams wanting full integration
 
-```bash
-# Install the CLI globally
-npm install -g @xschemadev/cli
+<Cards>
+  <Card 
+    title="Framework Getting Started" 
+    description="Step-by-step setup with CLI and client"
+    href="/docs/typescript/framework/getting-started" 
+  />
+</Cards>
 
-# Or use npx
-npx @xschemadev/cli generate
-```
+### Library Mode (Coming Soon)
 
-### Configuration
+Use adapters directly as standalone libraries:
 
-Create a config file (e.g., `schemas.jsonc`) with the `$schema` field pointing to the XSchema schema:
+- Import `@xschemadev/zod` (or other adapters) directly
+- Call `convert(jsonSchema)` to get validator code
+- No CLI or client required
+- Best for: existing build systems, custom integrations
 
-```jsonc
+<Cards>
+  <Card 
+    title="Library Mode" 
+    description="Direct adapter usage without CLI"
+    href="/docs/typescript/library" 
+  />
+</Cards>
+
+## Available Adapters
+
+All adapters are tested against the official JSON Schema Test Suite. Choose based on your project's needs:
+
+| Adapter | Package | Compliance | Best For |
+|---------|---------|------------|----------|
+| [Zod](/docs/typescript/adapters/zod) | `@xschemadev/zod` | 100% | Most projects - large ecosystem, familiar API |
+| [ArkType](/docs/typescript/adapters/arktype) | `@xschemadev/arktype` | 100% | Type-level validation, TS-native syntax |
+| [Effect](/docs/typescript/adapters/effect) | `@xschemadev/effect` | 100% | Effect ecosystem integration |
+| [Valibot](/docs/typescript/adapters/valibot) | `@xschemadev/valibot` | 98.9% | Smallest bundle size |
+
+<Cards>
+  <Card 
+    title="Compare Adapters" 
+    description="Detailed comparison and recommendations"
+    href="/docs/typescript/adapters" 
+  />
+</Cards>
+
+## Quick Example
+
+Define schemas in a config file:
+
+```jsonc title="user.xschema.jsonc"
 {
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
       "id": "User",
-      "sourceType": "file",
-      "source": "./user.schema.json",
-      "adapter": "zod"
+      "adapter": "@xschemadev/zod",
+      "sourceType": "json",
+      "source": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" }
+        },
+        "required": ["id", "email"]
+      }
     }
   ]
 }
 ```
 
-### Generate
-
-Run the CLI to generate your validation schemas:
+Generate and use:
 
 ```bash
-xschema generate
+bunx xschema generate
 ```
 
-This creates a `__generated__` directory with your typed schemas ready to import.
+```typescript title="app.ts"
+import { createXSchemaClient, type XSchemaType } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen.js";
 
-## Available Adapters
+const xschema = createXSchemaClient({ schemas });
 
-XSchema supports multiple TypeScript validation libraries:
+// Type-safe schema lookup
+const userSchema = xschema("user:User");
 
-<Cards>
-  <Card title="Zod" href="/docs/typescript/adapters/zod" />
-</Cards>
+// Full type inference
+type User = XSchemaType<"user:User">;
 
-## Example Output
-
-For a JSON Schema like:
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" },
-    "age": { "type": "integer", "minimum": 0 }
-  },
-  "required": ["name"]
+function validateUser(data: unknown): User {
+  return userSchema.parse(data);
 }
 ```
 
-XSchema generates (with the Zod adapter):
+## Next Steps
 
-```typescript
-import { z } from "zod";
-
-export const User = z.object({
-  name: z.string(),
-  age: z.number().int().min(0).optional(),
-});
-
-export type User = z.infer<typeof User>;
-```
+<Cards>
+  <Card 
+    title="Framework Getting Started" 
+    description="Full setup guide for CLI + client"
+    href="/docs/typescript/framework/getting-started" 
+  />
+  <Card 
+    title="Configuration Reference" 
+    description="All config file options"
+    href="/docs/typescript/framework/configuration" 
+  />
+  <Card 
+    title="Compare Adapters" 
+    description="Choose the right adapter for your project"
+    href="/docs/typescript/adapters" 
+  />
+  <Card 
+    title="Compliance" 
+    description="See how each adapter scores on JSON Schema tests"
+    href="/docs/compliance" 
+  />
+</Cards>
