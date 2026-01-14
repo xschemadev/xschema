@@ -765,3 +765,57 @@ The 33 failures fall into two categories:
 These are documented as known limitations, not bugs. The 96.8% compliance rate exceeds the 95% target.
 
 ---
+
+## Task: verify-all-drafts (COMPLETED)
+
+**Objective:** Verify compliance improvements across all draft versions
+
+**Results:**
+
+| Draft | Passed | Failed | Unsupported | Coverage |
+|-------|--------|--------|-------------|----------|
+| draft3 | 415 | 11 | 0 | 97.4% |
+| draft4 | 577 | 19 | 0 | 96.8% |
+| draft6 | 786 | 23 | 0 | 97.2% |
+| draft7 | 870 | 23 | 0 | 97.4% |
+| draft2019-09 | 993/994 | 31/32 | 178 | 96.9-97.0% |
+| draft2020-12 | 1006 | 33 | 201 | 96.8% |
+
+**Draft-Specific Limitations:**
+
+1. **draft3**: 11 failures
+   - No `$ref` keyword (uses `$ref` as property)
+   - Limited additionalProperties edge cases
+
+2. **draft4**: 19 failures
+   - additionalProperties + allOf interactions (6)
+   - $ref without canonical resolution (5)
+   - items/additionalItems edge cases (4)
+
+3. **draft6**: 23 failures
+   - Same categories as draft4
+   - Plus propertyNames + additionalProperties (2)
+
+4. **draft7**: 23 failures
+   - Same categories as draft6
+   - Stable failures across iterations
+
+5. **draft2019-09**: 31-32 failures, 178 unsupported
+   - $recursiveRef/$recursiveAnchor (not implemented - requires runtime scope tracking)
+   - unevaluatedItems/unevaluatedProperties partial (annotation tracking limited)
+
+6. **draft2020-12**: 33 failures, 201 unsupported
+   - $dynamicRef/$dynamicAnchor (not implemented)
+   - unevaluatedItems/unevaluatedProperties partial (same as draft2019-09)
+   - vocabulary keyword (correctly validates but complex edge cases)
+
+**Key Observations:**
+- All drafts exceed 95% target (96.8% - 97.4%)
+- Failures are consistent across drafts (same root causes)
+- Unsupported features are properly documented in REPORT.md
+- No regressions between drafts
+
+**Files Verified:**
+- python/packages/adapters/pydantic/compliance/results/REPORT.md (already committed)
+
+---
