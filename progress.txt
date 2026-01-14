@@ -443,3 +443,55 @@ This requires a fix in the core parser, not the renderer.
 - Empty code blocks in Python require `pass` statement
 
 ---
+
+## Task: fix-dependentSchemas (COMPLETED)
+
+**Objective:** Fix dependentSchemas validation (was 90%, now 100%)
+
+**Root Cause:**
+- `model_dump()` includes all declared model fields with their default values
+- For a model like `class T(BaseModel): foo: Any | None = None`, even if input is `{"bar": 1}`, `model_dump()` returns `{"foo": None, "bar": 1}`
+- The dependency check `if 'foo' in _all_props` triggered even when `foo` wasn't in the input
+- This violated JSON Schema semantics: dependency should only trigger if property was actually in the input
+
+**Trace of bug:**
+1. Schema: `{properties: {foo: {}}, dependentSchemas: {foo: {additionalProperties: false, properties: {bar: {}}}}}`
+2. Input: `{"bar": 1}` - foo is NOT present, so dependency shouldn't trigger
+3. `model_dump()` returns `{"foo": None, "bar": 1}` (includes declared field with default)
+4. `'foo' in _all_props` → True (BUG!)
+5. Dependency schema `{additionalProperties: false, properties: {bar: {}}}` fails because `foo` is present
+6. Test expected VALID, got INVALID
+
+**Solution:**
+- Changed all `model_dump()` calls to `model_dump(exclude_unset=True)` in renderer.py
+- `exclude_unset=True` only includes fields that were actually set in the input
+- This correctly distinguishes between "property not in input" vs "property explicitly set to null"
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Line 965: patternProperties iteration
+  - Line 991: propertyNames iteration
+  - Line 1004: min/maxProperties count
+  - Line 1027: dependency check
+  - Line 1105: unevaluatedProperties iteration
+  - Line 1121: required fields check
+- File: `python/packages/adapters/pydantic/tests/test_renderer.py`
+  - Line 452: Updated test expectation
+
+**Testing Results:**
+- ✅ dependentSchemas: 100% (20/20 tests passing)
+- ✅ dependentRequired: 100% (still passing)
+- ✅ required: 100% (still passing)
+- ✅ patternProperties: 100% (still passing)
+- ✅ propertyNames: 100% (still passing)
+- ✅ minProperties: 100% (still passing)
+- ✅ maxProperties: 100% (still passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insight:**
+- Pydantic's `model_dump()` vs `model_dump(exclude_unset=True)` is crucial for JSON Schema compliance
+- JSON Schema's "property exists" semantics require tracking which properties were actually in the input
+- This is different from "property has non-null value"
+
+---

@@ -449,7 +449,7 @@ def test_render_object_with_min_max_properties():
     )
     result = render(node, "Test")
     assert "@model_validator(mode='after')" in result.code
-    assert "prop_count = len(self.model_dump())" in result.code
+    assert "prop_count = len(self.model_dump(exclude_unset=True))" in result.code
     assert "if prop_count < 1:" in result.code
     assert "if prop_count > 5:" in result.code
 

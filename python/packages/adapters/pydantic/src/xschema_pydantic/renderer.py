@@ -962,7 +962,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     f"        validator_{len(validators)} = TypeAdapter({pattern_result.type_expr})"
                 )
                 validator_lines.append(
-                    "        for key, value in self.model_dump().items():"
+                    "        for key, value in self.model_dump(exclude_unset=True).items():"
                 )
                 validator_lines.append(
                     f"            if pattern_{len(validators)}.search(key):"
@@ -988,7 +988,9 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
             validator_lines.append(
                 f"        names_validator = TypeAdapter({names_result.type_expr})"
             )
-            validator_lines.append("        for key in self.model_dump().keys():")
+            validator_lines.append(
+                "        for key in self.model_dump(exclude_unset=True).keys():"
+            )
             validator_lines.append("            try:")
             validator_lines.append(
                 "                names_validator.validate_python(key)"
@@ -1001,7 +1003,9 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         # minProperties / maxProperties: count properties
         if node.min_properties is not None or node.max_properties is not None:
             validator_lines.append("        # Validate property count")
-            validator_lines.append("        prop_count = len(self.model_dump())")
+            validator_lines.append(
+                "        prop_count = len(self.model_dump(exclude_unset=True))"
+            )
 
             if node.min_properties is not None:
                 validator_lines.append(
@@ -1023,8 +1027,11 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         if node.dependencies:
             imports.add("from pydantic import TypeAdapter")
 
-            # Use model_dump() to get all properties including extras
-            validator_lines.append("        _all_props = self.model_dump()")
+            # Use model_dump(exclude_unset=True) to only include properties that were actually set
+            # This correctly distinguishes between "property not in input" vs "property set to null"
+            validator_lines.append(
+                "        _all_props = self.model_dump(exclude_unset=True)"
+            )
 
             for prop_name, dependency in node.dependencies:
                 # Use single-quote escaping for conditions (in single-quoted strings)
@@ -1102,7 +1109,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     f"        unevaluated_validator = TypeAdapter({unevaluated_result.type_expr})"
                 )
                 validator_lines.append(
-                    "        for key, value in self.model_dump().items():"
+                    "        for key, value in self.model_dump(exclude_unset=True).items():"
                 )
                 validator_lines.append("            if key not in declared_props:")
                 validator_lines.append("                try:")
@@ -1115,10 +1122,12 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 )
 
         # required fields without corresponding properties
-        # model_dump() includes both declared and extra fields
+        # model_dump(exclude_unset=True) includes only properties that were actually set
         if uncovered_required:
             validator_lines.append("        # Validate required fields")
-            validator_lines.append("        _all_props = self.model_dump()")
+            validator_lines.append(
+                "        _all_props = self.model_dump(exclude_unset=True)"
+            )
             for req_field in uncovered_required:
                 # For condition checks, use single-quoted strings
                 escaped_single = _escape_for_single_quotes(req_field)

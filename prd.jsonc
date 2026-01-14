@@ -208,7 +208,8 @@
         "Should ignore non-objects",
         "Test: if foo exists, validate against {type: object, properties: {bar: {type: number}}}",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. 100% (20/20). Key fix: Changed model_dump() to model_dump(exclude_unset=True) throughout renderer.py. This correctly distinguishes between 'property not in input' vs 'property explicitly set to null'. Pydantic's model_dump() includes all declared fields with their defaults, which caused dependency checks to trigger for properties that weren't actually in the input.",
     },
     {
       "id": "fix-patternProperties",
