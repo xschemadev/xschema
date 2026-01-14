@@ -404,3 +404,42 @@ This requires a fix in the core parser, not the renderer.
 - Parser now supports both legacy and modern syntax
 
 ---
+
+## Task: fix-dependentRequired (COMPLETED)
+
+**Objective:** Fix dependentRequired validation (was 0%, now 100%)
+
+**Root Causes:**
+1. **Missing extra='allow'**: Pydantic model_config didn't have `extra='allow'`, so extra fields (not declared as model properties) were silently dropped. Dependencies on extra fields would never trigger.
+2. **Wrong iteration method**: Using `self.__dict__` only gets declared model fields, not extra fields stored in `__pydantic_extra__`.
+3. **Incorrect null checks**: Code had `is not None` checks which is wrong - JSON Schema says if property EXISTS it triggers dependency, regardless of value.
+4. **Empty dependency list**: When `dependentRequired: {"bar": []}` has an empty array, the generated code had an empty if block causing SyntaxError.
+
+**Solution:**
+1. Added `node.dependencies` to the condition that sets `extra='allow'` in model_config
+2. Also added `node.min_properties` and `node.max_properties` to the same condition (they use `model_dump()`)
+3. Changed from `self.__dict__` to `self.model_dump()` for property existence checks
+4. Removed `is not None` checks - property just needs to exist
+5. Added `pass` statement for empty dependency lists
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Lines ~909-917: Extended condition for `extra='allow'` to include dependencies and min/maxProperties
+  - Lines ~1040-1055: Fixed dependency iteration to handle empty lists with `pass`
+
+**Testing Results:**
+- ✅ dependentRequired: 100% (20/20 tests passing)
+- ✅ minProperties: 100% (8/8) - was 62.5%
+- ✅ maxProperties: 100% (10/10) - was 70%
+- ✅ dependentSchemas: 90% (18/20) - was 60%
+- ✅ Overall compliance: 71.8% (660/920) - was 68.3% (628/920)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- Pydantic's `extra='allow'` is required for ANY validation that checks properties not declared in the model
+- `self.model_dump()` returns ALL properties (declared + extra), while `self.__dict__` only returns declared ones
+- JSON Schema property existence check means "key in dict", not "key in dict and value is not null"
+- Empty code blocks in Python require `pass` statement
+
+---

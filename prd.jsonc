@@ -195,7 +195,8 @@
         "Should ignore non-objects",
         "Test: if foo exists, bar must exist",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. 100% (20/20). Key fixes: (1) Added extra='allow' to model_config when dependencies are present so Pydantic keeps extra fields. (2) Changed from self.__dict__ to self.model_dump() for checking property existence. (3) Removed incorrect 'is not None' checks - JSON Schema says property just needs to exist. (4) Added 'pass' statement for empty dependency lists.",
     },
     {
       "id": "fix-dependentSchemas",
@@ -251,8 +252,8 @@
         "Identify and fix the edge case failures",
         "Common issue: constraints should ignore non-applicable types",
       ],
-      "passes": false,
-      "notes": "Most are at 80%+, need to find edge cases",
+      "passes": true,
+      "notes": "Fixed. All now at 100%: minLength=100%, maxLength=100%, minItems=100%, maxItems=100%, minProperties=100%, maxProperties=100%, minimum=100%, maximum=100%, exclusiveMinimum=100%, exclusiveMaximum=100%. Key fixes: (1) Added extra='allow' to model_config when min/maxProperties are present. (2) Proper type guards for inferred types.",
     },
     {
       "id": "fix-pattern-validation",
@@ -265,7 +266,8 @@
         "Test non-ASCII patterns",
         "Verify pattern should ignore non-strings",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. 100% (9/9). Previously at 100% - was already working, likely fixed by type guard improvements.",
     },
     {
       "id": "fix-contains-minContains-maxContains",

@@ -906,8 +906,14 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     elif uncovered_required:
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
-    # patternProperties and propertyNames need access to extra fields
-    elif node.pattern_properties or node.property_names is not None:
+    # patternProperties, propertyNames, dependencies, min/maxProperties need access to extra fields
+    elif (
+        node.pattern_properties
+        or node.property_names is not None
+        or node.dependencies
+        or node.min_properties is not None
+        or node.max_properties is not None
+    ):
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
 
@@ -1017,26 +1023,37 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         if node.dependencies:
             imports.add("from pydantic import TypeAdapter")
 
+            # Use model_dump() to get all properties including extras
+            validator_lines.append("        _all_props = self.model_dump()")
+
             for prop_name, dependency in node.dependencies:
                 # Use single-quote escaping for conditions (in single-quoted strings)
                 escaped_prop_single = _escape_for_single_quotes(prop_name)
                 validator_lines.append(
                     f"        # Dependency for property: {escaped_prop_single}"
                 )
+                # JSON Schema: check if property EXISTS (not if it has non-null value)
                 validator_lines.append(
-                    f"        if '{escaped_prop_single}' in self.__dict__ and self.__dict__['{escaped_prop_single}'] is not None:"
+                    f"        if '{escaped_prop_single}' in _all_props:"
                 )
 
                 if dependency.kind == "property":
-                    # Property dependency: require other properties
-                    for required_prop in dependency.required_properties:
-                        escaped_req_single = _escape_for_single_quotes(required_prop)
-                        validator_lines.append(
-                            f"            if '{escaped_req_single}' not in self.__dict__ or self.__dict__['{escaped_req_single}'] is None:"
-                        )
-                        validator_lines.append(
-                            f"                raise ValueError(f'When {escaped_prop_single} is present, {escaped_req_single} is required')"
-                        )
+                    # Property dependency: require other properties to exist
+                    if not dependency.required_properties:
+                        # Empty dependency list - always valid, add pass for valid Python syntax
+                        validator_lines.append("            pass")
+                    else:
+                        for required_prop in dependency.required_properties:
+                            escaped_req_single = _escape_for_single_quotes(
+                                required_prop
+                            )
+                            # JSON Schema: required property just needs to exist (even with null value)
+                            validator_lines.append(
+                                f"            if '{escaped_req_single}' not in _all_props:"
+                            )
+                            validator_lines.append(
+                                f"                raise ValueError(f'When {escaped_prop_single} is present, {escaped_req_single} is required')"
+                            )
                 elif dependency.kind == "schema":
                     # Schema dependency: validate entire object against schema
                     dep_result = render(
@@ -1051,7 +1068,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     )
                     validator_lines.append("            try:")
                     validator_lines.append(
-                        "                dep_validator.validate_python(self.__dict__)"
+                        "                dep_validator.validate_python(_all_props)"
                     )
                     validator_lines.append("            except Exception as e:")
                     validator_lines.append(
