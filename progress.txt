@@ -409,3 +409,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Error is `this.entries[key]._run is not a function` - Valibot's internal object iteration
   - The compliance results JSON has detailed failure info including actual error messages
 ---
+
+## 2026-01-14 - US-023
+- Added icons to all MDX pages for sidebar navigation
+- Manual icon additions to:
+  - `typescript/adapters/index.mdx` -> `Blocks`
+  - `typescript/framework/getting-started.mdx` -> `Rocket`
+  - `typescript/framework/configuration.mdx` -> `Settings`
+  - `typescript/framework/client.mdx` -> `Code`
+- Updated auto-generation scripts to include icons:
+  - `generate-compliance.ts` -> adds `ClipboardCheck` to all compliance pages
+  - `generate-unsupported-features.ts` -> adds `Ban` to unsupported-features page
+- Regenerated auto-generated files to apply icons
+- All 24 MDX pages now have icons
+- Build passes, typecheck passes, no icon warnings
+- **Learnings for future iterations:**
+  - fumadocs icons are added via frontmatter: `icon: IconName`
+  - Icons are lucide-react icon names (e.g., `Rocket`, `Shield`, `Blocks`)
+  - Auto-generated files need icons added in the generator scripts, not manually
+  - Build will show `[lucide-icons-plugin] Unknown icon detected:` if icon name is invalid
+---
