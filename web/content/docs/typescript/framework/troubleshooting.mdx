@@ -1,0 +1,39 @@
+---
+title: Troubleshooting
+description: Common client errors and how to fix them
+---
+
+## "Unknown schema: X. Run `xschema generate`."
+
+The client tried to access a schema key that doesn't exist in the generated manifest.
+
+**Common causes:**
+1. You haven't run `xschema generate` yet
+2. The schema ID or namespace is misspelled
+3. The schema was removed from the config but the code still references it
+
+**Fix:**
+
+1. Run generation:
+```bash
+xschema generate
+```
+
+2. Check your schema key matches the format `namespace:id`:
+```typescript
+// Config: user.xschema.jsonc with id: "Profile"
+// Correct key: "user:Profile"
+
+const schema = xschema("user:Profile"); // Correct
+const schema = xschema("Profile");      // Wrong (unless defaultNamespace is "user")
+```
+
+3. With `defaultNamespace`, you can omit the namespace prefix:
+```typescript
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user"
+});
+
+const schema = xschema("Profile"); // Resolves to "user:Profile"
+```

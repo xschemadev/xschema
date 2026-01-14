@@ -6,7 +6,7 @@ xschema brings **Cross Language Type Safety** to the JSON Schema ecosystem.
 
 ### The Problem (Why xschema Exists)
 
-JSON Schema is already the standard for cross-language validation, BUT the tooling around it is a **jungle** (and we're the gorilla that tames it! 🦍). Current problems:
+JSON Schema is already the standard for cross-language validation, BUT the tooling around it is a **jungle** (favicon). Current problems:
 
 1. **Fragmented Ecosystem**: Each library does its own thing with no consistency
 2. **Hidden Limitations**: Libraries don't document which JSON Schema features they support
@@ -18,7 +18,7 @@ JSON Schema is already the standard for cross-language validation, BUT the tooli
 xschema solves this by:
 
 - Generating native validators (Zod, Pydantic, etc.) from JSON Schema
-- Running comprehensive compliance tests (98%+ coverage)
+- Running comprehensive compliance tests
 - Providing excellent DX with CLI, clients, and libraries
 - Transparently documenting what works and what doesn't
 
@@ -67,4 +67,3 @@ Good documentation will:
 5. **Modern DX**: Watch mode, great errors, TypeScript-first
 
 This positions xschema as the mature, reliable solution in a chaotic ecosystem.
-

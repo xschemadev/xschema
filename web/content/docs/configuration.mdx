@@ -1,0 +1,185 @@
+---
+title: Configuration
+description: How to configure xschema with config files
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+xschema uses JSON/JSONC config files to define which schemas to generate.
+
+## Config File Structure
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "namespace": "user",  // optional, defaults to filename
+  "schemas": [
+    {
+      "id": "User",
+      "sourceType": "file",
+      "source": "./user.json",
+      "adapter": "@xschemadev/zod"
+    }
+  ]
+}
+```
+
+### `$schema`
+
+Required. Tells xschema this is a config file and which language to target.
+
+| Language | URL |
+|----------|-----|
+| TypeScript | `https://xschema.dev/schemas/typescript.jsonc` |
+
+### `namespace`
+
+Optional. Groups schemas under a namespace. Defaults to the config filename without extension.
+
+```
+user.xschema.jsonc  →  namespace: "user"
+api.jsonc           →  namespace: "api"
+```
+
+Schemas are accessed as `namespace:id`, e.g. `user:User`.
+
+### `schemas`
+
+Array of schema definitions. Each entry has:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Unique identifier within the namespace |
+| `sourceType` | Yes | How to fetch the schema: `file`, `url`, or `json` |
+| `source` | Yes | Path, URL, or inline JSON depending on `sourceType` |
+| `adapter` | Yes | Which adapter to use for code generation |
+| `headers` | No | HTTP headers for URL sources |
+
+## Source Types
+
+### `file`
+
+Load schema from a local JSON file. Paths are relative to the config file.
+
+```jsonc
+{
+  "id": "User",
+  "sourceType": "file",
+  "source": "./schemas/user.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+### `url`
+
+Fetch schema from a URL.
+
+```jsonc
+{
+  "id": "User",
+  "sourceType": "url",
+  "source": "https://api.example.com/schemas/user.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+### `json`
+
+Inline the schema directly in the config.
+
+```jsonc
+{
+  "id": "Settings",
+  "sourceType": "json",
+  "source": {
+    "type": "object",
+    "properties": {
+      "theme": { "type": "string", "enum": ["light", "dark"] }
+    }
+  },
+  "adapter": "@xschemadev/zod"
+}
+```
+
+## Headers & Authentication
+
+For URL sources, you can add HTTP headers:
+
+```jsonc
+{
+  "id": "User",
+  "sourceType": "url",
+  "source": "https://api.example.com/schemas/user",
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}",
+    "X-Api-Key": "${API_KEY}"
+  },
+  "adapter": "@xschemadev/zod"
+}
+```
+
+Environment variables use `${VAR}` syntax. xschema loads `.env` files automatically, or use `--env-file` to specify a different file.
+
+## Namespaces
+
+Namespaces organize schemas and prevent ID collisions across config files.
+
+```
+project/
+├── user.xschema.jsonc     # namespace: "user"
+│   └── schemas: [User, Profile]
+├── billing.xschema.jsonc  # namespace: "billing" 
+│   └── schemas: [Invoice, Payment]
+```
+
+Access schemas with `namespace:id`:
+
+```typescript
+xschema("user:User")
+xschema("billing:Invoice")
+```
+
+With `defaultNamespace`, you can omit it:
+
+```typescript
+const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
+xschema("User")  // same as xschema("user:User")
+```
+
+## Adapters
+
+Each schema specifies which adapter generates the code:
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    | Adapter | Library |
+    |---------|---------|
+    | `@xschemadev/zod` | [Zod](/docs/typescript/adapters/zod) |
+    | `@xschemadev/arktype` | [ArkType](/docs/typescript/adapters/arktype) |
+    | `@xschemadev/effect` | [Effect Schema](/docs/typescript/adapters/effect) |
+    | `@xschemadev/valibot` | [Valibot](/docs/typescript/adapters/valibot) |
+  </Tab>
+  <Tab value="Python">
+    | Adapter | Library |
+    |---------|---------|
+    | `@xschemadev/pydantic` | Pydantic (coming soon) |
+  </Tab>
+</Tabs>
+
+You can use different adapters in the same config file.
+
+## Multiple Config Files
+
+xschema discovers all config files in your project. Each file becomes its own namespace (unless overridden).
+
+```
+project/
+├── auth.xschema.jsonc
+├── api/
+│   └── responses.xschema.jsonc
+└── shared/
+    └── common.xschema.jsonc
+```
+
+All schemas are merged into a single generated output.

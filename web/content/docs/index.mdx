@@ -1,86 +1,28 @@
 ---
-title: xschema
-description: JSON Schema to native validators with full type safety
-icon: Zap
+title: XSchema
+description: Cross language type safety
 ---
 
-import { Card, Cards } from "fumadocs-ui/components/card";
-import { Callout } from "fumadocs-ui/components/callout";
-
-**xschema** converts JSON Schema into native validators (Zod, Pydantic, etc.) with 98%+ compliance and full type safety.
+JSON Schema is the standard for cross-language validation. The tooling around it is a **jungle**.
 
 ## The Problem
 
-The JSON Schema ecosystem is fragmented. Every validation library:
+- **Fragmented ecosystem** - each library implements a different subset of features
+- **Hidden limitations** - no documentation of what's actually supported
+- **Non-compliance** - most libraries don't follow the JSON Schema spec
+- **Complex features fail** - `$ref`, conditionals, `unevaluatedProperties` break silently
+- **No trust** - without compliance testing, you can't know if it'll work
+- **Poor DX** - you build your own tooling, commands, workflows
 
-- Implements a different subset of features
-- Silently fails on complex schemas (refs, circular refs, remote refs)
-- Doesn't document which features actually work
-- Has poor DX with manual setup and no tooling
-
-You end up writing schemas that "should work" but break at runtime.
+You write schemas that should work but break at runtime.
 
 ## The Solution
 
-xschema solves this by:
+xschema tames the jungle:
 
-1. **Generating native code** - Output real Zod/ArkType/Effect/Valibot schemas, not runtime interpreters
-2. **Testing compliance** - Every adapter runs against the official JSON Schema Test Suite
-3. **Bundling schemas** - Resolves all `$ref` and normalizes drafts before generation
-4. **Providing transparency** - Exactly which features work, which don't, and why
+1. **Generates native validators** - real Zod, ArkType, Effect, Valibot, Pydantic code
+2. **Tests compliance** - every adapter runs against the official JSON Schema Test Suite
+3. **[Unified processing](/docs/internals)** - all adapters receive bundled, normalized schemas
+4. **Documents everything** - which features work, which don't, and why
 
-<Callout type="info" title="How it works">
-xschema's CLI parses your config, fetches schemas, resolves all references, bundles everything into self-contained units, then calls adapter CLIs to generate native code. Adapters receive "easy" input - no ref resolution needed.
-
-Learn more in [How it works](/docs/internals).
-</Callout>
-
-## Two Ways to Use xschema
-
-<Cards>
-  <Card
-    title="Framework Mode"
-    description="Full integration with CLI, client, and type helpers. Define schemas in config files, generate code, use the runtime client."
-    href="/docs/typescript/framework/getting-started"
-  />
-  <Card
-    title="Library Mode"
-    description="Use adapters directly in your code. Coming soon."
-    href="/docs/typescript/library"
-  />
-</Cards>
-
-**Framework mode** is the recommended path - it handles schema discovery, code generation, and provides a typed client for runtime lookups.
-
-## Quick Example
-
-```jsonc title=".xschema.jsonc"
-{
-  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
-  "schemas": [
-    { "id": "User", "adapter": "@xschemadev/zod", "sourceType": "json", 
-      "source": { "type": "object", "properties": { "name": { "type": "string" } } } }
-  ]
-}
-```
-
-```bash
-bunx xschema generate
-```
-
-```typescript title="main.ts"
-import { createXSchemaClient } from "@xschemadev/client";
-import { schemas } from "./.xschema/xschema.gen.js";
-
-const xschema = createXSchemaClient({ schemas });
-const user = xschema("User").parse({ name: "Alice" }); // typed!
-```
-
-## Next Steps
-
-<Cards>
-  <Card title="Getting Started" description="Choose your language and mode" href="/docs/getting-started" />
-  <Card title="TypeScript" description="Zod, ArkType, Effect, Valibot adapters" href="/docs/typescript" />
-  <Card title="CLI Reference" description="All commands and flags" href="/docs/cli" />
-  <Card title="Compliance" description="Test suite results per adapter" href="/docs/compliance" />
-</Cards>
+Cross-language type safety you can trust.

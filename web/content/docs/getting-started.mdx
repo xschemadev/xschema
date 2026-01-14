@@ -1,103 +1,155 @@
 ---
 title: Getting Started
-description: Choose your language and usage mode to get started with xschema
-icon: Rocket
+description: Choose your mode and language
 ---
 
-import { Card, Cards } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
-xschema supports multiple languages and two usage modes. This guide helps you find the right path.
+## Framework vs Runtime
 
-## Choose Your Language
+xschema has two modes: **framework** and **runtime**.
 
-<Cards>
-  <Card
-    title="TypeScript"
-    description="Zod, ArkType, Effect, and Valibot adapters with full type inference"
-    href="/docs/typescript"
-  />
-</Cards>
+### Framework
 
-<Callout type="info">
-Python support is planned. Follow the project for updates.
-</Callout>
+The full xschema experience. Define schemas in config files, run the CLI to generate native validators, use the typed client at runtime.
 
-## Framework vs Library Mode
+- Config-driven schema discovery
+- Namespaces to organize schemas
+- Generated code with full type inference
+- Runtime client for typed schema lookups
 
-Once you've chosen a language, pick a usage mode:
-
-### Framework Mode (Recommended)
-
-Best for: **Most projects** - especially when schemas come from external sources (APIs, files, URLs).
-
-- Define schemas in `.xschema.jsonc` config files
-- Run `xschema generate` to produce native validators
-- Use `createXSchemaClient` for typed schema lookups at runtime
-- Schemas are discovered automatically via `$schema` URL
-
-```bash
-bunx xschema generate
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "adapter": "@xschemadev/zod",
+      "sourceType": "file",
+      "source": "./user.json"
+    },
+    {
+      "id": "Config",
+      "adapter": "@xschemadev/zod",
+      "sourceType": "url",
+      "source": "https://api.example.com/schemas/config.json"
+    },
+    {
+      "id": "Settings",
+      "adapter": "@xschemadev/zod",
+      "sourceType": "json",
+      "source": {
+        "type": "object",
+        "properties": {
+          "theme": { "type": "string", "enum": ["light", "dark"] },
+          "notifications": { "type": "boolean" }
+        },
+        "required": ["theme"]
+      }
+    }
+  ]
+}
 ```
 
-```typescript
-const xschema = createXSchemaClient({ schemas });
-const user = xschema("User").parse(data); // fully typed
-```
+<Tabs groupId="package-manager" items={["bun", "pnpm", "npm"]}>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+</Tabs>
 
-**Benefits:**
-- Automatic schema discovery and bundling
-- Handles `$ref` resolution, remote schemas, circular refs
-- Type-safe client with autocomplete
-- Works with any schema source (file, URL, inline)
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```typescript
+    import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+    import { schemas } from "./.xschema/xschema.gen";
 
-[Get started with TypeScript framework mode →](/docs/typescript/framework/getting-started)
+    const xschema = createXSchemaClient({ schemas });
 
-### Library Mode (Coming Soon)
+    // returns the native schema (Zod, ArkType, etc.) - use it however you want
+    const userSchema = xschema("user:User");
+    userSchema.parse(data);
+    userSchema.safeParse(data);
 
-Best for: **Advanced use cases** - when you need direct control over schema parsing.
+    // extract types
+    type Settings = XSchemaType<"user:Settings">;
+    ```
+  </Tab>
+  <Tab value="Python">
+    ```python
+    # coming soon
+    from xschema import create_client
+    from .xschema_gen import schemas
 
-- Use adapters directly without the CLI
-- Call `parse()` and `convert()` yourself
-- No config files or code generation step
+    xschema = create_client(schemas)
 
-```typescript
-import { parse, convert } from "@xschemadev/zod";
+    user_schema = xschema("user:User")
+    user_schema.parse(data)
+    ```
+  </Tab>
+</Tabs>
 
-const ir = parse(jsonSchema);
-const code = convert(ir);
-```
+### Runtime
+
+Use adapters programmatically. You pass JSON schemas, you get generated code back. The CLI handles the conversion, but you control fetching, bundling, and output.
+
+- No config files
+- You handle schema fetching and `$ref` resolution
+- Useful for libraries, custom tooling, or specific injection patterns
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```typescript
+    import { execSync } from "node:child_process";
+
+    const schemas = [
+      { namespace: "user", id: "User", schema: userJsonSchema },
+      { namespace: "user", id: "Post", schema: postJsonSchema },
+    ];
+
+    const input = JSON.stringify(schemas);
+    const output = execSync(`bunx @xschemadev/zod`, { input });
+    const results = JSON.parse(output.toString());
+
+    // results[0].schema = "z.object({ ... })"
+    // results[0].type = "{ name: string }"
+    ```
+  </Tab>
+  <Tab value="Python">
+    ```python
+    # coming soon
+    import subprocess
+    import json
+
+    schemas = [
+        {"namespace": "user", "id": "User", "schema": user_json_schema},
+        {"namespace": "user", "id": "Post", "schema": post_json_schema},
+    ]
+
+    result = subprocess.run(
+        ["bunx", "@xschemadev/zod"],
+        input=json.dumps(schemas),
+        capture_output=True
+    )
+    results = json.loads(result.stdout)
+    ```
+  </Tab>
+</Tabs>
 
 <Callout type="warn">
-Library mode is not yet documented. Use framework mode for now.
+Runtime mode documentation is in progress.
 </Callout>
 
-## Quick Decision
 
-| Scenario | Recommendation |
-|----------|----------------|
-| Fetching schemas from APIs | Framework mode |
-| Schemas stored in files | Framework mode |
-| Need runtime schema lookups | Framework mode |
-| Building a custom tool | Library mode (when available) |
-| Prototyping / one-off conversion | Library mode (when available) |
-
-## Next Steps
-
-<Cards>
-  <Card
-    title="TypeScript Getting Started"
-    description="Set up xschema with Zod, ArkType, Effect, or Valibot"
-    href="/docs/typescript/framework/getting-started"
-  />
-  <Card
-    title="CLI Reference"
-    description="All xschema commands and flags"
-    href="/docs/cli"
-  />
-  <Card
-    title="Compare Adapters"
-    description="Choose the right validator library"
-    href="/docs/typescript/adapters"
-  />
-</Cards>

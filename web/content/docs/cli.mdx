@@ -1,26 +1,11 @@
 ---
 title: CLI Reference
-description: Complete reference for all xschema CLI commands and flags
-icon: Terminal
+description: xschema CLI commands and flags
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The xschema CLI parses config files, fetches schemas, converts them to native validators, and writes output files.
-
-## Installation
-
-```bash
-# Using bun
-bunx xschema generate
-
-# Or install globally
-bun add -g xschema
-```
-
-## Commands
-
-### generate
+## generate
 
 Parse config files, convert schemas, and output native validators.
 
@@ -28,23 +13,19 @@ Parse config files, convert schemas, and output native validators.
 xschema generate [flags]
 ```
 
-#### Flags
+### Flags
 
 | Flag | Short | Default | Description |
 |------|-------|---------|-------------|
-| `--project` | `-p` | `.` (current directory) | Project root directory to scan for config files |
-| `--output` | `-o` | `.xschema` | Output directory for generated files |
-| `--lang` | | auto-detect | Filter to specific language if multiple detected |
+| `--project` | `-p` | `.` | Project root directory |
+| `--output` | `-o` | `.xschema` | Output directory |
+| `--lang` | | auto | Filter to specific language |
 | `--verbose` | `-v` | `false` | Show detailed output |
-| `--dry-run` | | `false` | Show what would be generated without writing files |
-| `--concurrency` | `-c` | `min(8, num_cpus)` | Number of parallel schema fetches |
-| `--env-file` | | | Path to env file for header variable substitution |
+| `--dry-run` | | `false` | Preview without writing files |
+| `--concurrency` | `-c` | `8` | Parallel schema fetches |
+| `--env-file` | | `.env` | Path to env file for header variables |
 
-<Callout type="info">
-Watch mode (`--watch`) is planned but not yet implemented.
-</Callout>
-
-#### Examples
+### Examples
 
 ```bash
 # Generate in current directory
@@ -56,142 +37,13 @@ xschema generate --project ./my-app
 # Custom output directory
 xschema generate --output ./generated
 
-# Multiple languages detected - filter to TypeScript
-xschema generate --lang typescript
-
 # Debug output
 xschema generate --verbose
 
-# Preview without writing files
+# Preview without writing
 xschema generate --dry-run
-
-# Use custom env file for header variables
-xschema generate --env-file .env.production
-
-# Faster fetching for large projects
-xschema generate --concurrency 16
 ```
 
-## Config File Discovery
-
-xschema finds config files using two methods:
-
-### Git-based Discovery (Default)
-
-When inside a git repository, xschema uses `git ls-files` to find all `.json` and `.jsonc` files. This is fast and respects your `.gitignore`.
-
-```bash
-git ls-files --cached --others --exclude-standard "*.json" "*.jsonc"
-```
-
-### Directory Walk (Fallback)
-
-When git is unavailable (or not in a repo), xschema walks the directory tree looking for config files. It automatically skips:
-
-- `node_modules/`
-- `.git/`
-- `vendor/`
-- Other language-specific directories
-
-### Config File Recognition
-
-A file is recognized as an xschema config only if it has a `$schema` URL matching `xschema.dev`:
-
-```jsonc
-{
-  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
-  // ...
-}
-```
-
-The language is detected from the `$schema` URL:
-- `typescript.jsonc` or `ts.jsonc` → TypeScript
-
-## Runner Auto-Detection
-
-xschema automatically detects which package runner to use for invoking adapters:
-
-| Detection Method | Runner |
-|-----------------|--------|
-| `package.json` has `"packageManager": "bun@..."` | `bunx` |
-| `package.json` has `"packageManager": "pnpm@..."` | `pnpm exec` |
-| `package.json` has `"packageManager": "yarn@..."` | `yarn` |
-| `package.json` has `"packageManager": "npm@..."` | `npx` |
-| `bun.lock` or `bun.lockb` exists | `bunx` |
-| `pnpm-lock.yaml` exists | `pnpm exec` |
-| `yarn.lock` exists | `yarn` |
-| `package-lock.json` exists | `npx` |
-| Fallback | First available: `bunx`, `pnpm`, `yarn`, `npx` |
-
-## Supported JSON Schema Drafts
-
-xschema supports the following JSON Schema drafts:
-
-| Draft | `$schema` URL |
-|-------|---------------|
-| Draft 3 | `http://json-schema.org/draft-03/schema#` |
-| Draft 4 | `http://json-schema.org/draft-04/schema#` |
-| Draft 6 | `http://json-schema.org/draft-06/schema#` |
-| Draft 7 | `http://json-schema.org/draft-07/schema#` |
-| Draft 2019-09 | `https://json-schema.org/draft/2019-09/schema` |
-| Draft 2020-12 | `https://json-schema.org/draft/2020-12/schema` |
-
-### Draft Normalization
-
-All schemas are normalized to **Draft 2020-12** internally before being passed to adapters. This means:
-
-1. Adapters only need to support Draft 2020-12 syntax
-2. Legacy schemas work automatically
-3. You don't need to update old schemas to use new adapters
-
-Legacy syntax transformations include:
-
-| Legacy Syntax | Draft 2020-12 Equivalent |
-|---------------|--------------------------|
-| `items` (array form) | `prefixItems` |
-| `additionalItems` | `items` |
-| `exclusiveMaximum: true` + `maximum` | `exclusiveMaximum: number` |
-| `exclusiveMinimum: true` + `minimum` | `exclusiveMinimum: number` |
-| `extends` | `allOf` |
-| `required: true` (property-level) | `required: []` (object-level) |
-| `type: "any"` | (removed) |
-| `divisibleBy` | `multipleOf` |
-| `id` | `$id` |
-| `definitions` | `$defs` |
-| `dependencies` | `dependentRequired`/`dependentSchemas` |
-| `disallow` | `not` |
-
-## Processing Pipeline
-
-When you run `xschema generate`, the following steps occur:
-
-1. **Parse** - Find config files, extract schema declarations
-2. **Retrieve** - Fetch schemas from URL, file, or inline JSON
-3. **Process** - Crawl external `$ref`s, validate against meta-schema, bundle into self-contained schemas
-4. **Generate** - Call adapter CLIs to convert schemas to native validators
-5. **Inject** - Write output files using language-specific templates
-
-See the [Architecture](/docs/internals/architecture) page for details.
-
-## Environment Variable Substitution
-
-When using URL sources with headers, you can use `${VAR}` syntax for environment variables:
-
-```jsonc
-{
-  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
-  "schemas": [
-    {
-      "id": "User",
-      "sourceType": "url",
-      "source": "https://api.example.com/schemas/user",
-      "headers": {
-        "Authorization": "Bearer ${API_TOKEN}"
-      },
-      "adapter": "@xschemadev/zod"
-    }
-  ]
-}
-```
-
-xschema automatically loads `.env` files from your project root. Use `--env-file` to specify an alternative file.
+<Callout type="info">
+Watch mode (`--watch`) is planned.
+</Callout>
