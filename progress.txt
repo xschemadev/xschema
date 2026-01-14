@@ -62,3 +62,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Adapter compliance data: zod 100%, arktype 100%, effect 100%, valibot 98.9%
   - Client package is `@xschemadev/client`
 ---
+
+## 2026-01-14 - US-013
+- Created TypeScript framework getting-started guide at `web/content/docs/typescript/framework/getting-started.mdx`
+- Content includes:
+  - Prerequisites (Node.js 18+, moduleResolution settings)
+  - Step-by-step installation (client + adapter + peer dep)
+  - Adapter options table with peer dependencies
+  - Creating xschema config file (user.xschema.jsonc example)
+  - Creating JSON Schema file (profile.schema.json example)
+  - Running `bunx xschema generate`
+  - Using generated schemas with createXSchemaClient and XSchemaType
+  - Explanation of generated output (.xschema/ directory structure)
+  - Next steps linking to config, client, adapters, and CLI docs
+- Used fumadocs components: Callout, Steps, Step
+- **Learnings for future iterations:**
+  - fumadocs Steps/Step import: `import { Steps, Step } from "fumadocs-ui/components/steps"`
+  - Namespace comes from filename: `user.xschema.jsonc` -> `user` namespace
+  - $schema URL is required for xschema to discover config files
+  - .xschema/ contains xschema.gen.ts (code) and xschema.manifest.json (tracking)
+---

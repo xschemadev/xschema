@@ -214,7 +214,7 @@
         "Document output directory (.xschema/) and generated files",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/example/ for working example. typescript/example/user.xschema.jsonc for config. typescript/example/main.ts for usage. typescript/example/.xschema/xschema.gen.ts for output."
     },
     {
