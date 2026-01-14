@@ -386,3 +386,26 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Effect Schema uses pipe pattern: `Schema.String.pipe(Schema.pattern(/@/))`
   - Package is just `effect` now (not `@effect/schema` separately) - Schema is re-exported from effect
 ---
+
+## 2026-01-14 - US-021
+- Updated Valibot adapter page at `web/content/docs/typescript/adapters/valibot/index.mdx`
+- Changes made:
+  - Added overview table with package name (`@xschemadev/valibot`), peer dep (`valibot ^0.42.0`), compliance (98.9%)
+  - Updated installation instructions with all package managers (bun, npm, pnpm)
+  - Replaced inline JSON usage with framework mode example (config file + client usage)
+  - Added prominent Callout warning at top about prototype property bug
+  - Added "Known Limitation" section with detailed explanation:
+    - Affected property names: `__proto__`, `constructor`, `toString`
+    - Error message: `this.entries[key]._run is not a function`
+    - Clarified this is a Valibot library bug, not xschema
+    - Suggested workaround: avoid these property names or use different adapter
+  - Updated supported features list to include `prefixItems` and `unevaluatedProperties`
+  - Replaced outdated "Limitations" section (was listing incorrect limitations)
+  - Added Next Steps cards linking to compliance, getting-started, configuration, adapters
+  - Added fumadocs imports for Cards, Card, Callout
+- **Learnings for future iterations:**
+  - Valibot compliance is 98.9% (909 passed, 10 failed out of 919 total)
+  - All 10 failures are prototype property tests in `properties` (5) and `required` (5) keywords
+  - Error is `this.entries[key]._run is not a function` - Valibot's internal object iteration
+  - The compliance results JSON has detailed failure info including actual error messages
+---

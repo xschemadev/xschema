@@ -347,7 +347,7 @@
         "Link to compliance page",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/adapters/valibot/package.json. typescript/packages/adapters/valibot/compliance/results/ shows 98.9% due to this bug."
     },
     {
