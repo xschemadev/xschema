@@ -1,0 +1,229 @@
+## Task: fix-none-union-syntax (COMPLETED)
+
+**Objective:** Fix 'None | None' type annotation error causing TypeError crashes
+
+**Root Cause:**
+- `render_union()` in renderer.py generated duplicate type expressions (e.g., "None | None")
+- Python's `|` operator doesn't support `NoneType | NoneType`, causing runtime TypeError
+- This crashed compliance test batches before any tests could run
+
+**Solution:**
+- Added deduplication logic to `render_union()` function
+- Collect unique variant types using set to track seen types
+- If only one unique type after dedup, return it directly (not as union)
+- Prevents invalid Python syntax like "None | None"
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+- Function: `render_union()` (lines 947-987)
+- Added deduplication step before building union type expression
+- Handles edge case where all variants are identical
+
+**Testing Results:**
+- ✅ anyOf with duplicate nulls: generates `None` instead of `None | None`
+- ✅ allOf with duplicate nulls: no longer crashes, generates validator with TypeAdapter(None)
+- ✅ allOf compliance: runs to completion (0/30 passing but no crashes - semantic issues remain)
+- ✅ anyOf compliance: 100% (18/18 tests passing)
+- ✅ oneOf compliance: 92.6% (25/27 tests passing)
+- ✅ type compliance: 91.2% (73/80 tests passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Impact:**
+- Critical bug fix: prevents TypeError crashes in compliance testing
+- Enables other test suites to run (anyOf now 100%)
+- Foundation for fixing allOf semantic validation issues (separate task)
+
+**Decision Notes:**
+- Chose deduplication in render_union vs render (broader impact, cleaner fix)
+- Preserves order of first occurrence (matters for discriminated unions)
+- Single-type unions collapse to simple type (no unnecessary union syntax)
+
+---
+
+## Task: fix-non-object-validation (COMPLETED)
+
+**Objective:** JSON Schema object keywords must ignore non-object inputs
+
+**Root Cause:**
+- JSON Schema semantics: `properties`, `additionalProperties`, `patternProperties`, `propertyNames`, `required` should ONLY apply to objects
+- Non-object values (12, [], "hello") should pass validation - these keywords are filters, not type requirements
+- Pydantic's BaseModel.model_validate() rejects non-dict inputs, violating JSON Schema semantics
+
+**Solution:**
+- Modified `converter.py` to add `_is_object_only_schema()` detection
+- Wrapped object validators with isinstance check: non-dicts return True (pass validation)
+- Lambda expression: `(lambda v: True if not isinstance(v, dict) else _try_validate(Model.model_validate)(v))`
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/converter.py`
+- Added `_is_object_only_schema()` function to detect ObjectNode schemas
+- Modified validate expression generation to wrap with isinstance check for object schemas
+
+**Also Fixed:**
+- `cli/compliance/harness.go`: Added workDir parameter to CallAdapterBatch for proper module resolution
+- `cli/language/langs/python/python.go`: AdapterCLIPath now works with uv run python
+
+**Testing Results:**
+- ✅ additionalProperties: 71.4% (15/21) - "ignores arrays/non-objects" tests pass
+- ✅ propertyNames: 75.0% (15/20) - "ignores arrays/non-objects" tests pass  
+- ✅ patternProperties: 56.5% (13/23)
+- ✅ required: 68.8% (11/16)
+- ❌ properties: 0% (0/28) - blocked by pre-existing bug with escaped chars in property names
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Known Issue (pre-existing, separate task):**
+- Property names with special characters (e.g., `foo\tbar`, `foo"bar`) generate invalid Python code
+- This breaks Group3 in properties tests, causing syntax error that fails all tests
+- Should be fixed in renderer.py (separate task)
+
+**Learnings:**
+- JSON Schema has "filter" semantics - keywords only apply to matching types
+- Pydantic's strict validation conflicts with JSON Schema's permissive approach
+- Compliance harness requires working directory for proper Python module resolution
+
+---
+
+## Task: fix-const-enum-validation (COMPLETED)
+
+**Objective:** Fix const and enum validation to work with any JSON value (0/54 const, 0/45 enum tests)
+
+**Root Causes:**
+1. **Null bytes in strings**: const values with `\u0000` generated literal null bytes in Python code, causing syntax errors
+2. **Complex values**: Python's `Literal[...]` only supports primitives; arrays/objects like `[1,2,3]` or `{"a":1}` need custom validators
+3. **Boolean/int coercion**: Python treats `False == 0` and `True == 1`, but JSON Schema distinguishes them
+
+**Solution:**
+1. Updated `_format_literal_value()` to use `json.dumps()` for strings, properly escaping control characters
+2. Added `_make_const_validator()` and `_make_enum_validator()` helper functions to harness template
+3. For const/enum values that are complex or involve booleans/0/1, use custom validators instead of `Literal`
+4. Implemented `_deep_equals()` function for recursive type-aware comparison that prevents bool/int coercion
+
+**Code Changes:**
+- `python/packages/core/src/xschema_core/ir.py`: Added `JsonValue` type alias for const/enum values
+- `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`:
+  - Updated `_format_literal_value()` to use json.dumps for strings
+  - Updated `render_literal()` to detect when strict type checking is needed
+  - Updated `render_enum()` to use custom validator when booleans or 0/1 are present
+- `cli/language/langs/python/templates.go`:
+  - Added `_deep_equals()` helper for recursive type-aware comparison
+  - Added `_make_const_validator()` and `_make_enum_validator()` functions
+- Updated `python/packages/adapters/pydantic/tests/test_renderer.py` to match new behavior
+
+**Testing Results:**
+- ✅ const: 100% (54/54 tests passing)
+- ✅ enum: 100% (45/45 tests passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+- ✅ Go CLI build, vet, and tests pass
+
+**Key Insights:**
+- Python's `Literal` type has limitations for JSON Schema compliance
+- Deep equality with type awareness is required for boolean/int distinction
+- `json.dumps()` is the correct way to escape strings for code generation
+
+---
+
+## Task: fix-multipleOf (COMPLETED)
+
+**Objective:** Fix multipleOf validation (0/10 tests passing)
+
+**Root Causes:**
+1. **Missing type guards**: Schemas with `multipleOf` but no explicit `type` should ignore non-numbers (JSON Schema semantics)
+2. **Integer + float multipleOf**: Pydantic's `Annotated[int, MultipleOf(0.123)]` fails because MultipleOf requires int-coercible values for int types
+
+**Solution:**
+1. Added type guard functions in `converter.py`:
+   - `_is_number_only_schema()`: Detects NumberNode schemas without explicit type
+   - `_is_string_only_schema()`: Detects StringNode schemas without explicit type  
+   - `_is_array_only_schema()`: Detects ArrayNode schemas without explicit type
+2. Wrapped validators with `isinstance` check for type-inferred schemas:
+   - Numbers: `(isinstance(v, (int, float)) and not isinstance(v, bool))`
+   - Strings: `isinstance(v, str)`
+   - Arrays: `isinstance(v, list)`
+3. Added special handling in `renderer.py` for integer type with float multipleOf:
+   - Uses `float` as base type with custom `BeforeValidator`
+   - Validator checks: value is integer AND value is multiple of multipleOf
+
+**Code Changes:**
+- `python/packages/adapters/pydantic/src/xschema_pydantic/converter.py`:
+  - Added `_is_number_only_schema()`, `_is_string_only_schema()`, `_is_array_only_schema()`
+  - Modified validate expression generation to use type guards for inferred types
+- `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`:
+  - Added `_is_integer_value()` helper
+  - Modified `render_number()` to handle integer + float multipleOf edge case
+
+**Testing Results:**
+- ✅ multipleOf: 100% (10/10 tests passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+- ✅ Go CLI build, vet, and tests pass
+
+**Key Insights:**
+- JSON Schema type-specific keywords only apply to matching types - this is "filter" semantics
+- The original schema's `type` keyword determines whether type filtering applies
+- Pydantic has limitations with `MultipleOf` for integer types - custom validators needed for edge cases
+- The converter has access to both IR node and original schema, enabling this distinction
+---
+
+## Task: fix-type-keyword (COMPLETED)
+
+**Objective:** Fix remaining type keyword failures (was 83.8%, now 100%)
+
+**Root Causes:**
+1. **Boolean/integer confusion**: Python's bool is a subclass of int, so `isinstance(True, int)` returns True. Pydantic's default `bool` type accepts 0/1 as booleans.
+2. **Type coercion**: Pydantic's default types coerce strings to numbers (`"1" -> 1`) and numbers to strings (`1 -> "1"`).
+3. **Object type guard bug**: `_is_object_only_schema()` was always returning True for ObjectNode, even when schema had explicit `type: "object"`. This caused non-objects to incorrectly pass validation.
+
+**Solution:**
+1. Use Pydantic's strict types to prevent coercion:
+   - `bool` → `StrictBool` (rejects integers 0/1)
+   - `int` → `StrictInt` (rejects bools and strings)
+   - `float` → `StrictFloat` (accepts both int and float, rejects strings)
+   - `str` → `StrictStr` (rejects non-strings)
+   - For constrained strings: `StringConstraints(strict=True, ...)`
+2. Fixed `_is_object_only_schema()` to check for explicit `type` keyword in original schema
+   - If schema has `type: object`, let Pydantic reject non-objects (correct behavior)
+   - If schema only has object keywords without type, use type guard wrapper (filter semantics)
+
+**Code Changes:**
+- `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`:
+  - `render_boolean()`: Returns `StrictBool` instead of `bool`
+  - `render_number()`: Uses `StrictInt` for integer, `StrictFloat` for number
+  - `render_string()`: Uses `StrictStr` or `StringConstraints(strict=True, ...)`
+- `python/packages/adapters/pydantic/src/xschema_pydantic/converter.py`:
+  - `_is_object_only_schema()`: Now takes `original_schema` parameter and checks for `type` keyword
+- `python/packages/adapters/pydantic/tests/test_renderer.py`:
+  - Updated 15 tests to expect strict types
+
+**Testing Results:**
+- ✅ type: 100% (80/80 tests passing) across all drafts
+- ✅ anyOf: 100% (18/18)
+- ✅ const: 100% (54/54)
+- ✅ enum: 100% (45/45)
+- ✅ multipleOf: 100% (10/10)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- JSON Schema's `type` keyword requires strict type validation - no coercion allowed
+- Pydantic's union handling with `MultipleOf` has floating point bugs; use `StrictFloat` instead of `StrictInt | StrictFloat` for number type
+- `StrictFloat` accepts integers (converts to float) which is fine for validation since integers are numbers
+- The distinction between "has type keyword" vs "has type-specific keywords only" is crucial for JSON Schema semantics
+
+---
+
+## Task: fix-oneOf-validation (COMPLETED)
+
+**Objective:** Fix remaining 2 oneOf failures (was 92.6%)
+
+**Result:** Already fixed! The previous strict type changes (StrictBool, StrictInt, etc.) resolved the edge cases.
+
+**Testing Results:**
+- ✅ oneOf: 100% (27/27 tests passing)
+
+**Notes:**
+- No code changes needed - was a side effect of fix-type-keyword strict type implementation
+- The 2 previously failing tests were likely related to bool/int confusion that StrictBool resolved
+

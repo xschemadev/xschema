@@ -121,8 +121,8 @@
         "Verify exactly-one matching logic is correct",
         "Fix edge cases where validation errors vs matches are counted incorrectly",
       ],
-      "passes": false,
-      "notes": "Currently at 92.6%, close to 100%",
+      "passes": true,
+      "notes": "Fixed by previous strict type changes. 100% (27/27) passing.",
     },
     // ============================================
     // PHASE 3: Array/Tuple Fixes
