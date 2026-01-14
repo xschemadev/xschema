@@ -144,7 +144,7 @@
         "Explain why adapters receive 'easy' input (bundled, normalized, validated)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/cmd/generate.go, cli/parser/parser.go, cli/retriever/retriever.go, cli/processor/processor.go, cli/bundler/bundler.go, cli/bundler/normalize.go, cli/generator/generator.go, cli/injector/injector.go. AGENTS.md for overview."
     },
     {

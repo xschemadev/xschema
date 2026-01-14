@@ -269,3 +269,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Compliance runner in `cli/compliance/runner.go`, fetcher in `cli/compliance/fetcher.go`
   - Test suite version pinned in `cli/compliance/fetcher.go:20`
 ---
+
+## 2026-01-14 - US-009
+- Created architecture deep-dive page at `web/content/docs/internals/architecture.mdx`
+- Content includes:
+  - Five-stage pipeline diagram: parse -> retrieve -> process -> generate -> inject
+  - Parser documentation: git-based vs directory walk discovery, language detection from $schema URL, namespace derivation from filename, duplicate detection
+  - Retriever documentation: source types (file/url/json), URL fetching with retry/caching, header env var substitution, parallel fetching
+  - Processor documentation: four phases (normalize, validate declared, crawl+fetch external refs, bundle)
+  - Bundler sub-section: external ref resolution, $defs flattening with example, anchor resolution, forbidden keywords table
+  - Generator documentation: adapter stdin/stdout JSON protocol, adapter invocation, runner detection
+  - Injector documentation: template rendering, manifest tracking, atomic writes
+  - "Why Adapters Are Simple" summary table showing what CLI handles vs adapter responsibility
+- **Learnings for future iterations:**
+  - Parser uses `git ls-files` for fast discovery, falls back to directory walk
+  - Namespace derived from config filename: `user.xschema.jsonc` -> `user`
+  - Processor runs 4 phases: normalize -> validate declared -> crawl external refs -> bundle
+  - Bundler flattens nested $defs with `__` separator: `remote_json__Address__Coordinate`
+  - Forbidden keywords: $dynamicRef, $dynamicAnchor, $recursiveRef, $recursiveAnchor
+  - Generator groups schemas by adapter, invokes adapter CLI via stdin/stdout JSON
+  - Injector uses manifest to track and delete stale files
+---

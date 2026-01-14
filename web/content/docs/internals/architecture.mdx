@@ -1,20 +1,388 @@
 ---
-title: Architecture Details
+title: Architecture Deep-Dive
 description: Full pipeline documentation with package responsibilities
 icon: Boxes
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
+xschema follows a five-stage pipeline design where each stage does one thing well. The key principle: **do the hard work upfront so adapters stay simple**.
+
+```
+┌─────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐
+│  Parse  │───▶│ Retrieve  │───▶│  Process  │───▶│ Generate  │───▶│  Inject  │
+└─────────┘    └───────────┘    └───────────┘    └───────────┘    └──────────┘
+     │              │                 │                │               │
+  configs       raw schemas      bundled         native code      output files
+  + decls                        schemas                          + manifest
+```
+
+## 1. Parser
+
+**Package:** `cli/parser/`
+
+The parser discovers xschema config files and extracts schema declarations.
+
+### Config Discovery
+
+The parser looks for `.json` and `.jsonc` files that contain an xschema `$schema` URL:
+
+```json
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [...]
+}
+```
+
+**Discovery methods (in order of preference):**
+
+1. **Git-based** (fast, respects `.gitignore`):
+   ```bash
+   git ls-files --cached --others --exclude-standard *.json *.jsonc
+   ```
+
+2. **Directory walk** (fallback when git unavailable):
+   - Walks the project tree
+   - Skips `node_modules`, `.git`, `vendor`, and other language-specific ignore directories
+
+### Language Detection
+
+The language is determined from the `$schema` URL:
+
+| URL Pattern | Language |
+|------------|----------|
+| `xschema.dev/schemas/typescript.jsonc` | TypeScript |
+| `xschema.dev/schemas/python.jsonc` | Python (planned) |
+
+If config files for multiple languages are found, use `--lang` to specify which one to process.
+
+### Namespace Derivation
+
+Namespaces are derived from config filenames:
+
+| Config Filename | Namespace |
+|----------------|-----------|
+| `user.xschema.jsonc` | `user` |
+| `user.xschema.json` | `user` |
+| `schemas.jsonc` | `schemas` |
+
+The namespace can be overridden explicitly in the config file:
+
+```json
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "namespace": "custom",
+  "schemas": [...]
+}
+```
+
+### Duplicate Detection
+
+The parser enforces unique schema IDs within each namespace. If two config files define the same `namespace:id`, an error is raised early:
+
+```
+duplicate schema ID "User" in namespace "api": defined in both api.xschema.jsonc and another.xschema.jsonc
+```
+
+### Output
+
+The parser produces a `ParseResult` containing:
+- Detected language
+- List of config files found
+- Flattened list of `Declaration` structs (namespace, ID, source type, source, adapter, headers)
+
+---
+
+## 2. Retriever
+
+**Package:** `cli/retriever/`
+
+The retriever fetches raw JSON schemas from their sources.
+
+### Source Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `file` | Local file path (relative to config) | `"./schemas/user.json"` |
+| `url` | Remote URL with retry/caching | `"https://api.example.com/schemas/user"` |
+| `json` | Inline JSON schema | `{"type": "object", ...}` |
+
+### URL Fetching
+
+For URL sources, the retriever:
+
+1. **Retries** failed requests (default: 3 attempts with exponential backoff)
+2. **Caches** responses in a shared cache to avoid duplicate fetches
+3. **Substitutes** environment variables in headers using `${VAR}` syntax:
+   ```json
+   {
+     "headers": {
+       "Authorization": "Bearer ${API_TOKEN}"
+     }
+   }
+   ```
+
 <Callout type="info">
-This page is coming soon. See the [internals overview](/docs/internals) for the high-level architecture.
+Headers are only allowed on `url` source types. Using headers with `file` or `json` sources produces an error.
 </Callout>
 
-## Coming Soon
+### Parallel Fetching
 
-This page will cover:
+Schemas are fetched concurrently using `errgroup` with configurable concurrency (default: `min(8, num_cpus)`).
 
-- Detailed documentation of each pipeline stage
-- Package responsibilities and dependencies  
-- How schemas flow through the system
-- Draft normalization transformations
+### Output
+
+The retriever produces `RetrievedSchema` structs containing:
+- Namespace and ID
+- Raw JSON schema bytes
+- Adapter reference
+- Source URI (for resolving relative `$ref`s later)
+
+---
+
+## 3. Processor
+
+**Package:** `cli/processor/`
+
+The processor is the most complex stage. It handles validation, external ref crawling, and bundling.
+
+### Processing Phases
+
+The processor runs four phases in sequence:
+
+#### Phase 1: Normalize Declared Schemas
+
+If schemas use legacy JSON Schema drafts (draft3/4/6/7), they're normalized to draft 2020-12 syntax:
+
+| Legacy Syntax | 2020-12 Equivalent |
+|--------------|-------------------|
+| `items` (array form) | `prefixItems` |
+| `additionalItems` | `items` |
+| `exclusiveMaximum: true` + `maximum` | `exclusiveMaximum: number` |
+| `id` | `$id` |
+| `definitions` | `$defs` |
+| `extends` | `allOf` |
+| `divisibleBy` | `multipleOf` |
+| `type: "any"` | (removed) |
+| `required: true` (property-level) | `required: []` (object-level) |
+| `dependencies` | `dependentRequired` / `dependentSchemas` |
+
+#### Phase 2: Validate Declared Schemas
+
+Schemas are validated against the JSON Schema meta-schema before any external fetching. This enables **fail-fast** behavior - invalid schemas are caught immediately rather than wasting time fetching external refs.
+
+#### Phase 3: Crawl and Fetch External Refs
+
+The processor discovers external `$ref` URIs and fetches them in waves:
+
+```
+Wave 1: Extract refs from declared schemas → fetch
+Wave 2: Extract refs from wave 1 results → fetch
+Wave 3: Extract refs from wave 2 results → fetch
+...until no new refs found
+```
+
+This handles arbitrarily deep reference chains while the shared cache prevents duplicate fetches.
+
+**Example:** Schema A references B, B references C:
+- Wave 1: Fetch B (referenced by A)
+- Wave 2: Fetch C (referenced by B)
+- Done: All refs resolved
+
+#### Phase 4: Bundle
+
+Each declared schema is bundled into a self-contained unit. See the [Bundler](#bundler) section below.
+
+### Output
+
+The processor produces `ProcessedSchema` structs containing:
+- Namespace and ID
+- Bundled schema (self-contained, no external refs)
+- Adapter reference
+- Original source URI
+
+---
+
+## Bundler
+
+**Package:** `cli/bundler/`
+
+The bundler is a sub-component of the processor that resolves `$ref` and produces self-contained schemas.
+
+### What Bundling Does
+
+1. **Resolves external refs**: Fetches referenced schemas and embeds them in `$defs`
+2. **Flattens nested `$defs`**: Nested definitions are lifted to the root with prefixed keys
+3. **Rewrites refs**: External refs become internal (`#/$defs/...`) pointers
+4. **Handles circular refs**: Circular references are detected and handled with lazy references
+5. **Validates internal refs**: All `#/...` pointers are verified to point to valid targets
+
+### Flattening Example
+
+Given an external schema with nested definitions:
+
+```json
+// remote.json
+{
+  "$defs": {
+    "Address": {
+      "$defs": {
+        "Coordinate": { "type": "object" }
+      }
+    }
+  }
+}
+```
+
+After bundling with key `remote_json`:
+
+```json
+{
+  "$defs": {
+    "remote_json": { ... },
+    "remote_json__Address": { ... },
+    "remote_json__Address__Coordinate": { "type": "object" }
+  }
+}
+```
+
+### Anchor Resolution
+
+The bundler handles JSON Schema anchors (`$anchor`, fragment-only `$id`):
+
+```json
+// Original
+{ "$ref": "remote.json#myAnchor" }
+
+// After bundling (anchor resolved to JSON pointer)
+{ "$ref": "#/$defs/remote_json/properties/name" }
+```
+
+### Forbidden Keywords
+
+The bundler rejects schemas containing keywords that cannot be statically compiled:
+
+| Keyword | Reason |
+|---------|--------|
+| `$dynamicRef` | Requires runtime scope resolution |
+| `$dynamicAnchor` | Requires runtime scope resolution |
+| `$recursiveRef` | Requires runtime scope resolution |
+| `$recursiveAnchor` | Requires runtime scope resolution |
+
+These produce an `UnsupportedKeywordError` with the keyword name and reason.
+
+---
+
+## 4. Generator
+
+**Package:** `cli/generator/`
+
+The generator invokes adapter CLIs to convert bundled schemas to native code.
+
+### Adapter Protocol
+
+Adapters communicate via stdin/stdout JSON:
+
+**Input** (JSON array):
+```json
+[
+  {
+    "namespace": "user",
+    "id": "Profile",
+    "varName": "user_Profile",
+    "schema": { "type": "object", ... }
+  }
+]
+```
+
+**Output** (JSON array):
+```json
+[
+  {
+    "namespace": "user",
+    "id": "Profile",
+    "varName": "user_Profile",
+    "schema": "z.object({ name: z.string() })",
+    "type": "{ name: string }",
+    "imports": ["import { z } from \"zod\";"]
+  }
+]
+```
+
+### Adapter Invocation
+
+The generator:
+
+1. Groups schemas by adapter
+2. Builds the adapter command using language-specific logic
+3. Executes the adapter CLI with schemas piped to stdin
+4. Parses the JSON output from stdout
+5. Validates outputs have required fields (`schema` or `type`, `varName`)
+
+### Runner Detection
+
+For TypeScript, the runner (bunx, pnpm exec, npx) is auto-detected:
+
+1. Check `package.json` `packageManager` field
+2. Check for lockfiles: `bun.lock` → bunx, `pnpm-lock.yaml` → pnpm exec
+3. Fall back to npx
+
+---
+
+## 5. Injector
+
+**Package:** `cli/injector/`
+
+The injector writes generated code to output files using language-specific templates.
+
+### Template Rendering
+
+Each language defines:
+- Output file path (e.g., `xschema.gen.ts`)
+- Template string with placeholders for imports and schemas
+
+The template receives:
+- Merged imports (deduplicated across all adapters)
+- Schema entries (namespace, ID, variable name, generated code, type)
+- Header/footer (language-specific)
+
+### Manifest Tracking
+
+The injector maintains `xschema.manifest.json` to track generated files:
+
+```json
+{
+  "files": ["xschema.gen.ts"]
+}
+```
+
+On subsequent runs, files in the old manifest but not the new one are **deleted**. This handles renames and removals cleanly.
+
+### Atomic Writes
+
+The manifest is written atomically (write to temp file, then rename) to prevent corruption if the process is interrupted.
+
+---
+
+## Why Adapters Are Simple
+
+The five-stage pipeline does significant preprocessing before adapters see schemas:
+
+| Complexity | Handled By | Not Adapter's Problem |
+|------------|------------|----------------------|
+| Config discovery | Parser | Finding schemas |
+| URL fetching with retry | Retriever | Network errors |
+| External `$ref` resolution | Bundler | Fetching referenced schemas |
+| `$defs` flattening | Bundler | Nested definitions |
+| Draft normalization | Bundler | Legacy syntax |
+| Circular ref detection | Bundler | Infinite loops |
+| Validation | Processor | Invalid schemas |
+| Unsupported keywords | Processor | Dynamic refs |
+| Output file management | Injector | File I/O |
+
+Adapters receive **bundled, validated, normalized** schemas and just need to:
+1. Parse the schema into an IR
+2. Render native code
+3. Return JSON to stdout
+
+See [Building Adapters](/docs/internals/adapters) for the full adapter development guide.
