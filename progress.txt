@@ -290,3 +290,26 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Generator groups schemas by adapter, invokes adapter CLI via stdin/stdout JSON
   - Injector uses manifest to track and delete stale files
 ---
+
+## 2026-01-14 - US-010
+- Created adapter development guide at `web/content/docs/internals/adapters.mdx`
+- Content includes:
+  - Overview table: CLI handles vs adapter handles
+  - Adapter protocol: stdin/stdout JSON communication
+  - Input format: ConvertInput with namespace, id, varName, schema
+  - Output format: ConvertResult with imports, schema, type, validate
+  - @xschemadev/core package exports and installation
+  - IR (Intermediate Representation) - all 18 node kinds with their fields
+  - Constraint types: StringConstraints, NumberConstraints, ArrayConstraints
+  - Step-by-step guide: convert function, renderer, CLI entry point, package.json
+  - Key utilities: escapeString, isPrimitive, hasPrototypeProperties, PROTOTYPE_PROPERTY_NAMES, sortedStringify
+  - Important notes: schemas pre-bundled, drafts normalized, forbidden keywords
+  - Reference to Zod adapter as example implementation
+  - Next steps cards to compliance-testing and architecture
+- **Learnings for future iterations:**
+  - ConvertResult has optional `validate` and `validationImports` fields for validation functions
+  - TypeGuardedNode handles schemas with type-specific keywords but no explicit type
+  - NullableNode is for OpenAPI 3.0 nullable support
+  - Adapter bin name must match adapter name in xschema configs (e.g. xschema-zod)
+  - The exhaustive switch pattern with `const _: never = node` catches missing node kinds at compile time
+---

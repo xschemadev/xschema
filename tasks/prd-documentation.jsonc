@@ -165,7 +165,7 @@
         "Link to typescript/packages/adapters/zod/src/ as example",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/adapter/types.go for protocol. typescript/packages/core/src/ir/ for IR types. typescript/packages/core/src/parser/ for parse(). typescript/packages/core/src/cli.ts for createAdapterCLI(). typescript/packages/core/src/utils/ for utilities."
     },
     {
