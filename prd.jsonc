@@ -233,7 +233,8 @@
         "Should ignore non-objects",
         "Test propertyNames with pattern constraint",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. 100% (20/20). Key fix: added propertyNames, minProperties, maxProperties, dependentRequired, dependentSchemas to _infer_type() and _detect_type_guards() in core parser. These object-specific keywords now correctly infer object type, triggering proper ObjectNode parsing and rendering.",
     },
     // ============================================
     // PHASE 5: Constraint Fixes

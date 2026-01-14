@@ -244,7 +244,7 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
     if "propertyNames" in schema:
         property_names_node = parse(schema["propertyNames"])
 
-    # Handle dependencies
+    # Handle dependencies (legacy draft-4/7 keyword)
     dependencies: list[tuple[str, Dependency]] = []
     for prop_name, dep_value in schema.get("dependencies", {}).items():
         if isinstance(dep_value, list):
@@ -255,6 +255,16 @@ def _parse_object(schema: dict[str, Any]) -> ObjectNode:
         elif isinstance(dep_value, dict):
             # Schema dependency
             dependencies.append((prop_name, SchemaDependency(schema=parse(dep_value))))
+
+    # Handle dependentRequired (draft 2019-09+ keyword)
+    for prop_name, required_props in schema.get("dependentRequired", {}).items():
+        dependencies.append(
+            (prop_name, PropertyDependency(required_properties=tuple(required_props)))
+        )
+
+    # Handle dependentSchemas (draft 2019-09+ keyword)
+    for prop_name, dep_schema in schema.get("dependentSchemas", {}).items():
+        dependencies.append((prop_name, SchemaDependency(schema=parse(dep_schema))))
 
     # Handle unevaluatedProperties
     unevaluated = schema.get("unevaluatedProperties")
@@ -444,7 +454,17 @@ def _infer_type(schema: dict[str, Any]) -> str | None:
     # Object keywords
     if any(
         k in schema
-        for k in ("properties", "required", "additionalProperties", "patternProperties")
+        for k in (
+            "properties",
+            "required",
+            "additionalProperties",
+            "patternProperties",
+            "propertyNames",
+            "minProperties",
+            "maxProperties",
+            "dependentRequired",
+            "dependentSchemas",
+        )
     ):
         return "object"
 
@@ -531,8 +551,11 @@ def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
             "required",
             "additionalProperties",
             "patternProperties",
+            "propertyNames",
             "minProperties",
             "maxProperties",
+            "dependentRequired",
+            "dependentSchemas",
         )
     ):
         object_schema = _parse_object(schema)

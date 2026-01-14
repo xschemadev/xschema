@@ -365,3 +365,42 @@ Schemas like `{propertyNames: false}` without explicit `type: object` are parsed
 This requires a fix in the core parser, not the renderer.
 
 ---
+
+## Task: fix-propertyNames (COMPLETED)
+
+**Objective:** Fix propertyNames validation (was 75%, now 100%)
+
+**Root Cause:**
+- Core parser's `_infer_type()` function didn't include `propertyNames` as an object-specific keyword
+- Schemas like `{propertyNames: false}` were parsed as `AnyNode` instead of `ObjectNode`
+- Same issue affected `minProperties`, `maxProperties`, `dependentRequired`, `dependentSchemas`
+
+**Solution:**
+- Added missing object keywords to `_infer_type()` function in core parser:
+  - `propertyNames`
+  - `minProperties`
+  - `maxProperties`
+  - `dependentRequired`
+  - `dependentSchemas`
+- Added same keywords to `_detect_type_guards()` for type guard inference
+- Also added parsing for `dependentRequired` and `dependentSchemas` in `_parse_object()`
+  (these are draft 2019-09+ keywords, were previously only supporting legacy `dependencies`)
+
+**Code Changes:**
+- File: `python/packages/core/src/xschema_core/parser.py`
+  - `_infer_type()`: Added 5 new object keywords
+  - `_detect_type_guards()`: Added same 5 keywords
+  - `_parse_object()`: Added parsing for `dependentRequired` and `dependentSchemas`
+
+**Testing Results:**
+- ✅ propertyNames: 100% (20/20 tests passing)
+- ✅ All 79 core package unit tests pass
+- ✅ All 85 pydantic adapter unit tests pass
+
+**Key Insights:**
+- JSON Schema type inference requires ALL type-specific keywords to be listed
+- The parser had inconsistent keyword lists between `_infer_type` and `_detect_type_guards`
+- Draft 2019-09+ introduced `dependentRequired`/`dependentSchemas` as replacements for `dependencies`
+- Parser now supports both legacy and modern syntax
+
+---
