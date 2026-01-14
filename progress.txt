@@ -86,3 +86,45 @@
 - Colon detection (`":"` in key) always treats as full key, never prepends namespace
 
 **Result**: xschema-client package functional, fully typed, 9 tests passing.
+
+## 2026-01-14: update-injector-template (COMPLETE)
+
+**Task**: Update Python output template to work with new client
+
+**Implementation**:
+1. Reviewed cli/language/langs/python/templates.go outputTemplate
+   - Template structure: header, imports, schemas, type registry
+   - Existing `schemas` dict with "namespace:id" keys - already correct
+   - Existing `SchemaTypes` TypedDict - needed update for type-only entries
+   - Existing `register_schemas()` function - needed removal (Python doesn't need this)
+
+2. Updated outputTemplate in templates.go
+   - Changed `schemas` dict comment to reference xschema-client package
+   - Fixed SchemaTypes TypedDict to include type-only schemas
+     - Changed condition from `{{- if and .Code .Type}}` to `{{- if .Type}}`
+     - This ensures type-only schemas (no .Code) are included in SchemaTypes
+     - Type-only schemas get `type[{{.Type}}]`, code-only get `Any`
+   - Removed `register_schemas()` function entirely
+     - Python client doesn't use registration pattern (unlike TS module augmentation)
+     - Client is created directly: `create_xschema_client(schemas, default_namespace)`
+   - Updated comments to be more helpful for users
+
+3. Tested template output with manual test
+   - Created test with 3 schemas: User (schema+type), Profile (schema+type), Native (type-only)
+   - Verified `schemas` dict only contains runtime validators (User, Profile)
+   - Verified `SchemaTypes` TypedDict contains all 3 (including type-only Native)
+   - Output file is `__init__.py` (not `xschema.gen.py`)
+
+4. Ran quality checks
+   - go build: compiles ✓
+   - go vet: no warnings ✓
+   - go test ./...: all tests pass ✓
+   - Python Pydantic adapter integration tests: 2/2 pass ✓
+
+**Decisions**:
+- Removed `register_schemas()` function completely - Python doesn't have declaration merging like TS
+- Type-only entries now correctly included in SchemaTypes (previously missed)
+- Kept `schemas` dict runtime-only (doesn't include type-only entries)
+- Updated comments to guide users to xschema-client package
+
+**Result**: Python template updated, compatible with client, all tests pass.

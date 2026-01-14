@@ -26,7 +26,8 @@ from typing import TYPE_CHECKING, Any, Dict
 {{.Code}}
 {{- end}}
 {{end}}
-# Schema registry - maps "namespace:id" to schema/validator
+# Schema registry - maps "namespace:id" to validator
+# Use with create_xschema_client() from xschema-client package
 schemas: Dict[str, Any] = {
 {{- range .Schemas}}
 {{- if .Code}}
@@ -36,32 +37,18 @@ schemas: Dict[str, Any] = {
 }
 
 # Type registry for static type checking
+# Includes both runtime schemas and type-only schemas
 if TYPE_CHECKING:
     from typing import TypedDict
 
     class SchemaTypes(TypedDict, total=False):
 {{- range .Schemas}}
-{{- if and .Code .Type}}
+{{- if .Type}}
         {{.Key | printf "%q"}}: type[{{.Type}}]
-{{- else if .Type}}
-        {{.Key | printf "%q"}}: type[{{.VarName}}]
 {{- else if .Code}}
-        {{.Key | printf "%q"}}: type[{{.VarName}}]
+        {{.Key | printf "%q"}}: Any
 {{- end}}
 {{- end}}
-
-
-def register_schemas(client: Any) -> None:
-    """Register schemas with an xschema client instance.
-
-    This is the Python equivalent of TypeScript's module augmentation.
-    Call this function to register generated schemas with your xschema client.
-
-    Args:
-        client: An xschema client instance with _register_schemas method.
-    """
-    if hasattr(client, "_register_schemas"):
-        client._register_schemas(schemas)
 {{- if .Footer}}
 {{.Footer}}
 {{- end}}
