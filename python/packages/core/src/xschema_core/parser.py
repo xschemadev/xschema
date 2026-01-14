@@ -469,7 +469,21 @@ def _infer_type(schema: dict[str, Any]) -> str | None:
         return "object"
 
     # Array keywords
-    if any(k in schema for k in ("items", "minItems", "maxItems", "uniqueItems")):
+    if any(
+        k in schema
+        for k in (
+            "items",
+            "minItems",
+            "maxItems",
+            "uniqueItems",
+            "contains",
+            "minContains",
+            "maxContains",
+            "prefixItems",
+            "additionalItems",
+            "unevaluatedItems",
+        )
+    ):
         return "array"
 
     return None
@@ -564,7 +578,18 @@ def _detect_type_guards(schema: dict[str, Any]) -> list[TypeGuard]:
     # Check for array-specific keywords
     if any(
         k in schema
-        for k in ("items", "minItems", "maxItems", "uniqueItems", "contains")
+        for k in (
+            "items",
+            "minItems",
+            "maxItems",
+            "uniqueItems",
+            "contains",
+            "minContains",
+            "maxContains",
+            "prefixItems",
+            "additionalItems",
+            "unevaluatedItems",
+        )
     ):
         array_schema = _parse_array(schema)
         guards.append(TypeGuard(check="array", schema=array_schema))

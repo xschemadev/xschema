@@ -281,7 +281,8 @@
         "Handle edge case: minContains: 0 means contains is optional",
         "Test contains with maxContains: 1 allows only one match",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. contains=100% (21/21), minContains=100% (28/28), maxContains=100% (12/12). Key fix: Added missing array keywords (contains, minContains, maxContains, prefixItems, additionalItems, unevaluatedItems) to _infer_type() and _detect_type_guards() in core parser. Schemas with only contains keyword were being parsed as AnyNode instead of ArrayNode.",
     },
     // ============================================
     // PHASE 6: Not and Composition Edge Cases

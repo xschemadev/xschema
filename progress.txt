@@ -532,3 +532,37 @@ This requires a fix in the core parser, not the renderer.
 - The difference between `items: false` (no extra) and no `items` (any extra) is crucial
 
 ---
+
+## Task: fix-contains-minContains-maxContains (COMPLETED)
+
+**Objective:** Fix contains constraint validation (was 14/21, 14/28, 6/12)
+
+**Root Cause:**
+- Core parser's `_infer_type()` function didn't include array keywords: `contains`, `minContains`, `maxContains`, `prefixItems`, `additionalItems`, `unevaluatedItems`
+- Schemas like `{contains: {minimum: 5}}` were parsed as `AnyNode` instead of `ArrayNode`
+- The validation logic in renderer.py was correct, but never applied because the wrong node type was generated
+
+**Solution:**
+- Added missing array keywords to `_infer_type()` function in core parser
+- Also added same keywords to `_detect_type_guards()` for consistency
+- Full list of array keywords now: items, minItems, maxItems, uniqueItems, contains, minContains, maxContains, prefixItems, additionalItems, unevaluatedItems
+
+**Code Changes:**
+- File: `python/packages/core/src/xschema_core/parser.py`
+  - `_infer_type()`: Added 6 new array keywords (lines ~472-485)
+  - `_detect_type_guards()`: Added 6 new array keywords (lines ~578-593)
+
+**Testing Results:**
+- ✅ contains: 100% (21/21 tests passing) - was 66.7%
+- ✅ minContains: 100% (28/28 tests passing) - was 50%
+- ✅ maxContains: 100% (12/12 tests passing) - was 50%
+- ✅ All 79 core package unit tests pass
+- ✅ All 85 pydantic adapter unit tests pass
+
+**Key Insights:**
+- The parser's type inference lists must be kept in sync across `_infer_type` and `_detect_type_guards`
+- JSON Schema has many array-specific keywords beyond the common ones (items, minItems, maxItems)
+- The contains family (contains, minContains, maxContains) are all array-specific keywords
+- Draft 2020-12 introduced prefixItems to replace the "items as array" syntax
+
+---
