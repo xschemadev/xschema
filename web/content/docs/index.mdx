@@ -1,31 +1,85 @@
 ---
-title: Hello World
-description: Your favourite docs framework.
-icon: Rocket
+title: xschema
+description: JSON Schema to native validators with full type safety
+icon: Zap
 ---
 
-Hey there! Fumadocs is the docs framework that also works on Tanstack Start!
+import { Card, Cards, Callout } from "fumadocs-ui/components/callout";
 
-## Heading
+**xschema** converts JSON Schema into native validators (Zod, Pydantic, etc.) with 98%+ compliance and full type safety.
 
-Hello World!
+## The Problem
+
+The JSON Schema ecosystem is fragmented. Every validation library:
+
+- Implements a different subset of features
+- Silently fails on complex schemas (refs, circular refs, remote refs)
+- Doesn't document which features actually work
+- Has poor DX with manual setup and no tooling
+
+You end up writing schemas that "should work" but break at runtime.
+
+## The Solution
+
+xschema solves this by:
+
+1. **Generating native code** - Output real Zod/ArkType/Effect/Valibot schemas, not runtime interpreters
+2. **Testing compliance** - Every adapter runs against the official JSON Schema Test Suite
+3. **Bundling schemas** - Resolves all `$ref` and normalizes drafts before generation
+4. **Providing transparency** - Exactly which features work, which don't, and why
+
+<Callout type="info" title="How it works">
+xschema's CLI parses your config, fetches schemas, resolves all references, bundles everything into self-contained units, then calls adapter CLIs to generate native code. Adapters receive "easy" input - no ref resolution needed.
+
+Learn more in [How it works](/docs/internals).
+</Callout>
+
+## Two Ways to Use xschema
 
 <Cards>
-  <Card title="Learn more about Tanstack Start" href="https://tanstack.com/start" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
+  <Card
+    title="Framework Mode"
+    description="Full integration with CLI, client, and type helpers. Define schemas in config files, generate code, use the runtime client."
+    href="/docs/typescript/framework/getting-started"
+  />
+  <Card
+    title="Library Mode"
+    description="Use adapters directly in your code. Coming soon."
+    href="/docs/typescript/library"
+  />
 </Cards>
 
-### CodeBlock
+**Framework mode** is the recommended path - it handles schema discovery, code generation, and provides a typed client for runtime lookups.
 
-```ts
-console.log('Hello World');
+## Quick Example
+
+```jsonc title=".xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    { "id": "User", "adapter": "@xschemadev/zod", "sourceType": "json", 
+      "source": { "type": "object", "properties": { "name": { "type": "string" } } } }
+  ]
+}
 ```
 
-#### Table
+```bash
+bunx xschema generate
+```
 
-| Head                            | Description                         |
-| ------------------------------- | ----------------------------------- |
-| `hello`                         | Hello World                         |
-| very **important**              | Hey                                 |
-| _Surprisingly_                  | Fumadocs                            |
-| very long text that looks weird | hello world hello world hello world |
+```typescript title="main.ts"
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen.js";
+
+const xschema = createXSchemaClient({ schemas });
+const user = xschema("User").parse({ name: "Alice" }); // typed!
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Getting Started" description="Choose your language and mode" href="/docs/getting-started" />
+  <Card title="TypeScript" description="Zod, ArkType, Effect, Valibot adapters" href="/docs/typescript" />
+  <Card title="CLI Reference" description="All commands and flags" href="/docs/cli" />
+  <Card title="Compliance" description="Test suite results per adapter" href="/docs/compliance" />
+</Cards>

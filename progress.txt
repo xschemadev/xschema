@@ -34,3 +34,18 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - pages listed in meta.json that don't exist yet are fine - fumadocs ignores them until files exist
   - typecheck command: `bun run types:check` in web/ directory
 ---
+
+## 2026-01-14 - US-003
+- Created docs introduction page at `web/content/docs/index.mdx`
+- Content includes:
+  - The problem (fragmented ecosystem, silent failures, no documentation)
+  - The solution (native code gen, compliance testing, bundling, transparency)
+  - Two ways to use xschema (framework vs library mode) with Cards
+  - Quick example showing config -> generate -> usage
+  - Next steps cards linking to getting-started, typescript, cli, compliance
+- Used fumadocs components: Cards, Card, Callout
+- **Learnings for future iterations:**
+  - fumadocs Callout component import: `import { Callout } from "fumadocs-ui/components/callout"`
+  - Cards/Card are from same import
+  - Keep intro focused on "why" and quick orientation, not deep technical details
+---

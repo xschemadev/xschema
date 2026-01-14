@@ -47,7 +47,7 @@
         "Link to getting-started and typescript sections",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: web/DOCUMENTATION_PLAN.md for vision. typescript/packages/client/README.md for product description."
     },
     {
