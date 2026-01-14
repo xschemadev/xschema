@@ -333,3 +333,19 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Results written to `{adapter}/compliance/results/{draft}.json` + `REPORT.md`
   - generate-compliance.ts discovers adapters from index.mdx files, requires results to exist
 ---
+
+## 2026-01-14 - US-018
+- Updated Zod adapter page at `web/content/docs/typescript/adapters/zod/index.mdx`
+- Changes made:
+  - Added overview table with package name (`@xschemadev/zod`), peer dep (`zod ^3.0.0`), compliance (100%)
+  - Updated installation instructions with all package managers
+  - Replaced inline JSON usage with framework mode example (config file + client usage)
+  - Removed incorrect "Limitations" section - Zod has 100% compliance
+  - Added `prefixItems` and `unevaluatedProperties` to supported features list
+  - Added Next Steps cards linking to compliance, getting-started, configuration, adapters
+  - Added fumadocs imports for Cards, Card, Callout
+- **Learnings for future iterations:**
+  - Zod has 100% compliance across all drafts - no limitations section needed
+  - Adapter pages should use framework mode examples (not standalone) since that's the recommended usage
+  - Overview tables are useful for quick reference: package name, peer dep, compliance %
+---

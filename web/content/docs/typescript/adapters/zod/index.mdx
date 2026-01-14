@@ -4,90 +4,129 @@ description: Generate Zod schemas from JSON Schema definitions
 icon: Shield
 ---
 
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
 The Zod adapter converts JSON Schema definitions into [Zod](https://zod.dev) validation schemas with full TypeScript type inference.
 
 ## Overview
 
-Zod is a TypeScript-first schema declaration and validation library. XSchema's Zod adapter provides:
+| | |
+|---|---|
+| **Package** | `@xschemadev/zod` |
+| **Peer Dependency** | `zod ^3.0.0` |
+| **Compliance** | 100% |
 
-- **High compliance** with JSON Schema specifications (98%+ for modern drafts)
+Zod is the most popular TypeScript validation library with a large ecosystem of integrations. The xschema Zod adapter generates native Zod schemas from JSON Schema with:
+
+- **100% compliance** with JSON Schema Test Suite (all supported drafts)
 - **Full type inference** - generated schemas include TypeScript types
-- **Runtime validation** - validate data at runtime with detailed error messages
+- **Runtime validation** - validate data with detailed error messages
 
 ## Installation
 
-The Zod adapter is included with the XSchema CLI. You just need Zod installed in your project:
-
 ```bash
-npm install zod
-# or
-bun add zod
+# with bun
+bun add @xschemadev/zod zod
+
+# with npm
+npm install @xschemadev/zod zod
+
+# with pnpm
+pnpm add @xschemadev/zod zod
 ```
 
-## Usage
+## Usage with Framework Mode
 
-Specify `"adapter": "zod"` in your schema definitions:
+The recommended way to use xschema is with the client. First, set up your config:
 
-```jsonc
+```jsonc title="user.xschema.jsonc"
 {
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
-      "id": "User",
-      "sourceType": "json",
-      "source": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email" },
-          "name": { "type": "string", "minLength": 1 },
-          "age": { "type": "integer", "minimum": 0 }
-        },
-        "required": ["id", "email", "name"]
-      },
-      "adapter": "zod"
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/zod"
     }
   ]
 }
 ```
 
-## Generated Output
+Run the generator:
 
-Running `xschema generate` produces:
-
-```typescript
-import { z } from "zod";
-
-export const User = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  name: z.string().min(1),
-  age: z.number().int().min(0).optional(),
-});
-
-export type User = z.infer<typeof User>;
+```bash
+bunx xschema generate
 ```
 
-## Using Generated Schemas
+Then use the generated schemas:
 
-```typescript
-import { User } from "./__generated__/schemas";
+```typescript title="app.ts"
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
 
-// Validate data
-const result = User.safeParse(userData);
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Get schema - returns a Zod schema
+const profileSchema = xschema("Profile");
+
+// Validate with safeParse (returns success/error)
+const result = profileSchema.safeParse({
+  id: "123",
+  email: "alice@example.com",
+});
+
 if (result.success) {
   console.log(result.data); // Fully typed!
 } else {
   console.error(result.error.issues);
 }
 
-// Parse and throw on error
-const user = User.parse(userData);
+// Or parse directly (throws on error)
+const profile = profileSchema.parse(userData);
+
+// Extract type for function signatures
+type Profile = XSchemaType<"user:Profile">;
+```
+
+## Generated Output
+
+For a JSON Schema like:
+
+```json title="profile.schema.json"
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["id", "email"]
+}
+```
+
+xschema generates:
+
+```typescript
+import { z } from "zod";
+
+const user_Profile = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  age: z.number().int().min(0).optional(),
+});
+type user_ProfileType = z.infer<typeof user_Profile>;
 ```
 
 ## Supported Features
 
-The Zod adapter supports the vast majority of JSON Schema keywords. See the [Compliance](/docs/typescript/adapters/zod/compliance) page for detailed coverage by JSON Schema draft.
+The Zod adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
+
+See the [Compliance](/docs/typescript/adapters/zod/compliance) page for the full breakdown by draft.
 
 ### Highlights
 
@@ -95,18 +134,33 @@ The Zod adapter supports the vast majority of JSON Schema keywords. See the [Com
 - String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
 - Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
 - String constraints (`minLength`, `maxLength`, `pattern`)
-- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`)
-- Object constraints (`required`, `additionalProperties`, `propertyNames`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`, `prefixItems`)
+- Object constraints (`required`, `additionalProperties`, `propertyNames`, `unevaluatedProperties`)
 - Composition (`allOf`, `anyOf`, `oneOf`, `not`)
 - Conditionals (`if`/`then`/`else`)
 - References (`$ref`, `$defs`)
 
-## Limitations
+## Next Steps
 
-Some advanced JSON Schema features have partial support:
-
-- `$dynamicRef` / `$dynamicAnchor` - complex dynamic references may not resolve correctly
-- `unevaluatedProperties` with cyclic refs - edge cases may pass incorrectly
-- Meta-schema vocabulary validation - custom vocabularies not fully supported
-
-See the [Compliance](/docs/typescript/adapters/zod/compliance) page for the full breakdown.
+<Cards>
+  <Card
+    title="Zod Compliance"
+    description="View detailed compliance by JSON Schema draft"
+    href="/docs/typescript/adapters/zod/compliance"
+  />
+  <Card
+    title="Framework Setup"
+    description="Complete getting started guide"
+    href="/docs/typescript/framework/getting-started"
+  />
+  <Card
+    title="Configuration"
+    description="All config file options"
+    href="/docs/typescript/framework/configuration"
+  />
+  <Card
+    title="Compare Adapters"
+    description="See all available adapters"
+    href="/docs/typescript/adapters"
+  />
+</Cards>

@@ -299,7 +299,7 @@
         "Link to compliance page",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/adapters/zod/package.json for package info. typescript/packages/adapters/zod/compliance/results/ for compliance."
     },
     {
