@@ -609,3 +609,25 @@ This requires a fix in the core parser, not the renderer.
 - The distinction between Python's `tuple[T1, T2, T3]` (exactly 3) and JSON Schema's behavior requires custom validation
 
 ---
+
+## Task: verify-tests-pass (COMPLETED)
+
+**Objective:** Verify all unit tests pass after the many compliance fixes
+
+**Test Results:**
+- Core package (python/packages/core): 79/79 tests passed
+- Pydantic adapter (python/packages/adapters/pydantic): 85/85 tests passed
+- Total: 164 tests, all green
+
+**Test Coverage:**
+- Parser tests: type inference, boolean schemas, string/number/object/array parsing, refs, unions, intersections, conditionals
+- Renderer tests: all node types, constraints, formats, tuples, objects, unions, discriminated unions, intersections, negation, conditionals
+- Integration tests: end-to-end schema processing
+- Error handling tests: CLI error cases, validation errors, edge cases
+
+**Notes:**
+- No new tests needed - existing test suite already covers the fixes made
+- Tests updated during individual fixes (test_renderer.py updated for strict types, model_dump expectations)
+- PRD requirement of 85+ tests exceeded (164 total)
+
+---
