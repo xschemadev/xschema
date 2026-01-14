@@ -235,7 +235,7 @@
         "Include examples for each source type",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/parser/parser.go for parsing and namespace derivation. cli/parser/types.go for structs. cli/retriever/retriever.go for header substitution. typescript/example/user.xschema.jsonc and subdir/another.xschema.jsonc for examples."
     },
     {

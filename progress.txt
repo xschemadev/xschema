@@ -82,3 +82,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - $schema URL is required for xschema to discover config files
   - .xschema/ contains xschema.gen.ts (code) and xschema.manifest.json (tracking)
 ---
+
+## 2026-01-14 - US-014
+- Created TypeScript framework config reference at `web/content/docs/typescript/framework/configuration.mdx`
+- Content includes:
+  - Config file structure overview
+  - `$schema` requirement and purpose
+  - Namespace behavior (defaults from filename, explicit override)
+  - Multiple config files behavior (merging, duplicate detection errors)
+  - Schemas array with required/optional fields
+  - Source types: file (relative paths), url (with retries/caching), json (inline)
+  - Headers and environment variable substitution (`${VAR}` syntax)
+  - `.env` auto-loading and `--env-file` flag
+  - Available adapters table
+  - Complete example with all source types
+- **Learnings for future iterations:**
+  - File paths are relative to config file's directory, not cwd
+  - Headers only allowed on URL sources (causes error otherwise)
+  - Environment variable substitution uses `${VAR}` syntax in header values
+  - xschema auto-loads .env files in project root
+---
