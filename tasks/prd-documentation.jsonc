@@ -112,7 +112,7 @@
         "Link to unsupported features page",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: web/content/docs/compliance/index.mdx for existing content. cli/compliance/ for how testing works. cli/unsupported/unsupported-features.json for exclusions."
     },
     {

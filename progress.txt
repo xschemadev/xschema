@@ -248,3 +248,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Compliance runner error in cli/compliance/runner.go:75
   - Env var substitution uses ${VAR} regex pattern in retriever
 ---
+
+## 2026-01-14 - US-007
+- Updated compliance overview page at `web/content/docs/compliance/index.mdx`
+- Content includes:
+  - What is the JSON Schema Test Suite (official test collection, industry standard)
+  - How xschema tests compliance (convert -> execute -> compare -> report)
+  - Static generation approach and benefits (type safety, performance, bundle size, predictability)
+  - How coverage is calculated with formula: `Passed / (Total - Unsupported) * 100`
+  - Explanation of why unsupported features are excluded (can't be implemented statically)
+  - Understanding results table (Passed, Failed, Unsupported, Coverage)
+  - Cards linking to all 4 adapter compliance pages with descriptions
+  - Card linking to unsupported features page
+- Fixed icon from `CheckCircle` to `CircleCheck` (lucide naming convention)
+- Also fixed same icon issue in `web/content/docs/typescript/adapters/valibot/index.mdx`
+- **Learnings for future iterations:**
+  - Lucide icon naming: `CircleCheck` not `CheckCircle` (noun-verb order)
+  - Build warning `[lucide-icons-plugin] Unknown icon detected:` indicates invalid icon name
+  - Unsupported features data in `cli/unsupported/unsupported-features.json`
+  - Compliance runner in `cli/compliance/runner.go`, fetcher in `cli/compliance/fetcher.go`
+  - Test suite version pinned in `cli/compliance/fetcher.go:20`
+---

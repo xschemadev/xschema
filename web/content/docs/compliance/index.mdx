@@ -1,44 +1,68 @@
 ---
 title: JSON Schema Compliance
-description: How XSchema validates against the official JSON Schema Test Suite
-icon: CheckCircle
+description: How xschema validates against the official JSON Schema Test Suite
+icon: CircleCheck
 ---
 
-XSchema adapters are tested against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite), ensuring reliable schema conversion across all supported validation libraries.
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
 
-## What is compliance testing?
+xschema adapters are tested against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite), ensuring reliable schema conversion across all supported validation libraries.
 
-The JSON Schema Test Suite is a collection of test cases that verify correct implementation of the JSON Schema specification. Each test case provides:
+## What is the JSON Schema Test Suite?
 
-- A JSON Schema
-- Sample data to validate
+The JSON Schema Test Suite is the official test collection maintained by the JSON Schema organization. It's the industry standard for verifying correct implementation of the JSON Schema specification across all drafts.
+
+Each test case provides:
+
+- A JSON Schema definition
+- Sample data to validate against the schema
 - Expected validation results (valid or invalid)
 
-XSchema runs these tests by:
-1. Converting each JSON Schema to native validation code (e.g., Zod, Valibot)
-2. Executing the generated validator against the test data
-3. Comparing results to expected outcomes
+The suite covers every keyword and edge case in the specification, from simple type checks to complex recursive references.
+
+## How xschema tests compliance
+
+xschema runs compliance tests by:
+
+1. **Converting** each JSON Schema to native validation code (Zod, ArkType, Effect, Valibot)
+2. **Executing** the generated validator against every test case
+3. **Comparing** actual results to expected outcomes
+4. **Reporting** pass/fail statistics per keyword and draft
+
+Tests run across all supported drafts: draft-03, draft-04, draft-06, draft-07, draft-2019-09, and draft-2020-12.
 
 ## Static generation approach
 
-Unlike runtime validators that interpret schemas on-the-fly, XSchema generates static validation code at build time. This approach offers:
+Unlike runtime validators that interpret schemas on-the-fly, xschema generates static validation code at build time. This approach offers:
 
 - **Type safety**: Full TypeScript type inference from schemas
 - **Performance**: No schema parsing at runtime
 - **Bundle size**: Only include the validation code you need
+- **Predictability**: The same schema always generates the same code
 
 However, static generation cannot support certain dynamic JSON Schema features that require runtime evaluation. See [Unsupported Features](/docs/compliance/unsupported-features) for these limitations.
 
-## Adapter compliance
+## How coverage is calculated
 
-Each adapter is tested across multiple JSON Schema drafts. Coverage percentages exclude unsupported features that are fundamental to static generation.
+Coverage percentages reflect real-world usability by excluding tests for features that are fundamentally incompatible with static code generation:
 
-<Cards>
-  <Card title="Zod" href="/docs/typescript/adapters/zod/compliance" />
-  <Card title="Valibot" href="/docs/typescript/adapters/valibot/compliance" />
-  <Card title="ArkType" href="/docs/typescript/adapters/arktype/compliance" />
-  <Card title="Effect" href="/docs/typescript/adapters/effect/compliance" />
-</Cards>
+```
+Coverage = Passed / (Total - Unsupported) * 100
+```
+
+**Unsupported features** are JSON Schema keywords that require runtime scope tracking:
+- `$dynamicRef` / `$dynamicAnchor` - dynamic reference resolution
+- `$recursiveRef` / `$recursiveAnchor` - recursive reference resolution
+- `unevaluatedProperties` / `unevaluatedItems` with applicators - annotation tracking
+
+These features are excluded because no static code generator can implement them - they require a runtime interpreter by design. A 100% coverage score means the adapter handles every test case that can possibly be supported through static code generation.
+
+<Callout type="info">
+**Why exclude unsupported features?**
+
+Counting unsupported features as failures would penalize adapters for something impossible to fix. The coverage metric measures how well an adapter handles the schemas you'll actually use in practice.
+</Callout>
 
 ## Understanding results
 
@@ -47,8 +71,27 @@ Each adapter's compliance report shows:
 | Term | Meaning |
 | ---- | ------- |
 | **Passed** | Tests where the generated validator produces correct results |
-| **Failed** | Tests with unexpected behavior (potential bugs) |
-| **Unsupported** | Tests excluded due to fundamental limitations |
-| **Coverage** | Pass rate excluding unsupported features |
+| **Failed** | Tests with unexpected behavior (potential bugs to investigate) |
+| **Unsupported** | Tests excluded due to fundamental static generation limitations |
+| **Coverage** | Pass rate: `Passed / (Total - Unsupported) * 100` |
 
 A coverage of 98%+ means the adapter handles nearly all practical JSON Schema use cases correctly.
+
+## Adapter compliance
+
+Each adapter is tested across all JSON Schema drafts. Click an adapter to see detailed results by keyword.
+
+<Cards>
+  <Card title="Zod" href="/docs/typescript/adapters/zod/compliance" description="100% coverage" />
+  <Card title="ArkType" href="/docs/typescript/adapters/arktype/compliance" description="100% coverage" />
+  <Card title="Effect" href="/docs/typescript/adapters/effect/compliance" description="100% coverage" />
+  <Card title="Valibot" href="/docs/typescript/adapters/valibot/compliance" description="98.9% coverage" />
+</Cards>
+
+## Unsupported features
+
+Some JSON Schema features cannot be implemented through static code generation. These are documented with detailed explanations of why they're incompatible.
+
+<Cards>
+  <Card title="Unsupported Features" href="/docs/compliance/unsupported-features" description="Keywords that require runtime evaluation" />
+</Cards>
