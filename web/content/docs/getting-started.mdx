@@ -1,0 +1,103 @@
+---
+title: Getting Started
+description: Choose your language and usage mode to get started with xschema
+icon: Rocket
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+xschema supports multiple languages and two usage modes. This guide helps you find the right path.
+
+## Choose Your Language
+
+<Cards>
+  <Card
+    title="TypeScript"
+    description="Zod, ArkType, Effect, and Valibot adapters with full type inference"
+    href="/docs/typescript"
+  />
+</Cards>
+
+<Callout type="info">
+Python support is planned. Follow the project for updates.
+</Callout>
+
+## Framework vs Library Mode
+
+Once you've chosen a language, pick a usage mode:
+
+### Framework Mode (Recommended)
+
+Best for: **Most projects** - especially when schemas come from external sources (APIs, files, URLs).
+
+- Define schemas in `.xschema.jsonc` config files
+- Run `xschema generate` to produce native validators
+- Use `createXSchemaClient` for typed schema lookups at runtime
+- Schemas are discovered automatically via `$schema` URL
+
+```bash
+bunx xschema generate
+```
+
+```typescript
+const xschema = createXSchemaClient({ schemas });
+const user = xschema("User").parse(data); // fully typed
+```
+
+**Benefits:**
+- Automatic schema discovery and bundling
+- Handles `$ref` resolution, remote schemas, circular refs
+- Type-safe client with autocomplete
+- Works with any schema source (file, URL, inline)
+
+[Get started with TypeScript framework mode →](/docs/typescript/framework/getting-started)
+
+### Library Mode (Coming Soon)
+
+Best for: **Advanced use cases** - when you need direct control over schema parsing.
+
+- Use adapters directly without the CLI
+- Call `parse()` and `convert()` yourself
+- No config files or code generation step
+
+```typescript
+import { parse, convert } from "@xschemadev/zod";
+
+const ir = parse(jsonSchema);
+const code = convert(ir);
+```
+
+<Callout type="warn">
+Library mode is not yet documented. Use framework mode for now.
+</Callout>
+
+## Quick Decision
+
+| Scenario | Recommendation |
+|----------|----------------|
+| Fetching schemas from APIs | Framework mode |
+| Schemas stored in files | Framework mode |
+| Need runtime schema lookups | Framework mode |
+| Building a custom tool | Library mode (when available) |
+| Prototyping / one-off conversion | Library mode (when available) |
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="TypeScript Getting Started"
+    description="Set up xschema with Zod, ArkType, Effect, or Valibot"
+    href="/docs/typescript/framework/getting-started"
+  />
+  <Card
+    title="CLI Reference"
+    description="All xschema commands and flags"
+    href="/docs/cli"
+  />
+  <Card
+    title="Compare Adapters"
+    description="Choose the right validator library"
+    href="/docs/typescript/adapters"
+  />
+</Cards>

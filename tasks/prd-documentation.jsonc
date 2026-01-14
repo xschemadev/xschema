@@ -61,7 +61,7 @@
         "Cards/links to TypeScript getting started (only language currently)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/language/ for supported languages. typescript/packages/adapters/ for available adapters."
     },
     {

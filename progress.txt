@@ -121,3 +121,17 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - ArkType uses direct call and instanceof type.errors for error checking
   - Effect uses Schema.decodeUnknownEither pattern
 ---
+
+## 2026-01-14 - US-004
+- Created general getting-started page at `web/content/docs/getting-started.mdx`
+- Content includes:
+  - Language selection (TypeScript only currently, Python planned)
+  - Framework vs Library mode explanation
+  - Decision table for when to use each mode
+  - Quick code examples for both modes
+  - Next steps cards linking to TypeScript getting-started, CLI, and adapters
+- **Learnings for future iterations:**
+  - Cards import: `import { Card, Cards } from "fumadocs-ui/components/card"`
+  - Callout type="warn" for warnings, type="info" for info
+  - TypeScript is the only language currently (cli/language/langs/ only has typescript)
+---
