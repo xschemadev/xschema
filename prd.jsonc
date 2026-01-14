@@ -314,8 +314,8 @@
         "Calculate final compliance percentage for passable tests: passed/(passed+failed) >= 95%",
         "Run --dev-report and commit updated REPORT.md",
       ],
-      "passes": false,
-      "notes": "Goal: 100% compliance for features we claim to support",
+      "passes": true,
+      "notes": "Verified. draft2020-12: 1006 passed, 33 failed, 201 unsupported = 96.8% compliance. All 6 drafts tested via --dev-report: draft3=97.4%, draft4=96.8%, draft6=97.2%, draft7=97.4%, draft2019-09=96.9%, draft2020-12=96.8%. REPORT.md generated and committed. Target of 95% exceeded across all drafts.",
     },
     {
       "id": "verify-all-drafts",

@@ -724,3 +724,44 @@ This requires a fix in the core parser, not the renderer.
 - `Any` type is correct for unresolved refs per JSON Schema semantics
 
 ---
+
+## Task: compliance-full-run (COMPLETED)
+
+**Objective:** Run full compliance suite and verify target reached
+
+**Results:**
+
+| Draft | Passed | Failed | Unsupported | Coverage |
+|-------|--------|--------|-------------|----------|
+| draft2019-09 | 993 | 32 | 178 | 96.9% |
+| draft2020-12 | 1006 | 33 | 201 | 96.8% |
+| draft3 | 415 | 11 | 0 | 97.4% |
+| draft4 | 577 | 19 | 0 | 96.8% |
+| draft6 | 786 | 23 | 0 | 97.2% |
+| draft7 | 870 | 23 | 0 | 97.4% |
+
+**Target Verification:**
+- ✅ ~650+ passed out of ~920 → **1006 passed** (exceeds target)
+- ✅ passed/(passed+failed) >= 95% → **96.8%** (exceeds target)
+- ✅ Unsupported features documented → **201 tests** in REPORT.md
+- ✅ REPORT.md generated via --dev-report
+
+**Remaining 33 Failures (draft2020-12):**
+Known edge cases that would require significant refactoring:
+- additionalProperties with patternProperties/allOf interaction (6)
+- allOf combined with anyOf/oneOf validation intersection (3)
+- prefixItems JavaScript pseudo-array edge cases (5)
+- ref recursive/relative URI cases (8)
+- unevaluatedItems/unevaluatedProperties without annotation tracking (11)
+
+**Files Generated:**
+- python/packages/adapters/pydantic/compliance/results/REPORT.md
+
+**Key Insight:**
+The 33 failures fall into two categories:
+1. Complex keyword interactions (additionalProperties + allOf/patternProperties) - would need full annotation tracking
+2. Edge cases in tuple handling (prefixItems with empty/pseudo-arrays) - would need Pydantic workarounds
+
+These are documented as known limitations, not bugs. The 96.8% compliance rate exceeds the 95% target.
+
+---
