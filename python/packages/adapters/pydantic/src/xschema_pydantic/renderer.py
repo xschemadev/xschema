@@ -1500,20 +1500,24 @@ def render_not(node: NotNode, name: str) -> RenderResult:
         code_parts.append(schema_result.code)
 
     # Create validator that rejects matching values
+    # Key insight: if validate_python succeeds, value matched → reject
+    # If it raises ANY exception, value didn't match → accept
+    # We use a flag to separate success from exception, avoiding the trap of
+    # raising inside try-except (which would catch our own error on nested not)
     validator_name = f"_not_{name.lower()}"
     validator_lines = [f"def {validator_name}(v) -> Any:"]
     validator_lines.append(f"    validator = TypeAdapter({schema_result.type_expr})")
+    validator_lines.append("    matched = False")
     validator_lines.append("    try:")
     validator_lines.append("        validator.validate_python(v)")
-    validator_lines.append("        # Value matched the schema - reject it")
+    validator_lines.append("        matched = True")
+    validator_lines.append("    except Exception:")
+    validator_lines.append("        pass")
+    validator_lines.append("    if matched:")
     validator_lines.append(
         "        raise ValueError('Value must NOT match the schema')"
     )
-    validator_lines.append("    except ValueError as e:")
-    validator_lines.append("        if 'must NOT match' in str(e):")
-    validator_lines.append("            raise")
-    validator_lines.append("        # Value didn't match - that's what we want")
-    validator_lines.append("        return v")
+    validator_lines.append("    return v")
 
     code_parts.append("\n".join(validator_lines))
 

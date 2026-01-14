@@ -290,8 +290,8 @@
         "Verify negation logic is correct",
         "Check if the failure is related to unsupported unevaluatedProperties",
       ],
-      "passes": false,
-      "notes": "Very close to 100%",
+      "passes": true,
+      "notes": "Fixed. 100% (38/38 passing, 2 unsupported due to unevaluatedProperties). Key fix: restructured not validator to use a matched flag instead of raising inside try-except, which caused nested not validators to incorrectly propagate errors (double negation test was failing).",
     },
     // ============================================
     // PHASE 7: Final Verification

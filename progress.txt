@@ -260,3 +260,64 @@
 - For double-quoted strings: keep `\"` as `\"` (json.dumps output works directly)
 
 ---
+
+## Task: fix-not-validation (COMPLETED)
+
+**Objective:** Fix remaining not validation edge case (was 37/38, now 38/38)
+
+**Root Cause:**
+- Double negation test (`not: {not: {}}`) was failing
+- The `render_not` function raised `ValueError('must NOT match')` inside a try-except block
+- When nested `not` validators raised this error, the outer `not` would catch it via `except ValueError`
+- The check `'must NOT match' in str(e)` would match the wrapped exception message
+- This caused the outer `not` to re-raise instead of accepting the value
+
+**Trace of bug:**
+1. `not: {}` (inner) - empty schema matches everything, so negation rejects everything
+2. Inner validator validates `"foo"` against `Any` → succeeds → raises "must NOT match"
+3. `not: {not: {}}` (outer) catches this ValueError
+4. Checks `'must NOT match' in str(e)` → True (Pydantic wraps the error message)
+5. Re-raises instead of accepting → BUG
+
+**Solution:**
+- Restructured validator to use a `matched` flag instead of raising inside try-except
+- Pattern: try/except sets flag, then check flag after block to decide action
+- This avoids the trap of catching our own raised exception
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+- Function: `render_not()` (lines ~1502-1520)
+- Changed from:
+  ```python
+  try:
+      validator.validate_python(v)
+      raise ValueError('must NOT match')  # caught by our own except!
+  except ValueError as e:
+      if 'must NOT match' in str(e):
+          raise  # problematic for nested not
+      return v
+  ```
+- Changed to:
+  ```python
+  matched = False
+  try:
+      validator.validate_python(v)
+      matched = True
+  except Exception:
+      pass
+  if matched:
+      raise ValueError('must NOT match')
+  return v
+  ```
+
+**Testing Results:**
+- ✅ not: 100% (38/38 passing, 2 unsupported due to unevaluatedProperties)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insight:**
+- Never raise inside a try-except if you plan to catch that exception type
+- Use flags to separate "did it succeed" from "what to do about it"
+- Pydantic wraps exceptions, so string matching on error messages is fragile
+
+---
