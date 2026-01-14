@@ -365,7 +365,7 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: web/scripts/generate-compliance.ts and web/scripts/generate-unsupported-features.ts. May need path updates if structure changed."
     },
     {

@@ -185,3 +185,21 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Valibot fails on properties named `__proto__`, `constructor`, `toString` (Valibot library bug)
   - Peer dependencies from `package.json` peerDependencies field
 ---
+
+## 2026-01-14 - US-022
+- Verified compliance pages render correctly after restructure
+- Ran `bun run generate:compliance` - generated 4 adapter compliance pages (zod, arktype, effect, valibot)
+- Ran `bun run generate:unsupported-features` - generated unsupported-features.mdx
+- All pages render correctly with:
+  - Summary tables with pass/fail/unsupported counts
+  - Tabs component for different drafts (draft2020-12, draft2019-09, etc.)
+  - Accordions for keyword details
+  - Valibot shows 98.9% with detailed failure info
+- Typecheck passes
+- Dev server verification confirms all pages load correctly
+- **Learnings for future iterations:**
+  - Generate script name is `generate:unsupported-features` not `generate:unsupported`
+  - Generator scripts discover adapters from existing index.mdx files in adapter directories
+  - Compliance results are read from `typescript/packages/adapters/*/compliance/results/`
+  - Generated MDX files include fumadocs components (Tabs, Tab, Accordions, Accordion)
+---
