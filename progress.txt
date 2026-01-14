@@ -233,3 +233,49 @@
 - Runtime identifier "python" (not "uv") to match language name
 
 **Result**: CI integration complete, compliance testing works locally, ready for GitHub Actions.
+
+## 2026-01-14: ci-workflow-python (COMPLETE)
+
+**Task**: Update CI workflow to build and typecheck Python packages
+
+**Implementation**:
+1. Added paths filter for python/ in .github/workflows/ci.yml
+   - Added python output to changes job: `python: ${{ steps.filter.outputs.python }}`
+   - Added python filter: `python: - 'python/**'`
+   - Follows same pattern as cli and typescript filters
+
+2. Added py-build job
+   - Runs on ubuntu-latest
+   - Depends on changes job, runs only if python/ changed
+   - Setup: actions/checkout@v4, actions/setup-python@v5 (3.12), astral-sh/setup-uv@v4
+   - Steps:
+     1. uv sync (install dependencies)
+     2. uv run mypy packages/ (type check)
+     3. uv run pytest (run tests)
+   - Mirrors ts-build and go-test job patterns
+
+3. Added py-build-result passthrough job
+   - Allows branch protection to depend on this job
+   - Always runs (if: always())
+   - Fails if py-build failed, succeeds if passed or skipped
+   - Matches go-test-result and ts-build-result pattern
+
+4. Fixed mypy error in Pydantic adapter
+   - renderer.py:507 had duplicate `annotations` variable definition
+   - Changed second definition to `constraint_annotations` in elif branch
+   - Updated all references in that branch to use new name
+   - mypy now passes with no errors
+
+5. Verified CI commands work locally
+   - uv sync: resolves 19 packages ✓
+   - uv run mypy packages/: no issues found in 17 source files ✓
+   - uv run pytest: 173 tests passed ✓
+
+**Decisions**:
+- Used Python 3.12 (latest stable) for CI
+- Run mypy on packages/ dir to check all workspace members
+- Run pytest without args - discovers all tests in workspace
+- Fixed mypy issue immediately (can't add CI that would fail)
+- Renamed variable instead of moving declaration to avoid scope issues
+
+**Result**: CI workflow operational, all Python checks pass locally, ready for GitHub Actions integration.

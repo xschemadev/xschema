@@ -95,7 +95,7 @@
         "verify CI runs on python/ changes only",
         "verify CI passes with current python code"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Follow same pattern as go-test and ts-build jobs"
     },
     {

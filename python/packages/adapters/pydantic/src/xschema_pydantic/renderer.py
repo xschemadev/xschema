@@ -504,25 +504,25 @@ def render_number(node: NumberNode) -> RenderResult:
     elif has_constraints:
         # Use Annotated with annotated-types constraints
         imports.add("from typing import Annotated")
-        annotations: list[str] = []
+        constraint_annotations: list[str] = []
 
         if node.constraints.minimum is not None:
             imports.add("from annotated_types import Ge")
-            annotations.append(f"Ge({node.constraints.minimum})")
+            constraint_annotations.append(f"Ge({node.constraints.minimum})")
         if node.constraints.exclusive_minimum is not None:
             imports.add("from annotated_types import Gt")
-            annotations.append(f"Gt({node.constraints.exclusive_minimum})")
+            constraint_annotations.append(f"Gt({node.constraints.exclusive_minimum})")
         if node.constraints.maximum is not None:
             imports.add("from annotated_types import Le")
-            annotations.append(f"Le({node.constraints.maximum})")
+            constraint_annotations.append(f"Le({node.constraints.maximum})")
         if node.constraints.exclusive_maximum is not None:
             imports.add("from annotated_types import Lt")
-            annotations.append(f"Lt({node.constraints.exclusive_maximum})")
+            constraint_annotations.append(f"Lt({node.constraints.exclusive_maximum})")
         if node.constraints.multiple_of is not None:
             imports.add("from annotated_types import MultipleOf")
-            annotations.append(f"MultipleOf({node.constraints.multiple_of})")
+            constraint_annotations.append(f"MultipleOf({node.constraints.multiple_of})")
 
-        annotation_str = ", ".join(annotations)
+        annotation_str = ", ".join(constraint_annotations)
         type_expr = f"Annotated[{base_type}, {annotation_str}]"
     else:
         type_expr = base_type
