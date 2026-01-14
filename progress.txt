@@ -102,3 +102,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Environment variable substitution uses `${VAR}` syntax in header values
   - xschema auto-loads .env files in project root
 ---
+
+## 2026-01-14 - US-015
+- Created TypeScript framework client reference at `web/content/docs/typescript/framework/client.mdx`
+- Content includes:
+  - createXSchemaClient function with options table
+  - Schema lookup with namespace:id format
+  - defaultNamespace shorthand behavior
+  - TypeScript integration (autocomplete, compile-time errors)
+  - Runtime error handling
+  - XSchemaType helper for type extraction
+  - Adapter-specific usage examples for Zod, ArkType, Effect, Valibot
+  - Schema types explained (schema+type, type-only, schema-only)
+  - Complete example with API handler pattern
+- **Learnings for future iterations:**
+  - XSchemaType only accepts full namespace:id keys (not shorthand)
+  - Error message for unknown schema: "Unknown schema: X. Run `xschema generate`."
+  - ArkType uses direct call and instanceof type.errors for error checking
+  - Effect uses Schema.decodeUnknownEither pattern
+---

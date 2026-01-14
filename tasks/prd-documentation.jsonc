@@ -252,7 +252,7 @@
         "Show examples with ArkType (direct call, instanceof type.errors)",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/client/src/index.ts for implementation. typescript/packages/client/README.md for usage. typescript/example/main.ts for real example."
     },
     {
