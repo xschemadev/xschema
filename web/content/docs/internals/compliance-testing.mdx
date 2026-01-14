@@ -5,16 +5,282 @@ icon: TestTube
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Steps, Step } from "fumadocs-ui/components/steps";
 
-<Callout type="info">
-This page is coming soon. See the [compliance overview](/docs/compliance) for what compliance means.
+Compliance testing runs adapters against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to verify correctness.
+
+## The `xschema compliance` Command
+
+Run compliance tests from within an adapter's package directory:
+
+```bash
+# From adapter directory (e.g., typescript/packages/adapters/zod/)
+xschema compliance
+```
+
+### Available Flags
+
+| Flag | Short | Description | Default |
+| ---- | ----- | ----------- | ------- |
+| `--draft` | `-d` | Test specific draft only | All drafts |
+| `--keyword` | `-k` | Test specific keyword only | All keywords |
+| `--dev-report` | | Write results to `compliance/results/` | false |
+| `--adapter-path` | `-p` | Path to adapter directory | Current directory |
+| `--verbose` | `-v` | Show verbose output | false |
+| `--profile` | | Print timing breakdown | false |
+| `--concurrency` | `-c` | Number of parallel jobs | min(8, num_cpus) |
+| `--lang` | `-l` | Language | typescript |
+
+### Examples
+
+```bash
+# Run all drafts, print results to terminal
+xschema compliance
+
+# Run all drafts and write results for docs generation
+xschema compliance --dev-report
+
+# Test specific draft only
+xschema compliance --draft draft2020-12
+
+# Test specific keyword across all drafts
+xschema compliance --keyword additionalProperties
+
+# Test specific keyword for specific draft
+xschema compliance --draft draft2020-12 --keyword additionalProperties
+
+# Run from different directory
+xschema compliance --adapter-path ../arktype
+
+# Debug with verbose output and timing
+xschema compliance --verbose --profile
+```
+
+## How It Works
+
+<Steps>
+<Step>
+### Fetch Test Suite
+
+The JSON Schema Test Suite is downloaded from GitHub and cached at `~/.cache/xschema/`. The version is pinned to ensure reproducible results.
+
+```
+~/.cache/xschema/json-schema-test-suite-Test-JSON-Schema-Acceptance-1.035/
+```
+
+If the cache exists, no download occurs.
+</Step>
+
+<Step>
+### Load Test Cases
+
+Test cases are loaded from the suite's `tests/{draft}/` directories. Each JSON file contains test groups for a specific keyword:
+
+```json
+// tests/draft2020-12/additionalProperties.json
+[
+  {
+    "description": "additionalProperties being false does not allow...",
+    "schema": { ... },
+    "tests": [
+      { "description": "no additional properties is valid", "data": {}, "valid": true },
+      { "description": "an additional property is invalid", "data": {"foo": 1}, "valid": false }
+    ]
+  }
+]
+```
+</Step>
+
+<Step>
+### Bundle Schemas
+
+Each test schema is bundled using the same bundler as `xschema generate`. This ensures adapters receive the same input format as production use.
+</Step>
+
+<Step>
+### Generate Code via Adapter
+
+The bundled schemas are sent to the adapter CLI via stdin/stdout JSON protocol. The adapter returns generated validator code.
+</Step>
+
+<Step>
+### Generate Test Harness
+
+A language-specific test harness is generated that:
+1. Imports the generated validators
+2. Runs each test case against the validator
+3. Reports pass/fail for each test
+</Step>
+
+<Step>
+### Execute Tests
+
+The harness is executed (e.g., via `bun run`) and results are collected. Each test is marked as:
+- **Passed**: Output matched expected `valid` value
+- **Failed**: Output didn't match expected value
+- **Skipped**: Adapter returned type-only output (no runtime validator)
+- **Unsupported**: Test uses features that can't be statically compiled
+</Step>
+
+<Step>
+### Report Results
+
+Results are aggregated by keyword and draft, then either:
+- Printed to terminal (default)
+- Written to `compliance/results/` (with `--dev-report`)
+</Step>
+</Steps>
+
+## Coverage Calculation
+
+Coverage is calculated as:
+
+```
+Coverage = Passed / (Total - Unsupported) * 100
+```
+
+Unsupported features are excluded because they represent fundamental limitations of static code generation (e.g., `$dynamicRef`, network-dependent validation). See [Unsupported Features](/docs/compliance/unsupported-features) for the full list.
+
+## The `--dev-report` Flag
+
+The `--dev-report` flag writes results to the adapter's `compliance/results/` directory:
+
+```
+typescript/packages/adapters/zod/compliance/results/
+  draft2020-12.json
+  draft2019-09.json
+  draft7.json
+  draft6.json
+  draft4.json
+  draft3.json
+  REPORT.md
+```
+
+<Callout type="warn">
+`--dev-report` cannot be combined with `--draft` or `--keyword` filters. It always runs all tests.
 </Callout>
 
-## Coming Soon
+### JSON Files
 
-This page will cover:
+Each draft produces a JSON file with detailed results:
 
-- The `xschema compliance` command
-- Available flags (--draft, --keyword, --dev-report, --adapter-path)
-- Test suite download and caching
-- How compliance results flow into documentation
+```json
+{
+  "draft": "draft2020-12",
+  "keywords": [
+    {
+      "keyword": "additionalProperties",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "total": 24,
+      "failures": []
+    }
+  ],
+  "summary": {
+    "passed": 1234,
+    "failed": 0,
+    "skipped": 0,
+    "total": 1234,
+    "percentage": 100.0,
+    "unsupportedFeatures": { "count": 42, "items": [...] }
+  }
+}
+```
+
+### REPORT.md
+
+A human-readable markdown report is also generated with summary tables and failure details.
+
+## Docs Generation Flow
+
+The compliance results flow into the documentation via two generation scripts:
+
+```
+xschema compliance --dev-report
+        │
+        ▼
+compliance/results/*.json
+        │
+        ▼
+web/scripts/generate-compliance.ts
+        │
+        ▼
+web/content/docs/typescript/adapters/{adapter}/compliance.mdx
+```
+
+<Steps>
+<Step>
+### Run Compliance Tests
+
+From each adapter directory, run:
+
+```bash
+xschema compliance --dev-report
+```
+
+This generates `compliance/results/*.json` files.
+</Step>
+
+<Step>
+### Generate Compliance Pages
+
+From the `web/` directory:
+
+```bash
+bun run generate:compliance
+```
+
+This script:
+1. Discovers adapters from `web/content/docs/{lang}/adapters/{adapter}/index.mdx`
+2. Requires compliance results at `{lang}/packages/adapters/{adapter}/compliance/results/`
+3. Generates `compliance.mdx` pages with tabs, tables, and accordions
+</Step>
+
+<Step>
+### Build Docs
+
+The generated pages are built with the rest of the docs:
+
+```bash
+bun run build
+```
+</Step>
+</Steps>
+
+## Supported Drafts
+
+The compliance runner tests against these JSON Schema drafts:
+
+- `draft2020-12` (latest)
+- `draft2019-09`
+- `draft7`
+- `draft6`
+- `draft4`
+- `draft3`
+
+All schemas are normalized to draft2020-12 internally, so older drafts are transformed before adapter invocation.
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="Unsupported Features"
+    description="Features excluded from compliance testing"
+    href="/docs/compliance/unsupported-features"
+    icon="AlertCircle"
+  />
+  <Card
+    title="Adapter Development"
+    description="Build a new adapter"
+    href="/docs/internals/adapters"
+    icon="Plug"
+  />
+  <Card
+    title="Compliance Overview"
+    description="What compliance means"
+    href="/docs/compliance"
+    icon="CircleCheck"
+  />
+</Cards>

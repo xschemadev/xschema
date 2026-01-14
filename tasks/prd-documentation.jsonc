@@ -182,7 +182,7 @@
         "Explain how compliance results flow into auto-generated docs",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/cmd/compliance.go for flags. cli/compliance/fetcher.go for caching. cli/compliance/report.go for --dev-report. web/scripts/generate-compliance.ts for docs generation."
     },
     {

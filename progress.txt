@@ -313,3 +313,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Adapter bin name must match adapter name in xschema configs (e.g. xschema-zod)
   - The exhaustive switch pattern with `const _: never = node` catches missing node kinds at compile time
 ---
+
+## 2026-01-14 - US-011
+- Created compliance testing guide at `web/content/docs/internals/compliance-testing.mdx`
+- Content includes:
+  - `xschema compliance` command documentation with all flags
+  - Examples for common use cases (specific draft, keyword filtering, dev-report)
+  - How it works: 7-step process (fetch suite, load tests, bundle, generate via adapter, generate harness, execute, report)
+  - Coverage calculation formula: `Passed / (Total - Unsupported) * 100`
+  - `--dev-report` flag behavior and output files (JSON per draft + REPORT.md)
+  - Docs generation flow: compliance results -> generate-compliance.ts -> MDX pages
+  - Supported drafts list (draft2020-12 through draft3)
+  - Next steps cards to unsupported-features, adapters, compliance overview
+- Used fumadocs components: Callout, Cards, Card, Steps, Step
+- **Learnings for future iterations:**
+  - Test suite cached at `~/.cache/xschema/json-schema-test-suite-{version}/`
+  - Test suite version pinned in `cli/compliance/fetcher.go:20`
+  - `--dev-report` cannot combine with `--draft` or `--keyword` (enforced in compliance.go:76)
+  - Results written to `{adapter}/compliance/results/{draft}.json` + `REPORT.md`
+  - generate-compliance.ts discovers adapters from index.mdx files, requires results to exist
+---
