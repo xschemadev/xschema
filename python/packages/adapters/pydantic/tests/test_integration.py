@@ -325,11 +325,11 @@ def test_schema_with_advanced_features():
         assert obj3.data is True
 
         # Test DateRange (class name is PascalCase)
+        # Note: Format is annotation-only per JSON Schema 2020-12, so dates are strings
         AdvancedDateRange = getattr(module, "AdvancedDateRange")
-        from datetime import date
 
-        date_range = AdvancedDateRange(start=date(2024, 1, 1), end=date(2024, 12, 31))
-        assert date_range.start == date(2024, 1, 1)
-        assert date_range.end == date(2024, 12, 31)
+        date_range = AdvancedDateRange(start="2024-01-01", end="2024-12-31")
+        assert date_range.start == "2024-01-01"
+        assert date_range.end == "2024-12-31"
 
         del sys.modules["advanced_schemas"]

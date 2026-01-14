@@ -80,8 +80,8 @@
         "Check if formats need to be explicitly enabled in Pydantic config",
         "Handle unknown formats gracefully (should not fail, just skip validation)",
       ],
-      "passes": false,
-      "notes": "Format validation is opt-in in JSON Schema. Check if we need to adjust approach.",
+      "passes": true,
+      "notes": "Fixed. 100% (133/133). Format is now treated as annotation-only per JSON Schema draft 2020-12 spec. Format values are preserved in IR but don't affect validation. This matches the spec where format validation is opt-in via format-assertion vocabulary.",
     },
     {
       "id": "fix-ref-validation",

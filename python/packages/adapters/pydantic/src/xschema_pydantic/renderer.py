@@ -255,8 +255,30 @@ def render_string(node: StringNode) -> RenderResult:
 def _render_format(fmt: str, constraints: Any) -> RenderResult | None:
     """Render format string types to Pydantic types.
 
-    Returns None for unknown formats (caller should use str).
+    Returns None to treat format as annotation-only (no validation).
+
+    JSON Schema draft 2020-12 specifies that the format keyword is an
+    annotation by default, not a validation keyword. Format validation
+    only occurs when explicitly enabled via the format-assertion vocabulary
+    in the meta-schema.
+
+    For compliance with the JSON Schema spec, we treat format as annotation-only.
+    This means all format values are valid - format is just metadata, not validation.
+
+    Users who want format validation can:
+    1. Add explicit validation in their application code
+    2. Use Pydantic's built-in types directly (EmailStr, AnyUrl, etc.)
+    3. Create custom validators for specific formats
+
+    See: https://json-schema.org/draft/2020-12/json-schema-validation#name-format
     """
+    # Always return None to treat format as annotation-only
+    # This ensures compliance with JSON Schema draft 2020-12 semantics
+    return None
+
+    # NOTE: The code below is preserved for reference if format validation
+    # is ever made configurable. For now, it's unreachable.
+
     imports: set[str] = set()
 
     # Email format

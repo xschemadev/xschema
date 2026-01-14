@@ -631,3 +631,43 @@ This requires a fix in the core parser, not the renderer.
 - PRD requirement of 85+ tests exceeded (164 total)
 
 ---
+
+## Task: fix-format-validation (COMPLETED)
+
+**Objective:** Fix format string validation (was 0/133, now 100%)
+
+**Root Cause:**
+- JSON Schema draft 2020-12 treats the `format` keyword as an **annotation by default**, not a validation keyword
+- Format validation only occurs when explicitly enabled via the `format-assertion` vocabulary in the meta-schema
+- Our adapter was enforcing format validation (using Pydantic's EmailStr, UUID, date, datetime, etc.) when it should have been annotation-only
+
+**Solution:**
+- Modified `_render_format()` in renderer.py to always return `None`
+- This causes format values to be ignored during rendering, falling through to base `StrictStr` type
+- Format values are still preserved in the IR for other uses (documentation, client generation, etc.)
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Function: `_render_format()` now returns `None` unconditionally
+  - Added comprehensive docstring explaining JSON Schema 2020-12 format semantics
+  - Preserved old format-specific code as comments for reference if format validation is ever made configurable
+- File: `python/packages/adapters/pydantic/tests/test_renderer.py`
+  - Updated `test_render_string_format_email`, `test_render_string_format_uuid`, `test_render_string_format_date`, `test_render_string_format_datetime` to expect `StrictStr` instead of format-specific types
+- File: `python/packages/adapters/pydantic/tests/test_integration.py`
+  - Updated DateRange test to use string values instead of Python date objects
+
+**Testing Results:**
+- ✅ format: 100% (133/133 tests passing) - was 0%
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- JSON Schema format semantics changed significantly in draft 2020-12
+- Earlier drafts (draft-04 through draft-07) had format as optional validation
+- Draft 2020-12 made format annotation-only by default, requiring vocabulary opt-in for validation
+- This is a breaking change for users who relied on format validation, but necessary for compliance
+- Users who want format validation can use Pydantic's types directly in their code
+
+**See:** https://json-schema.org/draft/2020-12/json-schema-validation#name-format
+
+---

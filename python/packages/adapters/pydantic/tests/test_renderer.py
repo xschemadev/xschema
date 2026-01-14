@@ -79,35 +79,52 @@ def test_render_string_with_pattern():
 
 
 def test_render_string_format_email():
-    """Test string with email format."""
+    """Test string with email format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    Format values are preserved in the IR but don't affect validation.
+    """
     node = StringNode(format="email")
     result = render(node, "Test")
-    assert result.type_expr == "EmailStr"
-    assert "from pydantic import EmailStr" in result.imports
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
 
 
 def test_render_string_format_uuid():
-    """Test string with uuid format."""
+    """Test string with uuid format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
     node = StringNode(format="uuid")
     result = render(node, "Test")
-    assert result.type_expr == "UUID"
-    assert "from uuid import UUID" in result.imports
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
 
 
 def test_render_string_format_date():
-    """Test string with date format."""
+    """Test string with date format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
     node = StringNode(format="date")
     result = render(node, "Test")
-    assert result.type_expr == "date"
-    assert "from datetime import date" in result.imports
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
 
 
 def test_render_string_format_datetime():
-    """Test string with date-time format."""
+    """Test string with date-time format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
     node = StringNode(format="date-time")
     result = render(node, "Test")
-    assert result.type_expr == "datetime"
-    assert "from datetime import datetime" in result.imports
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
 
 
 def test_render_number_unconstrained():
