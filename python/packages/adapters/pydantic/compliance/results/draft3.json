@@ -156,19 +156,10 @@
     },
     {
       "keyword": "divisibleBy",
-      "passed": 7,
-      "failed": 1,
+      "passed": 8,
+      "failed": 0,
       "skipped": 0,
-      "total": 8,
-      "failures": [
-        {
-          "group": "by int",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 8
     },
     {
       "keyword": "enum",
@@ -764,180 +755,59 @@
     },
     {
       "keyword": "items",
-      "passed": 6,
-      "failed": 1,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
-      "total": 7,
-      "failures": [
-        {
-          "group": "a schema given for items",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 7
     },
     {
       "keyword": "maxItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "maxItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "maxLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "maximum",
-      "passed": 12,
-      "failed": 2,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "maximum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "minItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "minLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "minimum",
-      "passed": 11,
-      "failed": 2,
+      "passed": 13,
+      "failed": 0,
       "skipped": 0,
-      "total": 13,
-      "failures": [
-        {
-          "group": "minimum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 13
     },
     {
       "keyword": "pattern",
-      "passed": 3,
-      "failed": 6,
+      "passed": 9,
+      "failed": 0,
       "skipped": 0,
-      "total": 9,
-      "failures": [
-        {
-          "group": "pattern validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores booleans",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores floats",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores integers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores null",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 9
     },
     {
       "keyword": "patternProperties",
@@ -1050,96 +920,10 @@
     },
     {
       "keyword": "type",
-      "passed": 68,
-      "failed": 12,
+      "passed": 80,
+      "failed": 0,
       "skipped": 0,
-      "total": 80,
-      "failures": [
-        {
-          "group": "boolean type matches booleans",
-          "test": "an integer is not a boolean",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a boolean is not an integer",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a string is still not an integer, even if it looks like one",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a boolean is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a boolean is not a number",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a string is still not a number, even if it looks like one",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a boolean is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a float is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a string is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an integer is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "null is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 80
     },
     {
       "keyword": "uniqueItems",
@@ -1243,11 +1027,11 @@
     }
   ],
   "summary": {
-    "passed": 260,
-    "failed": 137,
+    "passed": 288,
+    "failed": 109,
     "skipped": 0,
     "total": 397,
-    "percentage": 65.4911838790932,
+    "percentage": 72.544080604534,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

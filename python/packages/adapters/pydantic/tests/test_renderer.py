@@ -39,20 +39,26 @@ from xschema_pydantic.renderer import render
 
 
 def test_render_string_unconstrained():
-    """Test rendering unconstrained string."""
+    """Test rendering unconstrained string.
+
+    Uses StrictStr to prevent type coercion (JSON Schema semantics).
+    """
     node = StringNode()
     result = render(node, "Test")
-    assert result.type_expr == "str"
+    assert result.type_expr == "StrictStr"
     assert result.code == ""
-    assert result.imports == set()
+    assert "from pydantic import StrictStr" in result.imports
 
 
 def test_render_string_with_length():
-    """Test string with minLength/maxLength constraints."""
+    """Test string with minLength/maxLength constraints.
+
+    Uses StringConstraints with strict=True to prevent coercion.
+    """
     node = StringNode(constraints=StringConstraints(min_length=1, max_length=100))
     result = render(node, "Test")
     assert (
-        "Annotated[str, StringConstraints(min_length=1, max_length=100)]"
+        "Annotated[str, StringConstraints(strict=True, min_length=1, max_length=100)]"
         in result.type_expr
     )
     assert "from typing import Annotated" in result.imports
@@ -60,10 +66,16 @@ def test_render_string_with_length():
 
 
 def test_render_string_with_pattern():
-    """Test string with regex pattern."""
+    """Test string with regex pattern.
+
+    Uses StringConstraints with strict=True to prevent coercion.
+    """
     node = StringNode(constraints=StringConstraints(pattern="^[A-Z]+$"))
     result = render(node, "Test")
-    assert "Annotated[str, StringConstraints(pattern=r'^[A-Z]+$')]" in result.type_expr
+    assert (
+        "Annotated[str, StringConstraints(strict=True, pattern=r'^[A-Z]+$')]"
+        in result.type_expr
+    )
 
 
 def test_render_string_format_email():
@@ -99,39 +111,54 @@ def test_render_string_format_datetime():
 
 
 def test_render_number_unconstrained():
-    """Test rendering unconstrained number (float)."""
+    """Test rendering unconstrained number (float).
+
+    Uses StrictFloat to prevent coercion. StrictFloat accepts both int and float,
+    which matches JSON Schema 'number' semantics.
+    """
     node = NumberNode(integer=False)
     result = render(node, "Test")
-    assert result.type_expr == "float"
+    assert result.type_expr == "StrictFloat"
     assert result.code == ""
+    assert "from pydantic import StrictFloat" in result.imports
 
 
 def test_render_number_integer():
-    """Test rendering integer."""
+    """Test rendering integer.
+
+    Uses StrictInt to prevent coercion.
+    """
     node = NumberNode(integer=True)
     result = render(node, "Test")
-    assert result.type_expr == "int"
+    assert result.type_expr == "StrictInt"
+    assert "from pydantic import StrictInt" in result.imports
 
 
 def test_render_number_with_minimum():
-    """Test number with minimum constraint."""
+    """Test number with minimum constraint.
+
+    Uses StrictInt as base type.
+    """
     node = NumberNode(
         integer=True,
         constraints=NumberConstraints(minimum=0),
     )
     result = render(node, "Test")
-    assert "Annotated[int, Ge(0)]" in result.type_expr
+    assert "Annotated[StrictInt, Ge(0)]" in result.type_expr
     assert "from annotated_types import Ge" in result.imports
 
 
 def test_render_number_with_maximum():
-    """Test number with maximum constraint."""
+    """Test number with maximum constraint.
+
+    Uses StrictFloat for number type.
+    """
     node = NumberNode(
         integer=False,
         constraints=NumberConstraints(maximum=100.5),
     )
     result = render(node, "Test")
-    assert "Annotated[float, Le(100.5)]" in result.type_expr
+    assert "Annotated[StrictFloat, Le(100.5)]" in result.type_expr
     assert "from annotated_types import Le" in result.imports
 
 
@@ -163,11 +190,15 @@ def test_render_number_with_multiple_of():
 
 
 def test_render_boolean():
-    """Test rendering boolean."""
+    """Test rendering boolean.
+
+    Uses StrictBool to prevent coercion (integers 0/1 are not booleans).
+    """
     node = BooleanNode()
     result = render(node, "Test")
-    assert result.type_expr == "bool"
+    assert result.type_expr == "StrictBool"
     assert result.code == ""
+    assert "from pydantic import StrictBool" in result.imports
 
 
 def test_render_null():
@@ -238,24 +269,31 @@ def test_render_never():
 
 
 def test_render_array_simple():
-    """Test rendering simple array without constraints."""
+    """Test rendering simple array without constraints.
+
+    Inner type uses StrictStr.
+    """
     node = ArrayNode(
         items=StringNode(),
         constraints=ArrayConstraints(),
     )
     result = render(node, "Test")
-    assert result.type_expr == "list[str]"
+    assert result.type_expr == "list[StrictStr]"
 
 
 def test_render_array_with_length_constraints():
-    """Test array with minItems/maxItems."""
+    """Test array with minItems/maxItems.
+
+    Inner type uses StrictInt.
+    """
     node = ArrayNode(
         items=NumberNode(integer=True),
         constraints=ArrayConstraints(min_items=1, max_items=10),
     )
     result = render(node, "Test")
     assert (
-        "Annotated[list[int], Field(min_length=1, max_length=10)]" in result.type_expr
+        "Annotated[list[StrictInt], Field(min_length=1, max_length=10)]"
+        in result.type_expr
     )
     assert "from pydantic import Field" in result.imports
 
@@ -295,7 +333,10 @@ def test_render_array_with_contains():
 
 
 def test_render_tuple_fixed():
-    """Test rendering fixed-size tuple."""
+    """Test rendering fixed-size tuple.
+
+    Inner types use strict types.
+    """
     node = TupleNode(
         prefix_items=(
             StringNode(),
@@ -306,7 +347,7 @@ def test_render_tuple_fixed():
         constraints=ArrayConstraints(),
     )
     result = render(node, "Test")
-    assert result.type_expr == "tuple[str, int, bool]"
+    assert result.type_expr == "tuple[StrictStr, StrictInt, StrictBool]"
 
 
 def test_render_tuple_with_rest():
@@ -344,7 +385,10 @@ def test_render_tuple_with_constraints():
 
 
 def test_render_object_simple():
-    """Test rendering simple object with properties."""
+    """Test rendering simple object with properties.
+
+    Property types use strict types.
+    """
     node = ObjectNode(
         properties=(
             ("name", PropertyDef(schema=StringNode(), required=True)),
@@ -353,8 +397,8 @@ def test_render_object_simple():
     )
     result = render(node, "Test")
     assert "class Test(BaseModel):" in result.code
-    assert "name: str" in result.code
-    assert "age: int | None = None" in result.code
+    assert "name: StrictStr" in result.code
+    assert "age: StrictInt | None = None" in result.code
     assert "from pydantic import BaseModel" in result.imports
 
 
@@ -416,7 +460,10 @@ def test_render_object_with_min_max_properties():
 
 
 def test_render_union_simple():
-    """Test rendering simple union (anyOf)."""
+    """Test rendering simple union (anyOf).
+
+    Uses strict types.
+    """
     node = UnionNode(
         variants=(
             StringNode(),
@@ -424,7 +471,7 @@ def test_render_union_simple():
         )
     )
     result = render(node, "Test")
-    assert result.type_expr == "str | float"
+    assert result.type_expr == "StrictStr | StrictFloat"
 
 
 def test_render_union_discriminated():
@@ -463,7 +510,10 @@ def test_render_oneof():
 
 
 def test_render_intersection_objects():
-    """Test rendering intersection of objects (allOf)."""
+    """Test rendering intersection of objects (allOf).
+
+    Property types use strict types.
+    """
     obj1 = ObjectNode(
         properties=(("name", PropertyDef(schema=StringNode(), required=True)),),
     )
@@ -475,8 +525,8 @@ def test_render_intersection_objects():
     node = IntersectionNode(schemas=(obj1, obj2))
     result = render(node, "Test")
     assert "class Test(BaseModel):" in result.code
-    assert "name: str" in result.code
-    assert "age: int" in result.code
+    assert "name: StrictStr" in result.code
+    assert "age: StrictInt" in result.code
 
 
 def test_render_intersection_primitives():
@@ -565,11 +615,14 @@ def test_render_type_guarded():
 
 
 def test_render_nullable():
-    """Test rendering nullable type (OpenAPI 3.0 nullable: true)."""
+    """Test rendering nullable type (OpenAPI 3.0 nullable: true).
+
+    Inner type uses StrictStr.
+    """
     inner = StringNode()
     node = NullableNode(inner=inner)
     result = render(node, "Test")
-    assert result.type_expr == "str | None"
+    assert result.type_expr == "StrictStr | None"
 
 
 def test_render_nullable_already_nullable():

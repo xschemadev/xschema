@@ -9,28 +9,34 @@ from .import_collector import ImportCollector
 from .renderer import render
 
 
-def _is_object_only_schema(ir_node: Any) -> bool:
-    """Check if schema only has object-specific keywords.
+def _is_object_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
+    """Check if schema only has object-specific keywords without explicit type.
 
     JSON Schema object keywords (properties, additionalProperties, etc.) should
     ignore non-object inputs - they pass validation automatically. This function
     detects schemas that need this "ignore non-objects" behavior.
 
+    Args:
+        ir_node: The parsed IR node
+        original_schema: The original JSON Schema
+
     Returns True if:
     - The node is an ObjectNode (has object-specific constraints)
-    - AND the schema doesn't have a 'type' constraint requiring 'object'
+    - AND the schema doesn't have an explicit 'type' keyword
       (if it has type: object, Pydantic's rejection of non-objects is correct)
     """
     if not hasattr(ir_node, "kind"):
         return False
 
-    # ObjectNode - check if it has actual constraints
-    if ir_node.kind == "object":
-        # Always return True for ObjectNode - JSON Schema object keywords
-        # (properties, additionalProperties, etc.) should ignore non-objects
-        return True
+    # Must be an ObjectNode
+    if ir_node.kind != "object":
+        return False
 
-    return False
+    # Must not have explicit type in original schema
+    if isinstance(original_schema, bool):
+        return False
+
+    return "type" not in original_schema
 
 
 def _is_number_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
@@ -202,7 +208,7 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
 
     # Check if this is a type-specific schema that should ignore non-matching types
     # JSON Schema semantics: type-specific keywords only apply to their respective types
-    is_object_only = _is_object_only_schema(ir_node)
+    is_object_only = _is_object_only_schema(ir_node, schema)
     is_number_only = _is_number_only_schema(ir_node, schema)
     is_string_only = _is_string_only_schema(ir_node, schema)
     is_array_only = _is_array_only_schema(ir_node, schema)

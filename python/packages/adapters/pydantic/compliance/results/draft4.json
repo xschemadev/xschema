@@ -755,35 +755,17 @@
     },
     {
       "keyword": "maxItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "maxItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "maxLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "maxLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "maxProperties",
@@ -810,58 +792,24 @@
     },
     {
       "keyword": "maximum",
-      "passed": 12,
-      "failed": 2,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "maximum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "maximum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "minItems",
-      "passed": 3,
-      "failed": 1,
+      "passed": 4,
+      "failed": 0,
       "skipped": 0,
-      "total": 4,
-      "failures": [
-        {
-          "group": "minItems validation",
-          "test": "ignores non-arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 4
     },
     {
       "keyword": "minLength",
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "skipped": 0,
-      "total": 5,
-      "failures": [
-        {
-          "group": "minLength validation",
-          "test": "ignores non-strings",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 5
     },
     {
       "keyword": "minProperties",
@@ -881,122 +829,17 @@
     },
     {
       "keyword": "minimum",
-      "passed": 14,
-      "failed": 3,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "minimum validation",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minimum validation (explicit false exclusivity)",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "minimum validation with signed integer",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "multipleOf",
-      "passed": 0,
-      "failed": 10,
+      "passed": 10,
+      "failed": 0,
       "skipped": 0,
-      "total": 10,
-      "failures": [
-        {
-          "group": "by int",
-          "test": "ignores non-numbers",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by int",
-          "test": "int by int",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by int",
-          "test": "int by int fail",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by number",
-          "test": "35 is not multiple of 1.5",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by number",
-          "test": "4.5 is multiple of 1.5",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by number",
-          "test": "zero is multiple of anything",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by small number",
-          "test": "0.0075 is multiple of 0.0001",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "by small number",
-          "test": "0.00751 is not multiple of 0.0001",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "float division = inf",
-          "test": "invalid, but naive implementations may raise an overflow error",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        },
-        {
-          "group": "small multiple of large integer",
-          "test": "any integer is a multiple of 1e-8",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr: Traceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 287, in _init_core_attrs\n    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 56, in _getattr_no_parents\n    raise AttributeError(attribute)\nAttributeError: __pydantic_core_schema__\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 121, in \u003cmodule\u003e\n    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 244, in __init__\n    self._init_core_attrs(\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py\", line 321, in _init_core_attrs\n    self.validator = create_schema_validator(\n                     ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py\", line 51, in create_schema_validator\n    return SchemaValidator(schema, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npydantic_core._pydantic_core.SchemaError: Error building \"int\" validator:\n  ValueError: 'multiple_of' must be coercible to an integer\n"
-        }
-      ]
+      "total": 10
     },
     {
       "keyword": "not",
@@ -1039,54 +882,10 @@
     },
     {
       "keyword": "pattern",
-      "passed": 3,
-      "failed": 6,
+      "passed": 9,
+      "failed": 0,
       "skipped": 0,
-      "total": 9,
-      "failures": [
-        {
-          "group": "pattern validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores booleans",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores floats",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores integers",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores null",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "pattern validation",
-          "test": "ignores objects",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 9
     },
     {
       "keyword": "patternProperties",
@@ -1159,7 +958,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "object properties validation",
@@ -1167,7 +966,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "object properties validation",
@@ -1175,7 +974,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "object properties validation",
@@ -1183,7 +982,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "object properties validation",
@@ -1191,7 +990,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "object properties validation",
@@ -1199,7 +998,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1207,7 +1006,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1215,7 +1014,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1223,7 +1022,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1231,7 +1030,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1239,7 +1038,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1247,7 +1046,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties whose names are Javascript object property names",
@@ -1255,7 +1054,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties with escaped characters",
@@ -1263,7 +1062,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties with escaped characters",
@@ -1271,7 +1070,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties with null valued instance properties",
@@ -1279,7 +1078,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1287,7 +1086,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1295,7 +1094,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1303,7 +1102,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1311,7 +1110,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1319,7 +1118,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1327,7 +1126,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1335,7 +1134,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
@@ -1343,7 +1142,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: float | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
+          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 146\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 146)\n"
         }
       ]
     },
@@ -1407,103 +1206,10 @@
     },
     {
       "keyword": "type",
-      "passed": 66,
-      "failed": 13,
+      "passed": 79,
+      "failed": 0,
       "skipped": 0,
-      "total": 79,
-      "failures": [
-        {
-          "group": "boolean type matches booleans",
-          "test": "an integer is not a boolean",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "boolean type matches booleans",
-          "test": "zero is not a boolean",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a boolean is not an integer",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "integer type matches integers",
-          "test": "a string is still not an integer, even if it looks like one",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "multiple types can be specified in an array",
-          "test": "a boolean is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a boolean is not a number",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "number type matches numbers",
-          "test": "a string is still not a number, even if it looks like one",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a boolean is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a float is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "a string is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an array is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "an integer is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "object type matches objects",
-          "test": "null is not an object",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 79
     },
     {
       "keyword": "uniqueItems",
@@ -1635,11 +1341,11 @@
     }
   ],
   "summary": {
-    "passed": 343,
-    "failed": 183,
+    "passed": 381,
+    "failed": 145,
     "skipped": 0,
     "total": 526,
-    "percentage": 65.20912547528516,
+    "percentage": 72.43346007604563,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

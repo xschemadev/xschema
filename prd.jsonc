@@ -108,8 +108,8 @@
         "Verify type arrays create correct unions",
         "Test type: ['integer', 'null'] accepts both 5 and null",
       ],
-      "passes": false,
-      "notes": "Currently at 91.2%, need to identify and fix remaining edge cases",
+      "passes": true,
+      "notes": "Fixed. 100% (80/80). Key fixes: (1) Use StrictBool for boolean type (integers 0/1 are not booleans), (2) Use StrictInt for integer type, (3) Use StrictFloat for number type, (4) Use StringConstraints(strict=True) for string constraints, (5) Fix _is_object_only_schema to check for explicit type keyword - schemas with type:object should reject non-objects.",
     },
     {
       "id": "fix-oneOf-validation",

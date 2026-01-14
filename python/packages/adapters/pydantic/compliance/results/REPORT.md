@@ -4,27 +4,27 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 587 | 319 | 0 | 178 | 64.8% |
-| draft2020-12 | 579 | 340 | 0 | 201 | 63.0% |
-| draft3 | 260 | 137 | 0 | 0 | 65.5% |
-| draft4 | 343 | 183 | 0 | 0 | 65.2% |
-| draft6 | 480 | 227 | 0 | 0 | 67.9% |
-| draft7 | 507 | 276 | 0 | 0 | 64.8% |
+| draft2019-09 | 626 | 280 | 0 | 178 | 69.1% |
+| draft2020-12 | 617 | 302 | 0 | 201 | 67.1% |
+| draft3 | 288 | 109 | 0 | 0 | 72.5% |
+| draft4 | 381 | 145 | 0 | 0 | 72.4% |
+| draft6 | 519 | 188 | 0 | 0 | 73.4% |
+| draft7 | 546 | 237 | 0 | 0 | 69.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-64.8%25-red)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-63.0%25-red)
-![draft3](https://img.shields.io/badge/draft3%20compliance-65.5%25-red)
-![draft4](https://img.shields.io/badge/draft4%20compliance-65.2%25-red)
-![draft6](https://img.shields.io/badge/draft6%20compliance-67.9%25-red)
-![draft7](https://img.shields.io/badge/draft7%20compliance-64.8%25-red)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-69.1%25-red)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-67.1%25-red)
+![draft3](https://img.shields.io/badge/draft3%20compliance-72.5%25-red)
+![draft4](https://img.shields.io/badge/draft4%20compliance-72.4%25-red)
+![draft6](https://img.shields.io/badge/draft6%20compliance-73.4%25-red)
+![draft7](https://img.shields.io/badge/draft7%20compliance-69.7%25-red)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 13/19 |
+| additionalItems | ⚠️ | 14/19 |
 | additionalProperties | ⚠️ | 15/21 |
 | allOf | ❌ | 0/30 |
 | anchor | ✅ | 0/0 |
@@ -38,26 +38,26 @@
 | dependentRequired | ⚠️ | 14/20 |
 | dependentSchemas | ⚠️ | 10/20 |
 | enum | ✅ | 45/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ❌ | 0/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
 | maxContains | ⚠️ | 6/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
 | maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maximum | ✅ | 8/8 |
 | minContains | ⚠️ | 14/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
 | minProperties | ⚠️ | 6/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ❌ | 0/10 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ⚠️ | 37/38 |
 | oneOf | ⚠️ | 25/27 |
-| pattern | ⚠️ | 3/9 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 13/23 |
 | properties | ❌ | 0/28 |
 | propertyNames | ⚠️ | 15/20 |
@@ -65,7 +65,7 @@
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ⚠️ | 11/16 |
-| type | ⚠️ | 67/80 |
+| type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
 | unevaluatedProperties | ⚠️ | 18/25 |
 | uniqueItems | ⚠️ | 52/69 |
@@ -340,7 +340,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 6 failures</summary>
+<summary>additionalItems - 5 failures</summary>
 
 - **additionalItems are allowed by default**
   - Test: only the first item is validated
@@ -357,9 +357,6 @@ These tests are intentionally excluded due to documented limitations.
 - **array of items with no additionalItems permitted**
   - Test: fewer number of items present (2)
   - Expected: `valid`, Got: `false`
-- **when items is schema, additionalItems does nothing**
-  - Test: invalid with a array of mixed types
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1647,24 +1644,6 @@ Unable to evaluate type annotation 'None | None'.
 - **single dependency**
   - Test: wrong type other
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -6373,24 +6352,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>maxProperties - 3 failures</summary>
 
 - **maxProperties = 0 means the object is empty**
@@ -6402,15 +6363,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **maxProperties validation with a decimal**
   - Test: too long is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -6463,24 +6415,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>minProperties - 2 failures</summary>
 
 - **minProperties validation**
@@ -6489,304 +6423,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **minProperties validation with a decimal**
   - Test: too short is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 10 failures</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int fail
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 35 is not multiple of 1.5
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 4.5 is multiple of 1.5
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: zero is multiple of anything
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.0075 is multiple of 0.0001
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.00751 is not multiple of 0.0001
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **float division = inf**
-  - Test: always invalid, but naive implementations may raise an overflow error
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **small multiple of large integer**
-  - Test: any integer is a multiple of 1e-8
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
 
 </details>
 
@@ -6807,30 +6443,6 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Expected: `valid`, Got: `false`
 - **oneOf with required**
   - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -6878,7 +6490,7 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Test: both properties invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6886,7 +6498,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present and valid is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6894,7 +6506,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: doesn't invalidate other properties
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6902,7 +6514,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6910,7 +6522,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6918,7 +6530,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: one property invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6926,7 +6538,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6934,7 +6546,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: all present and valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6942,7 +6554,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6950,7 +6562,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6958,7 +6570,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6966,7 +6578,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6974,7 +6586,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6982,7 +6594,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6990,7 +6602,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: no property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -6998,7 +6610,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'false' property present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7006,7 +6618,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'true' property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7014,7 +6626,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with all numbers is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7022,7 +6634,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with strings is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7030,7 +6642,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: allows null values
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7038,7 +6650,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty ignores property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7046,7 +6658,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7054,7 +6666,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty validates others
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7062,7 +6674,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates nonproperty
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7070,7 +6682,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7078,7 +6690,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7086,7 +6698,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7094,7 +6706,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property validates property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -7139,51 +6751,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 13 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **boolean type matches booleans**
-  - Test: zero is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -7302,26 +6869,26 @@ SyntaxError: unterminated string literal (detected at line 155)
 | dependentSchemas | ⚠️ | 10/20 |
 | dynamicRef | ✅ | 0/0 |
 | enum | ✅ | 45/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ❌ | 0/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
 | maxContains | ⚠️ | 6/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
 | maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maximum | ✅ | 8/8 |
 | minContains | ⚠️ | 14/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
 | minProperties | ⚠️ | 6/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ❌ | 0/10 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ⚠️ | 37/38 |
 | oneOf | ⚠️ | 25/27 |
-| pattern | ⚠️ | 3/9 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 13/23 |
 | prefixItems | ⚠️ | 4/11 |
 | properties | ❌ | 0/28 |
@@ -7329,7 +6896,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ⚠️ | 11/16 |
-| type | ⚠️ | 67/80 |
+| type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
 | unevaluatedProperties | ⚠️ | 19/27 |
 | uniqueItems | ⚠️ | 52/69 |
@@ -8958,24 +8525,6 @@ Unable to evaluate type annotation 'None | None'.
 - **single dependency**
   - Test: wrong type other
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -14463,24 +14012,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>maxProperties - 3 failures</summary>
 
 - **maxProperties = 0 means the object is empty**
@@ -14492,15 +14023,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **maxProperties validation with a decimal**
   - Test: too long is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -14553,24 +14075,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>minProperties - 2 failures</summary>
 
 - **minProperties validation**
@@ -14579,304 +14083,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **minProperties validation with a decimal**
   - Test: too short is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 10 failures</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int fail
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 35 is not multiple of 1.5
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 4.5 is multiple of 1.5
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: zero is multiple of anything
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.0075 is multiple of 0.0001
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.00751 is not multiple of 0.0001
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **float division = inf**
-  - Test: always invalid, but naive implementations may raise an overflow error
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **small multiple of large integer**
-  - Test: any integer is a multiple of 1e-8
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
 
 </details>
 
@@ -14897,30 +14103,6 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Expected: `valid`, Got: `false`
 - **oneOf with required**
   - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -14995,7 +14177,7 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Test: both properties invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15003,7 +14185,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present and valid is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15011,7 +14193,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: doesn't invalidate other properties
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15019,7 +14201,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15027,7 +14209,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15035,7 +14217,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: one property invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15043,7 +14225,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15051,7 +14233,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: all present and valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15059,7 +14241,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15067,7 +14249,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15075,7 +14257,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15083,7 +14265,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15091,7 +14273,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15099,7 +14281,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15107,7 +14289,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: no property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15115,7 +14297,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'false' property present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15123,7 +14305,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'true' property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15131,7 +14313,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with all numbers is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15139,7 +14321,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with strings is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15147,7 +14329,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: allows null values
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15155,7 +14337,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty ignores property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15163,7 +14345,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15171,7 +14353,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty validates others
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15179,7 +14361,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates nonproperty
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15187,7 +14369,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15195,7 +14377,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15203,7 +14385,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15211,7 +14393,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property validates property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -15256,51 +14438,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 13 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **boolean type matches booleans**
-  - Test: zero is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -15413,25 +14550,25 @@ SyntaxError: unterminated string literal (detected at line 155)
 | default | ✅ | 7/7 |
 | dependencies | ⚠️ | 11/18 |
 | disallow | ✅ | 9/9 |
-| divisibleBy | ⚠️ | 7/8 |
+| divisibleBy | ✅ | 8/8 |
 | enum | ✅ | 16/16 |
 | extends | ❌ | 0/10 |
 | format | ❌ | 0/60 |
 | infinite-loop-detection | ✅ | 0/0 |
-| items | ⚠️ | 6/7 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
-| maximum | ⚠️ | 12/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
-| minimum | ⚠️ | 11/13 |
-| pattern | ⚠️ | 3/9 |
+| items | ✅ | 7/7 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
+| minimum | ✅ | 13/13 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 10/17 |
 | properties | ⚠️ | 12/15 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 4/4 |
-| type | ⚠️ | 68/80 |
+| type | ✅ | 80/80 |
 | uniqueItems | ⚠️ | 49/62 |
 
 ### Unexpected Failures
@@ -15499,15 +14636,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 - **multiple dependencies subschema**
   - Test: wrong type other
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>divisibleBy - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -18374,99 +17502,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
-
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 2 failures</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>patternProperties - 7 failures</summary>
 
 - **multiple simultaneous patternProperties are validated**
@@ -18505,48 +17540,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **properties, patternProperties, additionalProperties interaction**
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>type - 12 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -18610,24 +17603,24 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 | format | ❌ | 0/36 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
 | maxProperties | ⚠️ | 6/8 |
-| maximum | ⚠️ | 12/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
 | minProperties | ⚠️ | 5/6 |
-| minimum | ⚠️ | 14/17 |
-| multipleOf | ❌ | 0/10 |
+| minimum | ✅ | 17/17 |
+| multipleOf | ✅ | 10/10 |
 | not | ⚠️ | 19/20 |
 | oneOf | ⚠️ | 21/23 |
-| pattern | ⚠️ | 3/9 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 11/18 |
 | properties | ❌ | 0/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ⚠️ | 10/15 |
-| type | ⚠️ | 66/79 |
+| type | ✅ | 79/79 |
 | uniqueItems | ⚠️ | 52/69 |
 
 ### Unexpected Failures
@@ -21261,24 +20254,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>maxProperties - 2 failures</summary>
 
 - **maxProperties = 0 means the object is empty**
@@ -21291,342 +20266,11 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maximum - 2 failures</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>minProperties - 1 failure</summary>
 
 - **minProperties validation**
   - Test: too short is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 3 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 10 failures</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int fail
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 35 is not multiple of 1.5
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 4.5 is multiple of 1.5
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: zero is multiple of anything
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.0075 is multiple of 0.0001
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.00751 is not multiple of 0.0001
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **float division = inf**
-  - Test: invalid, but naive implementations may raise an overflow error
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **small multiple of large integer**
-  - Test: any integer is a multiple of 1e-8
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
 
 </details>
 
@@ -21647,30 +20291,6 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Expected: `valid`, Got: `false`
 - **oneOf with required**
   - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -21709,7 +20329,7 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Test: both properties invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21717,7 +20337,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: both properties present and valid is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21725,7 +20345,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: doesn't invalidate other properties
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21733,7 +20353,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21741,7 +20361,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21749,7 +20369,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: one property invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21757,7 +20377,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21765,7 +20385,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: all present and valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21773,7 +20393,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21781,7 +20401,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21789,7 +20409,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21797,7 +20417,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21805,7 +20425,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21813,7 +20433,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: object with all numbers is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21821,7 +20441,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: object with strings is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21829,7 +20449,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: allows null values
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21837,7 +20457,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: additionalProperty ignores property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21845,7 +20465,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21853,7 +20473,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: additionalProperty validates others
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21861,7 +20481,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: patternProperty invalidates nonproperty
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21869,7 +20489,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: patternProperty invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21877,7 +20497,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21885,7 +20505,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: property invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21893,7 +20513,7 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Test: property validates property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 146)
 `
@@ -21917,51 +20537,6 @@ SyntaxError: unterminated string literal (detected at line 146)
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 13 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **boolean type matches booleans**
-  - Test: zero is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -22027,7 +20602,7 @@ SyntaxError: unterminated string literal (detected at line 146)
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 13/19 |
+| additionalItems | ⚠️ | 14/19 |
 | additionalProperties | ⚠️ | 11/16 |
 | allOf | ❌ | 0/30 |
 | anyOf | ✅ | 18/18 |
@@ -22038,36 +20613,36 @@ SyntaxError: unterminated string literal (detected at line 146)
 | definitions | ✅ | 0/0 |
 | dependencies | ⚠️ | 21/36 |
 | enum | ✅ | 45/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ❌ | 0/54 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
 | maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
 | minProperties | ⚠️ | 6/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ❌ | 0/10 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ⚠️ | 37/38 |
 | oneOf | ⚠️ | 25/27 |
-| pattern | ⚠️ | 3/9 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 13/23 |
 | properties | ❌ | 0/28 |
 | propertyNames | ⚠️ | 15/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ⚠️ | 11/16 |
-| type | ⚠️ | 67/80 |
+| type | ✅ | 80/80 |
 | uniqueItems | ⚠️ | 52/69 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 6 failures</summary>
+<summary>additionalItems - 5 failures</summary>
 
 - **additionalItems are allowed by default**
   - Test: only the first item is validated
@@ -22084,9 +20659,6 @@ SyntaxError: unterminated string literal (detected at line 146)
 - **array of items with no additionalItems permitted**
   - Test: fewer number of items present (2)
   - Expected: `valid`, Got: `false`
-- **when items is schema, additionalItems does nothing**
-  - Test: invalid with a array of mixed types
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -23359,24 +21931,6 @@ Unable to evaluate type annotation 'None | None'.
 - **multiple dependencies subschema**
   - Test: wrong type other
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -25601,24 +24155,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>maxProperties - 3 failures</summary>
 
 - **maxProperties = 0 means the object is empty**
@@ -25634,33 +24170,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>minProperties - 2 failures</summary>
 
 - **minProperties validation**
@@ -25669,304 +24178,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **minProperties validation with a decimal**
   - Test: too short is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 10 failures</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int fail
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 35 is not multiple of 1.5
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 4.5 is multiple of 1.5
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: zero is multiple of anything
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.0075 is multiple of 0.0001
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.00751 is not multiple of 0.0001
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **float division = inf**
-  - Test: always invalid, but naive implementations may raise an overflow error
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **small multiple of large integer**
-  - Test: any integer is a multiple of 1e-8
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
 
 </details>
 
@@ -25987,30 +24198,6 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Expected: `valid`, Got: `false`
 - **oneOf with required**
   - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -26058,7 +24245,7 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Test: both properties invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26066,7 +24253,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present and valid is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26074,7 +24261,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: doesn't invalidate other properties
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26082,7 +24269,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26090,7 +24277,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26098,7 +24285,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: one property invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26106,7 +24293,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26114,7 +24301,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: all present and valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26122,7 +24309,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26130,7 +24317,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26138,7 +24325,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26146,7 +24333,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26154,7 +24341,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26162,7 +24349,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26170,7 +24357,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: no property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26178,7 +24365,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'false' property present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26186,7 +24373,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'true' property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26194,7 +24381,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with all numbers is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26202,7 +24389,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with strings is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26210,7 +24397,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: allows null values
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26218,7 +24405,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty ignores property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26226,7 +24413,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26234,7 +24421,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty validates others
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26242,7 +24429,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates nonproperty
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26250,7 +24437,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26258,7 +24445,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26266,7 +24453,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26274,7 +24461,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property validates property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -26319,51 +24506,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 13 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **boolean type matches booleans**
-  - Test: zero is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -26429,7 +24571,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 13/19 |
+| additionalItems | ⚠️ | 14/19 |
 | additionalProperties | ⚠️ | 11/16 |
 | allOf | ❌ | 0/30 |
 | anyOf | ✅ | 18/18 |
@@ -26440,37 +24582,37 @@ SyntaxError: unterminated string literal (detected at line 155)
 | definitions | ✅ | 0/0 |
 | dependencies | ⚠️ | 21/36 |
 | enum | ✅ | 45/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ❌ | 0/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
 | maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
 | minProperties | ⚠️ | 6/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ❌ | 0/10 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ⚠️ | 37/38 |
 | oneOf | ⚠️ | 25/27 |
-| pattern | ⚠️ | 3/9 |
+| pattern | ✅ | 9/9 |
 | patternProperties | ⚠️ | 13/23 |
 | properties | ❌ | 0/28 |
 | propertyNames | ⚠️ | 15/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ⚠️ | 11/16 |
-| type | ⚠️ | 67/80 |
+| type | ✅ | 80/80 |
 | uniqueItems | ⚠️ | 52/69 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 6 failures</summary>
+<summary>additionalItems - 5 failures</summary>
 
 - **additionalItems are allowed by default**
   - Test: only the first item is validated
@@ -26487,9 +24629,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 - **array of items with no additionalItems permitted**
   - Test: fewer number of items present (2)
   - Expected: `valid`, Got: `false`
-- **when items is schema, additionalItems does nothing**
-  - Test: invalid with a array of mixed types
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -27765,24 +25904,6 @@ Unable to evaluate type annotation 'None | None'.
 - **multiple dependencies subschema**
   - Test: wrong type other
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -31975,24 +30096,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>maxProperties - 3 failures</summary>
 
 - **maxProperties = 0 means the object is empty**
@@ -32008,33 +30111,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
 <summary>minProperties - 2 failures</summary>
 
 - **minProperties validation**
@@ -32043,304 +30119,6 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 - **minProperties validation with a decimal**
   - Test: too short is invalid
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 10 failures</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by int**
-  - Test: int by int fail
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 35 is not multiple of 1.5
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: 4.5 is multiple of 1.5
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by number**
-  - Test: zero is multiple of anything
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.0075 is multiple of 0.0001
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **by small number**
-  - Test: 0.00751 is not multiple of 0.0001
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **float division = inf**
-  - Test: always invalid, but naive implementations may raise an overflow error
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
-- **small multiple of large integer**
-  - Test: any integer is a multiple of 1e-8
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr: Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 287, in _init_core_attrs
-    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 56, in _getattr_no_parents
-    raise AttributeError(attribute)
-AttributeError: __pydantic_core_schema__
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
-    group_3 = TypeAdapter(Annotated[int, MultipleOf(0.123456789)])
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 244, in __init__
-    self._init_core_attrs(
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 321, in _init_core_attrs
-    self.validator = create_schema_validator(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/.venv/lib/python3.12/site-packages/pydantic/plugin/_schema_validator.py", line 51, in create_schema_validator
-    return SchemaValidator(schema, config)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
-  ValueError: 'multiple_of' must be coercible to an integer
-`
 
 </details>
 
@@ -32361,30 +30139,6 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Expected: `valid`, Got: `false`
 - **oneOf with required**
   - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -32432,7 +30186,7 @@ pydantic_core._pydantic_core.SchemaError: Error building "int" validator:
   - Test: both properties invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32440,7 +30194,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present and valid is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32448,7 +30202,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: doesn't invalidate other properties
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32456,7 +30210,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32464,7 +30218,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32472,7 +30226,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: one property invalid is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32480,7 +30234,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32488,7 +30242,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: all present and valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32496,7 +30250,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32504,7 +30258,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores arrays
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32512,7 +30266,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: ignores other non-objects
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32520,7 +30274,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32528,7 +30282,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32536,7 +30290,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: both properties present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32544,7 +30298,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: no property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32552,7 +30306,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'false' property present is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32560,7 +30314,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: only 'true' property present is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32568,7 +30322,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with all numbers is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32576,7 +30330,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: object with strings is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32584,7 +30338,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: allows null values
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32592,7 +30346,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty ignores property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32600,7 +30354,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty invalidates others
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32608,7 +30362,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: additionalProperty validates others
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32616,7 +30370,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates nonproperty
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32624,7 +30378,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32632,7 +30386,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: patternProperty validates nonproperty
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32640,7 +30394,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property invalidates property
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32648,7 +30402,7 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Test: property validates property
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: float | None = None
+    foo"bar: StrictFloat | None = None
        ^
 SyntaxError: unterminated string literal (detected at line 155)
 `
@@ -32693,51 +30447,6 @@ SyntaxError: unterminated string literal (detected at line 155)
   - Expected: `invalid`, Got: `true`
 - **required with escaped characters**
   - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 13 failures</summary>
-
-- **boolean type matches booleans**
-  - Test: an integer is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **boolean type matches booleans**
-  - Test: zero is not a boolean
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a boolean is not an integer
-  - Expected: `invalid`, Got: `true`
-- **integer type matches integers**
-  - Test: a string is still not an integer, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **multiple types can be specified in an array**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a boolean is not a number
-  - Expected: `invalid`, Got: `true`
-- **number type matches numbers**
-  - Test: a string is still not a number, even if it looks like one
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a boolean is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a float is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: a string is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an integer is not an object
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: null is not an object
   - Expected: `invalid`, Got: `true`
 
 </details>

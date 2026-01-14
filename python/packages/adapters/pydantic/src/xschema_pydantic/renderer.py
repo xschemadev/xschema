@@ -104,7 +104,11 @@ def render(node: SchemaNode, name: str) -> RenderResult:
 
 
 def render_string(node: StringNode) -> RenderResult:
-    """Render StringNode to Pydantic type with format support."""
+    """Render StringNode to Pydantic type with format support.
+
+    Uses StrictStr to ensure JSON Schema semantics where non-strings
+    are rejected without coercion.
+    """
     imports: set[str] = set()
 
     # Handle format first - format types override base str type
@@ -114,7 +118,7 @@ def render_string(node: StringNode) -> RenderResult:
             return format_result
         # Unknown formats fall through to str with constraints
 
-    # No format or unknown format - use str with constraints
+    # No format or unknown format - use StrictStr with constraints
     has_constraints = node.constraints is not None and (
         node.constraints.min_length is not None
         or node.constraints.max_length is not None
@@ -123,10 +127,11 @@ def render_string(node: StringNode) -> RenderResult:
 
     if has_constraints:
         # Use Annotated with StringConstraints for constrained strings
+        # Note: StringConstraints with strict=True ensures no coercion
         imports.add("from typing import Annotated")
         imports.add("from pydantic import StringConstraints")
 
-        constraints: list[str] = []
+        constraints: list[str] = ["strict=True"]
         if node.constraints.min_length is not None:
             constraints.append(f"min_length={node.constraints.min_length}")
         if node.constraints.max_length is not None:
@@ -141,7 +146,8 @@ def render_string(node: StringNode) -> RenderResult:
         constraint_str = ", ".join(constraints)
         type_expr = f"Annotated[str, StringConstraints({constraint_str})]"
     else:
-        type_expr = "str"
+        imports.add("from pydantic import StrictStr")
+        type_expr = "StrictStr"
 
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
@@ -264,9 +270,29 @@ def _is_integer_value(val: float | int) -> bool:
 
 
 def render_number(node: NumberNode) -> RenderResult:
-    """Render NumberNode to Pydantic type."""
+    """Render NumberNode to Pydantic type.
+
+    Uses strict types to ensure JSON Schema semantics:
+    - StrictInt for integer type (rejects bools and string coercion)
+    - StrictFloat for number type (accepts both int and float inputs)
+
+    Note: StrictFloat accepts integer inputs (e.g., 42 -> 42.0) which is fine
+    for JSON Schema validation since integers are a subset of numbers.
+    Using a union StrictInt | StrictFloat causes issues with Pydantic's
+    MultipleOf validator due to floating point precision bugs in union handling.
+    """
     imports: set[str] = set()
-    base_type = "int" if node.integer else "float"
+
+    # Use strict types to prevent coercion
+    if node.integer:
+        imports.add("from pydantic import StrictInt")
+        base_type = "StrictInt"
+    else:
+        # JSON Schema 'number' accepts both integers and floats
+        # StrictFloat accepts integers too (converts to float), which is fine
+        # for validation purposes
+        imports.add("from pydantic import StrictFloat")
+        base_type = "StrictFloat"
 
     has_constraints = node.constraints is not None and (
         node.constraints.minimum is not None
@@ -349,8 +375,14 @@ def render_number(node: NumberNode) -> RenderResult:
 
 
 def render_boolean(node: BooleanNode) -> RenderResult:
-    """Render BooleanNode to Pydantic type."""
-    return RenderResult(code="", type_expr="bool", imports=set())
+    """Render BooleanNode to Pydantic type.
+
+    Uses StrictBool to ensure proper JSON Schema semantics where integers
+    like 0 and 1 are NOT valid booleans.
+    """
+    return RenderResult(
+        code="", type_expr="StrictBool", imports={"from pydantic import StrictBool"}
+    )
 
 
 def render_null(node: NullNode) -> RenderResult:
