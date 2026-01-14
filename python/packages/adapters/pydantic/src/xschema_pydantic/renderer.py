@@ -310,46 +310,123 @@ def render_null(node: NullNode) -> RenderResult:
     return RenderResult(code="", type_expr="None", imports=set())
 
 
-def render_literal(node: LiteralNode) -> RenderResult:
-    """Render LiteralNode to Pydantic type."""
-    imports: set[str] = {"from typing import Literal"}
+def _is_primitive(value: Any) -> bool:
+    """Check if a value is a JSON primitive (str, int, float, bool, None)."""
+    return isinstance(value, (str, int, float, bool, type(None))) and not isinstance(
+        value, (list, dict)
+    )
 
-    # Format the literal value appropriately
-    value = node.value
+
+def _format_literal_value(value: Any) -> str:
+    """Format a primitive value for use in Literal[...].
+
+    Uses json.dumps for strings to properly escape all control characters.
+    """
+    import json
+
     if value is None:
-        literal_repr = "None"
+        return "None"
     elif isinstance(value, bool):
-        literal_repr = "True" if value else "False"
+        return "True" if value else "False"
     elif isinstance(value, str):
-        # Escape quotes in string
-        escaped = value.replace("\\", "\\\\").replace("'", "\\'")
-        literal_repr = f"'{escaped}'"
+        # use json.dumps to properly escape control characters like \x00
+        return json.dumps(value)
     else:
-        literal_repr = repr(value)
+        return repr(value)
 
-    type_expr = f"Literal[{literal_repr}]"
+
+def _format_json_value(value: Any) -> str:
+    """Format any JSON value as Python literal for code generation."""
+    import json
+
+    if value is None:
+        return "None"
+    elif isinstance(value, bool):
+        return "True" if value else "False"
+    elif isinstance(value, str):
+        # use json.dumps to handle escaping properly
+        return json.dumps(value)
+    elif isinstance(value, (list, dict)):
+        # convert to Python literal representation
+        return repr(value)
+    else:
+        return repr(value)
+
+
+def render_literal(node: LiteralNode) -> RenderResult:
+    """Render LiteralNode to Pydantic type.
+
+    For primitives: uses Literal[value] for simple cases
+    For booleans/integers: uses strict type checking to prevent 0/False coercion
+    For complex values (list, dict): uses custom validator with deep equality
+    """
+    value = node.value
+
+    # for booleans and integers (0, 1, etc), we need strict type checking
+    # because Python's Literal[False] accepts 0 and Literal[0] accepts False
+    needs_strict_check = isinstance(value, bool) or (
+        isinstance(value, int) and not isinstance(value, bool) and value in (0, 1)
+    )
+
+    if _is_primitive(value) and not needs_strict_check:
+        # simple case - use Literal for primitives that don't need strict type check
+        imports: set[str] = {"from typing import Literal"}
+        literal_repr = _format_literal_value(value)
+        type_expr = f"Literal[{literal_repr}]"
+        return RenderResult(code="", type_expr=type_expr, imports=imports)
+
+    # complex value (list or dict) - need custom validator with deep equality
+    imports = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator",
+    }
+
+    expected_repr = _format_json_value(value)
+
+    # generate a factory function call that creates a closure-based validator
+    # _make_const_validator is a helper that will be provided in the template
+    type_expr = (
+        f"Annotated[Any, BeforeValidator(_make_const_validator({expected_repr}))]"
+    )
+
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
 
 def render_enum(node: EnumNode) -> RenderResult:
-    """Render EnumNode to Pydantic type using Literal."""
-    imports: set[str] = {"from typing import Literal"}
+    """Render EnumNode to Pydantic type.
 
-    # Build Literal type with all enum values
-    literal_values: list[str] = []
-    for value in node.values:
-        if value is None:
-            literal_values.append("None")
-        elif isinstance(value, bool):
-            literal_values.append("True" if value else "False")
-        elif isinstance(value, str):
-            escaped = value.replace("\\", "\\\\").replace("'", "\\'")
-            literal_values.append(f"'{escaped}'")
-        else:
-            literal_values.append(repr(value))
+    For simple primitive values: uses Literal[val1, val2, ...]
+    For values with booleans or 0/1: uses custom validator (Python coercion issue)
+    For complex values (list/dict): uses custom validator with deep equality
+    """
+    # check if all values are primitives and don't need strict type checking
+    all_primitive = all(_is_primitive(v) for v in node.values)
 
-    values_str = ", ".join(literal_values)
-    type_expr = f"Literal[{values_str}]"
+    # check if any value needs strict type checking (bool or 0/1)
+    needs_strict_check = any(
+        isinstance(v, bool)
+        or (isinstance(v, int) and not isinstance(v, bool) and v in (0, 1))
+        for v in node.values
+    )
+
+    if all_primitive and not needs_strict_check:
+        # simple case - use Literal for all primitives
+        imports: set[str] = {"from typing import Literal"}
+        literal_values = [_format_literal_value(v) for v in node.values]
+        values_str = ", ".join(literal_values)
+        type_expr = f"Literal[{values_str}]"
+        return RenderResult(code="", type_expr=type_expr, imports=imports)
+
+    # has complex values or needs strict type checking - use custom validator
+    imports = {
+        "from typing import Annotated, Any",
+        "from pydantic import BeforeValidator",
+    }
+
+    # generate list of allowed values for the validator
+    values_repr = "[" + ", ".join(_format_json_value(v) for v in node.values) + "]"
+    type_expr = f"Annotated[Any, BeforeValidator(_make_enum_validator({values_repr}))]"
+
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
 

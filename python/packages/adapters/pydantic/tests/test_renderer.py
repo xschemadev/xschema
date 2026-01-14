@@ -182,7 +182,8 @@ def test_render_literal_string():
     """Test rendering literal string."""
     node = LiteralNode(value="active")
     result = render(node, "Test")
-    assert result.type_expr == "Literal['active']"
+    # json.dumps is used for strings, so double quotes
+    assert result.type_expr == 'Literal["active"]'
     assert "from typing import Literal" in result.imports
 
 
@@ -194,17 +195,23 @@ def test_render_literal_number():
 
 
 def test_render_literal_boolean():
-    """Test rendering literal boolean."""
+    """Test rendering literal boolean.
+
+    Booleans use custom validator to prevent Python's True==1 and False==0 coercion.
+    """
     node = LiteralNode(value=True)
     result = render(node, "Test")
-    assert result.type_expr == "Literal[True]"
+    # booleans need strict type checking, so we use BeforeValidator
+    assert "_make_const_validator(True)" in result.type_expr
+    assert "from pydantic import BeforeValidator" in result.imports
 
 
 def test_render_enum():
     """Test rendering enum (multiple literals)."""
     node = EnumNode(values=("red", "green", "blue"))
     result = render(node, "Test")
-    assert result.type_expr == "Literal['red', 'green', 'blue']"
+    # json.dumps is used for strings, so double quotes
+    assert result.type_expr == 'Literal["red", "green", "blue"]'
     assert "from typing import Literal" in result.imports
 
 

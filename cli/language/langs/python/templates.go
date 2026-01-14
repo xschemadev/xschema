@@ -95,6 +95,59 @@ def _try_validate(fn):
     return inner
 
 
+def _deep_equals(a, b):
+    """Deep equality check that distinguishes bool from int.
+
+    JSON Schema treats false != 0 and true != 1, but Python's == doesn't.
+    This function checks type equality for booleans while allowing int/float coercion.
+    """
+    # Check bool type mismatch (False == 0 and True == 1 in Python, but not in JSON)
+    a_is_bool = isinstance(a, bool)
+    b_is_bool = isinstance(b, bool)
+    if a_is_bool != b_is_bool:
+        return False
+
+    # For lists, check each element recursively
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_deep_equals(x, y) for x, y in zip(a, b))
+
+    # For dicts, check each key-value pair recursively
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_deep_equals(a[k], b[k]) for k in a)
+
+    # For other types, use regular equality
+    return a == b
+
+
+def _make_const_validator(expected):
+    """Create a validator that checks for deep equality with expected value.
+
+    Uses _deep_equals for strict type checking of booleans throughout the structure.
+    """
+    def validator(v):
+        if not _deep_equals(v, expected):
+            raise ValueError(f'Expected {expected!r}, got {v!r}')
+        return v
+    return validator
+
+
+def _make_enum_validator(allowed):
+    """Create a validator that checks value is in list of allowed values.
+
+    Uses _deep_equals for strict type checking of booleans.
+    """
+    def validator(v):
+        for item in allowed:
+            if _deep_equals(v, item):
+                return v
+        raise ValueError(f'Value {v!r} not in allowed values {allowed!r}')
+    return validator
+
+
 class TestCase(TypedDict):
     data: Any
     valid: bool

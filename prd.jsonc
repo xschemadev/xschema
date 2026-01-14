@@ -46,8 +46,8 @@
         "Test const: {const: [1,2,3]} validates [1,2,3] as valid",
         "Test enum: {enum: [{\"a\":1}, null]} validates correctly",
       ],
-      "passes": false,
-      "notes": "Python Literal only supports str, int, bool, None. Arrays/objects need different approach.",
+      "passes": true,
+      "notes": "Fixed. const=100%, enum=100%. Key fixes: (1) escape null bytes in string literals with json.dumps, (2) use _make_const_validator for complex values, (3) implement _deep_equals to prevent Python's bool/int coercion (False==0, True==1).",
     },
     // ============================================
     // PHASE 2: Semantic Compliance Fixes

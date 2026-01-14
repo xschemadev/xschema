@@ -10,6 +10,7 @@ from xschema_core.ir import (
     Dependency,
     EnumNode,
     IntersectionNode,
+    JsonValue,
     LiteralNode,
     NeverNode,
     NotNode,
@@ -69,4 +70,6 @@ __all__ = [
     "PropertyDependency",
     "SchemaDependency",
     "TypeGuard",
+    # Value types
+    "JsonValue",
 ]

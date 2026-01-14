@@ -1,7 +1,10 @@
 """IR node types for representing JSON Schema as a typed AST."""
 
 from dataclasses import dataclass
-from typing import Literal, Union
+from typing import Any, Literal, Union
+
+# JSON value type for const/enum (any valid JSON value)
+JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
 
 
 # ============================================
@@ -130,18 +133,18 @@ class NullNode:
 
 @dataclass(frozen=True)
 class LiteralNode:
-    """Literal/const value."""
+    """Literal/const value (any JSON value including arrays and objects)."""
 
     kind: Literal["literal"] = "literal"
-    value: str | int | float | bool | None = None
+    value: JsonValue = None
 
 
 @dataclass(frozen=True)
 class EnumNode:
-    """Enum type with list of allowed values."""
+    """Enum type with list of allowed values (any JSON values)."""
 
     kind: Literal["enum"] = "enum"
-    values: tuple[str | int | float | bool | None, ...] = ()
+    values: tuple[JsonValue, ...] = ()
 
 
 @dataclass(frozen=True)
