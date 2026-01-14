@@ -1,0 +1,8 @@
+[tool.uv.workspace]
+members = ["packages/core", "packages/adapters/*"]
+
+[tool.uv]
+dev-dependencies = [
+    "mypy>=1.19.1",
+    "pytest>=8.0",
+]

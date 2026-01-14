@@ -21,7 +21,7 @@ packages = ["src/xschema_pydantic"]
 xschema-pydantic = "xschema_pydantic.__main__:main"
 
 [tool.uv.sources]
-xschema-core = { path = "../../core", editable = true }
+xschema-core = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,347 +1,160 @@
+{
+  "description": "Python ecosystem setup: uv workspace, client package, CI/CD, PyPI publishing, and release automation. Goal is feature parity with TypeScript for DX.",
   "items": [
-    // ============================================
-    // PHASE 1: Critical Code Generation Bugs
-    // ============================================
     {
-      "id": "fix-none-union-syntax",
-      "category": "functional",
-      "description": "Fix 'None | None' type annotation error in allOf merging",
+      "id": "uv-workspace",
+      "category": "architectural",
+      "description": "Convert python/ to uv workspace with root pyproject.toml",
       "steps": [
-        "Run: cd python/packages/adapters/pydantic && echo '[{\"namespace\":\"t\",\"id\":\"T\",\"varName\":\"t\",\"schema\":{\"allOf\":[{\"type\":\"null\"},{\"type\":\"null\"}]}}]' | uv run python -m xschema_pydantic",
-        "Verify output doesn't produce 'None | None' type annotation",
-        "Check render_intersection in renderer.py handles duplicate null types",
-        "Test allOf with two identical schemas doesn't produce duplicate union types",
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword allOf",
-        "Verify allOf tests don't crash with TypeError about NoneType",
+        "create python/pyproject.toml with [tool.uv.workspace] members = ['packages/*', 'packages/adapters/*']",
+        "verify workspace members: core, client (new), pydantic adapter",
+        "run 'uv sync' from python/ root - should install all workspace members",
+        "remove individual uv.lock files from packages (workspace uses single root lock)",
+        "remove individual .venv dirs from packages",
+        "verify 'uv run --package xschema-pydantic pytest' works from root"
       ],
       "passes": true,
-      "notes": "Currently allOf crashes entire test batch with: TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'",
+      "notes": "Workspace provides single lockfile, shared deps, no relative path imports needed"
     },
     {
-      "id": "fix-non-object-validation",
+      "id": "python-client-package",
       "category": "functional",
-      "description": "JSON Schema object keywords must ignore non-object inputs",
+      "description": "Create xschema-client package with type-safe schema lookup",
       "steps": [
-        "Understand: {properties: {foo: {type: integer}}} should validate 12, [], 'hello' as VALID (they're not objects)",
-        "Modify render_object to generate TypeAdapter that checks isinstance(v, dict) first",
-        "Non-dicts should pass validation (return True), only dicts get property validation",
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword properties",
-        "Verify 'ignores arrays' and 'ignores other non-objects' tests pass",
-        "Same fix needed for additionalProperties, patternProperties, propertyNames",
-        "Run properties, additionalProperties compliance tests and verify improvement",
+        "create python/packages/client/ with pyproject.toml (name: xschema-client)",
+        "implement create_xschema_client(schemas, default_namespace) returning callable",
+        "client('namespace:id') returns validator from schemas dict",
+        "client('id') with default_namespace prepends namespace",
+        "raises XSchemaError if schema not found with helpful message",
+        "full type inference via TypeVar and Generic - mypy should infer return types",
+        "verify 'from xschema_client import create_xschema_client' works",
+        "add py.typed marker for PEP 561",
+        "add pytest tests for client: lookup, shorthand, error cases, type inference"
       ],
-      "passes": true,
-      "notes": "Fixed in converter.py. Non-dicts now pass validation for object schemas. Properties keyword shows 0% due to pre-existing bug with escaped chars in property names (Group3 tests). additionalProperties=71.4%, propertyNames=75%, patternProperties=56.5%, required=68.8% - all improved.",
+      "passes": false,
+      "notes": "Mirror TS client API. Use generics for type safety since Python lacks declaration merging."
     },
     {
-      "id": "fix-const-enum-validation",
+      "id": "python-example",
       "category": "functional",
-      "description": "Fix const and enum validation to work with any JSON value",
+      "description": "Create example project demonstrating Python xschema usage",
       "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword const --verbose",
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword enum --verbose",
-        "Identify why 0/54 const tests and 0/45 enum tests pass",
-        "Verify Literal types work for string, number, boolean, null values",
-        "Verify arrays and objects in const/enum use custom validators (Literal only works for primitives)",
-        "Test const: {const: [1,2,3]} validates [1,2,3] as valid",
-        "Test enum: {enum: [{\"a\":1}, null]} validates correctly",
+        "create python/example/ with pyproject.toml",
+        "add xschema config files using $schema: https://xschema.dev/schemas/python.jsonc",
+        "add user.xschema.jsonc with Calendar schema (xschema-pydantic adapter)",
+        "add subdir/another.xschema.jsonc with User schema (xschema-pydantic adapter)",
+        "use similar JSON Schema sources as TS example (calendar.json, source.json)",
+        "create main.py that imports generated schemas and uses client",
+        "demonstrate: full key lookup ('user:Calendar'), shorthand with default_namespace ('User')",
+        "demonstrate: Pydantic validation with model_validate()",
+        "add 'generate' script that runs xschema generate --project .",
+        "verify example works end-to-end: generate then run main.py"
       ],
-      "passes": true,
-      "notes": "Fixed. const=100%, enum=100%. Key fixes: (1) escape null bytes in string literals with json.dumps, (2) use _make_const_validator for complex values, (3) implement _deep_equals to prevent Python's bool/int coercion (False==0, True==1).",
-    },
-    // ============================================
-    // PHASE 2: Semantic Compliance Fixes
-    // ============================================
-    {
-      "id": "fix-multipleOf",
-      "category": "functional",
-      "description": "Fix multipleOf validation for integers and floats",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword multipleOf --verbose",
-        "Identify why 0/10 multipleOf tests pass",
-        "Verify annotated_types.MultipleOf is being used correctly",
-        "Handle floating point precision issues (0.3 / 0.1 might not equal 3.0 exactly)",
-        "Test multipleOf: 2 with value 4 passes",
-        "Test multipleOf: 0.01 with value 1.1 passes",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (10/10). Key fixes: (1) Added type guards for number-only schemas without explicit type (ignores non-numbers), (2) Handle integer type with float multipleOf using custom BeforeValidator since Pydantic's MultipleOf doesn't support non-integer values for int types.",
+      "passes": false,
+      "notes": "Example uses only Pydantic adapter (Python only has this adapter currently)"
     },
     {
-      "id": "fix-format-validation",
-      "category": "functional",
-      "description": "Fix format string validation (0/114 tests passing)",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword format --verbose",
-        "Identify which formats are failing and why",
-        "Verify email format uses EmailStr correctly",
-        "Verify date/datetime formats use correct Python types",
-        "Verify uri format validates correctly",
-        "Check if formats need to be explicitly enabled in Pydantic config",
-        "Handle unknown formats gracefully (should not fail, just skip validation)",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (133/133). Format is now treated as annotation-only per JSON Schema draft 2020-12 spec. Format values are preserved in IR but don't affect validation. This matches the spec where format validation is opt-in via format-assertion vocabulary.",
-    },
-    {
-      "id": "fix-ref-validation",
-      "category": "functional",
-      "description": "Fix $ref resolution in bundled schemas",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword ref --verbose",
-        "Identify why 0/0 ref tests pass (0 tests is suspicious - are they filtered?)",
-        "Verify RefNode with resolved field renders the resolved schema correctly",
-        "Verify forward references to $defs work via Python string annotations",
-        "Test schema with $ref to $defs validates correctly",
-      ],
-      "passes": true,
-      "notes": "Fixed. 89.9% (71/79). Key fixes: (1) Sanitize property names starting with underscore (like $ref -> f_ref), (2) Sanitize dunder names (__proto__ -> f__proto__), (3) Use _make_nullable() helper for forward references ('T' -> 'T | None' not 'T' | None), (4) Unresolved refs render as Any type. Remaining failures are recursive ref cases that would need custom validators.",
-    },
-    {
-      "id": "fix-type-keyword",
-      "category": "functional",
-      "description": "Fix remaining 7 type keyword failures (91.2% passing)",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword type --verbose 2>&1 | grep -A5 'FAIL\\|Error'",
-        "Identify the 7 failing tests",
-        "Common issue: type: [\"string\", \"null\"] should accept null values",
-        "Verify type arrays create correct unions",
-        "Test type: ['integer', 'null'] accepts both 5 and null",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (80/80). Key fixes: (1) Use StrictBool for boolean type (integers 0/1 are not booleans), (2) Use StrictInt for integer type, (3) Use StrictFloat for number type, (4) Use StringConstraints(strict=True) for string constraints, (5) Fix _is_object_only_schema to check for explicit type keyword - schemas with type:object should reject non-objects.",
-    },
-    {
-      "id": "fix-oneOf-validation",
-      "category": "functional",
-      "description": "Fix remaining 2 oneOf failures (92.6% passing)",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword oneOf --verbose 2>&1 | grep -A5 'FAIL\\|Error'",
-        "Identify the 2 failing tests",
-        "Verify exactly-one matching logic is correct",
-        "Fix edge cases where validation errors vs matches are counted incorrectly",
-      ],
-      "passes": true,
-      "notes": "Fixed by previous strict type changes. 100% (27/27) passing.",
-    },
-    // ============================================
-    // PHASE 3: Array/Tuple Fixes
-    // ============================================
-    {
-      "id": "fix-items-validation",
-      "category": "functional",
-      "description": "Fix items keyword validation (0/0 tests - likely filtered)",
-      "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12 --keyword items --verbose",
-        "Verify items schema applies to all array elements",
-        "Verify items: false means no additional items allowed after prefixItems",
-        "Test items with nested schema validates each element",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (29/29). Key fixes: (1) Core parser now correctly handles composition keywords (allOf/anyOf/oneOf) with sibling validation keywords - wraps them in IntersectionNode. (2) Renderer now generates custom validator for prefixItems+items:false that allows 0 to N items (not exactly N).",
-    },
-    {
-      "id": "fix-additionalItems",
-      "category": "functional",
-      "description": "Fix additionalItems validation (13/19 passing)",
-      "steps": [
-        "Run compliance for additionalItems and identify 6 failures",
-        "Fix: 'additionalItems are allowed by default' - empty prefix should allow any items",
-        "Fix: 'does not look in applicators' - additionalItems shouldn't check allOf subschemas",
-        "Fix: 'no additionalItems permitted' edge cases with empty array",
-        "Verify generated code handles both legacy (items array) and modern (prefixItems) syntax",
-      ],
-      "passes": true,
-      "notes": "Fixed by fix-items-validation changes. 100% (19/19) in draft7. additionalItems doesn't exist in draft2020-12 (replaced by items with prefixItems).",
-    },
-    {
-      "id": "fix-uniqueItems",
-      "category": "functional",
-      "description": "Fix uniqueItems validation (52/69 passing)",
-      "steps": [
-        "Run compliance for uniqueItems and identify 17 failures",
-        "Fix deep equality comparison for objects and arrays",
-        "Handle edge case: NaN != NaN in JSON but should be equal for uniqueness",
-        "Handle edge case: 1 and 1.0 should be considered equal",
-        "Test unique detection for nested objects",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (69/69). Key fixes: (1) Replaced set() with pairwise comparison using _json_equals() that properly handles bool/int distinction (False != 0, True != 1) and deep object/array equality. (2) Fixed prefixItems without items=false to allow additional items (variable-length tuple with validated prefix).",
-    },
-    // ============================================
-    // PHASE 4: Object Keyword Fixes
-    // ============================================
-    {
-      "id": "fix-required-validation",
-      "category": "functional",
-      "description": "Fix required keyword validation (6/16 passing)",
-      "steps": [
-        "Run compliance for required and identify 10 failures",
-        "Understand: required only applies if input is an object",
-        "Non-objects should pass validation",
-        "Required fields that exist with any value (including null) satisfy required",
-        "Test required with property set to null should pass",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (16/16). Key fix: properly escape special characters (newlines, tabs, quotes, backslashes) in property names using _escape_for_single_quotes() and _escape_for_double_quotes() helper functions. The previous code only escaped single quotes, causing syntax errors when property names contained control characters.",
-    },
-    {
-      "id": "fix-dependentRequired",
-      "category": "functional",
-      "description": "Fix dependentRequired validation (14/20 passing)",
-      "steps": [
-        "Run compliance for dependentRequired and identify 6 failures",
-        "Verify conditional property requirements work correctly",
-        "Should ignore non-objects",
-        "Test: if foo exists, bar must exist",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (20/20). Key fixes: (1) Added extra='allow' to model_config when dependencies are present so Pydantic keeps extra fields. (2) Changed from self.__dict__ to self.model_dump() for checking property existence. (3) Removed incorrect 'is not None' checks - JSON Schema says property just needs to exist. (4) Added 'pass' statement for empty dependency lists.",
-    },
-    {
-      "id": "fix-dependentSchemas",
-      "category": "functional",
-      "description": "Fix dependentSchemas validation (10/20 passing)",
-      "steps": [
-        "Run compliance for dependentSchemas and identify 10 failures",
-        "Verify schema dependencies are validated when trigger property exists",
-        "Should ignore non-objects",
-        "Test: if foo exists, validate against {type: object, properties: {bar: {type: number}}}",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (20/20). Key fix: Changed model_dump() to model_dump(exclude_unset=True) throughout renderer.py. This correctly distinguishes between 'property not in input' vs 'property explicitly set to null'. Pydantic's model_dump() includes all declared fields with their defaults, which caused dependency checks to trigger for properties that weren't actually in the input.",
-    },
-    {
-      "id": "fix-patternProperties",
-      "category": "functional",
-      "description": "Fix patternProperties validation (10/23 passing)",
-      "steps": [
-        "Run compliance for patternProperties and identify 13 failures",
-        "Verify regex patterns match property names correctly",
-        "Should ignore non-objects",
-        "Handle interaction with properties and additionalProperties",
-        "Test non-ASCII patterns",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (23/23). Key fixes: (1) Added extra='allow' to model_config when patternProperties or propertyNames are present, so Pydantic doesn't silently drop extra fields. (2) Changed from self.__dict__ to self.model_dump() for iterating all properties (Pydantic stores extra fields separately).",
-    },
-    {
-      "id": "fix-propertyNames",
-      "category": "functional",
-      "description": "Fix propertyNames validation (15/20 passing)",
-      "steps": [
-        "Run compliance for propertyNames and identify 5 failures",
-        "Verify all property names are validated against schema",
-        "Should ignore non-objects",
-        "Test propertyNames with pattern constraint",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (20/20). Key fix: added propertyNames, minProperties, maxProperties, dependentRequired, dependentSchemas to _infer_type() and _detect_type_guards() in core parser. These object-specific keywords now correctly infer object type, triggering proper ObjectNode parsing and rendering.",
-    },
-    // ============================================
-    // PHASE 5: Constraint Fixes
-    // ============================================
-    {
-      "id": "fix-min-max-constraints",
-      "category": "functional",
-      "description": "Fix remaining min/max constraint edge cases",
-      "steps": [
-        "Run compliance for minLength, maxLength (6/7 each)",
-        "Run compliance for minItems, maxItems (5/6 each)",
-        "Run compliance for minProperties, maxProperties",
-        "Run compliance for minimum, maximum, exclusiveMinimum, exclusiveMaximum",
-        "Identify and fix the edge case failures",
-        "Common issue: constraints should ignore non-applicable types",
-      ],
-      "passes": true,
-      "notes": "Fixed. All now at 100%: minLength=100%, maxLength=100%, minItems=100%, maxItems=100%, minProperties=100%, maxProperties=100%, minimum=100%, maximum=100%, exclusiveMinimum=100%, exclusiveMaximum=100%. Key fixes: (1) Added extra='allow' to model_config when min/maxProperties are present. (2) Proper type guards for inferred types.",
-    },
-    {
-      "id": "fix-pattern-validation",
-      "category": "functional",
-      "description": "Fix pattern validation (3/9 passing)",
-      "steps": [
-        "Run compliance for pattern and identify 6 failures",
-        "Verify regex compilation and matching",
-        "Handle ECMA vs Python regex differences",
-        "Test non-ASCII patterns",
-        "Verify pattern should ignore non-strings",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (9/9). Previously at 100% - was already working, likely fixed by type guard improvements.",
-    },
-    {
-      "id": "fix-contains-minContains-maxContains",
-      "category": "functional",
-      "description": "Fix contains constraint validation",
-      "steps": [
-        "Run compliance for contains (14/21), minContains (14/28), maxContains (6/12)",
-        "Verify at least minContains items match contains schema",
-        "Verify at most maxContains items match",
-        "Handle edge case: minContains: 0 means contains is optional",
-        "Test contains with maxContains: 1 allows only one match",
-      ],
-      "passes": true,
-      "notes": "Fixed. contains=100% (21/21), minContains=100% (28/28), maxContains=100% (12/12). Key fix: Added missing array keywords (contains, minContains, maxContains, prefixItems, additionalItems, unevaluatedItems) to _infer_type() and _detect_type_guards() in core parser. Schemas with only contains keyword were being parsed as AnyNode instead of ArrayNode.",
-    },
-    // ============================================
-    // PHASE 6: Not and Composition Edge Cases
-    // ============================================
-    {
-      "id": "fix-not-validation",
-      "category": "functional",
-      "description": "Fix remaining not validation edge case (37/38 passing)",
-      "steps": [
-        "Run compliance for not and identify 1 failure",
-        "Verify negation logic is correct",
-        "Check if the failure is related to unsupported unevaluatedProperties",
-      ],
-      "passes": true,
-      "notes": "Fixed. 100% (38/38 passing, 2 unsupported due to unevaluatedProperties). Key fix: restructured not validator to use a matched flag instead of raising inside try-except, which caused nested not validators to incorrectly propagate errors (double negation test was failing).",
-    },
-    // ============================================
-    // PHASE 7: Final Verification
-    // ============================================
-    {
-      "id": "compliance-full-run",
+      "id": "python-ci-setup",
       "category": "integration",
-      "description": "Run full compliance suite and verify target reached",
+      "description": "Create python/.ci/ for compliance workflow integration",
       "steps": [
-        "Run: cd python/packages/adapters/pydantic && ../../../../cli/xschema compliance --lang python --draft draft2020-12",
-        "Verify all fixable tests pass (target: ~650+ passed out of ~920)",
-        "Verify unsupported features are correctly documented (~200 tests)",
-        "Verify 0 unexpected failures",
-        "Calculate final compliance percentage for passable tests: passed/(passed+failed) >= 95%",
-        "Run --dev-report and commit updated REPORT.md",
+        "create python/.ci/runtime.txt containing 'python'",
+        "create python/.ci/setup.sh that runs 'uv sync'",
+        "verify compliance.yml detects python runtime correctly",
+        "run compliance workflow locally: go run . compliance --lang python --adapter-path ../python/packages/adapters/pydantic",
+        "verify no errors in setup phase"
       ],
-      "passes": true,
-      "notes": "Verified. draft2020-12: 1006 passed, 33 failed, 201 unsupported = 96.8% compliance. All 6 drafts tested via --dev-report: draft3=97.4%, draft4=96.8%, draft6=97.2%, draft7=97.4%, draft2019-09=96.9%, draft2020-12=96.8%. REPORT.md generated and committed. Target of 95% exceeded across all drafts.",
+      "passes": false,
+      "notes": "compliance.yml already supports python runtime detection, just need the files"
     },
     {
-      "id": "verify-all-drafts",
+      "id": "pypi-cli-packages",
+      "category": "architectural",
+      "description": "Create platform-specific CLI packages for PyPI distribution",
+      "steps": [
+        "create python/cli/ directory structure mirroring cli/npm/",
+        "create python/cli/xschema-cli/pyproject.toml with console_scripts entry point",
+        "create python/cli/xschema-cli/src/xschema_cli/__init__.py with platform detection + exec",
+        "create 6 platform packages: xschema-cli-{darwin,linux,win32}-{arm64,x64}/",
+        "each platform package has pyproject.toml with classifier for os/arch",
+        "main package declares platform packages as optional dependencies",
+        "verify 'uv pip install xschema-cli' installs correct platform binary",
+        "verify 'xschema --help' executes the Go binary"
+      ],
+      "passes": false,
+      "notes": "Match npm pattern. Platform packages contain Go binary, main package does detection."
+    },
+    {
+      "id": "ci-workflow-python",
       "category": "integration",
-      "description": "Verify compliance improvements across all draft versions",
+      "description": "Update CI workflow to build and typecheck Python packages",
       "steps": [
-        "Run compliance for draft2020-12, draft2019-09, draft7, draft6, draft4",
-        "Verify improvements are consistent across drafts",
-        "Document any draft-specific limitations",
-        "Commit final REPORT.md with all draft results",
+        "add paths filter for python/ in .github/workflows/ci.yml",
+        "add py-build job: uv sync, uv run mypy, uv run pytest (if tests exist)",
+        "add py-result passthrough job for branch protection",
+        "verify CI runs on python/ changes only",
+        "verify CI passes with current python code"
       ],
-      "passes": true,
-      "notes": "Verified. All 6 drafts exceed 96% compliance: draft3=97.4% (415/426), draft4=96.8% (577/596), draft6=97.2% (786/809), draft7=97.4% (870/893), draft2019-09=97.0% (994/1025 + 178 unsupported), draft2020-12=96.8% (1006/1039 + 201 unsupported). REPORT.md generated and committed with detailed failure analysis and unsupported feature documentation.",
+      "passes": false,
+      "notes": "Follow same pattern as go-test and ts-build jobs"
     },
     {
-      "id": "verify-tests-pass",
-      "category": "test",
-      "description": "Ensure existing unit tests still pass after fixes",
+      "id": "release-please-python",
+      "category": "integration",
+      "description": "Add Python packages to release-please configuration",
       "steps": [
-        "Run: cd python/packages/core && uv run pytest tests/ -v",
-        "Run: cd python/packages/adapters/pydantic && uv run pytest tests/ -v",
-        "Verify 85+ tests pass",
-        "Add new tests for any complex fixes made",
+        "add python/packages/core to release-please-config.json with release-type: python, component: py-core",
+        "add python/packages/client to config with release-type: python, component: py-client",
+        "add python/packages/adapters/pydantic to config with release-type: python, component: py-pydantic",
+        "add initial versions to .release-please-manifest.json (all 0.1.0)",
+        "verify release-please can parse the config: validate JSON syntax",
+        "tags will be: py-core-v0.1.0, py-client-v0.1.0, py-pydantic-v0.1.0"
       ],
-      "passes": true,
-      "notes": "Verified. Core package: 79/79 tests pass. Pydantic adapter: 85/85 tests pass. Total: 164 tests, all green. Exceeds 85+ requirement.",
+      "passes": false,
+      "notes": "Component names prefixed with py- to avoid collision with TS (core, client, zod). python release-type updates pyproject.toml version and CHANGELOG.md automatically."
     },
-  ],
+    {
+      "id": "release-workflow-pypi",
+      "category": "integration",
+      "description": "Add PyPI publishing to release workflow",
+      "steps": [
+        "add release-py job to .github/workflows/release-please.yml",
+        "job triggers on py-* tags (py-core, py-client, py-pydantic)",
+        "uses uv to build: uv build",
+        "publishes to PyPI using uv publish with PYPI_TOKEN secret",
+        "add comment documenting PYPI_TOKEN secret requirement",
+        "verify workflow syntax is valid"
+      ],
+      "passes": false,
+      "notes": "PYPI_TOKEN secret must be configured in GitHub repo settings"
+    },
+    {
+      "id": "release-workflow-pypi-cli",
+      "category": "integration",
+      "description": "Add PyPI CLI binary publishing to release workflow",
+      "steps": [
+        "extend release-cli job to also publish Python CLI packages",
+        "after Go binaries built, copy to python/cli/xschema-cli-{platform}/",
+        "build and publish each platform package to PyPI",
+        "build and publish main xschema-cli package",
+        "verify all 7 packages (1 main + 6 platform) publish correctly"
+      ],
+      "passes": false,
+      "notes": "CLI publishes on cli-* tags, same as npm. Requires PYPI_TOKEN."
+    },
+    {
+      "id": "update-injector-template",
+      "category": "functional",
+      "description": "Update Python output template to work with new client",
+      "steps": [
+        "review cli/language/langs/python/templates.go outputTemplate",
+        "ensure generated code exports schemas dict compatible with client",
+        "ensure SchemaTypes TypedDict is correct for type inference",
+        "verify register_schemas() function works with client._register_schemas()",
+        "regenerate example output and verify it works with client"
+      ],
+      "passes": false,
+      "notes": "Template already has most of what's needed, may need minor adjustments"
+    }
+  ]
 }
