@@ -31,7 +31,7 @@
         "Create meta.json in typescript/adapters/ with order: index, zod, arktype, effect, valibot",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: web/source.config.ts for fumadocs config. Fumadocs meta.json format: { \"pages\": [\"page-name\", ...] } or { \"title\": \"Section\", \"pages\": [...] }"
     },
     {

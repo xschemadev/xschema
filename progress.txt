@@ -18,3 +18,19 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Build command is `bun run build` in web/ directory - runs generate scripts first
   - fumadocs content is at `web/content/docs/`
 ---
+
+## 2026-01-14 - US-002
+- Created 7 meta.json files for fumadocs navigation structure
+- Files created:
+  - `web/content/docs/meta.json` - root order: index, getting-started, cli, troubleshooting, compliance, internals, typescript
+  - `web/content/docs/compliance/meta.json` - order: index, unsupported-features
+  - `web/content/docs/internals/meta.json` - order: index, architecture, adapters, compliance-testing
+  - `web/content/docs/typescript/meta.json` - order: index, framework, library, adapters
+  - `web/content/docs/typescript/framework/meta.json` - order: getting-started, configuration, client
+  - `web/content/docs/typescript/library/meta.json` - order: index
+  - `web/content/docs/typescript/adapters/meta.json` - order: index, zod, arktype, effect, valibot
+- **Learnings for future iterations:**
+  - fumadocs meta.json format: `{ "pages": ["page-name", ...] }`
+  - pages listed in meta.json that don't exist yet are fine - fumadocs ignores them until files exist
+  - typecheck command: `bun run types:check` in web/ directory
+---

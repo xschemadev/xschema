@@ -1,0 +1,3 @@
+{
+  "pages": ["index", "getting-started", "cli", "troubleshooting", "compliance", "internals", "typescript"]
+}
