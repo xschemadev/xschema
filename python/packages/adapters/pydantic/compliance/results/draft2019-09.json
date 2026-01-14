@@ -3,18 +3,11 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 14,
-      "failed": 5,
+      "passed": 15,
+      "failed": 4,
       "skipped": 0,
       "total": 19,
       "failures": [
-        {
-          "group": "additionalItems are allowed by default",
-          "test": "only the first item is validated",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "additionalItems does not look in applicators, invalid case",
           "test": "items defined in allOf are not examined",
@@ -375,61 +368,10 @@
     },
     {
       "keyword": "contains",
-      "passed": 14,
-      "failed": 7,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "contains keyword validation",
-          "test": "array without items matching schema is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword validation",
-          "test": "empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword with boolean schema false",
-          "test": "any non-empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword with boolean schema false",
-          "test": "empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword with boolean schema true",
-          "test": "empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains keyword with const keyword",
-          "test": "array without item 5 is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "contains with false if subschema",
-          "test": "empty array is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "content",
@@ -1431,54 +1373,10 @@
     },
     {
       "keyword": "maxContains",
-      "passed": 6,
-      "failed": 6,
+      "passed": 12,
+      "failed": 0,
       "skipped": 0,
-      "total": 12,
-      "failures": [
-        {
-          "group": "maxContains with contains",
-          "test": "all elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains with contains",
-          "test": "empty data",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains with contains",
-          "test": "some elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains with contains, value with a decimal",
-          "test": "too many elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains \u003c maxContains",
-          "test": "actual \u003c minContains \u003c maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains \u003c maxContains",
-          "test": "minContains \u003c maxContains \u003c actual",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 12
     },
     {
       "keyword": "maxItems",
@@ -1510,110 +1408,10 @@
     },
     {
       "keyword": "minContains",
-      "passed": 14,
-      "failed": 14,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "empty data",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid maxContains and minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains \u003c minContains",
-          "test": "invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains = minContains",
-          "test": "all elements match, invalid maxContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains = minContains",
-          "test": "all elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "maxContains = minContains",
-          "test": "empty data",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains = 0 with maxContains",
-          "test": "too many",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=1 with contains",
-          "test": "empty data",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=1 with contains",
-          "test": "no elements match",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains",
-          "test": "all elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains",
-          "test": "empty data",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains",
-          "test": "some elements match, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "minContains=2 with contains with a decimal value",
-          "test": "one element matches, invalid minContains",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "minItems",
@@ -1680,234 +1478,24 @@
     },
     {
       "keyword": "properties",
-      "passed": 0,
-      "failed": 28,
+      "passed": 26,
+      "failed": 2,
       "skipped": 0,
       "total": 28,
       "failures": [
         {
-          "group": "object properties validation",
-          "test": "both properties invalid is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "object properties validation",
-          "test": "both properties present and valid is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "object properties validation",
-          "test": "doesn't invalidate other properties",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "object properties validation",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "object properties validation",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "object properties validation",
-          "test": "one property invalid is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
           "group": "properties whose names are Javascript object property names",
           "test": "__proto__ not valid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "constructor not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores arrays",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "ignores other non-objects",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with boolean schema",
-          "test": "both properties present is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with boolean schema",
-          "test": "no property present is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with boolean schema",
-          "test": "only 'false' property present is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with boolean schema",
-          "test": "only 'true' property present is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with escaped characters",
-          "test": "object with all numbers is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with escaped characters",
-          "test": "object with strings is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties with null valued instance properties",
-          "test": "allows null values",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty ignores property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "properties, patternProperties, additionalProperties interaction",
           "test": "additionalProperty invalidates others",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty validates others",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates nonproperty",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty invalidates property",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "patternProperty validates nonproperty",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property invalidates property",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
-        },
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "property validates property",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "harness execution error: harness execution failed: exit status 1\nstderr:   File \"/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py\", line 155\n    foo\"bar: StrictFloat | None = None\n       ^\nSyntaxError: unterminated string literal (detected at line 155)\n"
+          "actual": "true",
+          "passed": false
         }
       ]
     },
@@ -2029,54 +1617,10 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 63,
-      "failed": 6,
+      "passed": 69,
+      "failed": 0,
       "skipped": 0,
-      "total": 69,
-      "failures": [
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 69
     },
     {
       "keyword": "vocabulary",
@@ -2087,11 +1631,11 @@
     }
   ],
   "summary": {
-    "passed": 682,
-    "failed": 224,
+    "passed": 742,
+    "failed": 164,
     "skipped": 0,
     "total": 906,
-    "percentage": 75.27593818984548,
+    "percentage": 81.89845474613686,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

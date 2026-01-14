@@ -3,18 +3,11 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 10,
-      "failed": 4,
+      "passed": 11,
+      "failed": 3,
       "skipped": 0,
       "total": 14,
       "failures": [
-        {
-          "group": "additionalItems are allowed by default",
-          "test": "only the first item is validated",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "array of items with no additionalItems permitted",
           "test": "empty array",
@@ -811,62 +804,18 @@
     },
     {
       "keyword": "uniqueItems",
-      "passed": 56,
-      "failed": 6,
+      "passed": 62,
+      "failed": 0,
       "skipped": 0,
-      "total": 62,
-      "failures": [
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "non-unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [false, true] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "uniqueItems=false with an array of items",
-          "test": "unique array extended from [true, false] is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 62
     }
   ],
   "summary": {
-    "passed": 311,
-    "failed": 86,
+    "passed": 318,
+    "failed": 79,
     "skipped": 0,
     "total": 397,
-    "percentage": 78.33753148614609,
+    "percentage": 80.10075566750629,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

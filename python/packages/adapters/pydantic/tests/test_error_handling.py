@@ -123,7 +123,7 @@ class TestConverterValidation:
 
     def test_unexpected_ref_in_schema(self):
         """$ref in schema raises InvalidSchemaError (should be pre-bundled)."""
-        with pytest.raises(InvalidSchemaError, match="Unexpected \\$ref in schema"):
+        with pytest.raises(InvalidSchemaError, match="Unexpected \\$ref"):
             convert(
                 {
                     "namespace": "test",

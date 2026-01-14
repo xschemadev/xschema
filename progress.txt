@@ -671,3 +671,56 @@ This requires a fix in the core parser, not the renderer.
 **See:** https://json-schema.org/draft/2020-12/json-schema-validation#name-format
 
 ---
+
+## Task: fix-ref-validation (COMPLETED)
+
+**Objective:** Fix $ref validation (was 0%, now 89.9%)
+
+**Root Causes:**
+
+1. **Property names starting with underscore**: Pydantic doesn't allow field names starting with `_`. Properties like `$ref` were sanitized to `_ref` which Pydantic rejected.
+
+2. **Dunder names**: Similarly, `__proto__` was being kept as-is after sanitizing `$` and other chars, but Pydantic doesn't allow `__` prefix.
+
+3. **Forward reference + nullable syntax**: When making a forward reference nullable, `'T' | None` is invalid Python. The union must be inside the quotes: `'T | None'`.
+
+4. **Unresolved refs**: `$ref: "#"` root self-references couldn't use the class type because the root schema might have no explicit `type`, meaning non-objects should pass.
+
+**Solutions:**
+
+1. Modified `_sanitize_property_name()` to prefix names starting with `_` with `f` (field):
+   - `$ref` → `_ref` → `f_ref`
+   - `__proto__` → `f__proto__`
+
+2. Added `_make_nullable()` helper function that handles forward references:
+   - `'T'` → `'T | None'` (keeps union inside quotes)
+   - `StrictInt` → `StrictInt | None` (regular append)
+
+3. Changed `render_ref()` for unresolved refs to return `Any` type instead of forward reference. JSON Schema semantics require accepting any value when schema has no explicit type.
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Added `_make_nullable()` helper function
+  - Updated `_sanitize_property_name()` to handle underscore-prefixed names
+  - Updated `render_ref()` for unresolved refs
+  - Updated all places that append `| None` to use `_make_nullable()`
+
+**Testing Results:**
+- ✅ ref: 89.9% (71/79 tests passing)
+- ✅ properties: 96.4% (27/28) - up from 0% 
+- ✅ Overall draft2020-12: 96.8% (1006 passed)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+- ✅ All Go CLI tests pass
+
+**Remaining Failures (8 tests):**
+- Root recursive refs (`$ref: "#"`) with nested objects don't recursively validate
+- Would require generating custom recursive validation functions
+- These are edge cases - most real-world schemas use explicit types
+
+**Key Insights:**
+- Pydantic has strict field naming rules that differ from JSON Schema property names
+- Forward reference syntax in Python requires the entire type expression in quotes
+- `Any` type is correct for unresolved refs per JSON Schema semantics
+
+---

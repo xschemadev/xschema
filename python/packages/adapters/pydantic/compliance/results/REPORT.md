@@ -4,34 +4,34 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 682 | 224 | 0 | 178 | 75.3% |
-| draft2020-12 | 673 | 246 | 0 | 201 | 73.2% |
-| draft3 | 311 | 86 | 0 | 0 | 78.3% |
-| draft4 | 423 | 103 | 0 | 0 | 80.4% |
-| draft6 | 573 | 134 | 0 | 0 | 81.0% |
-| draft7 | 600 | 183 | 0 | 0 | 76.6% |
+| draft2019-09 | 742 | 164 | 0 | 178 | 81.9% |
+| draft2020-12 | 734 | 185 | 0 | 201 | 79.9% |
+| draft3 | 318 | 79 | 0 | 0 | 80.1% |
+| draft4 | 452 | 74 | 0 | 0 | 85.9% |
+| draft6 | 612 | 95 | 0 | 0 | 86.6% |
+| draft7 | 640 | 143 | 0 | 0 | 81.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-75.3%25-red)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-73.2%25-red)
-![draft3](https://img.shields.io/badge/draft3%20compliance-78.3%25-red)
-![draft4](https://img.shields.io/badge/draft4%20compliance-80.4%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-81.0%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-76.6%25-red)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-81.9%25-yellow)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-79.9%25-red)
+![draft3](https://img.shields.io/badge/draft3%20compliance-80.1%25-yellow)
+![draft4](https://img.shields.io/badge/draft4%20compliance-85.9%25-yellow)
+![draft6](https://img.shields.io/badge/draft6%20compliance-86.6%25-yellow)
+![draft7](https://img.shields.io/badge/draft7%20compliance-81.7%25-yellow)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ⚠️ | 15/19 |
 | additionalProperties | ⚠️ | 15/21 |
 | allOf | ❌ | 0/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 14/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
@@ -44,12 +44,12 @@
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
-| maxContains | ⚠️ | 6/12 |
+| maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
-| minContains | ⚠️ | 14/28 |
+| minContains | ✅ | 28/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
 | minProperties | ✅ | 8/8 |
@@ -59,7 +59,7 @@
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ❌ | 0/28 |
+| properties | ⚠️ | 26/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
 | ref | ✅ | 0/0 |
@@ -68,7 +68,7 @@
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
 | unevaluatedProperties | ⚠️ | 19/25 |
-| uniqueItems | ⚠️ | 63/69 |
+| uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
@@ -340,11 +340,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 5 failures</summary>
+<summary>additionalItems - 4 failures</summary>
 
-- **additionalItems are allowed by default**
-  - Test: only the first item is validated
-  - Expected: `valid`, Got: `false`
 - **additionalItems does not look in applicators, invalid case**
   - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
@@ -1557,33 +1554,6 @@ stderr: Traceback (most recent call last):
 TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'
 Unable to evaluate type annotation 'None | None'.
 `
-
-</details>
-
-<details>
-<summary>contains - 7 failures</summary>
-
-- **contains keyword validation**
-  - Test: array without items matching schema is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword validation**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema true**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with const keyword**
-  - Test: array without item 5 is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains with false if subschema**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -6268,304 +6238,14 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxContains - 6 failures</summary>
+<summary>properties - 2 failures</summary>
 
-- **maxContains with contains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: some elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains, value with a decimal**
-  - Test: too many elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: actual < minContains < maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: minContains < maxContains < actual
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minContains - 14 failures</summary>
-
-- **maxContains < minContains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains and minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains = 0 with maxContains**
-  - Test: too many
-  - Expected: `invalid`, Got: `true`
-- **minContains=1 with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains=1 with contains**
-  - Test: no elements match
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: some elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains with a decimal value**
-  - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>properties - 28 failures</summary>
-
-- **object properties validation**
-  - Test: both properties invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: both properties present and valid is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: doesn't invalidate other properties
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: one property invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: both properties present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: no property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'false' property present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'true' property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with all numbers is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with strings is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with null valued instance properties**
-  - Test: allows null values
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates nonproperty
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -6605,30 +6285,6 @@ SyntaxError: unterminated string literal (detected at line 155)
 
 </details>
 
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -6639,7 +6295,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 14/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
@@ -6653,12 +6309,12 @@ SyntaxError: unterminated string literal (detected at line 155)
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 0/0 |
 | items | ✅ | 0/0 |
-| maxContains | ⚠️ | 6/12 |
+| maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
 | maximum | ✅ | 8/8 |
-| minContains | ⚠️ | 14/28 |
+| minContains | ✅ | 28/28 |
 | minItems | ✅ | 6/6 |
 | minLength | ✅ | 7/7 |
 | minProperties | ✅ | 8/8 |
@@ -6668,8 +6324,8 @@ SyntaxError: unterminated string literal (detected at line 155)
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 4/11 |
-| properties | ❌ | 0/28 |
+| prefixItems | ⚠️ | 6/11 |
+| properties | ⚠️ | 26/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
@@ -6677,7 +6333,7 @@ SyntaxError: unterminated string literal (detected at line 155)
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
 | unevaluatedProperties | ⚠️ | 20/27 |
-| uniqueItems | ⚠️ | 63/69 |
+| uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
 ### Unsupported Features
@@ -8216,33 +7872,6 @@ stderr: Traceback (most recent call last):
 TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'
 Unable to evaluate type annotation 'None | None'.
 `
-
-</details>
-
-<details>
-<summary>contains - 7 failures</summary>
-
-- **contains keyword validation**
-  - Test: array without items matching schema is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword validation**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema true**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with const keyword**
-  - Test: array without item 5 is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains with false if subschema**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -13706,94 +13335,16 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>maxContains - 6 failures</summary>
-
-- **maxContains with contains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains**
-  - Test: some elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains with contains, value with a decimal**
-  - Test: too many elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: actual < minContains < maxContains
-  - Expected: `invalid`, Got: `true`
-- **minContains < maxContains**
-  - Test: minContains < maxContains < actual
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>minContains - 14 failures</summary>
-
-- **maxContains < minContains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid maxContains and minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains < minContains**
-  - Test: invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid maxContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **maxContains = minContains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains = 0 with maxContains**
-  - Test: too many
-  - Expected: `invalid`, Got: `true`
-- **minContains=1 with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains=1 with contains**
-  - Test: no elements match
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: all elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: empty data
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains**
-  - Test: some elements match, invalid minContains
-  - Expected: `invalid`, Got: `true`
-- **minContains=2 with contains with a decimal value**
-  - Test: one element matches, invalid minContains
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>prefixItems - 7 failures</summary>
+<summary>prefixItems - 5 failures</summary>
 
 - **a schema given for prefixItems**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: array with additional items
   - Expected: `valid`, Got: `false`
 - **a schema given for prefixItems**
   - Test: empty array
   - Expected: `valid`, Got: `false`
 - **a schema given for prefixItems**
   - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **additional items are allowed by default**
-  - Test: only the first item is validated
   - Expected: `valid`, Got: `false`
 - **prefixItems with boolean schemas**
   - Test: array with one item is valid
@@ -13805,232 +13356,14 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>properties - 28 failures</summary>
+<summary>properties - 2 failures</summary>
 
-- **object properties validation**
-  - Test: both properties invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: both properties present and valid is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: doesn't invalidate other properties
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: one property invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: both properties present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: no property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'false' property present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'true' property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with all numbers is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with strings is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with null valued instance properties**
-  - Test: allows null values
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates nonproperty
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -14073,35 +13406,11 @@ SyntaxError: unterminated string literal (detected at line 155)
 
 </details>
 
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
 ## draft3
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 10/14 |
+| additionalItems | ⚠️ | 11/14 |
 | additionalProperties | ⚠️ | 11/16 |
 | default | ✅ | 7/7 |
 | dependencies | ✅ | 18/18 |
@@ -14125,16 +13434,13 @@ SyntaxError: unterminated string literal (detected at line 155)
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 56/62 |
+| uniqueItems | ✅ | 62/62 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 4 failures</summary>
+<summary>additionalItems - 3 failures</summary>
 
-- **additionalItems are allowed by default**
-  - Test: only the first item is validated
-  - Expected: `valid`, Got: `false`
 - **array of items with no additionalItems permitted**
   - Test: empty array
   - Expected: `valid`, Got: `false`
@@ -17039,35 +16345,11 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 
 </details>
 
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
 ## draft4
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 12/17 |
+| additionalItems | ⚠️ | 13/17 |
 | additionalProperties | ⚠️ | 11/16 |
 | allOf | ❌ | 0/27 |
 | anyOf | ✅ | 15/15 |
@@ -17091,21 +16373,18 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 | oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ❌ | 0/24 |
+| properties | ⚠️ | 22/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
-| uniqueItems | ⚠️ | 63/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 5 failures</summary>
+<summary>additionalItems - 4 failures</summary>
 
-- **additionalItems are allowed by default**
-  - Test: only the first item is validated
-  - Expected: `valid`, Got: `false`
 - **additionalItems does not look in applicators, invalid case**
   - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
@@ -19684,224 +18963,14 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>properties - 24 failures</summary>
+<summary>properties - 2 failures</summary>
 
-- **object properties validation**
-  - Test: both properties invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **object properties validation**
-  - Test: both properties present and valid is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **object properties validation**
-  - Test: doesn't invalidate other properties
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **object properties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **object properties validation**
-  - Test: one property invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties with escaped characters**
-  - Test: object with all numbers is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties with escaped characters**
-  - Test: object with strings is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties with null valued instance properties**
-  - Test: allows null values
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
+  - Expected: `invalid`, Got: `true`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates nonproperty
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 146
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 146)
-`
-
-</details>
-
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -19909,13 +18978,13 @@ SyntaxError: unterminated string literal (detected at line 146)
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ⚠️ | 15/19 |
 | additionalProperties | ⚠️ | 11/16 |
 | allOf | ❌ | 0/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 13/19 |
+| contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
@@ -19938,22 +19007,19 @@ SyntaxError: unterminated string literal (detected at line 146)
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ❌ | 0/28 |
+| properties | ⚠️ | 26/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 63/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 5 failures</summary>
+<summary>additionalItems - 4 failures</summary>
 
-- **additionalItems are allowed by default**
-  - Test: only the first item is validated
-  - Expected: `valid`, Got: `false`
 - **additionalItems does not look in applicators, invalid case**
   - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
@@ -21163,30 +20229,6 @@ stderr: Traceback (most recent call last):
 TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'
 Unable to evaluate type annotation 'None | None'.
 `
-
-</details>
-
-<details>
-<summary>contains - 6 failures</summary>
-
-- **contains keyword validation**
-  - Test: array without items matching schema is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword validation**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema true**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with const keyword**
-  - Test: array without item 5 is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -23411,256 +22453,14 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>properties - 28 failures</summary>
+<summary>properties - 2 failures</summary>
 
-- **object properties validation**
-  - Test: both properties invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: both properties present and valid is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: doesn't invalidate other properties
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: one property invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: both properties present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: no property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'false' property present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'true' property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with all numbers is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with strings is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with null valued instance properties**
-  - Test: allows null values
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates nonproperty
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-
-</details>
-
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -23668,13 +22468,13 @@ SyntaxError: unterminated string literal (detected at line 155)
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/19 |
+| additionalItems | ⚠️ | 15/19 |
 | additionalProperties | ⚠️ | 11/16 |
 | allOf | ❌ | 0/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 14/21 |
+| contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
@@ -23698,22 +22498,19 @@ SyntaxError: unterminated string literal (detected at line 155)
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ❌ | 0/28 |
+| properties | ⚠️ | 26/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| uniqueItems | ⚠️ | 63/69 |
+| uniqueItems | ✅ | 69/69 |
 
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 5 failures</summary>
+<summary>additionalItems - 4 failures</summary>
 
-- **additionalItems are allowed by default**
-  - Test: only the first item is validated
-  - Expected: `valid`, Got: `false`
 - **additionalItems does not look in applicators, invalid case**
   - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
@@ -24923,33 +23720,6 @@ stderr: Traceback (most recent call last):
 TypeError: unsupported operand type(s) for |: 'NoneType' and 'NoneType'
 Unable to evaluate type annotation 'None | None'.
 `
-
-</details>
-
-<details>
-<summary>contains - 7 failures</summary>
-
-- **contains keyword validation**
-  - Test: array without items matching schema is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword validation**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema false**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with boolean schema true**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains keyword with const keyword**
-  - Test: array without item 5 is invalid
-  - Expected: `invalid`, Got: `true`
-- **contains with false if subschema**
-  - Test: empty array is invalid
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -29142,256 +27912,14 @@ ImportError: email-validator is not installed, run `pip install 'pydantic[email]
 </details>
 
 <details>
-<summary>properties - 28 failures</summary>
+<summary>properties - 2 failures</summary>
 
-- **object properties validation**
-  - Test: both properties invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: both properties present and valid is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: doesn't invalidate other properties
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **object properties validation**
-  - Test: one property invalid is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: both properties present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: no property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'false' property present is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with boolean schema**
-  - Test: only 'true' property present is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with all numbers is valid
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with escaped characters**
-  - Test: object with strings is invalid
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties with null valued instance properties**
-  - Test: allows null values
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty ignores property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
+  - Expected: `invalid`, Got: `true`
 - **properties, patternProperties, additionalProperties interaction**
   - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty validates others
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates nonproperty
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property invalidates property
-  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: property validates property
-  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
-stderr:   File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 155
-    foo"bar: StrictFloat | None = None
-       ^
-SyntaxError: unterminated string literal (detected at line 155)
-`
-
-</details>
-
-<details>
-<summary>uniqueItems - 6 failures</summary>
-
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: non-unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [false, true] is valid
-  - Expected: `valid`, Got: `false`
-- **uniqueItems=false with an array of items**
-  - Test: unique array extended from [true, false] is valid
-  - Expected: `valid`, Got: `false`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 

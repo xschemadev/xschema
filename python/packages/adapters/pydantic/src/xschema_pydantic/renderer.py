@@ -61,6 +61,33 @@ def _escape_for_double_quotes(name: str) -> str:
     return escaped[1:-1]
 
 
+def _make_nullable(type_expr: str) -> str:
+    """Make a type expression nullable by adding '| None'.
+
+    Handles forward reference strings correctly. When type_expr is a quoted
+    string like 'T', we need to keep the union inside the quotes: 'T | None'.
+    Otherwise 'T' | None would be invalid Python (string | None).
+
+    Examples:
+        'T' -> 'T | None'
+        StrictInt -> StrictInt | None
+        'T | None' -> 'T | None' (already nullable)
+        StrictInt | None -> StrictInt | None (already nullable)
+    """
+    # Skip if already nullable
+    if type_expr.endswith(" | None") or type_expr == "None":
+        return type_expr
+
+    # Check if it's a forward reference (starts and ends with single quotes)
+    if type_expr.startswith("'") and type_expr.endswith("'"):
+        # Extract the inner type and make it nullable inside the quotes
+        inner = type_expr[1:-1]
+        return f"'{inner} | None'"
+
+    # Regular type - just append | None
+    return f"{type_expr} | None"
+
+
 def _is_valid_python_identifier(name: str) -> bool:
     """Check if a string is a valid Python identifier for Pydantic fields.
 
@@ -91,6 +118,9 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
     doesn't start with a digit. If used_names is provided, ensures uniqueness
     by appending a counter suffix.
 
+    Pydantic doesn't allow field names starting with double underscores,
+    so we prefix those with 'f_' (field).
+
     Args:
         name: The original property name
         used_names: Set of already used identifiers to avoid collisions
@@ -115,6 +145,12 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
         # If it's a Python keyword, append underscore
         if keyword.iskeyword(base):
             base = base + "_"
+
+        # Pydantic doesn't allow field names starting with underscore
+        # (both single _ and double __)
+        # Prefix with 'f' to make it valid
+        if base.startswith("_"):
+            base = "f" + base
 
     # Ensure uniqueness if used_names provided
     if used_names is None:
@@ -187,11 +223,9 @@ def render(node: SchemaNode, name: str) -> RenderResult:
         case "nullable":
             # Handle nullable by wrapping inner type with | None
             inner_result = render(node.inner, name)
-            if inner_result.type_expr.endswith(" | None"):
-                return inner_result
             return RenderResult(
                 code=inner_result.code,
-                type_expr=f"{inner_result.type_expr} | None",
+                type_expr=_make_nullable(inner_result.type_expr),
                 imports=inner_result.imports,
             )
         case "ref":
@@ -1105,8 +1139,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         if is_required:
             if is_nullable:
                 # Required but nullable: field: Type | None (no default)
-                if not type_expr.endswith(" | None"):
-                    type_expr = f"{type_expr} | None"
+                type_expr = _make_nullable(type_expr)
                 if needs_alias:
                     field_lines.append(
                         f'    {field_name}: {type_expr} = Field(alias="{escaped_alias}")'
@@ -1123,8 +1156,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     field_lines.append(f"    {field_name}: {type_expr}")
         else:
             # Optional: field: Type | None = None
-            if not type_expr.endswith(" | None") and type_expr != "None":
-                type_expr = f"{type_expr} | None"
+            type_expr = _make_nullable(type_expr)
             if needs_alias:
                 field_lines.append(
                     f'    {field_name}: {type_expr} = Field(default=None, alias="{escaped_alias}")'
@@ -1653,12 +1685,11 @@ def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
             type_expr = prop_result.type_expr
 
             if is_required:
-                if is_nullable and not type_expr.endswith(" | None"):
-                    type_expr = f"{type_expr} | None"
+                if is_nullable:
+                    type_expr = _make_nullable(type_expr)
                 field_lines.append(f"    {prop_name}: {type_expr}")
             else:
-                if not type_expr.endswith(" | None") and type_expr != "None":
-                    type_expr = f"{type_expr} | None"
+                type_expr = _make_nullable(type_expr)
                 field_lines.append(f"    {prop_name}: {type_expr} = None")
         else:
             # Property in multiple schemas - intersect the schemas
@@ -1678,8 +1709,7 @@ def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
             if is_required:
                 field_lines.append(f"    {prop_name}: {type_expr}")
             else:
-                if not type_expr.endswith(" | None") and type_expr != "None":
-                    type_expr = f"{type_expr} | None"
+                type_expr = _make_nullable(type_expr)
                 field_lines.append(f"    {prop_name}: {type_expr} = None")
 
     # Check additionalProperties - use most restrictive
@@ -1976,35 +2006,24 @@ def _type_guard_check_to_python(check: str) -> str:
 
 
 def render_ref(node: RefNode, name: str) -> RenderResult:
-    """Render RefNode to Pydantic type."""
+    """Render RefNode to Pydantic type.
+
+    For unresolved refs (where resolved=None), we can't know the target schema's
+    type constraint. Since JSON Schema allows any value to pass validation against
+    a schema without explicit 'type' keyword, we use 'Any' as the type.
+
+    The actual validation happens at runtime via the parent schema's validate
+    function, which recursively validates values against the full schema.
+    """
     # If resolved, render the resolved schema
     if node.resolved is not None:
         return render(node.resolved, name)
 
-    # Handle root reference (recursive schema)
-    if node.path == "#":
-        # For root references, we need to use forward reference to the parent type.
-        # The name follows pattern like "TFoo", "TFooBar", "Group0Foo" etc.
-        # Pattern: RootClassName + PascalCaseNestedPath
-        # E.g., "T" + "Foo" = "TFoo", "MyClass" + "Foo" = "MyClassFoo"
-        # E.g., "Group0" + "Foo" = "Group0Foo"
-        # The root name is the first PascalCase word (uppercase + lowercase/digits)
-        # stopping at the next uppercase letter.
-        root_name = ""
-        i = 0
-        # Take first character (must be uppercase for class names)
-        if name and name[0].isupper():
-            root_name = name[0]
-            i = 1
-            # Continue with lowercase letters or digits (part of same word)
-            while i < len(name) and (name[i].islower() or name[i].isdigit()):
-                root_name += name[i]
-                i += 1
-        if not root_name:
-            root_name = name or "Self"
-        return RenderResult(code="", type_expr=f"'{root_name}'", imports=set())
-
-    # Otherwise, just use the path as a forward reference
-    # Extract the type name from the path (last segment after /)
-    ref_name = node.path.split("/")[-1]
-    return RenderResult(code="", type_expr=f"'{ref_name}'", imports=set())
+    # For unresolved refs (including $ref: "#" root refs), use Any type.
+    # JSON Schema semantics: a schema without 'type' keyword accepts any value,
+    # and only applies constraints (properties, additionalProperties, etc.) to
+    # matching types. Since we don't know the target schema's type here, we
+    # must accept any value at the type level.
+    #
+    # The validate function will handle recursive validation at runtime.
+    return RenderResult(code="", type_expr="Any", imports={"from typing import Any"})
