@@ -154,3 +154,16 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - normalize.go handles legacy syntax transformations (items->prefixItems, etc.)
   - Concurrency default is min(8, num_cpus)
 ---
+
+## 2026-01-14 - US-016
+- Created TypeScript library mode placeholder page at `web/content/docs/typescript/library/index.mdx`
+- Content includes:
+  - Info callout explaining library mode is coming soon
+  - What is library mode explanation with code example
+  - When to use library mode (existing build systems, custom integrations)
+  - Link back to framework mode as the current recommendation
+  - Cards linking to framework getting-started and comparison page
+- **Learnings for future iterations:**
+  - Placeholder pages still need working code examples to set expectations
+  - Icon "Package" makes sense for library-related pages
+---

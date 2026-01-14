@@ -1,0 +1,64 @@
+---
+title: Library Mode
+description: Use xschema adapters directly without the CLI or client
+icon: Package
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+<Callout type="info">
+Library mode is coming soon. For now, use [framework mode](/docs/typescript/framework/getting-started) for the full xschema experience.
+</Callout>
+
+## What is Library Mode?
+
+Library mode lets you use xschema adapters as standalone packages, without the CLI or client:
+
+```typescript
+import { convert } from "@xschemadev/zod";
+
+const schema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    email: { type: "string", format: "email" }
+  },
+  required: ["id", "email"]
+};
+
+const result = convert(schema);
+// result.code = 'z.object({ id: z.string(), email: z.string().email() })'
+// result.type = 'z.infer<typeof schema>'
+```
+
+## When to Use Library Mode
+
+Library mode is ideal when you:
+
+- Already have a build system that handles code generation
+- Need to integrate xschema into an existing pipeline
+- Want to generate validators dynamically at runtime
+- Only need the conversion logic, not the full framework
+
+## Framework Mode (Recommended for Most Projects)
+
+For most projects, we recommend **framework mode** which provides:
+
+- CLI-driven code generation from config files
+- Type-safe runtime client for schema lookup
+- Automatic output management and stale file cleanup
+- Best developer experience with autocomplete and type inference
+
+<Cards>
+  <Card 
+    title="Framework Getting Started" 
+    description="Step-by-step setup with CLI and client"
+    href="/docs/typescript/framework/getting-started" 
+  />
+  <Card 
+    title="Compare Framework vs Library" 
+    description="See which mode fits your project"
+    href="/docs/getting-started" 
+  />
+</Cards>

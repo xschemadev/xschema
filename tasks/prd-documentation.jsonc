@@ -265,7 +265,7 @@
         "Link back to framework mode as current recommendation",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Library mode is not yet implemented. This is just a placeholder."
     },
     {
