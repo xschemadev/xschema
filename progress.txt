@@ -135,3 +135,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Callout type="warn" for warnings, type="info" for info
   - TypeScript is the only language currently (cli/language/langs/ only has typescript)
 ---
+
+## 2026-01-14 - US-005
+- Created CLI reference page at `web/content/docs/cli.mdx`
+- Content includes:
+  - Installation instructions
+  - `generate` command with all flags: --project/-p, --output/-o, --lang, --verbose/-v, --dry-run, --concurrency/-c, --env-file
+  - Note that --watch is planned but not yet implemented
+  - Config file discovery (git ls-files vs directory walk)
+  - Runner auto-detection from lockfiles and package.json packageManager field
+  - All supported JSON Schema drafts: draft3, draft4, draft6, draft7, draft2019-09, draft2020-12
+  - Draft normalization to 2020-12 with legacy syntax transformation table
+  - Processing pipeline overview (parse -> retrieve -> process -> generate -> inject)
+  - Environment variable substitution for headers
+- **Learnings for future iterations:**
+  - Runner detection: package.json packageManager field takes priority over lockfiles
+  - draftToSchemaURI map in cli/bundler/bundler.go has all supported drafts
+  - normalize.go handles legacy syntax transformations (items->prefixItems, etc.)
+  - Concurrency default is min(8, num_cpus)
+---

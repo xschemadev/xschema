@@ -78,7 +78,7 @@
         "Explain schemas are normalized to draft2020-12 internally",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/cmd/generate.go for flags. cli/parser/parser.go for discovery. cli/language/langs/typescript/runner.go for runner detection. cli/bundler/bundler.go for draftToSchemaURI map."
     },
     {
