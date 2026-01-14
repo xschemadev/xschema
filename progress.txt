@@ -1,0 +1,20 @@
+# Ralph Progress Log
+Started: Wed Jan 14 03:24:03 PM CET 2026
+
+## Codebase Patterns
+
+(none discovered yet)
+
+---
+
+## 2026-01-14 - US-001
+- Restructured content directory for fumadocs
+- Created directories: `/typescript/framework/`, `/typescript/library/`, `/internals/`
+- Added `.gitkeep` files to preserve empty directories in git
+- Removed `test.mdx` placeholder
+- `compliance/` stays at root level (per PRD navigation requirements)
+- **Learnings for future iterations:**
+  - Empty directories need `.gitkeep` for git tracking
+  - Build command is `bun run build` in web/ directory - runs generate scripts first
+  - fumadocs content is at `web/content/docs/`
+---

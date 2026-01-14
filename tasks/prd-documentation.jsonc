@@ -14,7 +14,7 @@
         "Remove test.mdx placeholder file if it exists",
         "Verify build passes: cd web && bun run build"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: Check current structure at web/content/docs/"
     },
     {
