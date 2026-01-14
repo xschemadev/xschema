@@ -36,3 +36,53 @@
 - Individual packages can still have package-specific dev deps if needed
 
 **Result**: Workspace operational. Single lockfile, single venv, all tests pass.
+
+## 2026-01-14: python-client-package (COMPLETE)
+
+**Task**: Create xschema-client package with type-safe schema lookup
+
+**Implementation**:
+1. Created python/packages/client/ structure
+   - pyproject.toml with name: xschema-client, version: 0.1.0
+   - No runtime dependencies (pure Python)
+   - README.md with usage examples
+
+2. Implemented src/xschema_client/__init__.py
+   - XSchemaClient class using Generic[T] for type inference
+   - create_xschema_client() factory function
+   - Full namespace:id lookup: client("user:Profile")
+   - Shorthand with default_namespace: client("Profile") -> "user:Profile"
+   - XSchemaError for missing schemas with helpful message
+
+3. Type safety via TypeVar and Generic
+   - TypeVar T preserves schema type through client
+   - mypy infers return types correctly
+   - Added py.typed marker for PEP 561 compliance
+
+4. Comprehensive tests (tests/test_client.py)
+   - Full key lookup
+   - Shorthand with/without default_namespace
+   - Error cases and messages
+   - Type inference verification
+   - Multiple clients
+   - Colon handling edge cases
+   - 9 tests, all passing
+
+5. Added to workspace
+   - Updated python/pyproject.toml members to include "packages/client"
+   - uv sync successfully resolved 20 packages (was 19)
+   - Import verification: from xschema_client import create_xschema_client works
+
+**Verification**:
+- pytest: 9/9 tests pass
+- mypy: no type errors
+- import test: successful
+- All acceptance criteria verified via manual test
+
+**Decisions**:
+- Used Generic[T] pattern instead of overloads for cleaner type inference
+- Returned callable XSchemaClient instance instead of bare function (mirrors TS pattern)
+- Error message includes "Run `xschema generate`" for user guidance
+- Colon detection (`":"` in key) always treats as full key, never prepends namespace
+
+**Result**: xschema-client package functional, fully typed, 9 tests passing.

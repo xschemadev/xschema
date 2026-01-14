@@ -31,7 +31,7 @@
         "add py.typed marker for PEP 561",
         "add pytest tests for client: lookup, shorthand, error cases, type inference"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Mirror TS client API. Use generics for type safety since Python lacks declaration merging."
     },
     {

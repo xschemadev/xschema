@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["packages/core", "packages/adapters/*"]
+members = ["packages/core", "packages/client", "packages/adapters/*"]
 
 [tool.uv]
 dev-dependencies = [
