@@ -82,22 +82,32 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     for import_stmt in result.imports:
         collector.add(import_stmt)
 
-    # Determine if this is a class definition or a type expression
-    # Class definitions (objects) have code that starts with "class "
-    is_class_definition = result.code.startswith("class ")
+    # Determine if this is a simple class definition (just a BaseModel subclass)
+    # A simple class definition:
+    # 1. Code starts with "class "
+    # 2. The class name matches the expected class_name (not a helper like "ClassNameOption0")
+    # 3. The type_expr is just the class name (not an Annotated type or union)
+    is_simple_class = (
+        result.code.startswith(f"class {class_name}(")
+        and result.type_expr == class_name
+    )
 
-    if is_class_definition:
+    if is_simple_class:
         schema_code = result.code
+        # For simple class definitions, use model_validate directly
+        validate_expr = f"_try_validate({class_name}.model_validate)"
     else:
-        # Non-object types get TypeAdapter
+        # For all other cases (primitives, unions, oneOf, etc.), use TypeAdapter
         collector.add("from pydantic import TypeAdapter")
 
-        # If there's helper code (like for Never type), prepend it
+        # If there's helper code, prepend it
         type_adapter_stmt = f"{var_name} = TypeAdapter({result.type_expr})"
         if result.code:
             schema_code = f"{result.code}\n\n{type_adapter_stmt}"
         else:
             schema_code = type_adapter_stmt
+        # For TypeAdapter, use validate_python
+        validate_expr = f"_try_validate({var_name}.validate_python)"
 
     # Convert imports to sorted, deduplicated list
     imports = collector.to_list()
@@ -109,4 +119,5 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         "imports": imports,
         "schema": schema_code,
         "type": result.type_expr,
+        "validate": validate_expr,
     }

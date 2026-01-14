@@ -84,6 +84,17 @@ from typing import Any, Dict, List, Literal, TypedDict, Union
 {{- end}}
 
 
+def _try_validate(fn):
+    """Wrap a validation function to return True/False instead of raising."""
+    def inner(data):
+        try:
+            fn(data)
+            return True
+        except Exception:
+            return False
+    return inner
+
+
 class TestCase(TypedDict):
     data: Any
     valid: bool
@@ -119,17 +130,21 @@ class ErrorResult(TypedDict):
 Result = Union[SuccessResult, SkippedResult, ErrorResult]
 
 
+# Schema definitions
+{{- range $i, $s := .Schemas}}
+{{- if not $s.IsTypeOnly}}
+{{$s.Schema}}
+{{- end}}
+{{- end}}
+
+
 # Schema registry
 schemas: Dict[str, Dict[str, Any]] = {
 {{- range $i, $s := .Schemas}}
 {{- if $s.IsTypeOnly}}
     "{{$s.GroupID}}": {"is_type_only": True, "validate": lambda _: True},
 {{- else}}
-    "{{$s.GroupID}}": {
-        "is_type_only": False,
-        "schema": {{$s.Schema}},
-        "validate": {{$s.Validate}},
-    },
+    "{{$s.GroupID}}": {"is_type_only": False, "validate": {{$s.Validate}}},
 {{- end}}
 {{- end}}
 }

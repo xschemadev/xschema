@@ -76,18 +76,16 @@ func detectHarnessRunner(dir string) (string, []string, error) {
 		return "", nil, err
 	}
 
-	// Transform tool runner to pytest runner
+	// Transform tool runner to python runner for executing harness scripts
 	switch runner {
 	case "uv":
-		return "uv", []string{"run", "pytest"}, nil
+		return "uv", []string{"run", "python"}, nil
 	case "poetry":
-		return "poetry", []string{"run", "pytest"}, nil
+		return "poetry", []string{"run", "python"}, nil
 	case "pipenv":
-		return "pipenv", []string{"run", "pytest"}, nil
-	case "pipx":
-		return "python", []string{"-m", "pytest"}, nil
+		return "pipenv", []string{"run", "python"}, nil
 	default:
-		return "python", []string{"-m", "pytest"}, nil
+		return "python", nil, nil
 	}
 }
 

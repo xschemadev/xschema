@@ -4,29 +4,29 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from xschema_core import (
+    AnyNode,
+    ArrayNode,
+    BooleanNode,
+    ConditionalNode,
+    EnumNode,
+    IntersectionNode,
+    LiteralNode,
+    NeverNode,
+    NotNode,
+    NullableNode,
+    NullNode,
+    NumberNode,
+    ObjectNode,
+    OneOfNode,
+    PropertyDef,
+    PropertyDependency,
+    RefNode,
+    SchemaDependency,
     SchemaNode,
     StringNode,
-    NumberNode,
-    BooleanNode,
-    NullNode,
-    LiteralNode,
-    EnumNode,
-    AnyNode,
-    NeverNode,
-    ArrayNode,
     TupleNode,
-    ObjectNode,
-    PropertyDef,
-    UnionNode,
-    OneOfNode,
-    IntersectionNode,
-    NotNode,
-    ConditionalNode,
     TypeGuardedNode,
-    NullableNode,
-    RefNode,
-    PropertyDependency,
-    SchemaDependency,
+    UnionNode,
 )
 
 
@@ -966,22 +966,34 @@ def render_union(node: UnionNode, name: str) -> RenderResult:
         if variant_result.code:
             code_parts.append(variant_result.code)
 
+    # Deduplicate variant types to avoid "None | None" errors
+    unique_variant_types = []
+    seen = set()
+    for vtype in variant_types:
+        if vtype not in seen:
+            unique_variant_types.append(vtype)
+            seen.add(vtype)
+
     # Detect if this is a discriminated union (all variants are objects with a common discriminator)
     discriminator_field = _detect_discriminator(node.variants)
 
-    if discriminator_field is not None and len(variant_types) > 1:
+    if discriminator_field is not None and len(unique_variant_types) > 1:
         # Discriminated union - use Annotated with Field(discriminator=...)
         imports.add("from typing import Annotated, Union")
         imports.add("from pydantic import Field")
 
         # Build Union[variant1, variant2, ...]
-        union_type = f"Union[{', '.join(variant_types)}]"
+        union_type = f"Union[{', '.join(unique_variant_types)}]"
         type_expr = (
             f"Annotated[{union_type}, Field(discriminator='{discriminator_field}')]"
         )
     else:
         # Simple union using | syntax
-        type_expr = " | ".join(variant_types)
+        # If only one unique type after deduplication, use it directly
+        if len(unique_variant_types) == 1:
+            type_expr = unique_variant_types[0]
+        else:
+            type_expr = " | ".join(unique_variant_types)
 
     code = "\n\n\n".join(code_parts) if code_parts else ""
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
