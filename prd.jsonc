@@ -110,7 +110,7 @@
         "verify release-please can parse the config: validate JSON syntax",
         "tags will be: py-core-v0.1.0, py-client-v0.1.0, py-pydantic-v0.1.0"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Component names prefixed with py- to avoid collision with TS (core, client, zod). python release-type updates pyproject.toml version and CHANGELOG.md automatically."
     },
     {

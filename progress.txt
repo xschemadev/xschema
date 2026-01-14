@@ -279,3 +279,31 @@
 - Renamed variable instead of moving declaration to avoid scope issues
 
 **Result**: CI workflow operational, all Python checks pass locally, ready for GitHub Actions integration.
+
+## 2026-01-14: release-please-python (COMPLETE)
+
+**Task**: Add Python packages to release-please configuration
+
+**Implementation**:
+1. Added Python packages to release-please-config.json
+   - python/packages/core: release-type: python, component: py-core
+   - python/packages/client: release-type: python, component: py-client
+   - python/packages/adapters/pydantic: release-type: python, component: py-pydantic
+   - All use python release-type (updates pyproject.toml version and CHANGELOG.md)
+
+2. Added initial versions to .release-please-manifest.json
+   - python/packages/core: 0.1.0
+   - python/packages/client: 0.1.0
+   - python/packages/adapters/pydantic: 0.1.0
+
+3. Validated JSON syntax
+   - release-please-config.json: valid
+   - .release-please-manifest.json: valid
+
+**Decisions**:
+- Component names prefixed with py- to avoid collision with TS packages (core, client)
+- Matches pattern from TS adapters (zod, arktype, etc.)
+- Tags will be: py-core-v0.1.0, py-client-v0.1.0, py-pydantic-v0.1.0
+- release-type: python handles pyproject.toml version bumps automatically
+
+**Result**: Python packages integrated with release-please, ready for automated releases.

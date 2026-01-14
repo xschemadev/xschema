@@ -6,5 +6,8 @@
   "typescript/packages/client": "0.0.4",
   "typescript/packages/adapters/effect": "0.1.0",
   "typescript/packages/adapters/typebox": "0.1.0",
-  "typescript/packages/adapters/valibot": "0.1.0"
+  "typescript/packages/adapters/valibot": "0.1.0",
+  "python/packages/core": "0.1.0",
+  "python/packages/client": "0.1.0",
+  "python/packages/adapters/pydantic": "0.1.0"
 }
