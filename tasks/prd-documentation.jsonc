@@ -314,7 +314,7 @@
         "Link to compliance page",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: typescript/packages/adapters/arktype/package.json for package info."
     },
     {

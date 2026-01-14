@@ -349,3 +349,21 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Adapter pages should use framework mode examples (not standalone) since that's the recommended usage
   - Overview tables are useful for quick reference: package name, peer dep, compliance %
 ---
+
+## 2026-01-14 - US-019
+- Updated ArkType adapter page at `web/content/docs/typescript/adapters/arktype/index.mdx`
+- Changes made:
+  - Added overview table with package name (`@xschemadev/arktype`), peer dep (`arktype ^2.0.0`), compliance (100%)
+  - Updated installation instructions with all package managers
+  - Replaced inline JSON usage with framework mode example (config file + client usage)
+  - Fixed compliance claim from "99.8%" to "100%" - ArkType has full compliance
+  - Removed incorrect "Limitations" section - ArkType has 100% compliance
+  - Added `prefixItems` and `unevaluatedProperties` to supported features list
+  - Added Next Steps cards linking to compliance, getting-started, configuration, adapters
+  - Added fumadocs imports for Cards, Card
+  - Added note about ArkType using direct invocation (not .parse()) and `instanceof type.errors` for error checking
+- **Learnings for future iterations:**
+  - ArkType validation: call schema directly, check errors with `instanceof type.errors`
+  - ArkType type extraction: `typeof schema.infer` (not z.infer pattern)
+  - ArkType uses string syntax for types: `"string.email"`, `"integer >= 0"`, `"age?"` for optional
+---

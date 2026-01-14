@@ -4,88 +4,128 @@ description: Generate ArkType schemas from JSON Schema definitions
 icon: Box
 ---
 
+import { Cards, Card } from "fumadocs-ui/components/card";
+
 The ArkType adapter converts JSON Schema definitions into [ArkType](https://arktype.io) validation schemas with full TypeScript type inference.
 
 ## Overview
 
-ArkType is a TypeScript validation library with a unique syntax that mirrors TypeScript's type syntax. XSchema's ArkType adapter provides:
+| | |
+|---|---|
+| **Package** | `@xschemadev/arktype` |
+| **Peer Dependency** | `arktype ^2.0.0` |
+| **Compliance** | 100% |
 
-- **Excellent compliance** with JSON Schema specifications (99.8% for modern drafts)
+ArkType is a TypeScript-native validation library with a unique syntax that mirrors TypeScript's type syntax. The xschema ArkType adapter generates native ArkType schemas from JSON Schema with:
+
+- **100% compliance** with JSON Schema Test Suite (all supported drafts)
 - **Full type inference** - generated schemas include TypeScript types
-- **Runtime validation** - validate data at runtime with detailed error messages
-- **Familiar syntax** - type definitions that look like TypeScript
+- **Runtime validation** - validate data with detailed error messages
+- **Type-level validation** - errors are surfaced at compile time where possible
 
 ## Installation
 
-The ArkType adapter is included with the XSchema CLI. You just need ArkType installed in your project:
-
 ```bash
-npm install arktype
-# or
-bun add arktype
+# with bun
+bun add @xschemadev/arktype arktype
+
+# with npm
+npm install @xschemadev/arktype arktype
+
+# with pnpm
+pnpm add @xschemadev/arktype arktype
 ```
 
-## Usage
+## Usage with Framework Mode
 
-Specify `"adapter": "arktype"` in your schema definitions:
+The recommended way to use xschema is with the client. First, set up your config:
 
-```jsonc
+```jsonc title="user.xschema.jsonc"
 {
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
-      "id": "User",
-      "sourceType": "json",
-      "source": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email" },
-          "name": { "type": "string", "minLength": 1 },
-          "age": { "type": "integer", "minimum": 0 }
-        },
-        "required": ["id", "email", "name"]
-      },
-      "adapter": "arktype"
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/arktype"
     }
   ]
 }
 ```
 
-## Generated Output
+Run the generator:
 
-Running `xschema generate` produces:
-
-```typescript
-import { type } from "arktype";
-
-export const User = type({
-  id: "string.uuid",
-  email: "string.email",
-  name: "string >= 1",
-  "age?": "integer >= 0",
-});
-
-export type User = typeof User.infer;
+```bash
+bunx xschema generate
 ```
 
-## Using Generated Schemas
+Then use the generated schemas:
 
-```typescript
-import { User } from "./__generated__/schemas";
+```typescript title="app.ts"
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+import { type } from "arktype";
+import { schemas } from "./.xschema/xschema.gen";
 
-// Validate data
-const result = User(userData);
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Get schema - returns an ArkType type
+const profileSchema = xschema("Profile");
+
+// Validate by calling directly (ArkType uses direct invocation, not .parse())
+const result = profileSchema({
+  id: "123",
+  email: "alice@example.com",
+});
+
+// Check for errors using instanceof
 if (result instanceof type.errors) {
   console.error(result.summary);
 } else {
   console.log(result); // Fully typed!
 }
+
+// Extract type for function signatures
+type Profile = XSchemaType<"user:Profile">;
+```
+
+## Generated Output
+
+For a JSON Schema like:
+
+```json title="profile.schema.json"
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["id", "email"]
+}
+```
+
+xschema generates:
+
+```typescript
+import { type } from "arktype";
+
+const user_Profile = type({
+  id: "string",
+  email: "string.email",
+  "age?": "integer >= 0",
+});
+type user_ProfileType = typeof user_Profile.infer;
 ```
 
 ## Supported Features
 
-The ArkType adapter supports the vast majority of JSON Schema keywords. See the [Compliance](/docs/typescript/adapters/arktype/compliance) page for detailed coverage by JSON Schema draft.
+The ArkType adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
+
+See the [Compliance](/docs/typescript/adapters/arktype/compliance) page for the full breakdown by draft.
 
 ### Highlights
 
@@ -93,17 +133,33 @@ The ArkType adapter supports the vast majority of JSON Schema keywords. See the 
 - String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
 - Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
 - String constraints (`minLength`, `maxLength`, `pattern`)
-- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`)
-- Object constraints (`required`, `additionalProperties`, `propertyNames`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`, `prefixItems`)
+- Object constraints (`required`, `additionalProperties`, `propertyNames`, `unevaluatedProperties`)
 - Composition (`allOf`, `anyOf`, `oneOf`, `not`)
 - Conditionals (`if`/`then`/`else`)
 - References (`$ref`, `$defs`)
 
-## Limitations
+## Next Steps
 
-Some advanced JSON Schema features have partial support:
-
-- `additionalProperties` with `allOf` - properties in applicators may not be examined
-- Meta-schema vocabulary validation - custom vocabularies not fully supported
-
-See the [Compliance](/docs/typescript/adapters/arktype/compliance) page for the full breakdown.
+<Cards>
+  <Card
+    title="ArkType Compliance"
+    description="View detailed compliance by JSON Schema draft"
+    href="/docs/typescript/adapters/arktype/compliance"
+  />
+  <Card
+    title="Framework Setup"
+    description="Complete getting started guide"
+    href="/docs/typescript/framework/getting-started"
+  />
+  <Card
+    title="Configuration"
+    description="All config file options"
+    href="/docs/typescript/framework/configuration"
+  />
+  <Card
+    title="Compare Adapters"
+    description="See all available adapters"
+    href="/docs/typescript/adapters"
+  />
+</Cards>
