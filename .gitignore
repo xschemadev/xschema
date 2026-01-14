@@ -31,8 +31,3 @@ node_modules/
 *.swo
 .DS_Store
 dist/
-
-# Ralph
-prd.json
-prd.jsonc
-progress.txt
