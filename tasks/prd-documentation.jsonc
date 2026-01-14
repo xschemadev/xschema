@@ -126,7 +126,7 @@
         "Link to detailed pages: architecture, adapters, compliance-testing",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/cmd/generate.go for pipeline. AGENTS.md for architecture table."
     },
     {

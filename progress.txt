@@ -203,3 +203,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Compliance results are read from `typescript/packages/adapters/*/compliance/results/`
   - Generated MDX files include fumadocs components (Tabs, Tab, Accordions, Accordion)
 ---
+
+## 2026-01-14 - US-008
+- Created internals overview page at `web/content/docs/internals/index.mdx`
+- Content includes:
+  - Design principle: "do the hard work upfront so adapters stay simple"
+  - ASCII pipeline diagram: parse -> retrieve -> process -> generate -> inject
+  - Explanation of each pipeline stage with brief descriptions
+  - Why adapters are simple (table of complexity handled by CLI)
+  - Cards linking to architecture, adapters, compliance-testing deep dives
+- Also created placeholder pages for dependent stories:
+  - `web/content/docs/internals/architecture.mdx` (US-009)
+  - `web/content/docs/internals/adapters.mdx` (US-010)
+  - `web/content/docs/internals/compliance-testing.mdx` (US-011)
+  - `web/content/docs/troubleshooting.mdx` (US-006)
+- Fixed import bug in `web/content/docs/index.mdx` (Cards was imported from callout instead of card)
+- **Learnings for future iterations:**
+  - Build prerendering will fail if linked pages don't exist - need placeholders
+  - fumadocs icons: Cog for internals, Boxes for architecture, Plug for adapters, TestTube for testing
+  - Cards import: `import { Card, Cards } from "fumadocs-ui/components/card"`
+  - Callout import: `import { Callout } from "fumadocs-ui/components/callout"` (separate)
+---
