@@ -321,3 +321,47 @@
 - Pydantic wraps exceptions, so string matching on error messages is fragile
 
 ---
+
+## Task: fix-patternProperties (COMPLETED)
+
+**Objective:** Fix patternProperties validation (was 56.5%, now 100%)
+
+**Root Causes:**
+1. **Missing extra='allow'**: When schema has patternProperties but no explicit additionalProperties, Pydantic silently drops extra fields
+2. **Wrong iteration method**: Using `self.__dict__` only gets declared model fields, not extra fields. Extra fields are stored in `__pydantic_extra__`
+
+**Solution:**
+1. Added patternProperties and propertyNames to conditions that require `extra='allow'` in model_config
+2. Changed from `self.__dict__` to `self.model_dump()` for iterating properties
+   - `model_dump()` returns all properties (both declared and extra)
+   - This affects patternProperties, propertyNames, minProperties/maxProperties, unevaluatedProperties, and required field validation
+
+**Code Changes:**
+- File: `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+  - Line ~909: Added condition for patternProperties/propertyNames requiring extra='allow'
+  - Line ~958: patternProperties loop uses `self.model_dump().items()`
+  - Line ~985: propertyNames loop uses `self.model_dump().keys()`
+  - Line ~998: minProperties/maxProperties uses `len(self.model_dump())`
+  - Line ~1088: unevaluatedProperties uses `self.model_dump().items()`
+  - Line ~1106: required fields uses `self.model_dump()`
+- File: `python/packages/adapters/pydantic/tests/test_renderer.py`
+  - Line 452: Updated test to expect `self.model_dump()` instead of `self.__dict__`
+
+**Testing Results:**
+- ✅ patternProperties: 100% (23/23 tests passing)
+- ✅ required: 100% (still passing)
+- ✅ All 85 pydantic adapter unit tests pass
+- ✅ All 79 core package unit tests pass
+
+**Key Insights:**
+- Pydantic's `model_config = ConfigDict(extra='allow')` stores extra fields separately from declared fields
+- `self.__dict__` only contains declared fields
+- `self.__pydantic_extra__` contains extra fields
+- `self.model_dump()` combines both - this is the correct method for JSON Schema validation
+
+**Note on propertyNames (75% still):**
+The propertyNames keyword is still at 75% but this is a CORE PARSER issue, not a renderer issue.
+Schemas like `{propertyNames: false}` without explicit `type: object` are parsed as AnyNode instead of ObjectNode.
+This requires a fix in the core parser, not the renderer.
+
+---

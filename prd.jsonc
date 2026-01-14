@@ -220,7 +220,8 @@
         "Handle interaction with properties and additionalProperties",
         "Test non-ASCII patterns",
       ],
-      "passes": false,
+      "passes": true,
+      "notes": "Fixed. 100% (23/23). Key fixes: (1) Added extra='allow' to model_config when patternProperties or propertyNames are present, so Pydantic doesn't silently drop extra fields. (2) Changed from self.__dict__ to self.model_dump() for iterating all properties (Pydantic stores extra fields separately).",
     },
     {
       "id": "fix-propertyNames",

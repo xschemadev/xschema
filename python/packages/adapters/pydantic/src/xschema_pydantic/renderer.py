@@ -906,6 +906,10 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     elif uncovered_required:
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
+    # patternProperties and propertyNames need access to extra fields
+    elif node.pattern_properties or node.property_names is not None:
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='allow')"
 
     # Generate validators for advanced object features
     needs_validator = (
@@ -952,7 +956,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     f"        validator_{len(validators)} = TypeAdapter({pattern_result.type_expr})"
                 )
                 validator_lines.append(
-                    "        for key, value in self.__dict__.items():"
+                    "        for key, value in self.model_dump().items():"
                 )
                 validator_lines.append(
                     f"            if pattern_{len(validators)}.search(key):"
@@ -978,7 +982,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
             validator_lines.append(
                 f"        names_validator = TypeAdapter({names_result.type_expr})"
             )
-            validator_lines.append("        for key in self.__dict__.keys():")
+            validator_lines.append("        for key in self.model_dump().keys():")
             validator_lines.append("            try:")
             validator_lines.append(
                 "                names_validator.validate_python(key)"
@@ -991,7 +995,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         # minProperties / maxProperties: count properties
         if node.min_properties is not None or node.max_properties is not None:
             validator_lines.append("        # Validate property count")
-            validator_lines.append("        prop_count = len(self.__dict__)")
+            validator_lines.append("        prop_count = len(self.model_dump())")
 
             if node.min_properties is not None:
                 validator_lines.append(
@@ -1081,7 +1085,7 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                     f"        unevaluated_validator = TypeAdapter({unevaluated_result.type_expr})"
                 )
                 validator_lines.append(
-                    "        for key, value in self.__dict__.items():"
+                    "        for key, value in self.model_dump().items():"
                 )
                 validator_lines.append("            if key not in declared_props:")
                 validator_lines.append("                try:")
@@ -1094,19 +1098,17 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 )
 
         # required fields without corresponding properties
-        # Note: with extra='allow', extra fields go to model_extra, not __dict__
+        # model_dump() includes both declared and extra fields
         if uncovered_required:
-            validator_lines.append(
-                "        # Validate required fields (check model_extra for extra fields)"
-            )
-            validator_lines.append("        _extra = self.model_extra or {}")
+            validator_lines.append("        # Validate required fields")
+            validator_lines.append("        _all_props = self.model_dump()")
             for req_field in uncovered_required:
                 # For condition checks, use single-quoted strings
                 escaped_single = _escape_for_single_quotes(req_field)
                 # For error messages using double quotes, escape differently
                 escaped_double = _escape_for_double_quotes(req_field)
                 validator_lines.append(
-                    f"        if '{escaped_single}' not in self.__dict__ and '{escaped_single}' not in _extra:"
+                    f"        if '{escaped_single}' not in _all_props:"
                 )
                 validator_lines.append(
                     f"            raise ValueError(\"Missing required property: '{escaped_double}'\")"
