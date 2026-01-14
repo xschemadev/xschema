@@ -1,0 +1,98 @@
+---
+title: Adapters
+description: Compare TypeScript validation libraries supported by xschema
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# TypeScript Adapters
+
+xschema supports multiple TypeScript validation libraries. Each adapter generates native code for your chosen library from JSON Schema.
+
+## Comparison
+
+| Adapter | Compliance | Peer Dependency | Key Features |
+|---------|------------|-----------------|--------------|
+| [@xschemadev/zod](/docs/typescript/adapters/zod) | 100% | `zod ^3.0.0` | Most popular, large ecosystem |
+| [@xschemadev/arktype](/docs/typescript/adapters/arktype) | 100% | `arktype ^2.0.0` | TypeScript-native, type-level validation |
+| [@xschemadev/effect](/docs/typescript/adapters/effect) | 100% | `effect ^3.0.0` | Effect ecosystem integration |
+| [@xschemadev/valibot](/docs/typescript/adapters/valibot) | 98.9% | `valibot ^0.42.0` | Smallest bundle size |
+
+<Callout type="info">
+  Compliance percentages are calculated against the official JSON Schema Test Suite, excluding features that cannot be statically compiled.
+  [Learn more about compliance testing](/docs/compliance).
+</Callout>
+
+## Choosing an Adapter
+
+### Zod
+
+The most popular choice. Zod has a large ecosystem of integrations with form libraries, API frameworks, and ORMs. If you're unsure which adapter to use, start with Zod.
+
+```bash
+bun add @xschemadev/zod zod
+```
+
+### ArkType
+
+A TypeScript-native validation library that compiles your schemas at the type level. Choose ArkType if you want the most advanced TypeScript inference.
+
+```bash
+bun add @xschemadev/arktype arktype
+```
+
+### Effect
+
+Integrates with the Effect ecosystem for functional programming in TypeScript. Choose Effect if you're already using Effect in your project.
+
+```bash
+bun add @xschemadev/effect effect
+```
+
+### Valibot
+
+The smallest bundle size of any adapter. Choose Valibot if bundle size is your primary concern.
+
+<Callout type="warn">
+  Valibot has a known bug with JavaScript prototype property names (`__proto__`, `constructor`, `toString`). Schemas using these property names will cause runtime errors. This is a Valibot library issue, not an xschema issue.
+</Callout>
+
+```bash
+bun add @xschemadev/valibot valibot
+```
+
+## Recommendations
+
+| Use Case | Recommended Adapter |
+|----------|---------------------|
+| General purpose | Zod |
+| Effect ecosystem | Effect |
+| Advanced type inference | ArkType |
+| Minimal bundle size | Valibot |
+| Maximum ecosystem compatibility | Zod |
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="Zod Adapter"
+    description="Install and configure the Zod adapter"
+    href="/docs/typescript/adapters/zod"
+  />
+  <Card
+    title="ArkType Adapter"
+    description="Install and configure the ArkType adapter"
+    href="/docs/typescript/adapters/arktype"
+  />
+  <Card
+    title="Effect Adapter"
+    description="Install and configure the Effect adapter"
+    href="/docs/typescript/adapters/effect"
+  />
+  <Card
+    title="Valibot Adapter"
+    description="Install and configure the Valibot adapter"
+    href="/docs/typescript/adapters/valibot"
+  />
+</Cards>

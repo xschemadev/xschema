@@ -167,3 +167,21 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Placeholder pages still need working code examples to set expectations
   - Icon "Package" makes sense for library-related pages
 ---
+
+## 2026-01-14 - US-017
+- Created TypeScript adapters comparison page at `web/content/docs/typescript/adapters/index.mdx`
+- Content includes:
+  - Comparison table: adapter name, compliance %, peer dependency, key features
+  - Zod: 100% compliance, most popular, large ecosystem
+  - ArkType: 100% compliance, TypeScript-native, type-level validation
+  - Effect: 100% compliance, Effect ecosystem integration
+  - Valibot: 98.9% compliance (prototype property bug), smallest bundle
+  - Brief descriptions of each adapter's philosophy
+  - Callout warning about Valibot prototype property bug
+  - Recommendations table by use case
+  - Next steps cards linking to each adapter's detail page
+- **Learnings for future iterations:**
+  - Compliance data from `typescript/packages/adapters/*/compliance/results/draft2020-12.json`
+  - Valibot fails on properties named `__proto__`, `constructor`, `toString` (Valibot library bug)
+  - Peer dependencies from `package.json` peerDependencies field
+---
