@@ -1,0 +1,389 @@
+{
+  "project": "xschema-docs",
+  "description": "Build comprehensive documentation for xschema - JSON Schema to native validators with full type safety. Two user journeys (framework vs library mode), multi-language scalable structure, compliance transparency.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Restructure content directory",
+      "description": "As a developer, I need the docs file structure reorganized so content is logically grouped by scope (general vs language-specific).",
+      "acceptanceCriteria": [
+        "Create /typescript/framework/ directory",
+        "Create /typescript/library/ directory",
+        "Create /internals/ directory",
+        "Move compliance/ to correct location if needed",
+        "Remove test.mdx placeholder file if it exists",
+        "Verify build passes: cd web && bun run build"
+      ],
+      "passes": false,
+      "notes": "Research: Check current structure at web/content/docs/"
+    },
+    {
+      "id": "US-002",
+      "title": "Add fumadocs meta.json files for navigation",
+      "description": "As a user navigating the docs, I want logical sidebar structure that groups related content.",
+      "acceptanceCriteria": [
+        "Create meta.json in web/content/docs/ with order: index, getting-started, cli, troubleshooting, compliance, internals, typescript",
+        "Create meta.json in compliance/ with order: index, unsupported-features",
+        "Create meta.json in internals/ with order: index, architecture, adapters, compliance-testing",
+        "Create meta.json in typescript/ with order: index, framework, library, adapters",
+        "Create meta.json in typescript/framework/ with order: getting-started, configuration, client",
+        "Create meta.json in typescript/library/ with order: index",
+        "Create meta.json in typescript/adapters/ with order: index, zod, arktype, effect, valibot",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: web/source.config.ts for fumadocs config. Fumadocs meta.json format: { \"pages\": [\"page-name\", ...] } or { \"title\": \"Section\", \"pages\": [...] }"
+    },
+    {
+      "id": "US-003",
+      "title": "Create docs introduction page",
+      "description": "As a new visitor, I want to understand what xschema does and why it exists so I can decide if it solves my problem.",
+      "acceptanceCriteria": [
+        "Replace web/content/docs/index.mdx with xschema introduction",
+        "Explain the problem: JSON Schema ecosystem is fragmented, non-compliant, poor DX",
+        "Explain the solution: native validators with compliance testing",
+        "Include 'two ways to use xschema' overview (framework vs library)",
+        "Add 'How it works' teaser with link to /docs/internals/",
+        "Link to getting-started and typescript sections",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: web/DOCUMENTATION_PLAN.md for vision. typescript/packages/client/README.md for product description."
+    },
+    {
+      "id": "US-004",
+      "title": "Create general getting-started page",
+      "description": "As a new user, I want a quick overview that helps me choose my path (language + mode) so I don't waste time reading irrelevant docs.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/getting-started.mdx",
+        "Add decision tree: pick language -> pick mode (framework vs library)",
+        "Brief explanation of when to use framework vs library mode",
+        "Cards/links to TypeScript getting started (only language currently)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/language/ for supported languages. typescript/packages/adapters/ for available adapters."
+    },
+    {
+      "id": "US-005",
+      "title": "Create CLI reference page",
+      "description": "As a power user, I want a complete reference of all CLI commands and flags.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/cli.mdx",
+        "Document xschema generate command with flags: --project/-p, --output/-o, --lang, --verbose/-v, --dry-run, --concurrency/-c, --env-file",
+        "Note that --watch is planned but not yet implemented",
+        "Document config file discovery (git-based vs directory walk)",
+        "Document runner auto-detection (bun.lock -> bunx, pnpm-lock.yaml -> pnpm exec)",
+        "List supported JSON Schema drafts: draft3, draft4, draft6, draft7, draft2019-09, draft2020-12",
+        "Explain schemas are normalized to draft2020-12 internally",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/cmd/generate.go for flags. cli/parser/parser.go for discovery. cli/language/langs/typescript/runner.go for runner detection. cli/bundler/bundler.go for draftToSchemaURI map."
+    },
+    {
+      "id": "US-006",
+      "title": "Create troubleshooting page",
+      "description": "As a developer debugging issues, I want to understand common error messages and how to fix them.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/troubleshooting.mdx",
+        "Document 'no xschema config files found' - need $schema URL in config",
+        "Document 'multiple languages detected' - use --lang flag",
+        "Document 'duplicate schema ID' - same ID in same namespace across files",
+        "Document 'headers are only allowed for sourceType url'",
+        "Document 'missing env var' - set env var or use --env-file",
+        "Document 'Unknown schema: X' client error - run xschema generate",
+        "Document adapter CLI not found - ensure adapter is installed/built",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/parser/parser.go, cli/retriever/retriever.go, cli/generator/generator.go for error messages. typescript/packages/client/src/index.ts for client errors."
+    },
+    {
+      "id": "US-007",
+      "title": "Update compliance overview page",
+      "description": "As a user evaluating xschema, I want to understand what compliance means and why it matters.",
+      "acceptanceCriteria": [
+        "Review and update web/content/docs/compliance/index.mdx",
+        "Explain JSON Schema Test Suite",
+        "Explain static generation approach and its benefits",
+        "Explain coverage calculation (excludes unsupported features)",
+        "Link to all adapter compliance pages",
+        "Link to unsupported features page",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: web/content/docs/compliance/index.mdx for existing content. cli/compliance/ for how testing works. cli/unsupported/unsupported-features.json for exclusions."
+    },
+    {
+      "id": "US-008",
+      "title": "Create internals overview page",
+      "description": "As a curious developer or contributor, I want to understand how xschema works under the hood.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/internals/index.mdx",
+        "High-level architecture explanation: parse -> retrieve -> process -> generate -> inject",
+        "Explain why this architecture makes adapters simple (bundled schemas, normalized drafts)",
+        "Link to detailed pages: architecture, adapters, compliance-testing",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/cmd/generate.go for pipeline. AGENTS.md for architecture table."
+    },
+    {
+      "id": "US-009",
+      "title": "Create architecture deep-dive page",
+      "description": "As a curious developer, I want to understand the full processing pipeline in detail.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/internals/architecture.mdx",
+        "Document Parser: config discovery (git vs walk), namespace derivation, language detection",
+        "Document Retriever: fetch from URL/file/inline, header substitution, caching",
+        "Document Processor: ref extraction, external fetch loop, validation, bundling",
+        "Document Bundler: $ref resolution, draft normalization to 2020-12, $defs embedding",
+        "Document Generator: adapter invocation via stdin/stdout, parallel processing",
+        "Document Injector: template rendering, manifest tracking, stale file cleanup",
+        "Explain why adapters receive 'easy' input (bundled, normalized, validated)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/cmd/generate.go, cli/parser/parser.go, cli/retriever/retriever.go, cli/processor/processor.go, cli/bundler/bundler.go, cli/bundler/normalize.go, cli/generator/generator.go, cli/injector/injector.go. AGENTS.md for overview."
+    },
+    {
+      "id": "US-010",
+      "title": "Create adapter development guide",
+      "description": "As a contributor wanting to build a new adapter, I want to understand the full adapter development process.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/internals/adapters.mdx",
+        "Document adapter protocol: stdin/stdout JSON communication",
+        "Document input format: [{ namespace, id, varName, schema }]",
+        "Document output format: [{ namespace, id, varName, schema, type, imports }]",
+        "Document @xschemadev/core package exports",
+        "Document IR (Intermediate Representation) - mention the node kinds",
+        "Document parse() function (JSON Schema -> IR)",
+        "Document createAdapterCLI() helper",
+        "Document key utilities: escapeString, isPrimitive, hasPrototypeProperties",
+        "Explain schemas are pre-bundled (no $ref resolution needed in adapters)",
+        "Link to typescript/packages/adapters/zod/src/ as example",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/adapter/types.go for protocol. typescript/packages/core/src/ir/ for IR types. typescript/packages/core/src/parser/ for parse(). typescript/packages/core/src/cli.ts for createAdapterCLI(). typescript/packages/core/src/utils/ for utilities."
+    },
+    {
+      "id": "US-011",
+      "title": "Create compliance testing guide",
+      "description": "As an adapter developer, I want to understand how to run compliance tests.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/internals/compliance-testing.mdx",
+        "Document xschema compliance command",
+        "Document flags: --draft, --keyword, --dev-report, --profile, --adapter-path",
+        "Explain must run from adapter directory (or use --adapter-path)",
+        "Explain test suite download and caching (~/.cache/xschema/)",
+        "Explain --dev-report writes results for docs generation",
+        "Explain how compliance results flow into auto-generated docs",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/cmd/compliance.go for flags. cli/compliance/fetcher.go for caching. cli/compliance/report.go for --dev-report. web/scripts/generate-compliance.ts for docs generation."
+    },
+    {
+      "id": "US-012",
+      "title": "Create TypeScript overview page",
+      "description": "As a TypeScript developer, I want a language-specific landing page that shows me all my options.",
+      "acceptanceCriteria": [
+        "Update web/content/docs/typescript/index.mdx as language hub",
+        "Brief intro to xschema for TS",
+        "Links to framework getting-started, library (coming soon), adapters comparison",
+        "List available adapters: zod, arktype, effect, valibot",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/ for adapter list. typescript/packages/client/ for client info."
+    },
+    {
+      "id": "US-013",
+      "title": "Create TypeScript framework getting-started",
+      "description": "As a developer wanting full xschema integration, I want a step-by-step guide to set up the framework mode.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/typescript/framework/getting-started.mdx",
+        "Step 1: Install dependencies (@xschemadev/client, adapter package like @xschemadev/zod)",
+        "Step 2: Create .xschema.jsonc config file with example",
+        "Step 3: Run xschema generate (or bunx xschema generate)",
+        "Step 4: Use generated schemas with createXSchemaClient",
+        "Step 5: Extract types with XSchemaType<'namespace:id'>",
+        "Include complete working code example",
+        "Document output directory (.xschema/) and generated files",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/example/ for working example. typescript/example/user.xschema.jsonc for config. typescript/example/main.ts for usage. typescript/example/.xschema/xschema.gen.ts for output."
+    },
+    {
+      "id": "US-014",
+      "title": "Create TypeScript framework config reference",
+      "description": "As a framework user, I want to understand all config file options so I can customize my setup.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/typescript/framework/configuration.mdx",
+        "Document $schema URL requirement (https://xschema.dev/schemas/typescript.jsonc)",
+        "Document schemas array structure",
+        "Document fields: id, sourceType, source, adapter",
+        "Document sourceType options: file, url, json (inline)",
+        "Document namespace behavior (defaults to filename without extension)",
+        "Document headers field for URL sources with ${VAR} substitution",
+        "Document .env auto-loading and --env-file flag",
+        "Document multiple config files behavior (namespace merging, duplicate detection)",
+        "Document adapter naming: must be scoped like @xschemadev/zod",
+        "Include examples for each source type",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: cli/parser/parser.go for parsing and namespace derivation. cli/parser/types.go for structs. cli/retriever/retriever.go for header substitution. typescript/example/user.xschema.jsonc and subdir/another.xschema.jsonc for examples."
+    },
+    {
+      "id": "US-015",
+      "title": "Create TypeScript framework client reference",
+      "description": "As a framework user, I want to understand how to use the xschema client and type helpers.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/typescript/framework/client.mdx",
+        "Document createXSchemaClient function",
+        "Document defaultNamespace option",
+        "Document schema lookup: xschema('namespace:id') and xschema('id') with default namespace",
+        "Document XSchemaType<'namespace:id'> type helper",
+        "Show examples with Zod (.parse(), .safeParse())",
+        "Show examples with ArkType (direct call, instanceof type.errors)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/client/src/index.ts for implementation. typescript/packages/client/README.md for usage. typescript/example/main.ts for real example."
+    },
+    {
+      "id": "US-016",
+      "title": "Create TypeScript library placeholder",
+      "description": "As a developer interested in library mode, I want a placeholder indicating it's coming soon.",
+      "acceptanceCriteria": [
+        "Create web/content/docs/typescript/library/index.mdx",
+        "Brief explanation that library mode (direct adapter usage without client) is coming soon",
+        "Link back to framework mode as current recommendation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Library mode is not yet implemented. This is just a placeholder."
+    },
+    {
+      "id": "US-017",
+      "title": "Create TypeScript adapters comparison page",
+      "description": "As a TypeScript developer, I want to compare available adapters so I can choose the right one for my project.",
+      "acceptanceCriteria": [
+        "Update web/content/docs/typescript/adapters/index.mdx",
+        "Add comparison table: adapter name, compliance %, key features",
+        "Zod: most popular, 100% compliance, ecosystem integration",
+        "ArkType: TS-native syntax, 100% compliance, type-level validation",
+        "Effect: Effect ecosystem integration, 100% compliance",
+        "Valibot: smallest bundle, 98.9% compliance (prototype property bug)",
+        "Brief description of each adapter's philosophy",
+        "Links to each adapter's detail page",
+        "Recommendation guidance",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/*/package.json for versions. typescript/packages/adapters/*/compliance/results/ for compliance data."
+    },
+    {
+      "id": "US-018",
+      "title": "Update Zod adapter page",
+      "description": "As a developer considering Zod, I want complete information about the adapter.",
+      "acceptanceCriteria": [
+        "Review and update web/content/docs/typescript/adapters/zod/index.mdx",
+        "Ensure package name is correct: @xschemadev/zod",
+        "Ensure peer dependency is documented: zod ^3.0.0",
+        "Show usage example with framework mode",
+        "Link to compliance page",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/zod/package.json for package info. typescript/packages/adapters/zod/compliance/results/ for compliance."
+    },
+    {
+      "id": "US-019",
+      "title": "Update ArkType adapter page",
+      "description": "As a developer considering ArkType, I want complete information about the adapter.",
+      "acceptanceCriteria": [
+        "Review and update web/content/docs/typescript/adapters/arktype/index.mdx",
+        "Ensure package name is correct: @xschemadev/arktype",
+        "Ensure peer dependency is documented: arktype ^2.0.0",
+        "Show usage example - note ArkType uses direct call not .parse()",
+        "Link to compliance page",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/arktype/package.json for package info."
+    },
+    {
+      "id": "US-020",
+      "title": "Update Effect adapter page",
+      "description": "As a developer considering Effect Schema, I want complete information about the adapter.",
+      "acceptanceCriteria": [
+        "Review and update web/content/docs/typescript/adapters/effect/index.mdx",
+        "Ensure package name is correct: @xschemadev/effect",
+        "Ensure peer dependency is documented: effect ^3.0.0",
+        "Show usage example with Schema.decodeUnknownEither",
+        "Link to compliance page",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/effect/package.json for package info."
+    },
+    {
+      "id": "US-021",
+      "title": "Update Valibot adapter page with known limitation",
+      "description": "As a developer considering Valibot, I want complete information including known issues.",
+      "acceptanceCriteria": [
+        "Review and update web/content/docs/typescript/adapters/valibot/index.mdx",
+        "Ensure package name is correct: @xschemadev/valibot",
+        "Ensure peer dependency is documented: valibot ^0.42.0",
+        "Show usage example with safeParse",
+        "Add Callout warning about prototype property bug",
+        "Explain that properties named __proto__, constructor, toString cause runtime errors",
+        "Clarify this is a Valibot library bug, not xschema",
+        "Link to compliance page",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: typescript/packages/adapters/valibot/package.json. typescript/packages/adapters/valibot/compliance/results/ shows 98.9% due to this bug."
+    },
+    {
+      "id": "US-022",
+      "title": "Verify compliance pages render correctly",
+      "description": "As a maintainer, I need to ensure auto-generated compliance pages work after restructure.",
+      "acceptanceCriteria": [
+        "Run bun run generate:compliance in web/ directory",
+        "Run bun run generate:unsupported in web/ directory",
+        "Verify Zod compliance page renders with tabs and accordions",
+        "Verify ArkType compliance page renders",
+        "Verify Effect compliance page renders",
+        "Verify Valibot compliance page renders",
+        "Verify unsupported-features page renders",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": "Research: web/scripts/generate-compliance.ts and web/scripts/generate-unsupported-features.ts. May need path updates if structure changed."
+    },
+    {
+      "id": "US-023",
+      "title": "Add proper icons to navigation",
+      "description": "As a user browsing the docs, I want visual icons to help identify sections quickly.",
+      "acceptanceCriteria": [
+        "Add TypeScript icon to /typescript/ section in meta.json",
+        "Add Zod icon to /typescript/adapters/zod/ in meta.json or frontmatter",
+        "Add ArkType icon to /typescript/adapters/arktype/",
+        "Add Effect icon to /typescript/adapters/effect/",
+        "Add Valibot icon to /typescript/adapters/valibot/",
+        "Add appropriate icons for compliance, internals, CLI sections",
+        "Verify icons render in sidebar navigation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": "Research: Fumadocs docs for icon format. Can use lucide-react icons or custom SVGs in web/public/. Check existing meta.json files for icon examples."
+    }
+  ]
+}
