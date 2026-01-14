@@ -96,7 +96,7 @@
         "Document adapter CLI not found - ensure adapter is installed/built",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Research: cli/parser/parser.go, cli/retriever/retriever.go, cli/generator/generator.go for error messages. typescript/packages/client/src/index.ts for client errors."
     },
     {

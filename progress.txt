@@ -224,3 +224,27 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Cards import: `import { Card, Cards } from "fumadocs-ui/components/card"`
   - Callout import: `import { Callout } from "fumadocs-ui/components/callout"` (separate)
 ---
+
+## 2026-01-14 - US-006
+- Created troubleshooting page at `web/content/docs/troubleshooting.mdx`
+- Documented CLI errors:
+  - "no xschema config files found" - $schema URL requirement
+  - "multiple languages detected" - --lang flag usage
+  - "duplicate schema ID" - namespace conflicts and resolution
+  - "headers are only allowed for sourceType url" - source type restrictions
+  - "missing env var" - env file options (auto .env, --env-file flag)
+  - "unsupported language" - current supported languages
+  - Runner not found - runner detection logic and packageManager field
+  - "adapter failed" - installation and debugging tips
+- Documented client errors:
+  - "Unknown schema: X" - namespace:id format, defaultNamespace usage
+- Documented compliance runner errors:
+  - "adapter CLI not found" - build requirements
+- Added schema validation section ($ref resolution)
+- Added "Getting More Help" section with next steps
+- **Learnings for future iterations:**
+  - Error messages in cli/parser/parser.go, cli/retriever/retriever.go, cli/generator/generator.go
+  - Client error in typescript/packages/client/src/index.ts:102
+  - Compliance runner error in cli/compliance/runner.go:75
+  - Env var substitution uses ${VAR} regex pattern in retriever
+---
