@@ -101,3 +101,16 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - fumadocs-twoslash is the integration layer, twoslash is the core engine
   - Both packages needed - can't use just one
 ---
+
+## 2026-01-18 - Create Zod example and generate
+- Created `web/examples/typescript/zod/user.xschema.jsonc` (namespace 'user', id 'Profile')
+- Created `web/examples/typescript/zod/app.xschema.jsonc` (namespace 'app', id 'Config')
+- Generated `web/examples/typescript/zod/.xschema/xschema.gen.ts` manually via adapter CLI
+- Generated file exports schemas with keys 'user:Profile' and 'app:Config'
+- Typecheck passes
+- Files changed: 3 new files in web/examples/typescript/zod/
+- **Learnings for future iterations:**
+  - xschema namespace is per-config-file, not per-schema. To have multiple namespaces, use multiple config files (e.g., user.xschema.jsonc, app.xschema.jsonc)
+  - Adapters aren't published to npm yet, so xschema generate fails with 404. Workaround: call adapter CLI directly from typescript/packages/adapters/<adapter>/dist/cli.js
+  - Generated output format: header comment + imports + schema definitions + `export const schemas = { "ns:id": varName }` + SchemaTypes type + module declaration for @xschemadev/client
+---
