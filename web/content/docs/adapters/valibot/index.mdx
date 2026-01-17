@@ -22,10 +22,6 @@ Valibot is a modular validation library focused on bundle size. xschema's Valibo
 - **Tree-shakeable** - only include what you use
 - **Minimal bundle size** - modular design keeps bundles small
 
-<Callout type="warn" title="Known Limitation">
-Valibot has a bug with properties named `__proto__`, `constructor`, or `toString`. Schemas with these property names will cause runtime errors. This is a Valibot library bug, not an xschema issue. See [Known Limitation](#known-limitation) below.
-</Callout>
-
 ## Installation
 
 <Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
@@ -51,111 +47,29 @@ Valibot has a bug with properties named `__proto__`, `constructor`, or `toString
   </Tab>
 </Tabs>
 
-## Usage with Framework Mode
-
-The recommended way to use xschema is with the client. First, set up your config:
+## Usage
 
 ```jsonc title="user.xschema.jsonc"
 {
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
-      "id": "Profile",
-      "sourceType": "file",
-      "source": "./profile.schema.json",
-      "adapter": "@xschemadev/valibot"
+      "id": "User",
+      "adapter": "@xschemadev/valibot",
+      "source": "./user.schema.json"
     }
   ]
 }
 ```
 
-Run the generator:
-
-<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
-  <Tab value="bun">
-    ```bash
-    bunx xschema generate
-    ```
-  </Tab>
-  <Tab value="npm">
-    ```bash
-    npx xschema generate
-    ```
-  </Tab>
-  <Tab value="pnpm">
-    ```bash
-    pnpm exec xschema generate
-    ```
-  </Tab>
-  <Tab value="yarn">
-    ```bash
-    yarn dlx xschema generate
-    ```
-  </Tab>
-</Tabs>
-
-Then use the generated schemas with the [xschema client](/docs/typescript/client):
-
 ```typescript title="app.ts"
-import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
-import { schemas } from "./.xschema/xschema.gen";
+import { xschema } from "./.xschema/client";
 import * as v from "valibot";
 
-const xschema = createXSchemaClient({
-  schemas,
-  defaultNamespace: "user",
-});
-
-// Get schema - returns a Valibot schema
-const profileSchema = xschema("Profile");
-
-// Validate with safeParse (returns result object)
-const result = v.safeParse(profileSchema, {
-  id: "123",
-  email: "alice@example.com",
-});
-
-if (result.success) {
-  console.log(result.output); // Fully typed!
-} else {
-  console.error(result.issues);
-}
-
-// Or use parse (throws on error)
-const profile = v.parse(profileSchema, userData);
-
-// Extract type for function signatures
-type Profile = XSchemaType<"user:Profile">;
+const user = v.parse(xschema("User"), data);
 ```
 
-## Generated Output
-
-For a JSON Schema like:
-
-```json title="profile.schema.json"
-{
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "email": { "type": "string", "format": "email" },
-    "age": { "type": "integer", "minimum": 0 }
-  },
-  "required": ["id", "email"]
-}
-```
-
-xschema generates:
-
-```typescript
-import * as v from "valibot";
-
-const user_Profile = v.object({
-  id: v.string(),
-  email: v.pipe(v.string(), v.email()),
-  age: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
-});
-type user_ProfileType = v.InferOutput<typeof user_Profile>;
-```
+See the [TypeScript guide](/docs/typescript) for full setup instructions.
 
 ## Supported Features
 
@@ -189,5 +103,3 @@ import { object, string, optional, number, pipe, minLength } from "valibot";
 ```
 
 This makes Valibot an excellent choice for frontend applications where bundle size matters.
-
-

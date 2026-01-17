@@ -45,115 +45,31 @@ Zod is the most popular TypeScript validation library with a large ecosystem of 
   </Tab>
 </Tabs>
 
-## Usage with Framework Mode
-
-The recommended way to use xschema is with the client. First, set up your config:
+## Usage
 
 ```jsonc title="user.xschema.jsonc"
 {
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
   "schemas": [
     {
-      "id": "Profile",
-      "sourceType": "file",
-      "source": "./profile.schema.json",
-      "adapter": "@xschemadev/zod"
+      "id": "User",
+      "adapter": "@xschemadev/zod",
+      "source": "./user.schema.json"
     }
   ]
 }
 ```
 
-Run the generator:
-
-<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
-  <Tab value="bun">
-    ```bash
-    bunx xschema generate
-    ```
-  </Tab>
-  <Tab value="npm">
-    ```bash
-    npx xschema generate
-    ```
-  </Tab>
-  <Tab value="pnpm">
-    ```bash
-    pnpm exec xschema generate
-    ```
-  </Tab>
-  <Tab value="yarn">
-    ```bash
-    yarn dlx xschema generate
-    ```
-  </Tab>
-</Tabs>
-
-Then use the generated schemas with the [xschema client](/docs/typescript/client):
-
 ```typescript title="app.ts"
-import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
-import { schemas } from "./.xschema/xschema.gen";
+import { xschema } from "./.xschema/client";
 
-const xschema = createXSchemaClient({
-  schemas,
-  defaultNamespace: "user",
-});
-
-// Get schema - returns a Zod schema
-const profileSchema = xschema("Profile");
-
-// Validate with safeParse (returns success/error)
-const result = profileSchema.safeParse({
-  id: "123",
-  email: "alice@example.com",
-});
-
-if (result.success) {
-  console.log(result.data); // Fully typed!
-} else {
-  console.error(result.error.issues);
-}
-
-// Or parse directly (throws on error)
-const profile = profileSchema.parse(userData);
-
-// Extract type for function signatures
-type Profile = XSchemaType<"user:Profile">;
+const user = xschema("User").parse(data);
 ```
 
-## Generated Output
-
-For a JSON Schema like:
-
-```json title="profile.schema.json"
-{
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "email": { "type": "string", "format": "email" },
-    "age": { "type": "integer", "minimum": 0 }
-  },
-  "required": ["id", "email"]
-}
-```
-
-xschema generates:
-
-```typescript
-import { z } from "zod";
-
-const user_Profile = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  age: z.number().int().min(0).optional(),
-});
-type user_ProfileType = z.infer<typeof user_Profile>;
-```
+See the [TypeScript guide](/docs/typescript) for full setup instructions.
 
 ## Supported Features
 
 The Zod adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
 
 See the [Compliance](/docs/adapters/zod/compliance) page for the full breakdown by draft.
-
-
