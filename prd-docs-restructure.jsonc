@@ -62,8 +62,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created (framework)/index.mdx with Introduction title, brief intro, and Cards linking to Getting Started, What is XSchema, Adapters, CLI, Compliance. Removed old root index.mdx to allow Framework section to be the landing page at /docs."
     },
     {
       "id": "US-005",

@@ -473,3 +473,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - biome-ignore comment must be directly above the prop, not the JSX element
   - Mermaid requires dangerouslySetInnerHTML for SVG rendering (expected)
 ---
+
+## 2026-01-17 - US-004 (PRD: docs-restructure)
+- Created Framework section landing page at `web/content/docs/(framework)/index.mdx`
+- Content includes:
+  - Title: "Introduction"
+  - Brief intro explaining xschema converts JSON Schema to native validators with compliance testing
+  - 5 Cards with Lucide icons:
+    - Getting Started (Rocket) -> /docs/getting-started
+    - What is XSchema (Lightbulb) -> /docs/what-is-xschema
+    - Adapters (Puzzle) -> /docs/adapters
+    - CLI Reference (Terminal) -> /docs/cli
+    - Compliance (ShieldCheck) -> /docs/compliance
+- Removed old `web/content/docs/index.mdx` to allow Framework section to be the landing page at /docs
+- Verified in browser: page renders correctly with all cards showing icons and links
+- Typecheck passes
+- **Learnings for future iterations:**
+  - fumadocs route groups `(framework)` only work as root if there's no conflicting root index.mdx
+  - Removing old files may be necessary even if "cleanup" is a separate story - dependencies matter
+  - Card icons are just icon names like "Rocket", not full icon imports
+---
