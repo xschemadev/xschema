@@ -86,7 +86,7 @@
         "Packages added to package.json",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

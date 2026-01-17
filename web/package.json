@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "fumadocs-core": "16.4.4",
     "fumadocs-mdx": "14.2.4",
+    "fumadocs-twoslash": "^3.1.12",
     "fumadocs-ui": "16.4.4",
     "lucide-react": "^0.562.0",
     "mermaid": "^11.12.2",
@@ -32,6 +33,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "tailwind-merge": "^3.4.0",
+    "twoslash": "^0.3.6",
     "vite": "^7.3.0"
   },
   "devDependencies": {

@@ -89,3 +89,15 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - For twoslash examples, schemas need `required` array to distinguish optional properties for accurate type inference
   - The examples/ directory is at web/examples/, not in content/
 ---
+
+## 2026-01-18 03:00 - Install Twoslash packages
+- Ran `bun add fumadocs-twoslash twoslash` in web/ directory
+- Packages added to package.json:
+  - fumadocs-twoslash: ^3.1.12
+  - twoslash: ^0.3.6
+- Typecheck passes
+- Files changed: `web/package.json`, `web/bun.lock`
+- **Learnings for future iterations:**
+  - fumadocs-twoslash is the integration layer, twoslash is the core engine
+  - Both packages needed - can't use just one
+---
