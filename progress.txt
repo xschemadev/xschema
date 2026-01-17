@@ -906,3 +906,15 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - grep for /docs/ links can find both internal and external links (need to check context)
   - All 24 user stories in docs-restructure PRD now complete
 ---
+
+## 2026-01-17 - Enable processed markdown in source config (PRD: ai-llms-features)
+- Updated `web/source.config.ts` to enable processed markdown for LLM endpoints
+- Added `docs: { postprocess: { includeProcessedMarkdown: true } }` to defineDocs config
+- This enables `page.data.getText("processed")` API for LLM text generation
+- Typecheck passes, build passes with 32 pages prerendered
+- **Learnings for future iterations:**
+  - fumadocs defineDocs config has nested `docs` property for collection-specific options
+  - `includeProcessedMarkdown: true` enables `getText("processed")` on page objects
+  - This is foundation for LLM endpoints (llms-full.txt, per-page .mdx endpoints)
+---
+
