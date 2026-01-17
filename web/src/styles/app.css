@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-twoslash/twoslash.css';
 
 /*
  * xschema docs theme - earthy palette

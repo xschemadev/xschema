@@ -127,3 +127,14 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Spread existing transformers with `...(rehypeCodeDefaultOptions.transformers ?? [])` to preserve default behavior
   - langs array is important because Shiki doesn't lazy-load languages for twoslash popups
 ---
+
+## 2026-01-18 - Add Twoslash CSS and UI components
+- Added `@import 'fumadocs-twoslash/twoslash.css'` to `web/src/styles/app.css`
+- Imported `* as Twoslash from "fumadocs-twoslash/ui"` in `web/src/routes/docs/$.tsx`
+- Spread `...Twoslash` into MDX components object (before other custom components)
+- Typecheck passes
+- Files changed: `web/src/styles/app.css`, `web/src/routes/docs/$.tsx`
+- **Learnings for future iterations:**
+  - Twoslash UI uses namespace import (`* as Twoslash`) then spread into components
+  - CSS import goes after fumadocs preset in app.css
+---

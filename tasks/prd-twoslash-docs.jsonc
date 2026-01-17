@@ -112,7 +112,7 @@
         "Spread Twoslash components into MDX components object",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
