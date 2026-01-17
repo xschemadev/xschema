@@ -1,0 +1,171 @@
+---
+title: Effect Schema
+description: Generate Effect schemas from JSON Schema definitions
+icon: Shield
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+The Effect adapter converts JSON Schema definitions into [Effect Schema](https://effect.website/docs/schema/introduction) validation schemas with full TypeScript type inference.
+
+## Overview
+
+| | |
+|---|---|
+| **Package** | `@xschemadev/effect` |
+| **Peer Dependency** | `effect ^3.0.0` |
+| **Compliance** | 100% |
+
+Effect Schema is part of the Effect ecosystem, providing a powerful schema library with encoding/decoding capabilities. The xschema Effect adapter generates native Effect schemas from JSON Schema with:
+
+- **100% compliance** with JSON Schema Test Suite (all supported drafts)
+- **Full type inference** - generated schemas include TypeScript types
+- **Bidirectional transformations** - encode and decode data
+- **Effect ecosystem integration** - works seamlessly with Effect
+
+## Installation
+
+```bash
+# with bun
+bun add @xschemadev/effect effect
+
+# with npm
+npm install @xschemadev/effect effect
+
+# with pnpm
+pnpm add @xschemadev/effect effect
+```
+
+## Usage with Framework Mode
+
+The recommended way to use xschema is with the client. First, set up your config:
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/effect"
+    }
+  ]
+}
+```
+
+Run the generator:
+
+```bash
+bunx xschema generate
+```
+
+Then use the generated schemas:
+
+```typescript title="app.ts"
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+import { Schema } from "effect";
+import { schemas } from "./.xschema/xschema.gen";
+
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Get schema - returns an Effect Schema
+const profileSchema = xschema("Profile");
+
+// Validate with decodeUnknownEither (returns Either<ParseError, A>)
+const result = Schema.decodeUnknownEither(profileSchema)({
+  id: "123",
+  email: "alice@example.com",
+});
+
+if (result._tag === "Right") {
+  console.log(result.right); // Fully typed!
+} else {
+  console.error(result.left);
+}
+
+// Or use sync version (throws on error)
+const profile = Schema.decodeUnknownSync(profileSchema)(userData);
+
+// Extract type for function signatures
+type Profile = XSchemaType<"user:Profile">;
+```
+
+## Generated Output
+
+For a JSON Schema like:
+
+```json title="profile.schema.json"
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["id", "email"]
+}
+```
+
+xschema generates:
+
+```typescript
+import { Schema } from "effect";
+
+const user_Profile = Schema.Struct({
+  id: Schema.String,
+  email: Schema.String.pipe(Schema.pattern(/@/)),
+  age: Schema.optionalWith(Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(0)), { exact: true }),
+});
+type user_ProfileType = typeof user_Profile.Type;
+```
+
+## Supported Features
+
+The Effect adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
+
+See the [Compliance](/docs/adapters/effect/compliance) page for the full breakdown by draft.
+
+### Highlights
+
+- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
+- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
+- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
+- String constraints (`minLength`, `maxLength`, `pattern`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`, `prefixItems`)
+- Object constraints (`required`, `additionalProperties`, `propertyNames`, `unevaluatedProperties`)
+- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
+- Conditionals (`if`/`then`/`else`)
+- References (`$ref`, `$defs`)
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="Effect Compliance"
+    description="View detailed compliance by JSON Schema draft"
+    href="/docs/adapters/effect/compliance"
+    icon="ClipboardCheck"
+  />
+  <Card
+    title="Getting Started"
+    description="Complete setup guide"
+    href="/docs/getting-started"
+    icon="Rocket"
+  />
+  <Card
+    title="Configuration"
+    description="All config file options"
+    href="/docs/configuration"
+    icon="Settings"
+  />
+  <Card
+    title="Compare Adapters"
+    description="See all available adapters"
+    href="/docs/adapters"
+    icon="Puzzle"
+  />
+</Cards>

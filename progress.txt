@@ -569,3 +569,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Valibot has 98.9% compliance due to prototype property bug (Valibot library issue)
   - Compliance pages use Tabs/Tab/Accordions/Accordion fumadocs components
 ---
+
+## 2026-01-17 - US-018 (PRD: docs-restructure)
+- Moved Effect adapter pages to new location: `web/content/docs/adapters/effect/`
+- Files created:
+  - `adapters/effect/index.mdx` - main Effect adapter page with updated links
+  - `adapters/effect/compliance.mdx` - compliance report page with updated links
+- Updated internal links to new paths:
+  - `/docs/adapters/effect/compliance` (was `/docs/typescript/adapters/effect/compliance`)
+  - `/docs/getting-started` (was `/docs/typescript/framework/getting-started`)
+  - `/docs/configuration` (was `/docs/typescript/framework/configuration`)
+  - `/docs/adapters` (was `/docs/typescript/adapters`)
+  - `/docs/compliance/unsupported-features` (unchanged)
+- Added fumadocs component imports for Tabs/Tab/Accordions/Accordion in compliance page
+- Sidebar shows Effect Schema and Effect Compliance under Adapters tab
+- Typecheck passes, verified in browser
+- **Learnings for future iterations:**
+  - Same pattern as Zod/ArkType/Valibot: copy content, update all internal links to new paths
+  - Effect has 100% compliance across all drafts
+  - Compliance pages need explicit imports for Tabs/Tab/Accordions/Accordion from fumadocs
+  - All 4 adapters (Zod, ArkType, Effect, Valibot) now migrated to /docs/adapters/ section
+---

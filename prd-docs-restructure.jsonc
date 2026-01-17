@@ -295,8 +295,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/effect/index.mdx and adapters/effect/compliance.mdx with updated links pointing to new paths (/docs/adapters/effect/compliance, /docs/getting-started, /docs/configuration, /docs/adapters, /docs/compliance/unsupported-features). Added fumadocs component imports for Tabs/Tab/Accordions/Accordion in compliance page. Verified both pages render correctly in browser with sidebar navigation showing Effect Schema and Effect Compliance."
     },
     {
       "id": "US-019",
