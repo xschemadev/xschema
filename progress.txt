@@ -529,3 +529,21 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Adapter pages should link to new consolidated pages (getting-started, configuration) not old typescript-specific paths
   - Icon `Shield` works well for adapter index pages
 ---
+
+## 2026-01-17 - US-016 (PRD: docs-restructure)
+- Moved ArkType adapter pages to new location: `web/content/docs/adapters/arktype/`
+- Files created:
+  - `adapters/arktype/index.mdx` - main ArkType adapter page with updated links
+  - `adapters/arktype/compliance.mdx` - compliance report page with updated links
+- Updated internal links to new paths:
+  - `/docs/adapters/arktype/compliance` (was `/docs/typescript/adapters/arktype/compliance`)
+  - `/docs/getting-started` (was `/docs/typescript/framework/getting-started`)
+  - `/docs/configuration` (was `/docs/typescript/framework/configuration`)
+  - `/docs/adapters` (was `/docs/typescript/adapters`)
+  - `/docs/compliance/unsupported-features` (unchanged)
+- Sidebar shows ArkType and ArkType Compliance under Adapters tab
+- Typecheck passes, verified in browser
+- **Learnings for future iterations:**
+  - Same pattern as Zod: copy content, update all internal links to new paths
+  - Compliance pages need Tabs/Tab/Accordions/Accordion fumadocs components
+---

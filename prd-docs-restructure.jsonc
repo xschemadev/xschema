@@ -265,8 +265,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/arktype/index.mdx and adapters/arktype/compliance.mdx with updated links pointing to new paths (/docs/adapters/arktype/compliance, /docs/getting-started, /docs/configuration, /docs/adapters, /docs/compliance/unsupported-features). Verified in browser."
     },
     {
       "id": "US-017",
