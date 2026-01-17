@@ -439,3 +439,20 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - fumadocs route groups use parentheses: (framework) becomes the default route
   - meta.json pages array controls sidebar section ordering
 ---
+
+## 2026-01-17 - US-002 (PRD: docs-restructure)
+- Created meta.json files with `root: true` for all 5 documentation sections
+- Files created/updated:
+  - `web/content/docs/(framework)/meta.json` - root: true, title: "Framework", icon: "Layers"
+  - `web/content/docs/runtime/meta.json` - root: true, title: "Runtime", icon: "Zap"
+  - `web/content/docs/cli/meta.json` - root: true, title: "CLI", icon: "Terminal"
+  - `web/content/docs/adapters/meta.json` - root: true, title: "Adapters", icon: "Puzzle"
+  - `web/content/docs/compliance/meta.json` - root: true, title: "Compliance", icon: "ShieldCheck"
+- Verified in browser: sidebar shows 5 expandable tabs with correct icons
+- Typecheck passes
+- **Learnings for future iterations:**
+  - fumadocs root folders need meta.json with `root: true` property to become sidebar tabs
+  - Format: `{ "root": true, "title": "Tab Name", "description": "...", "icon": "LucideIconName" }`
+  - Icons are Lucide icon names (Layers, Zap, Terminal, Puzzle, ShieldCheck)
+  - Existing `pages` array in compliance/meta.json was replaced - root folders don't need pages array
+---

@@ -1,0 +1,6 @@
+{
+  "root": true,
+  "title": "Framework",
+  "description": "Generate validators from JSON Schema at build time",
+  "icon": "Layers"
+}

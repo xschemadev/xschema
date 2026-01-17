@@ -1,3 +1,6 @@
 {
-  "pages": ["index", "unsupported-features"]
+  "root": true,
+  "title": "Compliance",
+  "description": "JSON Schema Test Suite compliance testing",
+  "icon": "ShieldCheck"
 }
