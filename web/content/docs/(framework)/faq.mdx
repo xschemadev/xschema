@@ -1,0 +1,222 @@
+---
+title: FAQ
+description: Frequently asked questions about xschema
+icon: CircleHelp
+---
+
+<Accordions>
+
+<Accordion title="Which adapter should I use?">
+
+It depends on your priorities:
+
+| Adapter | Best for |
+|---------|----------|
+| **Zod** | Most users. Largest ecosystem, excellent docs, battle-tested. |
+| **ArkType** | TypeScript purists. Native TS syntax, type-level validation. |
+| **Effect** | Effect ecosystem users. Integrates with Effect's error handling and services. |
+| **Valibot** | Bundle size matters. Smallest footprint, tree-shakeable. |
+
+All adapters have 100% compliance except Valibot (98.9%) which has a known issue with prototype property names (`__proto__`, `constructor`, `toString`).
+
+See the [adapter comparison](/docs/adapters) for detailed feature comparisons.
+
+</Accordion>
+
+<Accordion title="Does xschema support $ref?">
+
+**Yes, fully.** xschema resolves all `$ref` references before adapters see the schema.
+
+The CLI:
+1. Fetches external `$ref` targets (URLs, files) recursively
+2. Bundles everything into local `$defs`
+3. Produces a self-contained schema with no external dependencies
+
+```json
+// Input schema with external ref
+{
+  "type": "object",
+  "properties": {
+    "address": { "$ref": "https://api.example.com/schemas/address.json" }
+  }
+}
+
+// After bundling (what adapters receive)
+{
+  "type": "object",
+  "properties": {
+    "address": { "$ref": "#/$defs/address_json__Address" }
+  },
+  "$defs": {
+    "address_json__Address": { /* resolved content */ }
+  }
+}
+```
+
+This means you can use:
+- Local file refs: `{ "$ref": "./types/address.json" }`
+- URL refs: `{ "$ref": "https://api.example.com/schemas/user.json" }`
+- Nested refs: Schemas that reference other schemas that reference more schemas
+
+See [architecture](/docs/what-is-xschema#architecture) for how the bundling pipeline works.
+
+</Accordion>
+
+<Accordion title="Why is feature X unsupported?">
+
+Some JSON Schema features cannot be statically compiled because they require runtime information:
+
+| Feature | Why unsupported |
+|---------|-----------------|
+| `$dynamicRef` / `$dynamicAnchor` | Target depends on the validation call stack |
+| `$recursiveRef` / `$recursiveAnchor` | Same issue, older draft syntax |
+| `unevaluatedProperties` with applicators | Requires tracking which properties were evaluated by each schema branch |
+
+These aren't xschema limitations - they're fundamental to any static code generator. The JSON Schema spec explicitly notes some features require runtime evaluation.
+
+**Good news:** Most schemas don't use these features. And if you only use `unevaluatedProperties: false` without complex applicators, it works fine.
+
+See [unsupported features](/docs/compliance/unsupported-features) for detailed explanations.
+
+</Accordion>
+
+<Accordion title="Can I use xschema with OpenAPI schemas?">
+
+**Yes.** OpenAPI 3.0/3.1 uses JSON Schema for its schema definitions. xschema handles:
+
+- **OpenAPI 3.1**: Uses standard JSON Schema 2020-12. Works directly.
+- **OpenAPI 3.0**: Uses a JSON Schema subset with some differences. xschema normalizes these.
+
+Common OpenAPI patterns that work:
+- `nullable: true` → converted to `type: ["string", "null"]` (or similar)
+- `$ref` to `#/components/schemas/X` → resolved and bundled
+- `allOf` for composition → fully supported
+
+**Extracting schemas from OpenAPI:**
+
+xschema expects JSON Schema files, not full OpenAPI specs. Extract the schemas you need:
+
+```jsonc
+// user.xschema.jsonc
+{
+  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "source": "https://api.example.com/openapi.json#/components/schemas/User",
+      "adapter": "zod"
+    }
+  ]
+}
+```
+
+Or extract to files first using tools like `openapi-typescript` or manual extraction.
+
+</Accordion>
+
+<Accordion title="How do I migrate from json-schema-to-zod?">
+
+If you're using json-schema-to-zod for ad-hoc conversions:
+
+**1. Create a config file:**
+
+```jsonc
+// user.xschema.jsonc
+{
+  "$schema": "https://xschema.dev/schemas/ts.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "source": { "file": "./schemas/user.json" },
+      "adapter": "zod"
+    }
+  ]
+}
+```
+
+**2. Run xschema:**
+
+```bash
+bunx xschema generate
+```
+
+**3. Use the client:**
+
+```typescript
+// Before (json-schema-to-zod)
+import { jsonSchemaToZod } from "json-schema-to-zod";
+const schema = jsonSchemaToZod(jsonSchema);
+const result = schema.parse(data);
+
+// After (xschema)
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+
+const client = createXSchemaClient({ schemas, defaultNamespace: "user" });
+const schema = client.get("User");
+const result = schema.parse(data);
+```
+
+**Benefits of migrating:**
+- Compliance tested (100% on Zod adapter)
+- All `$ref`s resolved automatically
+- Type-safe client with autocomplete
+- Switch adapters without changing schemas
+
+</Accordion>
+
+<Accordion title="Does xschema work at runtime?">
+
+**Currently, no.** xschema is a **build-time** code generator.
+
+The workflow:
+1. Write JSON Schema files
+2. Run `xschema generate` at build time
+3. Import generated validators in your code
+
+**Why build-time?**
+- Full TypeScript type inference
+- Tree-shaking removes unused code
+- No runtime parsing overhead
+- Smaller bundle size
+
+**Runtime mode is planned.** It will allow:
+```typescript
+// Planned API (not yet implemented)
+import { convert } from "@xschemadev/runtime";
+const schema = convert(jsonSchema, { adapter: "zod" });
+```
+
+This is useful for dynamic schemas loaded at runtime. Track progress in the [Runtime section](/docs/runtime).
+
+</Accordion>
+
+<Accordion title="What JSON Schema drafts are supported?">
+
+xschema supports all major JSON Schema drafts:
+
+| Draft | Meta-schema URI | Status |
+|-------|-----------------|--------|
+| draft-2020-12 | `https://json-schema.org/draft/2020-12/schema` | Full support |
+| draft-2019-09 | `https://json-schema.org/draft/2019-09/schema` | Full support |
+| draft-07 | `http://json-schema.org/draft-07/schema#` | Full support |
+| draft-06 | `http://json-schema.org/draft-06/schema#` | Full support |
+| draft-04 | `http://json-schema.org/draft-04/schema#` | Full support |
+| draft-03 | `http://json-schema.org/draft-03/schema#` | Full support |
+
+**How it works:**
+
+All schemas are normalized to draft-2020-12 before adapters see them. This means:
+- Legacy syntax is transformed automatically
+- `items` (array) → `prefixItems`
+- `additionalItems` → `items`
+- `dependencies` → `dependentSchemas` / `dependentRequired`
+- `definitions` → `$defs`
+
+You don't need to update old schemas. xschema handles the conversion.
+
+See the [CLI reference](/docs/cli/generate) for draft detection details.
+
+</Accordion>
+
+</Accordions>

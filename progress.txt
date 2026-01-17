@@ -813,3 +813,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Detection uses pattern matching on test paths AND schema keyword scanning
   - All schemas are normalized to draft2020-12 before adapter sees them
 ---
+
+## 2026-01-17 - US-010 (PRD: docs-restructure)
+- Created FAQ page at `web/content/docs/(framework)/faq.mdx`
+- Content includes 7 Q&A items using Accordions/Accordion components:
+  1. Which adapter should I use? - comparison table with Zod/ArkType/Effect/Valibot recommendations
+  2. Does xschema support $ref? - explains bundling, shows before/after schema example
+  3. Why is feature X unsupported? - table of unsupported features with reasons, links to compliance
+  4. Can I use xschema with OpenAPI schemas? - explains OpenAPI 3.0/3.1 compatibility
+  5. How do I migrate from json-schema-to-zod? - step-by-step migration guide with code examples
+  6. Does xschema work at runtime? - explains build-time vs runtime, links to Runtime section
+  7. What JSON Schema drafts are supported? - table of all drafts with meta-schema URIs
+- Icon: CircleHelp
+- Typecheck passes, build passes (page prerendered at /docs/faq)
+- **Learnings for future iterations:**
+  - Accordions/Accordion components are already registered in MDX components
+  - No import needed in MDX files - components are globally available
+  - Accordion format works well for FAQ with collapsible answers
+  - CircleHelp is the correct Lucide icon for FAQ pages
+---

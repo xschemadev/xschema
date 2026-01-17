@@ -172,8 +172,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created FAQ page with 7 Q&A items using Accordions/Accordion components. Covers adapter selection, $ref support, unsupported features, OpenAPI compatibility, migration from json-schema-to-zod, runtime mode status, and JSON Schema drafts. Build passes, page prerendered at /docs/faq."
     },
     {
       "id": "US-011",
