@@ -23,8 +23,8 @@
         "Uses `page.data.getText('processed')` to get content",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created get-llm-text.ts with getLLMText function using InferPageType from fumadocs-core/source"
     },
     {
       "title": "Create /llms-full.txt endpoint",
