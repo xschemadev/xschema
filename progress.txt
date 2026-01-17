@@ -690,3 +690,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Tabs component with groupId="language" keeps TypeScript/Python selection in sync across page
   - Python examples should use Callout type="info" with "coming soon" message
 ---
+
+## 2026-01-17 - US-020 (PRD: docs-restructure)
+- Updated compliance section index page at `web/content/docs/compliance/index.mdx`
+- Changes made:
+  - Added "Adapter compliance reports" section with Cards linking to all 4 adapters:
+    - Zod (100% compliance)
+    - ArkType (100% compliance)
+    - Effect Schema (100% compliance)
+    - Valibot (98.9% compliance)
+  - Added "Learn more" section with Cards linking to:
+    - Unsupported Features page
+    - CLI compliance command (future page at /docs/cli/compliance)
+  - Added `icon: ShieldCheck` to frontmatter
+- Existing content retained: JSON Schema Test Suite explanation, compliance testing process, static generation approach, coverage calculation, understanding results
+- Typecheck passes
+- Verified in browser: all Cards render with icons and link to correct pages
+- **Learnings for future iterations:**
+  - Compliance section already had good content from previous work (US-007 in original PRD)
+  - Adding Cards sections creates good navigation experience
+  - Links to future pages (/docs/cli/compliance) can be added before page exists
+---

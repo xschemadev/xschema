@@ -331,8 +331,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated compliance/index.mdx with Cards linking to all 4 adapter compliance reports (Zod, ArkType, Effect, Valibot) and Learn more section linking to Unsupported Features and CLI compliance command. Added icon to frontmatter. Verified in browser."
     },
     {
       "id": "US-021",

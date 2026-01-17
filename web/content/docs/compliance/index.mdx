@@ -1,6 +1,7 @@
 ---
 title: JSON Schema Compliance
 description: How xschema validates against the official JSON Schema Test Suite
+icon: ShieldCheck
 ---
 
 import { Cards, Card } from "fumadocs-ui/components/card";
@@ -75,3 +76,51 @@ Each adapter's compliance report shows:
 | **Coverage** | Pass rate: `Passed / (Total - Unsupported) * 100` |
 
 A coverage of 98%+ means the adapter handles nearly all practical JSON Schema use cases correctly.
+
+## Adapter compliance reports
+
+View detailed compliance reports for each adapter:
+
+<Cards>
+  <Card
+    icon="Shield"
+    title="Zod"
+    description="100% compliance - most popular Zod validation library"
+    href="/docs/adapters/zod/compliance"
+  />
+  <Card
+    icon="Shield"
+    title="ArkType"
+    description="100% compliance - TypeScript-native validation"
+    href="/docs/adapters/arktype/compliance"
+  />
+  <Card
+    icon="Shield"
+    title="Effect Schema"
+    description="100% compliance - Effect ecosystem integration"
+    href="/docs/adapters/effect/compliance"
+  />
+  <Card
+    icon="Shield"
+    title="Valibot"
+    description="98.9% compliance - smallest bundle size"
+    href="/docs/adapters/valibot/compliance"
+  />
+</Cards>
+
+## Learn more
+
+<Cards>
+  <Card
+    icon="Ban"
+    title="Unsupported Features"
+    description="Features that cannot be statically compiled"
+    href="/docs/compliance/unsupported-features"
+  />
+  <Card
+    icon="Terminal"
+    title="Running Compliance Tests"
+    description="How to run the compliance suite against adapters"
+    href="/docs/cli/compliance"
+  />
+</Cards>
