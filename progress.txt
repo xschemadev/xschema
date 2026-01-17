@@ -382,3 +382,47 @@ cli/
   npm/              # npm packages (@xschemadev/cli-*)
   pypi/             # pypi packages (xschema-cli-*)
 ```
+## 2026-01-17: release-workflow-pypi (COMPLETE)
+
+**Task**: Add PyPI publishing to release workflow
+
+**Implementation**:
+1. Added Python package outputs to release-please job
+   - Added py-core--release_created output from 'python/packages/core--release_created'
+   - Added py-client--release_created output from 'python/packages/client--release_created'
+   - Added py-pydantic--release_created output from 'python/packages/adapters/pydantic--release_created'
+   - Outputs used to conditionally trigger release-py job
+
+2. Created release-py job in .github/workflows/release-please.yml
+   - Triggers when any Python package released (py-core, py-client, py-pydantic)
+   - Runs on ubuntu-latest
+   - Setup: actions/checkout@v4, actions/setup-python@v5 (3.12), astral-sh/setup-uv@v4
+   - Steps for each package:
+     1. uv build (creates wheel and sdist in dist/)
+     2. uv publish --token ${{ secrets.PYPI_TOKEN }}
+   - Each package publishes only if its release_created output is true
+
+3. Added documentation comment
+   - NOTE comment documenting PYPI_TOKEN secret requirement
+   - Secret must be configured in GitHub repo settings
+
+4. Verified workflow syntax
+   - Checked YAML structure and indentation
+   - Verified job names align correctly (release-please, release-cli, release-ts, release-py)
+   - Verified outputs reference correct release-please paths
+   - All syntax valid
+
+**Decisions**:
+- Mirrors release-ts job structure for consistency
+- Uses uv build + uv publish (standard uv workflow)
+- Publishes packages individually with conditional checks (not all at once)
+- Uses PYPI_TOKEN secret (not legacy username/password)
+- Python 3.12 for build environment (matches CI)
+
+**Quality Checks**:
+- Workflow YAML syntax: valid ✓
+- Job structure: follows TS pattern ✓
+- Outputs correctly reference release-please paths ✓
+
+**Result**: PyPI publishing workflow ready. 3 Python packages (core, client, pydantic) will auto-publish on py-* tag releases. Requires PYPI_TOKEN secret in repo settings.
+

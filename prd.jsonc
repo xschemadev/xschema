@@ -125,7 +125,7 @@
         "add comment documenting PYPI_TOKEN secret requirement",
         "verify workflow syntax is valid"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "PYPI_TOKEN secret must be configured in GitHub repo settings"
     },
     {
