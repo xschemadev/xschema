@@ -1,0 +1,212 @@
+---
+title: API Reference
+description: Runtime mode API documentation (coming soon)
+icon: Book
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+
+<Callout type="info">
+Runtime mode is **coming soon**. This page documents the planned API.
+</Callout>
+
+## convert
+
+Converts a JSON Schema to a validator schema.
+
+```typescript
+function convert<T>(
+  schema: JsonSchema,
+  options: ConvertOptions
+): T;
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `schema` | `JsonSchema` | A valid JSON Schema object |
+| `options` | `ConvertOptions` | Conversion options |
+
+### ConvertOptions
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `adapter` | `string` | required | Adapter to use: `"zod"`, `"arktype"`, `"effect"`, `"valibot"` |
+| `strict` | `boolean` | `false` | Throw on unsupported features instead of warning |
+
+### Returns
+
+The generated validator schema for the specified adapter.
+
+### Example
+
+```typescript
+import { convert } from "@xschemadev/runtime";
+
+const schema = {
+  type: "object",
+  properties: {
+    name: { type: "string" }
+  }
+};
+
+const zodSchema = convert(schema, { adapter: "zod" });
+```
+
+---
+
+## createRuntime
+
+Creates a runtime instance with caching and configuration.
+
+```typescript
+function createRuntime(options: RuntimeOptions): Runtime;
+```
+
+### RuntimeOptions
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `adapter` | `string` | required | Default adapter for conversions |
+| `cache` | `boolean` | `false` | Enable schema caching |
+| `cacheSize` | `number` | `100` | Maximum cached schemas (LRU eviction) |
+| `strict` | `boolean` | `false` | Throw on unsupported features |
+
+### Runtime Instance
+
+| Method | Description |
+|--------|-------------|
+| `convert(schema)` | Convert a schema using the configured adapter |
+| `convert(schema, options)` | Convert with override options |
+| `clearCache()` | Clear the schema cache |
+| `getCacheStats()` | Get cache hit/miss statistics |
+
+### Example
+
+```typescript
+import { createRuntime } from "@xschemadev/runtime";
+
+const runtime = createRuntime({
+  adapter: "zod",
+  cache: true,
+  cacheSize: 50
+});
+
+// Convert schemas
+const User = runtime.convert(userSchema);
+const Order = runtime.convert(orderSchema);
+
+// Check cache stats
+console.log(runtime.getCacheStats());
+// { hits: 5, misses: 2, size: 2 }
+```
+
+---
+
+## Types
+
+### JsonSchema
+
+A JSON Schema object. Supports all drafts from draft-03 to draft-2020-12.
+
+```typescript
+type JsonSchema = {
+  $schema?: string;
+  type?: string | string[];
+  properties?: Record<string, JsonSchema>;
+  // ... all JSON Schema keywords
+};
+```
+
+### ConvertResult
+
+The result type varies by adapter:
+
+```typescript
+// Zod
+import type { z } from "zod";
+const schema: z.ZodType = convert(jsonSchema, { adapter: "zod" });
+
+// ArkType
+import type { Type } from "arktype";
+const schema: Type = convert(jsonSchema, { adapter: "arktype" });
+
+// Effect
+import type { Schema } from "effect";
+const schema: Schema.Schema<unknown> = convert(jsonSchema, { adapter: "effect" });
+
+// Valibot
+import type { BaseSchema } from "valibot";
+const schema: BaseSchema = convert(jsonSchema, { adapter: "valibot" });
+```
+
+---
+
+## Error Handling
+
+### ConvertError
+
+Thrown when conversion fails.
+
+```typescript
+import { convert, ConvertError } from "@xschemadev/runtime";
+
+try {
+  const schema = convert(invalidSchema, { adapter: "zod" });
+} catch (error) {
+  if (error instanceof ConvertError) {
+    console.log(error.message); // What went wrong
+    console.log(error.path);    // JSON pointer to problematic location
+    console.log(error.schema);  // The offending schema fragment
+  }
+}
+```
+
+### UnsupportedFeatureError
+
+Thrown when `strict: true` and schema uses unsupported features.
+
+```typescript
+import { convert, UnsupportedFeatureError } from "@xschemadev/runtime";
+
+try {
+  const schema = convert(dynamicRefSchema, {
+    adapter: "zod",
+    strict: true
+  });
+} catch (error) {
+  if (error instanceof UnsupportedFeatureError) {
+    console.log(error.feature); // "$dynamicRef"
+    console.log(error.reason);  // Why it's unsupported
+  }
+}
+```
+
+---
+
+## Comparison with Framework Mode
+
+| Feature | Framework (Build-time) | Runtime |
+|---------|------------------------|---------|
+| API | `createXSchemaClient` | `convert` / `createRuntime` |
+| Types | Full inference | Generic types |
+| Config | `*.xschema.jsonc` files | Programmatic |
+| Output | Generated `.ts` files | In-memory schemas |
+| Performance | Zero runtime cost | Conversion cost |
+
+<Cards>
+  <Card
+    title="Framework Client API"
+    description="Build-time client API reference"
+    href="/docs/typescript/client"
+    icon="Code"
+  />
+  <Card
+    title="Runtime Overview"
+    description="When to use runtime mode"
+    href="/docs/runtime"
+    icon="Zap"
+  />
+</Cards>

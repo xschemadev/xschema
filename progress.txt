@@ -867,3 +867,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Root folders with `root: true` don't need pages array for basic listing, but need it for ordering
   - Pages not listed in array are excluded from navigation
 ---
+
+## 2026-01-17 - US-011 (PRD: docs-restructure)
+- Created Runtime section with 4 pages documenting planned runtime mode API
+- Files created:
+  - `web/content/docs/runtime/index.mdx` - Overview explaining what runtime mode is, when to use it, planned API preview, Framework vs Runtime comparison table
+  - `web/content/docs/runtime/getting-started/typescript.mdx` - TypeScript getting started placeholder with planned usage examples
+  - `web/content/docs/runtime/getting-started/python.mdx` - Python getting started placeholder with Pydantic preview
+  - `web/content/docs/runtime/getting-started/meta.json` - Navigation ordering
+  - `web/content/docs/runtime/api-reference.mdx` - Complete planned API documentation (convert, createRuntime, types, error handling)
+- Updated `web/content/docs/runtime/meta.json` with pages array and section separators
+- Added Runtime card to Framework landing page (`(framework)/index.mdx`) for discoverability and prerender discovery
+- All pages have "coming soon" Callout component
+- Build passes with 30 pages prerendered (was 26 before)
+- **Learnings for future iterations:**
+  - Prerender only discovers pages linked from other pages - need at least one link to a section for discovery
+  - Runtime API planned: `convert()` for one-off conversions, `createRuntime()` for cached conversions
+  - Runtime mode trades TypeScript inference for flexibility (dynamic schemas)
+  - Python runtime planned to use Pydantic v2 adapter
+---

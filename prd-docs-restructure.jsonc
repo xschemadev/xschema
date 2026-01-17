@@ -189,8 +189,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created runtime section with 4 pages: index.mdx (overview with when to use, planned API preview, comparison table, coming soon callout), getting-started/typescript.mdx (TS placeholder with planned usage examples), getting-started/python.mdx (Python placeholder with Pydantic preview), and api-reference.mdx (complete planned API documentation). Added Runtime card to Framework landing page for discoverability. Build passes with 30 pages prerendered."
     },
     {
       "id": "US-012",

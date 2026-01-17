@@ -1,0 +1,131 @@
+---
+title: TypeScript
+description: Getting started with runtime mode in TypeScript (coming soon)
+icon: Code
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+
+<Callout type="info">
+Runtime mode for TypeScript is **coming soon**. This page shows the planned usage.
+</Callout>
+
+## Prerequisites
+
+- Node.js 18+
+- TypeScript 5.0+ (recommended)
+- A validation library: Zod, ArkType, Effect, or Valibot
+
+## Planned Installation
+
+```bash
+# Install runtime package
+bun add @xschemadev/runtime
+
+# Install your preferred adapter
+bun add zod
+```
+
+## Planned Usage
+
+### Basic Conversion
+
+```typescript
+import { convert } from "@xschemadev/runtime";
+import type { z } from "zod";
+
+// Your JSON Schema (from API, file, or any source)
+const userSchema = {
+  type: "object",
+  properties: {
+    id: { type: "integer" },
+    name: { type: "string" },
+    email: { type: "string", format: "email" }
+  },
+  required: ["id", "name", "email"]
+};
+
+// Convert to Zod schema at runtime
+const User = convert<z.ZodType>(userSchema, { adapter: "zod" });
+
+// Use it
+const result = User.safeParse({
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+});
+
+if (result.success) {
+  console.log(result.data); // { id: 1, name: "Alice", email: "alice@example.com" }
+}
+```
+
+### With Schema Fetching
+
+```typescript
+import { convert } from "@xschemadev/runtime";
+
+async function validateUser(data: unknown) {
+  // Fetch schema from registry
+  const schema = await fetch("https://api.example.com/schemas/user")
+    .then(r => r.json());
+  
+  // Convert and validate
+  const User = convert(schema, { adapter: "zod" });
+  return User.safeParse(data);
+}
+```
+
+### With Caching
+
+```typescript
+import { createRuntime } from "@xschemadev/runtime";
+
+const runtime = createRuntime({
+  adapter: "zod",
+  cache: true
+});
+
+// First call converts and caches
+const User = runtime.convert(userSchema);
+
+// Second call returns cached version
+const UserAgain = runtime.convert(userSchema);
+```
+
+## Type Safety
+
+Runtime mode provides limited type inference compared to build-time generation:
+
+```typescript
+// Build-time (full types)
+import { schemas } from "./.xschema/xschema.gen";
+const User = schemas.user.User;
+type User = z.infer<typeof User>; // Full type
+
+// Runtime (generic types)
+const User = convert(schema, { adapter: "zod" });
+type User = z.infer<typeof User>; // unknown or generic
+```
+
+For full TypeScript inference, use [Framework mode](/docs/getting-started/typescript).
+
+## Current Status
+
+Runtime mode is in development. Use Framework mode for production applications.
+
+<Cards>
+  <Card
+    title="Framework Mode"
+    description="Full TypeScript types with build-time generation"
+    href="/docs/getting-started/typescript"
+    icon="Rocket"
+  />
+  <Card
+    title="Runtime Overview"
+    description="Learn more about runtime mode"
+    href="/docs/runtime"
+    icon="Zap"
+  />
+</Cards>
