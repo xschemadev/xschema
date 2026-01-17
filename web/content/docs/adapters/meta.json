@@ -2,5 +2,15 @@
   "root": true,
   "title": "Adapters",
   "description": "Validation library adapters and their compliance",
-  "icon": "Puzzle"
+  "icon": "Puzzle",
+  "pages": [
+    "index",
+    "---TypeScript---",
+    "zod",
+    "arktype",
+    "effect",
+    "valibot",
+    "---Development---",
+    "building-adapters"
+  ]
 }

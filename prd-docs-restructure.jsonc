@@ -363,8 +363,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated meta.json files for (framework), cli, adapters, and compliance sections with pages arrays and section separators. Framework has 'Getting Started', 'Language Reference', 'Help' sections. CLI has 'Commands' section. Adapters has 'TypeScript' and 'Development' sections. Runtime section kept minimal (no content yet). Build passes with 26 pages prerendered."
     },
     {
       "id": "US-023",
