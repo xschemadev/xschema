@@ -16,7 +16,7 @@
         "Use content from existing `getting-started/typescript.mdx` as base",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

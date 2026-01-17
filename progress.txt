@@ -1,0 +1,24 @@
+# Ralph Progress Log
+Started: Sat Jan 17 11:52:30 PM CET 2026
+---
+
+## Codebase Patterns
+
+- **Tabs pattern**: Use `<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>` with nested `<Tab value="x">` for package manager selection
+- **Import fumadocs components**: `import { Tabs, Tab } from "fumadocs-ui/components/tabs"`
+- **Typecheck command**: `bun run types:check` from web/ directory
+
+---
+
+## 2026-01-18 00:07 - Create TypeScript page with setup content
+- Created `web/content/docs/(framework)/typescript.mdx` at root level (not in subfolder)
+- Added frontmatter with title, description, icon (FileCode)
+- Included Prerequisites, Installation (with Tabs), Config file creation, Run generator (with Tabs), What's generated sections
+- Based content on existing `getting-started/typescript.mdx`
+- Typecheck passes
+- Files changed: `web/content/docs/(framework)/typescript.mdx` (new)
+- **Learnings for future iterations:**
+  - The Tabs component uses `groupId="pm"` to sync tab selection across all instances on the page
+  - Existing `getting-started/typescript.mdx` had bash blocks with multiple commands; converted to proper Tabs with single commands per tab
+  - yarn uses `yarn dlx` for executing package binaries (not `yarn exec`)
+---
