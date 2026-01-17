@@ -12,6 +12,7 @@ import {
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Mermaid } from "@/components/mdx/mermaid";
 import { baseOptions } from "@/lib/layout.shared";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
 
@@ -53,6 +54,7 @@ const clientLoader = browserCollections.docs.createClientLoader({
               Accordions,
               Tab,
               Tabs,
+              Mermaid,
             }}
           />
         </DocsBody>
