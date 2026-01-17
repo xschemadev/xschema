@@ -665,3 +665,28 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Steps/Step components from fumadocs-ui/components/steps for numbered guides
   - Cards with icons work well for "Next steps" sections
 ---
+
+## 2026-01-17 - US-007 (PRD: docs-restructure)
+- Created consolidated Configuration reference page at `web/content/docs/(framework)/configuration.mdx`
+- Content includes:
+  - Config file structure with TypeScript/Python tabs
+  - `$schema` requirement with Schema URL reference table (TS + Python coming soon)
+  - Namespace section: default behavior, explicit override, multiple config files, accessing schemas by namespace
+  - Schemas array: required fields table, optional fields table
+  - Source types: file (local), url (remote with retries/caching), json (inline)
+  - Headers and environment variables: substitution syntax, .env auto-loading, --env-file flag
+  - Adapters: TypeScript adapters table (Zod, ArkType, Effect, Valibot with peer deps), Python adapters (Pydantic coming soon)
+  - Using multiple adapters example
+  - Complete example with TypeScript/Python tabs
+  - Next steps Cards linking to client, CLI, adapters, troubleshooting
+- Removed old configuration.mdx files (root + typescript/framework) to prevent fumadocs duplicate slug error
+- Files changed:
+  - Created: `web/content/docs/(framework)/configuration.mdx`
+  - Removed: `web/content/docs/configuration.mdx` (content consolidated)
+  - Removed: `web/content/docs/typescript/framework/configuration.mdx` (content consolidated)
+- **Learnings for future iterations:**
+  - fumadocs throws "Duplicated slugs" error when multiple files resolve to same route
+  - Old files must be removed when creating consolidated replacements, not just left for cleanup
+  - Tabs component with groupId="language" keeps TypeScript/Python selection in sync across page
+  - Python examples should use Callout type="info" with "coming soon" message
+---

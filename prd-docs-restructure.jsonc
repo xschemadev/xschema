@@ -114,8 +114,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created (framework)/configuration.mdx with complete config reference. Covers: $schema with language URL reference table, namespace (default/override/multiple files), schemas array (required/optional fields), source types (file/url/json), headers and env var substitution, adapters (TypeScript table + Python coming soon), using multiple adapters. TypeScript examples throughout with Python tabs marked as coming soon. Removed old configuration.mdx files to prevent duplicate slug error."
     },
     {
       "id": "US-008",

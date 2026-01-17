@@ -1,0 +1,461 @@
+---
+title: Configuration Reference
+description: Complete reference for xschema config files
+icon: Settings
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Card, Cards } from "fumadocs-ui/components/card";
+
+This page documents all options for xschema config files.
+
+## Config file structure
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```jsonc title="user.xschema.jsonc"
+    {
+      "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+      "namespace": "optional-override",
+      "schemas": [
+        {
+          "id": "SchemaName",
+          "sourceType": "file" | "url" | "json",
+          "source": "...",
+          "adapter": "@xschemadev/zod",
+          "headers": { ... }
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab value="Python">
+    <Callout type="info">
+      Python support is coming soon. The config format will be identical.
+    </Callout>
+    ```jsonc title="user.xschema.jsonc"
+    {
+      "$schema": "https://xschema.dev/schemas/python.jsonc",
+      "namespace": "optional-override",
+      "schemas": [
+        {
+          "id": "SchemaName",
+          "sourceType": "file" | "url" | "json",
+          "source": "...",
+          "adapter": "@xschemadev/pydantic"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Required: `$schema`
+
+The `$schema` URL is **required** - xschema uses it to discover config files in your project and determine the target language.
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```jsonc
+    {
+      "$schema": "https://xschema.dev/schemas/typescript.jsonc"
+    }
+    ```
+  </Tab>
+  <Tab value="Python">
+    ```jsonc
+    {
+      "$schema": "https://xschema.dev/schemas/python.jsonc"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Without this URL, xschema won't recognize the file as a config file and will skip it.
+
+### Schema URL reference
+
+| Language | URL |
+|----------|-----|
+| TypeScript | `https://xschema.dev/schemas/typescript.jsonc` |
+| Python | `https://xschema.dev/schemas/python.jsonc` (coming soon) |
+
+## Namespace
+
+The namespace groups related schemas together. It defaults to the filename (without extension).
+
+### Default behavior
+
+| Filename | Namespace |
+|----------|-----------|
+| `user.xschema.jsonc` | `user` |
+| `api.xschema.json` | `api` |
+| `models.jsonc` | `models` |
+
+### Explicit override
+
+Override the default with the `namespace` field:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "namespace": "my-custom-namespace",
+  "schemas": [...]
+}
+```
+
+### Multiple config files
+
+You can have multiple config files in your project:
+
+```
+project/
+  user.xschema.jsonc      # namespace: user
+  api.xschema.jsonc       # namespace: api
+  subdir/
+    models.xschema.jsonc  # namespace: models
+```
+
+All are merged into a single output. Duplicate IDs within the same namespace cause an error:
+
+```
+duplicate schema ID "User" in namespace "user": defined in both user.xschema.jsonc and models.xschema.jsonc
+```
+
+### Accessing schemas by namespace
+
+Schemas are accessed as `namespace:id`:
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```typescript
+    import { createXSchemaClient } from "@xschemadev/client";
+    import { schemas } from "./.xschema/xschema.gen";
+
+    const xschema = createXSchemaClient({ schemas });
+
+    // Full namespace:id syntax
+    const userSchema = xschema("user:User");
+    const invoiceSchema = xschema("billing:Invoice");
+
+    // With defaultNamespace, you can omit it
+    const client = createXSchemaClient({ schemas, defaultNamespace: "user" });
+    client("User");  // same as client("user:User")
+    ```
+  </Tab>
+  <Tab value="Python">
+    <Callout type="info">Python client coming soon.</Callout>
+    ```python
+    from xschema import create_client
+    from .xschema import schemas
+
+    xschema = create_client(schemas)
+
+    # Full namespace:id syntax
+    User = xschema("user:User")
+    Invoice = xschema("billing:Invoice")
+
+    # With default_namespace, you can omit it
+    client = create_client(schemas, default_namespace="user")
+    client("User")  # same as client("user:User")
+    ```
+  </Tab>
+</Tabs>
+
+## Schemas array
+
+The `schemas` array defines each schema to generate.
+
+### Required fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier within the namespace |
+| `sourceType` | `"file"` \| `"url"` \| `"json"` | How to retrieve the schema |
+| `source` | string \| object | The schema source (format depends on sourceType) |
+| `adapter` | string | Adapter package name (e.g., `"@xschemadev/zod"`) |
+
+### Optional fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `headers` | object | HTTP headers for URL sources (supports `${VAR}` syntax) |
+
+## Source types
+
+### `file` - Local file
+
+Load a JSON Schema from a file path relative to the config file:
+
+```jsonc
+{
+  "id": "User",
+  "sourceType": "file",
+  "source": "./schemas/user.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+<Callout>
+File paths are always relative to the config file's directory, not the current working directory.
+</Callout>
+
+### `url` - Remote URL
+
+Fetch a JSON Schema from a URL:
+
+```jsonc
+{
+  "id": "TSConfig",
+  "sourceType": "url",
+  "source": "https://json.schemastore.org/tsconfig.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+URL sources support:
+- Automatic retries (3 attempts by default)
+- Caching to avoid redundant fetches
+- Custom headers (see below)
+
+### `json` - Inline schema
+
+Embed the JSON Schema directly in the config file:
+
+```jsonc
+{
+  "id": "Fruit",
+  "sourceType": "json",
+  "source": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "color": { "type": "string" }
+    },
+    "required": ["name"]
+  },
+  "adapter": "@xschemadev/zod"
+}
+```
+
+Inline schemas are useful for simple schemas or when you want everything in one file.
+
+## Headers and environment variables
+
+For URL sources, you can specify HTTP headers:
+
+```jsonc
+{
+  "id": "PrivateSchema",
+  "sourceType": "url",
+  "source": "https://api.example.com/schemas/user",
+  "adapter": "@xschemadev/zod",
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}",
+    "X-Api-Key": "${API_KEY}"
+  }
+}
+```
+
+### Environment variable substitution
+
+Header values support `${VAR}` syntax for environment variables:
+
+1. Variables are read from the environment
+2. xschema auto-loads `.env` files in the project root
+3. Use `--env-file` to specify a custom env file
+
+```bash
+# Uses .env in project root
+xschema generate
+
+# Uses custom env file
+xschema generate --env-file .env.production
+```
+
+If a referenced variable is missing:
+
+```
+missing env var: API_TOKEN. use --env-file to specify env file
+```
+
+<Callout type="warn">
+Headers are only allowed for `sourceType: "url"`. Using headers with `file` or `json` sources causes an error:
+```
+headers are only allowed for sourceType "url"
+```
+</Callout>
+
+## Adapters
+
+The `adapter` field specifies which validation library to generate code for.
+
+### TypeScript adapters
+
+| Adapter | Package | Peer Dependency |
+|---------|---------|-----------------|
+| Zod | `@xschemadev/zod` | `zod ^3.0.0` |
+| ArkType | `@xschemadev/arktype` | `arktype ^2.0.0` |
+| Effect | `@xschemadev/effect` | `effect ^3.0.0` |
+| Valibot | `@xschemadev/valibot` | `valibot ^0.42.0` |
+
+### Python adapters
+
+<Callout type="info">
+Python adapters are coming soon.
+</Callout>
+
+| Adapter | Package | Peer Dependency |
+|---------|---------|-----------------|
+| Pydantic | `@xschemadev/pydantic` | `pydantic ^2.0` |
+
+### Using multiple adapters
+
+You can use different adapters for different schemas in the same config file:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "UserZod",
+      "sourceType": "file",
+      "source": "./user.json",
+      "adapter": "@xschemadev/zod"
+    },
+    {
+      "id": "UserArkType",
+      "sourceType": "file",
+      "source": "./user.json",
+      "adapter": "@xschemadev/arktype"
+    }
+  ]
+}
+```
+
+## Complete example
+
+<Tabs groupId="language" items={["TypeScript", "Python"]}>
+  <Tab value="TypeScript">
+    ```jsonc title="user.xschema.jsonc"
+    {
+      // The $schema URL is required for xschema to discover this file
+      "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+
+      // Optional: override the namespace (defaults to "user" from filename)
+      // "namespace": "custom",
+
+      "schemas": [
+        // Local file source
+        {
+          "id": "Profile",
+          "sourceType": "file",
+          "source": "./schemas/profile.json",
+          "adapter": "@xschemadev/zod"
+        },
+
+        // Remote URL source
+        {
+          "id": "TSConfig",
+          "sourceType": "url",
+          "source": "https://json.schemastore.org/tsconfig.json",
+          "adapter": "@xschemadev/zod"
+        },
+
+        // Remote URL with auth headers
+        {
+          "id": "PrivateAPI",
+          "sourceType": "url",
+          "source": "https://api.internal.com/schema",
+          "adapter": "@xschemadev/arktype",
+          "headers": {
+            "Authorization": "Bearer ${API_TOKEN}"
+          }
+        },
+
+        // Inline JSON schema
+        {
+          "id": "Status",
+          "sourceType": "json",
+          "source": {
+            "type": "string",
+            "enum": ["active", "inactive", "pending"]
+          },
+          "adapter": "@xschemadev/zod"
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab value="Python">
+    <Callout type="info">
+      Python support is coming soon. The config format will be identical.
+    </Callout>
+    ```jsonc title="user.xschema.jsonc"
+    {
+      "$schema": "https://xschema.dev/schemas/python.jsonc",
+      "schemas": [
+        // Local file source
+        {
+          "id": "Profile",
+          "sourceType": "file",
+          "source": "./schemas/profile.json",
+          "adapter": "@xschemadev/pydantic"
+        },
+
+        // Remote URL source with auth
+        {
+          "id": "PrivateAPI",
+          "sourceType": "url",
+          "source": "https://api.internal.com/schema",
+          "adapter": "@xschemadev/pydantic",
+          "headers": {
+            "Authorization": "Bearer ${API_TOKEN}"
+          }
+        },
+
+        // Inline JSON schema
+        {
+          "id": "Status",
+          "sourceType": "json",
+          "source": {
+            "type": "string",
+            "enum": ["active", "inactive", "pending"]
+          },
+          "adapter": "@xschemadev/pydantic"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Next steps
+
+<Cards>
+  <Card
+    icon="Code"
+    title="Client Reference"
+    description="Using generated schemas in TypeScript"
+    href="/docs/typescript/client"
+  />
+  <Card
+    icon="Terminal"
+    title="CLI Reference"
+    description="All command flags and options"
+    href="/docs/cli"
+  />
+  <Card
+    icon="Puzzle"
+    title="Compare Adapters"
+    description="Choose the right adapter for your project"
+    href="/docs/adapters"
+  />
+  <Card
+    icon="AlertTriangle"
+    title="Troubleshooting"
+    description="Common errors and how to fix them"
+    href="/docs/troubleshooting"
+  />
+</Cards>
