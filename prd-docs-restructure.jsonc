@@ -205,8 +205,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created cli/index.mdx with overview, installation, commands table, quick start, pipeline explanation, and next steps. Created cli/generate.mdx with all flags table, examples (basic, debugging, performance, env vars, multi-lang), common workflows (CI/CD, monorepo, private registries), config file discovery, runner detection, JSON Schema drafts, output structure, and exit codes. Both pages verified in browser."
     },
     {
       "id": "US-013",

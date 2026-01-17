@@ -611,3 +611,27 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Cards component works well for "when to use" sections with icons
   - External links to GitHub repos (json-schema-to-zod, typebox) provide context for comparisons
 ---
+
+## 2026-01-17 - US-012 (PRD: docs-restructure)
+- Created CLI section with overview and generate command reference
+- Files created:
+  - `web/content/docs/cli/index.mdx` - CLI overview with installation, commands table, quick start, pipeline explanation
+  - `web/content/docs/cli/generate.mdx` - Complete generate command reference
+- Generate page includes:
+  - All flags table with descriptions (--project, --output, --lang, --verbose, --dry-run, --concurrency, --env-file)
+  - Examples: basic usage, debugging, performance, environment variables, multi-language
+  - Common workflows: CI/CD pipeline, monorepo, private schema registries
+  - Config file discovery (git-based vs directory walk)
+  - Runner detection table (packageManager field priority, lockfile detection)
+  - JSON Schema drafts table with meta-schema URIs
+  - Legacy syntax transformation table
+  - Output structure (.xschema/ directory)
+  - Exit codes
+- Both pages verified in browser, typecheck passes
+- **Learnings for future iterations:**
+  - CLI section already had meta.json with `root: true` from US-002
+  - Old cli.mdx at root level still exists (US-023 cleanup will remove it)
+  - Commands table in index links to individual command pages
+  - Concurrency default is `min(8, num_cpus)` not just `8`
+  - packageManager field in package.json takes priority over lockfile detection
+---

@@ -1,0 +1,124 @@
+---
+title: CLI Overview
+description: Install and use the xschema command-line interface
+icon: Terminal
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+The xschema CLI converts JSON Schema files into native validators for your target language. It handles schema discovery, fetching, bundling, and code generation.
+
+## Installation
+
+Install the CLI globally:
+
+```bash
+# Using npm
+npm install -g xschema
+
+# Using bun
+bun install -g xschema
+
+# Using pnpm
+pnpm install -g xschema
+```
+
+Or run directly with a package runner:
+
+```bash
+# Using npx
+npx xschema generate
+
+# Using bunx
+bunx xschema generate
+
+# Using pnpm exec
+pnpm exec xschema generate
+```
+
+## Version
+
+Check the installed version:
+
+```bash
+xschema --version
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| [`generate`](/docs/cli/generate) | Parse config files, convert schemas, output native validators |
+| [`compliance`](/docs/cli/compliance) | Run JSON Schema Test Suite compliance tests for adapters |
+
+## Quick Start
+
+1. Create a config file with the `$schema` URL:
+
+```json title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/ts.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "source": "./user.schema.json",
+      "adapter": "zod"
+    }
+  ]
+}
+```
+
+2. Run generate:
+
+```bash
+xschema generate
+```
+
+3. The CLI will:
+   - Discover all `*.xschema.jsonc` config files
+   - Fetch schemas from files, URLs, or inline JSON
+   - Bundle external `$ref` references
+   - Generate native validators via adapters
+   - Write output to `.xschema/`
+
+## How It Works
+
+The CLI runs a 5-stage pipeline:
+
+1. **Parse** - Discovers config files and extracts schema declarations
+2. **Retrieve** - Fetches schemas from files, URLs, or inline JSON
+3. **Process** - Validates, crawls external refs, and bundles schemas
+4. **Generate** - Calls adapter CLIs to convert schemas to native code
+5. **Inject** - Writes generated code to output directory
+
+For architecture details, see [What is XSchema](/docs/what-is-xschema).
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="Generate Command"
+    description="Full reference for xschema generate"
+    href="/docs/cli/generate"
+    icon="Play"
+  />
+  <Card
+    title="Compliance Command"
+    description="Run adapter compliance tests"
+    href="/docs/cli/compliance"
+    icon="ShieldCheck"
+  />
+  <Card
+    title="Configuration"
+    description="Config file format reference"
+    href="/docs/configuration"
+    icon="Settings"
+  />
+  <Card
+    title="Troubleshooting"
+    description="Common errors and fixes"
+    href="/docs/troubleshooting"
+    icon="Bug"
+  />
+</Cards>
