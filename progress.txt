@@ -711,3 +711,25 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Adding Cards sections creates good navigation experience
   - Links to future pages (/docs/cli/compliance) can be added before page exists
 ---
+
+## 2026-01-17 - US-008 (PRD: docs-restructure)
+- Created TypeScript client reference page at `web/content/docs/(framework)/typescript/client.mdx`
+- Content includes:
+  - createXSchemaClient function with options table
+  - Schema lookup with namespace:id format and defaultNamespace shorthand
+  - TypeScript integration (autocomplete, compile-time errors)
+  - Runtime error handling
+  - XSchemaType helper for type extraction
+  - Adapter-specific usage examples for Zod, ArkType, Effect, Valibot
+  - Schema types explained (schema+type, type-only, schema-only)
+  - Complete example with API handler pattern
+  - Next steps Cards linking to configuration, adapters, troubleshooting
+- Also created `web/content/docs/(framework)/typescript/meta.json` for navigation ordering
+- All examples use consistent API pattern: `createXSchemaClient({ schemas, defaultNamespace })`
+- Typecheck passes
+- Verified in browser: page renders correctly with sidebar showing Typescript > Client Reference
+- **Learnings for future iterations:**
+  - Creating a new subfolder requires meta.json with pages array
+  - Links should point to new consolidated paths (/docs/configuration, /docs/adapters, /docs/troubleshooting)
+  - Page is accessible at /docs/typescript/client (not /docs/(framework)/typescript/client)
+---

@@ -1,0 +1,280 @@
+---
+title: Client Reference
+description: Using createXSchemaClient and XSchemaType for type-safe schema lookups
+icon: Code
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+The xschema client provides type-safe runtime schema lookups with full TypeScript autocompletion.
+
+## createXSchemaClient
+
+Creates a function for looking up schemas by key with compile-time type safety.
+
+```typescript
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user", // optional
+});
+```
+
+### Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `schemas` | `Record<string, unknown>` | The generated schemas object from `.xschema/xschema.gen` |
+| `defaultNamespace` | `string` | Optional namespace to use when looking up schemas without a prefix |
+
+### Schema lookup
+
+Look up schemas using the `namespace:id` format:
+
+```typescript
+// Full key format
+const profileSchema = xschema("user:Profile");
+const configSchema = xschema("app:Config");
+```
+
+With `defaultNamespace` set, you can omit the namespace for that namespace's schemas:
+
+```typescript
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Shorthand - resolves to "user:Profile"
+const profile = xschema("Profile");
+
+// Still need full key for other namespaces
+const config = xschema("app:Config");
+```
+
+### TypeScript integration
+
+The client provides full autocomplete for all valid schema keys:
+
+```typescript
+const schema = xschema("use"); // TypeScript shows: "user:Profile" | "user:Calendar" | ...
+```
+
+Invalid keys cause compile-time errors:
+
+```typescript
+const schema = xschema("nonexistent"); // Type error!
+```
+
+### Runtime errors
+
+If a schema key doesn't exist at runtime, an error is thrown:
+
+```typescript
+// Error: Unknown schema: missing:Key. Run `xschema generate`.
+const schema = xschema("missing:Key");
+```
+
+## XSchemaType
+
+Extract TypeScript types from your schemas by key:
+
+```typescript
+import type { XSchemaType } from "@xschemadev/client";
+
+type Profile = XSchemaType<"user:Profile">;
+type Config = XSchemaType<"app:Config">;
+```
+
+<Callout>
+`XSchemaType` only accepts full `namespace:id` keys for explicitness. Use the client for shorthand lookups.
+</Callout>
+
+### Using in function signatures
+
+```typescript
+import type { XSchemaType } from "@xschemadev/client";
+
+type Profile = XSchemaType<"user:Profile">;
+
+function createUser(data: Profile): void {
+  console.log(data.email); // fully typed
+}
+
+function validateAndCreate(input: unknown): Profile {
+  const schema = xschema("user:Profile");
+  return schema.parse(input);
+}
+```
+
+## Adapter-specific usage
+
+The schema returned by the client is the native validator from your chosen adapter. Usage varies by adapter.
+
+### Zod
+
+```typescript
+const schema = xschema("user:Profile");
+
+// Parse (throws on error)
+const user = schema.parse(data);
+
+// Safe parse (returns result object)
+const result = schema.safeParse(data);
+if (result.success) {
+  console.log(result.data);
+} else {
+  console.error(result.error.issues);
+}
+```
+
+### ArkType
+
+```typescript
+const schema = xschema("user:Profile");
+
+// Direct call returns data or problems
+const result = schema(data);
+
+if (result instanceof type.errors) {
+  console.error(result.summary);
+} else {
+  console.log(result); // validated data
+}
+```
+
+### Effect Schema
+
+```typescript
+import { Schema } from "effect";
+
+const schema = xschema("user:Profile");
+
+// Decode with Either result
+const result = Schema.decodeUnknownEither(schema)(data);
+
+if (result._tag === "Right") {
+  console.log(result.right);
+} else {
+  console.error(result.left);
+}
+```
+
+### Valibot
+
+```typescript
+import * as v from "valibot";
+
+const schema = xschema("user:Profile");
+
+// Safe parse
+const result = v.safeParse(schema, data);
+
+if (result.success) {
+  console.log(result.output);
+} else {
+  console.error(result.issues);
+}
+```
+
+## Schema types explained
+
+xschema adapters can generate three kinds of outputs:
+
+### Schema + Type (most common)
+
+Adapters like Zod, ArkType, Effect, and Valibot generate both runtime validators and types. Both `xschema()` and `XSchemaType<>` work:
+
+```typescript
+const schema = xschema("user:Profile"); // runtime validator
+type Profile = XSchemaType<"user:Profile">; // extracted type
+```
+
+### Type-only (future)
+
+Future adapters may generate only types without runtime validators:
+
+```typescript
+// Only XSchemaType works
+type Profile = XSchemaType<"user:Profile">;
+
+// This would be a compile error - no runtime validator
+// const schema = xschema("user:Profile");
+```
+
+### Schema-only
+
+Some adapters may generate validators that don't expose inferred types. `XSchemaType` returns `typeof` the schema:
+
+```typescript
+const schema = xschema("user:Profile");
+type Profile = XSchemaType<"user:Profile">; // typeof schema
+```
+
+## Complete example
+
+```typescript
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+
+// Create client with default namespace
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Extract types
+type Profile = XSchemaType<"user:Profile">;
+type Config = XSchemaType<"app:Config">;
+
+// API handler example
+function handleCreateUser(body: unknown): Profile {
+  const profileSchema = xschema("Profile");
+  return profileSchema.parse(body);
+}
+
+// With error handling
+function safeValidate(body: unknown): Profile | null {
+  const profileSchema = xschema("Profile");
+  const result = profileSchema.safeParse(body);
+  
+  if (!result.success) {
+    console.error("Validation failed:", result.error.issues);
+    return null;
+  }
+  
+  return result.data;
+}
+
+// Use in service layer
+function createUserService(profile: Profile) {
+  // profile is fully typed with id, name, email, etc.
+  console.log(`Creating user: ${profile.email}`);
+}
+```
+
+## Next steps
+
+<Cards>
+  <Card
+    title="Configuration"
+    icon="Settings"
+    href="/docs/configuration"
+    description="Config file options and source types"
+  />
+  <Card
+    title="Adapters"
+    icon="Puzzle"
+    href="/docs/adapters"
+    description="Compare validator libraries"
+  />
+  <Card
+    title="Troubleshooting"
+    icon="CircleHelp"
+    href="/docs/troubleshooting"
+    description="Common errors and solutions"
+  />
+</Cards>

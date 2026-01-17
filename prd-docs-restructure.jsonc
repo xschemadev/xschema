@@ -133,8 +133,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created (framework)/typescript/client.mdx with createXSchemaClient API, XSchemaType utility, adapter-specific usage examples for Zod/ArkType/Effect/Valibot, schema types explained, and complete example. Created typescript/meta.json for navigation. All examples use consistent API pattern. Verified in browser."
     },
     {
       "id": "US-009",
