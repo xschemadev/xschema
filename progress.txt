@@ -590,3 +590,24 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Compliance pages need explicit imports for Tabs/Tab/Accordions/Accordion from fumadocs
   - All 4 adapters (Zod, ArkType, Effect, Valibot) now migrated to /docs/adapters/ section
 ---
+
+## 2026-01-17 - US-005 (PRD: docs-restructure)
+- Created "What is XSchema" deep-dive page at `web/content/docs/(framework)/what-is-xschema.mdx`
+- Content includes:
+  - Philosophy section with 4 principles: compliance-first, build-time generation, do the hard work upfront, transparency over magic
+  - Architecture section with Mermaid flowchart showing 5-stage pipeline (Parse, Retrieve, Process, Generate, Inject)
+  - Mermaid diagram includes subgraphs for Input, Pipeline, Process Stage (4 phases), Output
+  - "What each stage does" table with stage responsibilities
+  - "Why this matters" explaining preprocessing benefits
+  - Comparison section: vs json-schema-to-zod (feature table), vs TypeBox (feature table), vs Zod directly (workflow comparison)
+  - "When to use xschema" Cards section with 4 use cases
+  - "When not to use xschema" bullet list with alternatives
+  - Next steps Cards linking to getting-started, adapters, compliance
+- Typecheck passes, verified Mermaid diagram renders correctly in browser with dark theme
+- **Learnings for future iterations:**
+  - Mermaid flowchart LR with subgraphs works well for pipeline visualization
+  - Mermaid supports `direction TB` inside subgraphs for vertical flow
+  - Dotted lines (`-.->`) useful for showing relationships between stages and sub-processes
+  - Cards component works well for "when to use" sections with icons
+  - External links to GitHub repos (json-schema-to-zod, typebox) provide context for comparisons
+---
