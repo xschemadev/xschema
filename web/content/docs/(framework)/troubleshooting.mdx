@@ -1,9 +1,11 @@
 ---
 title: Troubleshooting
 description: Common error messages and how to fix them
+icon: CircleHelp
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
 
 ## CLI Errors
 
@@ -129,6 +131,8 @@ xschema generate --env-file .env.local
 **Fix:** Currently supported languages:
 - `typescript` (detected from `ts.jsonc` or `typescript.jsonc` schema URLs)
 
+Python support is planned.
+
 ---
 
 ### Runner not found (bun/pnpm/npx)
@@ -176,27 +180,41 @@ xschema generate --verbose
 
 ---
 
-## Compliance Runner Errors
+## Client Errors
 
-<Callout type="info">
-These errors apply when running `xschema compliance` for adapter development.
-</Callout>
+### "Unknown schema: X. Run `xschema generate`."
 
-### "adapter CLI not found"
+The client tried to access a schema key that doesn't exist in the generated manifest.
 
-**Cause:** The compliance runner couldn't find the adapter's compiled CLI binary.
+**Common causes:**
+1. You haven't run `xschema generate` yet
+2. The schema ID or namespace is misspelled
+3. The schema was removed from the config but the code still references it
 
-**Fix:** Build the adapter first:
+**Fix:**
 
+1. Run generation:
 ```bash
-# From the adapter directory
-bun run build
+xschema generate
 ```
 
-Or specify a custom path:
+2. Check your schema key matches the format `namespace:id`:
+```typescript
+// Config: user.xschema.jsonc with id: "Profile"
+// Correct key: "user:Profile"
 
-```bash
-xschema compliance --adapter-path ./dist/cli.js
+const schema = xschema("user:Profile"); // Correct
+const schema = xschema("Profile");      // Wrong (unless defaultNamespace is "user")
+```
+
+3. With `defaultNamespace`, you can omit the namespace prefix:
+```typescript
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user"
+});
+
+const schema = xschema("Profile"); // Resolves to "user:Profile"
 ```
 
 ---
@@ -225,6 +243,73 @@ xschema compliance --adapter-path ./dist/cli.js
 
 ---
 
+## Compliance Runner Errors
+
+<Callout type="info">
+These errors apply when running `xschema compliance` for adapter development.
+</Callout>
+
+### "adapter CLI not found"
+
+**Cause:** The compliance runner couldn't find the adapter's compiled CLI binary.
+
+**Example error:**
+```
+adapter CLI not found at /path/to/adapter/dist/cli.js
+Make sure the adapter is built
+```
+
+**Fix:** Build the adapter first:
+
+```bash
+# From the adapter directory
+bun run build
+```
+
+---
+
+### "keyword not found"
+
+**Cause:** The keyword filter (`--keyword`) specified a keyword that doesn't exist in the test suite for the given draft.
+
+**Example error:**
+```
+keyword "foobar" not found in draft2020-12 (available: 45 keywords)
+```
+
+**Fix:** Check available keywords by running without the filter, or verify the keyword name against the [JSON Schema specification](https://json-schema.org/specification).
+
+---
+
+### "harness execution failed"
+
+**Cause:** The test harness (which executes generated validators) crashed during execution.
+
+**Common causes:**
+1. Generated code has syntax errors
+2. Missing dependencies
+3. Runtime incompatibility
+
+**Fix:**
+1. Run with `--verbose` to see the full error
+2. Check the adapter's generated code for issues
+3. Ensure all peer dependencies are installed
+
+---
+
+### "test suite not found"
+
+**Cause:** The JSON Schema Test Suite hasn't been downloaded or is corrupted.
+
+**Fix:** The test suite is cached at `~/.cache/xschema/json-schema-test-suite-{version}/`. Try removing this directory to force a fresh download:
+
+```bash
+rm -rf ~/.cache/xschema/json-schema-test-suite-*
+xschema compliance --adapter zod
+```
+
+---
+
 ## Getting More Help
 
 If you encounter an error not listed here:
@@ -232,4 +317,19 @@ If you encounter an error not listed here:
 1. Run with `--verbose` flag for detailed output
 2. Check the [CLI reference](/docs/cli) for command options
 3. Review [adapter compliance](/docs/compliance) for supported features
-4. Open an issue on GitHub with the full error message and reproduction steps
+4. Open an issue on [GitHub](https://github.com/xschemadev/xschema) with the full error message and reproduction steps
+
+<Cards>
+  <Card
+    title="CLI Reference"
+    description="Full command documentation"
+    href="/docs/cli"
+    icon="Terminal"
+  />
+  <Card
+    title="Compliance Reports"
+    description="Adapter feature support"
+    href="/docs/compliance"
+    icon="ShieldCheck"
+  />
+</Cards>

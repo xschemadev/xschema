@@ -756,3 +756,39 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Steps component from fumadocs-ui/components/steps is useful for multi-step processes
   - Build prerendering confirms page is accessible
 ---
+
+## 2026-01-17 - US-009 (PRD: docs-restructure)
+- Verified troubleshooting page already exists at `web/content/docs/(framework)/troubleshooting.mdx`
+- Content already complete from previous work (was created as part of US-008 dependency)
+- Page has all required sections: CLI errors, Client errors, Schema validation errors, Compliance runner errors
+- Each error has: message, cause, fix format
+- Typecheck passes, page renders at /docs/troubleshooting (HTTP 200)
+- Marked as passes: true (no changes needed, just verification)
+- **Learnings for future iterations:**
+  - Some stories may be completed as dependencies of other stories
+  - Always verify existing content before assuming work is needed
+  - Check git log to understand what was done previously
+---
+
+## 2026-01-17 - US-019 (PRD: docs-restructure)
+- Created Building Adapters guide at `web/content/docs/adapters/building-adapters.mdx`
+- Content adapted from `internals/adapters.mdx` with additions:
+  - Full adapter protocol documentation (stdin/stdout JSON)
+  - ConvertInput and ConvertResult interface definitions
+  - @xschemadev/core package exports and usage
+  - All 18 IR node kinds with descriptions
+  - Constraint types (StringConstraints, NumberConstraints, ArrayConstraints)
+  - Step-by-step guide using Steps component (convert function, renderer, CLI entry, package.json)
+  - Key utilities (escapeString, isPrimitive, hasPrototypeProperties, sortedStringify)
+  - Important notes (pre-bundled schemas, normalized drafts, forbidden keywords)
+  - **NEW**: Testing with Compliance Suite section with workflow steps
+  - Zod adapter as reference implementation
+  - Updated Next Steps cards with new paths
+- Replaced placeholder that existed at this path
+- Typecheck passes, page renders at /docs/adapters/building-adapters (HTTP 200)
+- **Learnings for future iterations:**
+  - Adapter pages should link to /docs/cli/compliance for command reference
+  - Compliance workflow is: build -> test single keyword -> iterate -> full report
+  - Coverage formula: Passed / (Total - Unsupported) * 100
+  - --dev-report creates compliance/results/{draft}.json and compliance/REPORT.md
+---

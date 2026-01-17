@@ -152,8 +152,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Troubleshooting page already existed at (framework)/troubleshooting.mdx with complete content from previous work. Verified typecheck passes and page renders at /docs/troubleshooting."
     },
     {
       "id": "US-010",
@@ -314,8 +314,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/building-adapters.mdx with full adapter development guide. Covers protocol (stdin/stdout JSON), input/output types (ConvertInput, ConvertResult), @xschemadev/core package (createAdapterCLI, parse, utilities), IR node types (all 18 kinds), step-by-step guide with Steps component, testing with compliance suite (new section with workflow), and Zod adapter as reference. Links updated to new paths (/docs/cli/compliance, /docs/compliance/unsupported-features, /docs/compliance). Typecheck passes, page renders at /docs/adapters/building-adapters."
     },
     {
       "id": "US-020",
