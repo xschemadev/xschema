@@ -1,0 +1,401 @@
+{
+  "project": "XSchema Docs",
+  "description": "Restructure documentation into 5 sections with Fumadocs sidebar tabs: Framework, Runtime, CLI, Adapters, Compliance",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create folder structure for 5 documentation sections",
+      "description": "As a developer, I need the folder structure created so content can be added to each section.",
+      "acceptanceCriteria": [
+        "Create content/docs/(framework)/ directory (route group for default section)",
+        "Create content/docs/runtime/ directory",
+        "Create content/docs/cli/ directory",
+        "Create content/docs/adapters/ directory",
+        "Create content/docs/compliance/ directory",
+        "Create content/docs/meta.json with pages array: [\"(framework)\", \"runtime\", \"cli\", \"adapters\", \"compliance\"]",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Create meta.json files for each section with root: true",
+      "description": "As a developer, I need each section configured as a sidebar tab.",
+      "acceptanceCriteria": [
+        "(framework)/meta.json has root: true, title: \"Framework\", description, icon: \"Layers\"",
+        "runtime/meta.json has root: true, title: \"Runtime\", description, icon: \"Zap\"",
+        "cli/meta.json has root: true, title: \"CLI\", description, icon: \"Terminal\"",
+        "adapters/meta.json has root: true, title: \"Adapters\", description, icon: \"Puzzle\"",
+        "compliance/meta.json has root: true, title: \"Compliance\", description, icon: \"ShieldCheck\"",
+        "Sidebar shows 5 tabs when running dev server",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Set up Mermaid diagram support",
+      "description": "As a documentation author, I need Mermaid rendering so diagrams work in MDX.",
+      "acceptanceCriteria": [
+        "Add remarkMdxMermaid plugin to source.config.ts mdxOptions.remarkPlugins",
+        "Create src/components/mdx/mermaid.tsx as client component using mermaid library",
+        "Register Mermaid component in MDX components (src/routes/docs/$.tsx or equivalent)",
+        "Test with a simple mermaid code block - diagram renders",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Create Framework section landing page",
+      "description": "As a user visiting /docs, I want to see an intro with navigation cards.",
+      "acceptanceCriteria": [
+        "Create (framework)/index.mdx with title \"Introduction\" or \"Quick Start\"",
+        "Page has brief intro explaining what xschema does (2-3 sentences)",
+        "Page has Cards component linking to: Getting Started, What is XSchema, Adapters, CLI, Compliance",
+        "Cards use appropriate Lucide icons",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Create What is XSchema deep-dive page with architecture diagram",
+      "description": "As a user, I want to understand xschema's philosophy and architecture.",
+      "acceptanceCriteria": [
+        "Create (framework)/what-is-xschema.mdx",
+        "Page has Philosophy section explaining why xschema exists and design principles",
+        "Page has Architecture section with Mermaid diagram of 5-stage pipeline (deep dive into internals/architecture.mdx and CLI codebase to create best diagram)",
+        "Page has Comparison section vs alternatives (json-schema-to-zod, typebox)",
+        "Page has When to use / when not to use section",
+        "Content adapted from current internals/index.mdx and internals/architecture.mdx",
+        "Mermaid diagram renders correctly",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Create Getting Started section with language pages",
+      "description": "As a user, I want a getting started guide for my language.",
+      "acceptanceCriteria": [
+        "Create (framework)/getting-started/index.mdx - overview routing to language pages",
+        "Create (framework)/getting-started/typescript.mdx - full TS setup guide",
+        "Create (framework)/getting-started/python.mdx - Coming soon placeholder",
+        "TypeScript guide covers: prerequisites, installation, config file, run generate, use output",
+        "TypeScript guide has working copy-paste code examples",
+        "Content adapted from current typescript/framework/getting-started.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Create consolidated Configuration reference page",
+      "description": "As a user, I want a single authoritative configuration reference.",
+      "acceptanceCriteria": [
+        "Create (framework)/configuration.mdx with complete config reference",
+        "Covers: $schema, namespace, schemas array, source types (file/url/json), headers, env vars",
+        "Includes TypeScript config examples",
+        "Includes Python config examples marked as coming soon",
+        "Has adapter options table for each language",
+        "Content merged from current configuration.mdx and typescript/framework/configuration.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Create TypeScript client reference page",
+      "description": "As a TypeScript user, I want client API documentation.",
+      "acceptanceCriteria": [
+        "Create (framework)/typescript/client.mdx",
+        "Covers createXSchemaClient API and options",
+        "Covers XSchemaType utility type",
+        "Has usage examples for each adapter (Zod, ArkType, Effect, Valibot)",
+        "Explains schema lookup patterns (full key vs default namespace)",
+        "Covers error handling",
+        "All examples use consistent API pattern (not the old Valibot style)",
+        "Content adapted from current typescript/framework/client.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Create consolidated Troubleshooting page",
+      "description": "As a user encountering errors, I want all error messages in one place.",
+      "acceptanceCriteria": [
+        "Create (framework)/troubleshooting.mdx",
+        "Has CLI errors section (config not found, multiple languages, duplicate IDs, headers errors, etc.)",
+        "Has Client errors section (unknown schema error from typescript/framework/troubleshooting.mdx)",
+        "Has Schema validation errors section",
+        "Has Compliance errors section",
+        "Each error has: message, cause, fix",
+        "Organized with clear headings by category",
+        "Content merged from current troubleshooting.mdx and typescript/framework/troubleshooting.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Create FAQ page",
+      "description": "As a user with common questions, I want quick answers.",
+      "acceptanceCriteria": [
+        "Create (framework)/faq.mdx",
+        "Has Q&A for: Which adapter should I use? (links to adapters)",
+        "Has Q&A for: Does xschema support $ref? (explain bundling)",
+        "Has Q&A for: Why is feature X unsupported? (links to compliance)",
+        "Has Q&A for: Can I use xschema with OpenAPI schemas?",
+        "Has Q&A for: How do I migrate from json-schema-to-zod?",
+        "Has Q&A for: Does xschema work at runtime? (Framework vs Runtime)",
+        "Has Q&A for: What JSON Schema drafts are supported?",
+        "Uses collapsible/accordion format for Q&A",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Create Runtime section",
+      "description": "As a user who wants programmatic conversion, I want Runtime documentation.",
+      "acceptanceCriteria": [
+        "Create runtime/index.mdx explaining what runtime mode is, when to use it",
+        "Index page has Coming soon callout for actual implementation",
+        "Index page has brief API preview showing intended usage",
+        "Create runtime/getting-started/typescript.mdx as coming soon placeholder",
+        "Create runtime/getting-started/python.mdx as coming soon placeholder",
+        "Create runtime/api-reference.mdx documenting planned API",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Create CLI section with generate command",
+      "description": "As a user, I want complete generate command documentation.",
+      "acceptanceCriteria": [
+        "Create cli/index.mdx with CLI overview and installation",
+        "Create cli/generate.mdx with complete xschema generate reference",
+        "Generate page has all flags with descriptions in a table",
+        "Generate page has usage examples",
+        "Generate page has common workflows section",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Create CLI compliance command reference",
+      "description": "As a user, I want compliance command documentation.",
+      "acceptanceCriteria": [
+        "Create cli/compliance.mdx with complete xschema compliance reference",
+        "Page has all flags with descriptions in a table",
+        "Page explains how to run against adapters",
+        "Page covers report generation (--dev-report flag)",
+        "Content adapted from current internals/compliance-testing.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Create Adapters section with comparison index",
+      "description": "As a user, I want to compare adapters.",
+      "acceptanceCriteria": [
+        "Create adapters/index.mdx with comparison table",
+        "Table has columns: adapter, peer dep, bundle size, compliance %",
+        "Page has Which to choose guidance section",
+        "Page has links to individual adapter pages",
+        "Content adapted from current typescript/adapters/index.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Move Zod adapter pages to new location",
+      "description": "As a maintainer, I need adapter docs in the new section.",
+      "acceptanceCriteria": [
+        "Create adapters/zod/index.mdx with content from typescript/adapters/zod/index.mdx",
+        "Create adapters/zod/compliance.mdx with content from typescript/adapters/zod/compliance.mdx",
+        "Update any internal links to use new paths",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Move ArkType adapter pages to new location",
+      "description": "As a maintainer, I need adapter docs in the new section.",
+      "acceptanceCriteria": [
+        "Create adapters/arktype/index.mdx with content from typescript/adapters/arktype/index.mdx",
+        "Create adapters/arktype/compliance.mdx with content from typescript/adapters/arktype/compliance.mdx",
+        "Update any internal links to use new paths",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Move Valibot adapter pages to new location",
+      "description": "As a maintainer, I need adapter docs in the new section.",
+      "acceptanceCriteria": [
+        "Create adapters/valibot/index.mdx with content from typescript/adapters/valibot/index.mdx",
+        "Create adapters/valibot/compliance.mdx with content from typescript/adapters/valibot/compliance.mdx",
+        "Fix client API example to use consistent pattern: createXSchemaClient({ schemas, defaultNamespace })",
+        "Fix import to use: import { schemas } from \"./.xschema/xschema.gen\"",
+        "Update any internal links to use new paths",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Move Effect adapter pages to new location",
+      "description": "As a maintainer, I need adapter docs in the new section.",
+      "acceptanceCriteria": [
+        "Create adapters/effect/index.mdx with content from typescript/adapters/effect/index.mdx",
+        "Create adapters/effect/compliance.mdx with content from typescript/adapters/effect/compliance.mdx",
+        "Update any internal links to use new paths",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Create Building Adapters guide",
+      "description": "As a contributor, I want documentation on building new adapters.",
+      "acceptanceCriteria": [
+        "Create adapters/building-adapters.mdx",
+        "Page covers adapter protocol (stdin/stdout JSON format)",
+        "Page covers input/output types (ConvertInput, ConvertResult)",
+        "Page covers using @xschemadev/core (createAdapterCLI, parse, utilities)",
+        "Page covers Intermediate Representation (IR) node types",
+        "Page has step-by-step guide to create new adapter",
+        "Page covers testing with compliance suite",
+        "Content adapted from current internals/adapters.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Create Compliance section index and overview",
+      "description": "As a user, I want to understand the compliance system.",
+      "acceptanceCriteria": [
+        "Create compliance/index.mdx explaining what compliance means",
+        "Page covers JSON Schema Test Suite explanation",
+        "Page covers why compliance matters",
+        "Page explains how to read compliance reports",
+        "Page has links to adapter-specific compliance reports",
+        "Content adapted from current compliance/index.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Move unsupported features page and create how-it-works page",
+      "description": "As a user, I want to understand compliance limitations and internals.",
+      "acceptanceCriteria": [
+        "Create compliance/unsupported-features.mdx with content from current compliance/unsupported-features.mdx",
+        "Create compliance/how-it-works.mdx covering compliance testing internals",
+        "how-it-works page covers: testing pipeline, unsupported feature detection, coverage calculation",
+        "how-it-works content adapted from internals/compliance-testing.mdx and internals/architecture.mdx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Update all meta.json navigation ordering",
+      "description": "As a user, I want logical sidebar navigation in each section.",
+      "acceptanceCriteria": [
+        "(framework)/meta.json pages array has logical order with section separators",
+        "runtime/meta.json pages array has logical order",
+        "cli/meta.json pages array has logical order",
+        "adapters/meta.json pages array has logical order",
+        "compliance/meta.json pages array has logical order",
+        "Section separators (---Name---) used appropriately",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Remove deprecated files from old structure",
+      "description": "As a maintainer, I want to clean up old files.",
+      "acceptanceCriteria": [
+        "Remove content/docs/configuration.mdx (consolidated into framework)",
+        "Remove content/docs/getting-started.mdx (replaced by framework structure)",
+        "Remove content/docs/cli.mdx (moved to cli section)",
+        "Remove content/docs/troubleshooting.mdx (moved to framework)",
+        "Remove content/docs/typescript/ folder entirely (content moved)",
+        "Remove content/docs/internals/ folder entirely (content distributed)",
+        "Remove content/docs/compliance/index.mdx (replaced by new compliance section)",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Verify no broken internal links",
+      "description": "As a maintainer, I want all links to work.",
+      "acceptanceCriteria": [
+        "Run build and check for broken link warnings",
+        "All internal links in new docs point to valid pages",
+        "No 404s when navigating documentation",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
