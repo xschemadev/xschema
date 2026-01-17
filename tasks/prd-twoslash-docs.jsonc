@@ -11,7 +11,7 @@
         "Both schemas are valid JSON Schema draft-2020-12",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

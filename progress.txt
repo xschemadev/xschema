@@ -75,3 +75,17 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Content pages should be at root level (not in subfolders) for cleaner URLs
   - When deleting folders, ensure no other pages reference the old paths (index.mdx had stale links to `/docs/getting-started/typescript` - not part of this task but noted)
 ---
+
+## 2026-01-18 02:30 - Create shared example schemas
+- Created `web/examples/schemas/` directory
+- Created `web/examples/schemas/user.schema.json`:
+  - id (string, required), name (string, optional), email (string format email, required)
+- Created `web/examples/schemas/app.schema.json`:
+  - theme (string enum light/dark, required), language (string, required), debug (boolean, optional)
+- Both schemas use JSON Schema draft-2020-12
+- Typecheck passes
+- Files changed: `web/examples/schemas/user.schema.json` (new), `web/examples/schemas/app.schema.json` (new)
+- **Learnings for future iterations:**
+  - For twoslash examples, schemas need `required` array to distinguish optional properties for accurate type inference
+  - The examples/ directory is at web/examples/, not in content/
+---
