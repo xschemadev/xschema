@@ -53,8 +53,8 @@
         "Typecheck passes",
         "Verify `/llms.mdx/docs/cli/generate` returns markdown in browser"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created route at llms[.]mdx.docs.$.ts. Returns markdown with title header. 404 for nonexistent pages returns TanStack's isNotFound JSON."
     },
     {
       "title": "Set up path rewriting middleware",

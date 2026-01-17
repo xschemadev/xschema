@@ -944,3 +944,19 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Response content includes raw MDX (imports, components) - this is expected from `getText('processed')`
 ---
 
+## 2026-01-17 - Create per-page .mdx endpoint (PRD: ai-llms-features)
+- Created `web/src/routes/llms[.]mdx.docs.$.ts` route file
+- Route pattern: `/llms.mdx/docs/$` with splat param for slug
+- Extracts slug from `params._splat`, splits by '/', looks up with `source.getPage(slugs)`
+- Returns 404 via `throw notFound()` for nonexistent pages
+- Returns markdown with Content-Type: text/markdown; charset=utf-8
+- Typecheck passes, build passes with 32 pages prerendered
+- Verified in browser: `/llms.mdx/docs/cli/generate` returns full markdown content
+- Verified 404 handling: nonexistent pages return TanStack's `{"isNotFound":true}` JSON
+- **Learnings for future iterations:**
+  - TanStack Start splat routes use `params._splat` (with underscore prefix)
+  - `source.getPage(slugs)` returns undefined for nonexistent pages, null check required
+  - TanStack's `notFound()` returns JSON response, not HTML 404 page
+  - Route filename pattern: `llms[.]mdx.docs.$.ts` maps to `/llms.mdx/docs/*`
+---
+
