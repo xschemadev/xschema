@@ -40,3 +40,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - When merging content from separate pages, adjust heading levels to maintain hierarchy (client.mdx used h2 for main sections, but as a subsection of typescript.mdx it uses h3)
   - The Callout component was already imported in typescript.mdx so no additional imports needed
 ---
+
+## 2026-01-18 01:15 - Create Python placeholder page
+- Created `web/content/docs/(framework)/python.mdx` at root level (not in subfolder)
+- Added frontmatter with title, description mentioning 'coming soon', icon (FileCode)
+- Included Callout with coming soon message
+- Included planned workflow preview (pip install, xschema generate)
+- Included planned features list (Pydantic v2, type hints, compliance, config format)
+- Included example config and expected output preview
+- Added Cards linking to TypeScript page (`/docs/typescript`) and GitHub
+- Used content from existing `getting-started/python.mdx` as base
+- Updated TypeScript Card href from `/docs/getting-started/typescript` to `/docs/typescript`
+- Typecheck passes
+- Files changed: `web/content/docs/(framework)/python.mdx` (new)
+- **Learnings for future iterations:**
+  - When moving pages to new locations, update internal links (hrefs) to reflect the new structure
+---

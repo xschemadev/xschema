@@ -53,7 +53,7 @@
         "Use content from existing `getting-started/python.mdx` as base",
         "Typecheck passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
