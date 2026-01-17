@@ -1,0 +1,249 @@
+{
+  "project": "xschema-docs",
+  "description": "Twoslash Integration - Show autocomplete, type inference, and error prevention in docs using real generated code",
+  "userStories": [
+    {
+      "title": "Create shared example schemas",
+      "description": "As a developer, I need source JSON Schemas that all adapter examples will use for both simple and multi-namespace demos.",
+      "acceptanceCriteria": [
+        "Create web/examples/schemas/user.schema.json with id (string), name (string, optional), email (string format email)",
+        "Create web/examples/schemas/app.schema.json with theme (string enum: light/dark), language (string), debug (boolean, optional)",
+        "Both schemas are valid JSON Schema draft-2020-12",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Create Zod example and generate",
+      "description": "As a developer, I need Zod generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/zod/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/zod adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/zod/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Create Effect example and generate",
+      "description": "As a developer, I need Effect generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/effect/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/effect adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/effect/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Create ArkType example and generate",
+      "description": "As a developer, I need ArkType generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/arktype/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/arktype adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/arktype/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Create Valibot example and generate",
+      "description": "As a developer, I need Valibot generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/valibot/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/valibot adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/valibot/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Install Twoslash packages",
+      "description": "As a developer, I need fumadocs-twoslash installed to enable type hovers.",
+      "acceptanceCriteria": [
+        "Run bun add fumadocs-twoslash twoslash in web/ directory",
+        "Packages added to package.json",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Configure Twoslash transformer in source.config.ts",
+      "description": "As a developer, I need Twoslash transformer added to Shiki config.",
+      "acceptanceCriteria": [
+        "Import transformerTwoslash from fumadocs-twoslash",
+        "Import rehypeCodeDefaultOptions from fumadocs-core/mdx-plugins",
+        "Add rehypeCodeOptions with transformers array including transformerTwoslash()",
+        "Add langs array with js, jsx, ts, tsx",
+        "Enable createFileSystemTypesCache() for performance",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash CSS and UI components",
+      "description": "As a developer, I need Twoslash styles and components for type popups to render.",
+      "acceptanceCriteria": [
+        "Add @import 'fumadocs-twoslash/twoslash.css' to src/styles/app.css",
+        "Import Twoslash components from fumadocs-twoslash/ui in src/routes/docs/$.tsx",
+        "Spread Twoslash components into MDX components object",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Configure Vite SSR externals for Twoslash",
+      "description": "As a developer, I need typescript and twoslash externalized to avoid SSR bundling issues.",
+      "acceptanceCriteria": [
+        "Add ssr.external array to vite.config.ts with 'typescript' and 'twoslash'",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - docs pages load without SSR errors"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx client setup",
+      "description": "As a user reading the TypeScript guide, I want to see types when using createXSchemaClient.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Use the client' code block (around line 92)",
+        "Add ^? annotation under profileSchema variable to show its type",
+        "Import uses relative path to examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - hovering shows Zod schema type"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx schema lookup section",
+      "description": "As a user, I want to see return types for schema lookups including multi-namespace and defaultNamespace.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Schema lookup' code blocks (around line 135)",
+        "Show xschema('user:Profile') with ^? annotation showing Zod schema type",
+        "Show xschema('app:Config') with ^? annotation showing different schema type",
+        "Show defaultNamespace: 'user' example with shorthand xschema('Profile')",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx XSchemaType section",
+      "description": "As a user, I want to see what types XSchemaType extracts.",
+      "acceptanceCriteria": [
+        "Add twoslash to XSchemaType example (around line 159)",
+        "Add ^? annotation to show extracted type shape",
+        "Add twoslash to function signatures example showing typed property access",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add autocomplete and error examples to typescript.mdx",
+      "description": "As a user, I want to see autocomplete for schema keys and errors for invalid keys so I understand the DX benefits.",
+      "acceptanceCriteria": [
+        "Add 'Developer Experience' or similar section to typescript.mdx after 'Using the Client'",
+        "Show autocomplete example using ^| annotation displaying available schema keys",
+        "Show error example using @errors annotation for invalid key like xschema('wrong:Key')",
+        "Add Callout reminding users to run xschema generate after schema changes",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - autocomplete popup and error highlight visible"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to Quick Start index.mdx",
+      "description": "As a new user on the Quick Start page, I want to see types in the usage example.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Use the generated schemas' code block (around line 118)",
+        "Add ^? annotation under profileSchema variable",
+        "Import uses relative path to examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to Zod adapter usage",
+      "description": "As a user viewing the Zod adapter page, I want to see typed parse result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/zod/index.mdx (around line 63)",
+        "Add ^? annotation under user variable after .parse()",
+        "Import from examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to Effect adapter usage",
+      "description": "As a user viewing the Effect adapter page, I want to see typed decode result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/effect/index.mdx (around line 64)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/effect/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to ArkType adapter usage",
+      "description": "As a user viewing the ArkType adapter page, I want to see typed validation result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/arktype/index.mdx (around line 64)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/arktype/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to Valibot adapter usage",
+      "description": "As a user viewing the Valibot adapter page, I want to see typed parse result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/valibot/index.mdx (around line 65)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/valibot/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
