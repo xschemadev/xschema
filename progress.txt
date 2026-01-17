@@ -22,3 +22,21 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Existing `getting-started/typescript.mdx` had bash blocks with multiple commands; converted to proper Tabs with single commands per tab
   - yarn uses `yarn dlx` for executing package binaries (not `yarn exec`)
 ---
+
+## 2026-01-18 00:35 - Add client reference section to TypeScript page
+- Added "Using the Client" h2 section after "What's generated?" in typescript.mdx
+- Included createXSchemaClient documentation with options table
+- Included schema lookup examples (full key and shorthand with defaultNamespace)
+- Included XSchemaType documentation with function signature examples
+- Included "Schema types explained" section with three types: Schema + Type, Type-only, Schema-only
+- Changed "Type-only (future)" to just "Type-only" and removed "Future" from description
+- Included Adapter-specific usage section (Zod, ArkType, Effect Schema, Valibot)
+- Included complete example at end
+- Used content from existing `typescript/client.mdx` as base, adjusted heading levels (h2 -> h3, h3 -> h4)
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript
+- Files changed: `web/content/docs/(framework)/typescript.mdx`
+- **Learnings for future iterations:**
+  - When merging content from separate pages, adjust heading levels to maintain hierarchy (client.mdx used h2 for main sections, but as a subsection of typescript.mdx it uses h3)
+  - The Callout component was already imported in typescript.mdx so no additional imports needed
+---
