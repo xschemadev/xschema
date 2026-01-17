@@ -6,6 +6,7 @@ icon: Shield
 
 import { Cards, Card } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
+import { ClipboardCheck, Rocket, Settings, Puzzle } from "lucide-react";
 
 The Zod adapter converts JSON Schema definitions into [Zod](https://zod.dev) validation schemas with full TypeScript type inference.
 
@@ -147,24 +148,24 @@ See the [Compliance](/docs/adapters/zod/compliance) page for the full breakdown 
     title="Zod Compliance"
     description="View detailed compliance by JSON Schema draft"
     href="/docs/adapters/zod/compliance"
-    icon="ClipboardCheck"
+    icon={<ClipboardCheck />}
   />
   <Card
     title="Getting Started"
     description="Complete setup guide"
     href="/docs/getting-started"
-    icon="Rocket"
+    icon={<Rocket />}
   />
   <Card
     title="Configuration"
     description="All config file options"
     href="/docs/configuration"
-    icon="Settings"
+    icon={<Settings />}
   />
   <Card
     title="Compare Adapters"
     description="See all available adapters"
     href="/docs/adapters"
-    icon="Puzzle"
+    icon={<Puzzle />}
   />
 </Cards>

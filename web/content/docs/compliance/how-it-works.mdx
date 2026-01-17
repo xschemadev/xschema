@@ -7,6 +7,7 @@ icon: Cog
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
 import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Ban, Terminal, Plug, ShieldCheck } from "lucide-react";
 
 xschema tests adapters against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to verify correctness. This page explains how the compliance testing pipeline works internally.
 
@@ -272,24 +273,24 @@ All schemas are normalized to draft2020-12 internally, so adapters only need to 
     title="Unsupported Features"
     description="Detailed explanations of features that cannot be statically compiled"
     href="/docs/compliance/unsupported-features"
-    icon="Ban"
+    icon={<Ban />}
   />
   <Card
     title="CLI Compliance Command"
     description="Full command reference for xschema compliance"
     href="/docs/cli/compliance"
-    icon="Terminal"
+    icon={<Terminal />}
   />
   <Card
     title="Building Adapters"
     description="Create a new adapter with compliance testing"
     href="/docs/adapters/building-adapters"
-    icon="Plug"
+    icon={<Plug />}
   />
   <Card
     title="Compliance Overview"
     description="What compliance means for xschema"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
 </Cards>

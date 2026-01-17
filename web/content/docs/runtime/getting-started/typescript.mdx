@@ -6,6 +6,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Rocket, Zap } from "lucide-react";
 
 <Callout type="info">
 Runtime mode for TypeScript is **coming soon**. This page shows the planned usage.
@@ -120,12 +121,12 @@ Runtime mode is in development. Use Framework mode for production applications.
     title="Framework Mode"
     description="Full TypeScript types with build-time generation"
     href="/docs/getting-started/typescript"
-    icon="Rocket"
+    icon={<Rocket />}
   />
   <Card
     title="Runtime Overview"
     description="Learn more about runtime mode"
     href="/docs/runtime"
-    icon="Zap"
+    icon={<Zap />}
   />
 </Cards>

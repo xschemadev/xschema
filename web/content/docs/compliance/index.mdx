@@ -6,6 +6,7 @@ icon: ShieldCheck
 
 import { Cards, Card } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
+import { Shield, Ban, Terminal } from "lucide-react";
 
 xschema adapters are tested against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite), ensuring reliable schema conversion across all supported validation libraries.
 
@@ -83,25 +84,25 @@ View detailed compliance reports for each adapter:
 
 <Cards>
   <Card
-    icon="Shield"
+    icon={<Shield />}
     title="Zod"
     description="100% compliance - most popular Zod validation library"
     href="/docs/adapters/zod/compliance"
   />
   <Card
-    icon="Shield"
+    icon={<Shield />}
     title="ArkType"
     description="100% compliance - TypeScript-native validation"
     href="/docs/adapters/arktype/compliance"
   />
   <Card
-    icon="Shield"
+    icon={<Shield />}
     title="Effect Schema"
     description="100% compliance - Effect ecosystem integration"
     href="/docs/adapters/effect/compliance"
   />
   <Card
-    icon="Shield"
+    icon={<Shield />}
     title="Valibot"
     description="98.9% compliance - smallest bundle size"
     href="/docs/adapters/valibot/compliance"
@@ -112,13 +113,13 @@ View detailed compliance reports for each adapter:
 
 <Cards>
   <Card
-    icon="Ban"
+    icon={<Ban />}
     title="Unsupported Features"
     description="Features that cannot be statically compiled"
     href="/docs/compliance/unsupported-features"
   />
   <Card
-    icon="Terminal"
+    icon={<Terminal />}
     title="Running Compliance Tests"
     description="How to run the compliance suite against adapters"
     href="/docs/cli/compliance"

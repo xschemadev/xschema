@@ -6,6 +6,7 @@ icon: Lightbulb
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Cards, Card } from "fumadocs-ui/components/card";
+import { FileJson, ShieldCheck, Puzzle, Languages, Rocket } from "lucide-react";
 
 ## Philosophy
 
@@ -139,16 +140,16 @@ If you're already using Zod and don't have external JSON Schemas, you don't need
 ## When to use xschema
 
 <Cards>
-  <Card title="You have JSON Schemas" icon="FileJson">
+  <Card title="You have JSON Schemas" icon={<FileJson />}>
     OpenAPI specs, API contracts, shared schema definitions
   </Card>
-  <Card title="You need compliance guarantees" icon="ShieldCheck">
+  <Card title="You need compliance guarantees" icon={<ShieldCheck />}>
     Know exactly which keywords work, with test results
   </Card>
-  <Card title="You want adapter flexibility" icon="Puzzle">
+  <Card title="You want adapter flexibility" icon={<Puzzle />}>
     Switch between Zod, ArkType, Effect, or Valibot
   </Card>
-  <Card title="You use multiple languages" icon="Languages">
+  <Card title="You use multiple languages" icon={<Languages />}>
     TypeScript today, Python tomorrow (same schemas)
   </Card>
 </Cards>
@@ -171,18 +172,18 @@ xschema isn't always the right tool. Here's when to skip it:
     title="Getting Started" 
     description="Set up xschema in 5 minutes"
     href="/docs/getting-started"
-    icon="Rocket"
+    icon={<Rocket />}
   />
   <Card 
     title="Adapters" 
     description="Compare Zod, ArkType, Effect, Valibot"
     href="/docs/adapters"
-    icon="Puzzle"
+    icon={<Puzzle />}
   />
   <Card 
     title="Compliance" 
     description="See test results for each adapter"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
 </Cards>

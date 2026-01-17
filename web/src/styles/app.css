@@ -1,3 +1,68 @@
 @import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
+
+/*
+ * xschema docs theme - earthy palette
+ * https://coolors.co/palette/606c38-283618-fefae0-dda15e-bc6c25
+ *
+ * #606c38 - olive green
+ * #283618 - dark green  
+ * #fefae0 - cream
+ * #dda15e - amber
+ * #bc6c25 - copper
+ */
+
+@theme {
+  /* light mode - warm cream base with forest accents */
+  --color-fd-background: hsl(52, 94%, 97%);
+  --color-fd-foreground: hsl(88, 38%, 15%);
+  --color-fd-muted: hsl(52, 40%, 92%);
+  --color-fd-muted-foreground: hsl(88, 25%, 35%);
+  --color-fd-popover: hsl(52, 94%, 98%);
+  --color-fd-popover-foreground: hsl(88, 38%, 15%);
+  --color-fd-card: hsl(52, 60%, 95%);
+  --color-fd-card-foreground: hsl(88, 38%, 15%);
+  --color-fd-border: hsl(77, 20%, 80%);
+  --color-fd-primary: hsl(77, 32%, 32%);
+  --color-fd-primary-foreground: hsl(52, 94%, 97%);
+  --color-fd-secondary: hsl(52, 50%, 90%);
+  --color-fd-secondary-foreground: hsl(88, 38%, 15%);
+  --color-fd-accent: hsl(77, 25%, 85%);
+  --color-fd-accent-foreground: hsl(88, 38%, 15%);
+  --color-fd-ring: hsl(77, 32%, 45%);
+  --color-fd-overlay: hsla(0, 0%, 0%, 0.2);
+}
+
+@theme static {
+  /* semantic colors */
+  --color-fd-info: oklch(62.3% 0.214 259.815);
+  --color-fd-warning: oklch(76.9% 0.188 70.08);
+  --color-fd-error: oklch(63.7% 0.237 25.331);
+  --color-fd-success: oklch(72.3% 0.219 149.579);
+  --color-fd-idea: oklch(70.5% 0.209 60.849);
+  /* diff colors */
+  --color-fd-diff-remove: rgba(200, 10, 100, 0.12);
+  --color-fd-diff-remove-symbol: rgb(230, 10, 100);
+  --color-fd-diff-add: rgba(14, 180, 100, 0.1);
+  --color-fd-diff-add-symbol: rgb(10, 200, 100);
+}
+
+.dark {
+  /* dark mode - clean neutral with olive accent */
+  --color-fd-background: hsl(0, 0%, 4%);
+  --color-fd-foreground: hsl(0, 0%, 93%);
+  --color-fd-muted: hsl(0, 0%, 10%);
+  --color-fd-muted-foreground: hsl(0, 0%, 55%);
+  --color-fd-popover: hsl(0, 0%, 6%);
+  --color-fd-popover-foreground: hsl(0, 0%, 90%);
+  --color-fd-card: hsl(0, 0%, 8%);
+  --color-fd-card-foreground: hsl(0, 0%, 95%);
+  --color-fd-border: hsl(0, 0%, 18%);
+  --color-fd-primary: hsl(77, 40%, 50%);
+  --color-fd-primary-foreground: hsl(0, 0%, 4%);
+  --color-fd-secondary: hsl(0, 0%, 12%);
+  --color-fd-secondary-foreground: hsl(0, 0%, 90%);
+  --color-fd-accent: hsl(0, 0%, 14%);
+  --color-fd-accent-foreground: hsl(0, 0%, 95%);
+  --color-fd-ring: hsl(77, 35%, 45%);
+}

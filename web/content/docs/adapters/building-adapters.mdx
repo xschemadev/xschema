@@ -7,6 +7,7 @@ icon: Wrench
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Terminal, Ban, ShieldCheck } from "lucide-react";
 
 Adapters convert JSON Schema to native validation code. This guide explains how to build a new adapter using the `@xschemadev/core` package.
 
@@ -444,18 +445,18 @@ See the full source at [`typescript/packages/adapters/zod/src/`](https://github.
     title="CLI Compliance Command"
     description="Full reference for the compliance command"
     href="/docs/cli/compliance"
-    icon="Terminal"
+    icon={<Terminal />}
   />
   <Card
     title="Unsupported Features"
     description="Features that can't be statically compiled"
     href="/docs/compliance/unsupported-features"
-    icon="Ban"
+    icon={<Ban />}
   />
   <Card
     title="Compliance Overview"
     description="Understanding the compliance system"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
 </Cards>

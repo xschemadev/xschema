@@ -6,6 +6,7 @@ icon: Puzzle
 
 import { Cards, Card } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
+import { Shield, Sparkles, Layers, Package } from "lucide-react";
 
 # Adapters
 
@@ -87,25 +88,25 @@ bun add @xschemadev/valibot valibot
 
 <Cards>
   <Card
-    icon="Shield"
+    icon={<Shield />}
     title="Zod"
     description="Most popular, 100% compliant"
     href="/docs/adapters/zod"
   />
   <Card
-    icon="Sparkles"
+    icon={<Sparkles />}
     title="ArkType"
     description="TypeScript-native, 100% compliant"
     href="/docs/adapters/arktype"
   />
   <Card
-    icon="Layers"
+    icon={<Layers />}
     title="Effect"
     description="Effect ecosystem, 100% compliant"
     href="/docs/adapters/effect"
   />
   <Card
-    icon="Package"
+    icon={<Package />}
     title="Valibot"
     description="Smallest bundle, 98.9% compliant"
     href="/docs/adapters/valibot"

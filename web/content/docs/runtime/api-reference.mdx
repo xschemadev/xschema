@@ -6,6 +6,7 @@ icon: Book
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Code, Zap } from "lucide-react";
 
 <Callout type="info">
 Runtime mode is **coming soon**. This page documents the planned API.
@@ -201,12 +202,12 @@ try {
     title="Framework Client API"
     description="Build-time client API reference"
     href="/docs/typescript/client"
-    icon="Code"
+    icon={<Code />}
   />
   <Card
     title="Runtime Overview"
     description="When to use runtime mode"
     href="/docs/runtime"
-    icon="Zap"
+    icon={<Zap />}
   />
 </Cards>

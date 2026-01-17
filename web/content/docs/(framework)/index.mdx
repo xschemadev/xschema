@@ -5,6 +5,7 @@ icon: Layers
 ---
 
 import { Cards, Card } from "fumadocs-ui/components/card";
+import { Rocket, Lightbulb, Puzzle, Terminal, ShieldCheck, Zap } from "lucide-react";
 
 xschema converts JSON Schema to native validators (Zod, ArkType, Effect, Valibot) with full type inference. Every adapter is tested against the official JSON Schema Test Suite, so you know exactly what works.
 
@@ -13,36 +14,36 @@ xschema converts JSON Schema to native validators (Zod, ArkType, Effect, Valibot
     title="Getting Started" 
     description="Set up xschema in your project in 5 minutes"
     href="/docs/getting-started"
-    icon="Rocket"
+    icon={<Rocket />}
   />
   <Card 
     title="What is XSchema" 
     description="Architecture, philosophy, and how it compares"
     href="/docs/what-is-xschema"
-    icon="Lightbulb"
+    icon={<Lightbulb />}
   />
   <Card 
     title="Adapters" 
     description="Compare Zod, ArkType, Effect, and Valibot"
     href="/docs/adapters"
-    icon="Puzzle"
+    icon={<Puzzle />}
   />
   <Card 
     title="CLI Reference" 
     description="xschema generate, compliance, and more"
     href="/docs/cli"
-    icon="Terminal"
+    icon={<Terminal />}
   />
   <Card 
     title="Compliance" 
     description="Test results and coverage reports"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
   <Card 
     title="Runtime Mode" 
     description="Convert schemas at runtime (coming soon)"
     href="/docs/runtime"
-    icon="Zap"
+    icon={<Zap />}
   />
 </Cards>

@@ -6,6 +6,7 @@ icon: CircleQuestionMark
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Terminal, ShieldCheck } from "lucide-react";
 
 ## CLI Errors
 
@@ -324,12 +325,12 @@ If you encounter an error not listed here:
     title="CLI Reference"
     description="Full command documentation"
     href="/docs/cli"
-    icon="Terminal"
+    icon={<Terminal />}
   />
   <Card
     title="Compliance Reports"
     description="Adapter feature support"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
 </Cards>

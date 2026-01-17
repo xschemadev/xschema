@@ -6,6 +6,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Code, Rocket } from "lucide-react";
 
 <Callout type="info">
 Runtime mode for Python is **coming soon**. This page shows the planned usage.
@@ -95,12 +96,12 @@ Python support is planned. Development will begin after TypeScript runtime mode 
     title="TypeScript Runtime"
     description="Runtime mode for TypeScript"
     href="/docs/runtime/getting-started/typescript"
-    icon="Code"
+    icon={<Code />}
   />
   <Card
     title="Framework Mode (TypeScript)"
     description="Build-time generation for TypeScript"
     href="/docs/getting-started/typescript"
-    icon="Rocket"
+    icon={<Rocket />}
   />
 </Cards>

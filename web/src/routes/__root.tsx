@@ -14,7 +14,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Fumadocs on TanStack Start',
+        title: 'xschema',
       },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
@@ -32,7 +32,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

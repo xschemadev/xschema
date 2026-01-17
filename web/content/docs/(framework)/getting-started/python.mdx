@@ -6,6 +6,7 @@ icon: FileCode
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { FileCode, Github } from "lucide-react";
 
 <Callout type="info">
 Python support is planned but not yet implemented. Follow the project for updates.
@@ -72,12 +73,12 @@ schemas = {
     title="Use TypeScript"
     description="Full support for Zod, ArkType, Effect, and Valibot"
     href="/docs/getting-started/typescript"
-    icon="FileCode"
+    icon={<FileCode />}
   />
   <Card
     title="Contribute"
     description="Help build Python support on GitHub"
     href="https://github.com/xschemadev/xschema"
-    icon="Github"
+    icon={<Github />}
   />
 </Cards>

@@ -7,6 +7,7 @@ icon: ShieldCheck
 import { Card, Cards } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
+import { ShieldCheck, AlertCircle, Puzzle, Play } from "lucide-react";
 
 ```bash
 xschema compliance [flags]
@@ -298,24 +299,24 @@ bun run build
     title="Compliance Overview"
     description="What compliance means"
     href="/docs/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
   <Card
     title="Unsupported Features"
     description="Features excluded from testing"
     href="/docs/compliance/unsupported-features"
-    icon="AlertCircle"
+    icon={<AlertCircle />}
   />
   <Card
     title="Building Adapters"
     description="Create a new adapter"
     href="/docs/adapters/building-adapters"
-    icon="Puzzle"
+    icon={<Puzzle />}
   />
   <Card
     title="Generate Command"
     description="Main generation command"
     href="/docs/cli/generate"
-    icon="Play"
+    icon={<Play />}
   />
 </Cards>

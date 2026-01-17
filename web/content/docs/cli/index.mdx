@@ -6,6 +6,7 @@ icon: Terminal
 
 import { Card, Cards } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
+import { Play, ShieldCheck, Settings, Bug } from "lucide-react";
 
 The xschema CLI converts JSON Schema files into native validators for your target language. It handles schema discovery, fetching, bundling, and code generation.
 
@@ -101,24 +102,24 @@ For architecture details, see [What is XSchema](/docs/what-is-xschema).
     title="Generate Command"
     description="Full reference for xschema generate"
     href="/docs/cli/generate"
-    icon="Play"
+    icon={<Play />}
   />
   <Card
     title="Compliance Command"
     description="Run adapter compliance tests"
     href="/docs/cli/compliance"
-    icon="ShieldCheck"
+    icon={<ShieldCheck />}
   />
   <Card
     title="Configuration"
     description="Config file format reference"
     href="/docs/configuration"
-    icon="Settings"
+    icon={<Settings />}
   />
   <Card
     title="Troubleshooting"
     description="Common errors and fixes"
     href="/docs/troubleshooting"
-    icon="Bug"
+    icon={<Bug />}
   />
 </Cards>

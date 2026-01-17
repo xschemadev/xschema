@@ -6,6 +6,7 @@ icon: Zap
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Rocket, Github } from "lucide-react";
 
 <Callout type="info">
 Runtime mode is **coming soon**. This section documents the planned API.
@@ -106,12 +107,12 @@ Runtime mode is in development. For now, use [Framework mode](/docs/getting-star
     title="Framework Getting Started"
     description="Generate validators at build time (recommended)"
     href="/docs/getting-started/typescript"
-    icon="Rocket"
+    icon={<Rocket />}
   />
   <Card
     title="Follow Progress"
     description="Track runtime mode development on GitHub"
     href="https://github.com/xschemadev/xschema"
-    icon="Github"
+    icon={<Github />}
   />
 </Cards>

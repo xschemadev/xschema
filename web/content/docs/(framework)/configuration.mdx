@@ -7,6 +7,7 @@ icon: Settings
 import { Callout } from "fumadocs-ui/components/callout";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Code, Terminal, Puzzle, AlertTriangle } from "lucide-react";
 
 This page documents all options for xschema config files.
 
@@ -435,25 +436,25 @@ You can use different adapters for different schemas in the same config file:
 
 <Cards>
   <Card
-    icon="Code"
+    icon={<Code />}
     title="Client Reference"
     description="Using generated schemas in TypeScript"
     href="/docs/typescript/client"
   />
   <Card
-    icon="Terminal"
+    icon={<Terminal />}
     title="CLI Reference"
     description="All command flags and options"
     href="/docs/cli"
   />
   <Card
-    icon="Puzzle"
+    icon={<Puzzle />}
     title="Compare Adapters"
     description="Choose the right adapter for your project"
     href="/docs/adapters"
   />
   <Card
-    icon="AlertTriangle"
+    icon={<AlertTriangle />}
     title="Troubleshooting"
     description="Common errors and how to fix them"
     href="/docs/troubleshooting"
