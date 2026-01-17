@@ -100,8 +100,8 @@
         "Enable createFileSystemTypesCache() for performance",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Also added themes (github-light/github-dark) as required by RehypeCodeOptions type"
     },
     {
       "title": "Add Twoslash CSS and UI components",

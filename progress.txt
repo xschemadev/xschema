@@ -114,3 +114,16 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Adapters aren't published to npm yet, so xschema generate fails with 404. Workaround: call adapter CLI directly from typescript/packages/adapters/<adapter>/dist/cli.js
   - Generated output format: header comment + imports + schema definitions + `export const schemas = { "ns:id": varName }` + SchemaTypes type + module declaration for @xschemadev/client
 ---
+
+## 2026-01-18 - Configure Twoslash transformer in source.config.ts
+- Added twoslash configuration to `web/source.config.ts`
+- Imported `transformerTwoslash` from fumadocs-twoslash and `rehypeCodeDefaultOptions` from fumadocs-core/mdx-plugins
+- Added `rehypeCodeOptions` with themes (github-light/dark), transformers array, and langs
+- Enabled `createFileSystemTypesCache()` for build performance
+- Typecheck passes
+- Files changed: `web/source.config.ts`
+- **Learnings for future iterations:**
+  - `rehypeCodeOptions` requires `themes` property - it's not optional despite docs example omitting it
+  - Spread existing transformers with `...(rehypeCodeDefaultOptions.transformers ?? [])` to preserve default behavior
+  - langs array is important because Shiki doesn't lazy-load languages for twoslash popups
+---

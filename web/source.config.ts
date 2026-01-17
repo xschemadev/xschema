@@ -1,5 +1,10 @@
-import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
+import {
+  rehypeCodeDefaultOptions,
+  remarkMdxMermaid,
+} from "fumadocs-core/mdx-plugins";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
+import { transformerTwoslash } from "fumadocs-twoslash";
+import { createFileSystemTypesCache } from "fumadocs-twoslash/cache-fs";
 
 export const docs = defineDocs({
   dir: "content/docs",
@@ -13,5 +18,18 @@ export const docs = defineDocs({
 export default defineConfig({
   mdxOptions: {
     remarkPlugins: [remarkMdxMermaid],
+    rehypeCodeOptions: {
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      transformers: [
+        ...(rehypeCodeDefaultOptions.transformers ?? []),
+        transformerTwoslash({
+          typesCache: createFileSystemTypesCache(),
+        }),
+      ],
+      langs: ["js", "jsx", "ts", "tsx"],
+    },
   },
 });
