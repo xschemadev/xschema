@@ -930,3 +930,17 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - The source import must be a type-only import to avoid circular dependencies
 ---
 
+## 2026-01-17 - Create /llms-full.txt endpoint (PRD: ai-llms-features)
+- Created `web/src/routes/llms-full[.]txt.ts` API route
+- Uses TanStack Start pattern: `createFileRoute('/llms-full.txt')` with `server: { handlers: { GET } }`
+- Maps all pages through `getLLMText` using `Promise.all` for parallel processing
+- Pages joined with `\n\n---\n\n` separator for readability
+- Returns Response with `Content-Type: text/plain; charset=utf-8`
+- Typecheck passes, build passes, endpoint verified in browser
+- **Learnings for future iterations:**
+  - TanStack Start route files with dots need `[.]` escape: `llms-full[.]txt.ts`
+  - `source.getPages()` returns all docs pages for iteration
+  - `Promise.all` parallelizes the async `getLLMText` calls for performance
+  - Response content includes raw MDX (imports, components) - this is expected from `getText('processed')`
+---
+
