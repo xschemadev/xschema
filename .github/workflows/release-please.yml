@@ -148,6 +148,36 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # Publish PyPI CLI packages
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Copy binaries to PyPI packages
+        run: |
+          cp dist/xschema-linux-x64/xschema     release/pypi/xschema-cli-linux-x64/src/xschema_cli_linux_x64/xschema
+          cp dist/xschema-linux-arm64/xschema   release/pypi/xschema-cli-linux-arm64/src/xschema_cli_linux_arm64/xschema
+          cp dist/xschema-darwin-x64/xschema    release/pypi/xschema-cli-darwin-x64/src/xschema_cli_darwin_x64/xschema
+          cp dist/xschema-darwin-arm64/xschema  release/pypi/xschema-cli-darwin-arm64/src/xschema_cli_darwin_arm64/xschema
+          cp dist/xschema-win32-x64/xschema.exe release/pypi/xschema-cli-win32-x64/src/xschema_cli_win32_x64/xschema.exe
+          cp dist/xschema-win32-arm64/xschema.exe release/pypi/xschema-cli-win32-arm64/src/xschema_cli_win32_arm64/xschema.exe
+        working-directory: cli
+
+      - name: Publish platform packages to PyPI
+        run: |
+          for pkg in xschema-cli-darwin-arm64 xschema-cli-darwin-x64 xschema-cli-linux-arm64 xschema-cli-linux-x64 xschema-cli-win32-arm64 xschema-cli-win32-x64; do
+            echo "Publishing $pkg..."
+            cd "$pkg"
+            uv build
+            uv publish --token ${{ secrets.PYPI_TOKEN }}
+            cd ..
+          done
+        working-directory: cli/release/pypi
+
+      - name: Publish main xschema-cli package to PyPI
+        run: |
+          uv build
+          uv publish --token ${{ secrets.PYPI_TOKEN }}
+        working-directory: cli/release/pypi/xschema-cli
+
   # Publish TypeScript packages when released
   release-ts:
     needs: release-please

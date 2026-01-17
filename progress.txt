@@ -426,3 +426,54 @@ cli/
 
 **Result**: PyPI publishing workflow ready. 3 Python packages (core, client, pydantic) will auto-publish on py-* tag releases. Requires PYPI_TOKEN secret in repo settings.
 
+## 2026-01-17: release-workflow-pypi-cli (COMPLETE)
+
+**Task**: Add PyPI CLI binary publishing to release workflow
+
+**Implementation**:
+1. Extended release-cli job in .github/workflows/release-please.yml
+   - Added astral-sh/setup-uv@v4 action after npm publishing
+   - Mirrors npm publishing pattern (build binaries once, copy to both ecosystems)
+
+2. Added "Copy binaries to PyPI packages" step
+   - Copies 6 platform binaries from dist/ to cli/release/pypi/xschema-cli-{platform}/src/
+   - Platform mappings:
+     - dist/xschema-linux-x64/xschema -> xschema-cli-linux-x64/src/xschema_cli_linux_x64/
+     - dist/xschema-linux-arm64/xschema -> xschema-cli-linux-arm64/src/xschema_cli_linux_arm64/
+     - dist/xschema-darwin-x64/xschema -> xschema-cli-darwin-x64/src/xschema_cli_darwin_x64/
+     - dist/xschema-darwin-arm64/xschema -> xschema-cli-darwin-arm64/src/xschema_cli_darwin_arm64/
+     - dist/xschema-win32-x64/xschema.exe -> xschema-cli-win32-x64/src/xschema_cli_win32_x64/
+     - dist/xschema-win32-arm64/xschema.exe -> xschema-cli-win32-arm64/src/xschema_cli_win32_arm64/
+
+3. Added "Publish platform packages to PyPI" step
+   - Iterates over 6 platform packages
+   - Runs uv build in each package dir
+   - Runs uv publish --token ${{ secrets.PYPI_TOKEN }} in each
+   - Uses loop pattern for consistency with npm publishing
+
+4. Added "Publish main xschema-cli package to PyPI" step
+   - Builds main package (depends on platform packages via optional-dependencies)
+   - Publishes to PyPI with same token
+
+5. Tested locally
+   - Built Go binary for darwin-arm64
+   - Copied to platform package: cli/release/pypi/xschema-cli-darwin-arm64/
+   - uv build: successfully created wheel (7.4MB) and sdist (7.4MB)
+   - Main package build: successfully created wheel (2.7KB) and sdist (2.2KB)
+   - Verified binary is executable in wheel
+
+**Decisions**:
+- PyPI publishing happens in same job as npm (release-cli), not separate job
+  - Reason: binaries already built, no need for separate job overhead
+  - Saves CI time and reduces workflow complexity
+- Uses same PYPI_TOKEN as release-py job for consistency
+- Platform packages published before main package (main depends on platform packages)
+- No platform-specific conditionals - all 7 packages publish every CLI release
+
+**Quality Checks**:
+- Workflow YAML structure: valid ✓
+- Local build test: darwin-arm64 package builds correctly ✓
+- Binary size: 14MB Go binary -> 7.4MB wheel (reasonable compression) ✓
+
+**Result**: PyPI CLI publishing ready. On cli-* tag releases, 7 packages auto-publish to PyPI (1 main xschema-cli + 6 platform-specific). Requires PYPI_TOKEN secret configured.
+

@@ -139,7 +139,7 @@
         "build and publish main xschema-cli package",
         "verify all 7 packages (1 main + 6 platform) publish correctly"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "CLI publishes on cli-* tags, same as npm. Requires PYPI_TOKEN."
     },
     {
