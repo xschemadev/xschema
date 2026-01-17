@@ -307,3 +307,78 @@
 - release-type: python handles pyproject.toml version bumps automatically
 
 **Result**: Python packages integrated with release-please, ready for automated releases.
+
+## 2026-01-17: pypi-cli-packages (COMPLETE)
+
+**Task**: Create platform-specific CLI packages for PyPI distribution
+
+**Implementation**:
+1. Created python/cli/ directory structure mirroring cli/npm/
+   - Main package: xschema-cli/
+   - 6 platform packages: xschema-cli-{darwin,linux,win32}-{arm64,x64}/
+   - Each package has src/ dir with __init__.py
+
+2. Created xschema-cli main package
+   - pyproject.toml with console_scripts entry point: xschema = "xschema_cli:main"
+   - Platform packages as optional dependencies (darwin-arm64, darwin-x64, etc.)
+   - Version 0.2.1 to match npm CLI
+   - Full classifiers for PyPI discoverability
+
+3. Implemented platform detection in xschema_cli/__init__.py
+   - Uses platform.system() and platform.machine() for detection
+   - Maps (Darwin, arm64) -> xschema_cli_darwin_arm64, etc.
+   - Imports platform package dynamically, finds binary path
+   - Executes binary with subprocess.run, forwarding stdin/stdout/stderr
+   - Proper error messages with reinstall guidance
+
+4. Created 6 platform-specific packages
+   - Each has pyproject.toml with OS classifiers
+   - Empty __init__.py (binary added during release)
+   - Packages: darwin-arm64, darwin-x64, linux-arm64, linux-x64, win32-arm64, win32-x64
+
+5. Added .gitignore for binaries
+   - Matches npm pattern: binaries not committed, copied during release
+
+6. Tested end-to-end
+   - Built Go binary for darwin-arm64
+   - Copied to platform package src dir
+   - Installed both packages in temp venv
+   - Ran `xschema --help` - works correctly
+   - Cleaned up test artifacts
+
+**Decisions**:
+- Used hatchling build backend (modern, fast, good wheel support)
+- Platform detection at runtime (not via environment markers) - simpler for users
+- Version synced with npm CLI (0.2.1) for consistency
+- Used subprocess.run instead of os.execv for better cross-platform compatibility
+- Binary lives in package src dir (alongside __init__.py) for simple package structure
+
+**Quality Checks**:
+- go build: compiles ✓
+- go vet: no warnings ✓
+- go test ./...: all tests pass ✓
+
+**Result**: PyPI CLI packages ready. 7 packages total (1 main + 6 platform). Installation and execution verified locally.
+
+**Refinement (same session)**:
+Moved packages from python/cli/ to cli/pypi/ after analyzing release flow:
+- CLI versioning is centralized in `cli/` package in release-please
+- npm packages live at cli/npm/, pypi should mirror at cli/pypi/
+- Single version source: CLI version = npm versions = pypi versions = Go binary version
+- release-please updates all package versions via extra-files in `cli` package config
+
+Changes made:
+1. Moved python/cli/ -> cli/pypi/
+2. Updated release-please-config.json:
+   - Added TOML extra-files for pypi package versions ($.project.version)
+   - Added generic updater entries for x-release-please-version markers
+3. Added x-release-please-version markers to:
+   - cli/pypi/xschema-cli/pyproject.toml (optional deps versions)
+   - cli/pypi/xschema-cli/src/xschema_cli/__init__.py (__version__)
+
+Structure now matches npm pattern:
+```
+cli/
+  npm/              # npm packages (@xschemadev/cli-*)
+  pypi/             # pypi packages (xschema-cli-*)
+```

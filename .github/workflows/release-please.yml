@@ -19,13 +19,14 @@ jobs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       cli--release_created: ${{ steps.release.outputs['cli--release_created'] }}
       cli--tag_name: ${{ steps.release.outputs['cli--tag_name'] }}
-      core--release_created: ${{ steps.release.outputs['typescript/packages/core--release_created'] }}
-      client--release_created: ${{ steps.release.outputs['typescript/packages/client--release_created'] }}
-      zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
-      arktype--release_created: ${{ steps.release.outputs['typescript/packages/adapters/arktype--release_created'] }}
-      effect--release_created: ${{ steps.release.outputs['typescript/packages/adapters/effect--release_created'] }}
-      typebox--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typebox--release_created'] }}
-      valibot--release_created: ${{ steps.release.outputs['typescript/packages/adapters/valibot--release_created'] }}
+      ts-core--release_created: ${{ steps.release.outputs['typescript/packages/core--release_created'] }}
+      ts-client--release_created: ${{ steps.release.outputs['typescript/packages/client--release_created'] }}
+      ts-zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
+      ts-arktype--release_created: ${{ steps.release.outputs['typescript/packages/adapters/arktype--release_created'] }}
+      ts-effect--release_created: ${{ steps.release.outputs['typescript/packages/adapters/effect--release_created'] }}
+      ts-typebox--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typebox--release_created'] }}
+      ts-valibot--release_created: ${{ steps.release.outputs['typescript/packages/adapters/valibot--release_created'] }}
+      ts-typescript--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typescript--release_created'] }}
     steps:
       # Using PAT instead of GITHUB_TOKEN so PRs trigger workflow runs
       - uses: googleapis/release-please-action@v4
@@ -118,12 +119,12 @@ jobs:
 
       - name: Copy binaries to npm packages
         run: |
-          cp dist/xschema-linux-x64/xschema     npm/cli-linux-x64/xschema
-          cp dist/xschema-linux-arm64/xschema   npm/cli-linux-arm64/xschema
-          cp dist/xschema-darwin-x64/xschema    npm/cli-darwin-x64/xschema
-          cp dist/xschema-darwin-arm64/xschema  npm/cli-darwin-arm64/xschema
-          cp dist/xschema-win32-x64/xschema.exe npm/cli-win32-x64/xschema.exe
-          cp dist/xschema-win32-arm64/xschema.exe npm/cli-win32-arm64/xschema.exe
+          cp dist/xschema-linux-x64/xschema     release/npm/cli-linux-x64/xschema
+          cp dist/xschema-linux-arm64/xschema   release/npm/cli-linux-arm64/xschema
+          cp dist/xschema-darwin-x64/xschema    release/npm/cli-darwin-x64/xschema
+          cp dist/xschema-darwin-arm64/xschema  release/npm/cli-darwin-arm64/xschema
+          cp dist/xschema-win32-x64/xschema.exe release/npm/cli-win32-x64/xschema.exe
+          cp dist/xschema-win32-arm64/xschema.exe release/npm/cli-win32-arm64/xschema.exe
         working-directory: cli
 
       - name: Publish platform packages to npm
@@ -134,13 +135,13 @@ jobs:
             npm publish --access public
             cd ..
           done
-        working-directory: cli/npm
+        working-directory: cli/release/npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish main CLI package to npm
         run: npm publish --access public
-        working-directory: cli/npm/cli
+        working-directory: cli/release/npm/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -148,14 +149,14 @@ jobs:
   release-ts:
     needs: release-please
     if: |
-      needs.release-please.outputs.core--release_created == 'true' ||
-      needs.release-please.outputs.client--release_created == 'true' ||
-      needs.release-please.outputs.zod--release_created == 'true' ||
-      needs.release-please.outputs.arktype--release_created == 'true' ||
-      needs.release-please.outputs.effect--release_created == 'true' ||
-      needs.release-please.outputs.typebox--release_created == 'true' ||
-      needs.release-please.outputs.valibot--release_created == 'true' ||
-      needs.release-please.outputs.typescript--release_created == 'true'
+      needs.release-please.outputs.ts-core--release_created == 'true' ||
+      needs.release-please.outputs.ts-client--release_created == 'true' ||
+      needs.release-please.outputs.ts-zod--release_created == 'true' ||
+      needs.release-please.outputs.ts-arktype--release_created == 'true' ||
+      needs.release-please.outputs.ts-effect--release_created == 'true' ||
+      needs.release-please.outputs.ts-typebox--release_created == 'true' ||
+      needs.release-please.outputs.ts-valibot--release_created == 'true' ||
+      needs.release-please.outputs.ts-typescript--release_created == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -171,49 +172,49 @@ jobs:
         working-directory: typescript
 
       - name: Publish @xschemadev/core
-        if: needs.release-please.outputs.core--release_created == 'true'
+        if: needs.release-please.outputs.ts-core--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/core
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/client
-        if: needs.release-please.outputs.client--release_created == 'true'
+        if: needs.release-please.outputs.ts-client--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/client
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/zod
-        if: needs.release-please.outputs.zod--release_created == 'true'
+        if: needs.release-please.outputs.ts-zod--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/zod
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/arktype
-        if: needs.release-please.outputs.arktype--release_created == 'true'
+        if: needs.release-please.outputs.ts-arktype--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/arktype
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/effect
-        if: needs.release-please.outputs.effect--release_created == 'true'
+        if: needs.release-please.outputs.ts-effect--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/effect
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/typebox
-        if: needs.release-please.outputs.typebox--release_created == 'true'
+        if: needs.release-please.outputs.ts-typebox--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/typebox
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @xschemadev/valibot
-        if: needs.release-please.outputs.valibot--release_created == 'true'
+        if: needs.release-please.outputs.ts-valibot--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/valibot
         env:

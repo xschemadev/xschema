@@ -81,7 +81,7 @@
         "verify 'uv pip install xschema-cli' installs correct platform binary",
         "verify 'xschema --help' executes the Go binary"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Match npm pattern. Platform packages contain Go binary, main package does detection."
     },
     {
