@@ -1,49 +1,204 @@
 ---
-title: Introduction
-description: Generate type-safe validators from JSON Schema at build time
+title: Quick Start
+description: Getting Started with xschema
 icon: Layers
 ---
 
+import { Callout } from "fumadocs-ui/components/callout";
 import { Cards, Card } from "fumadocs-ui/components/card";
-import { Rocket, Lightbulb, Puzzle, Terminal, ShieldCheck, Zap } from "lucide-react";
+import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Lightbulb, Puzzle, Terminal, Code, Settings } from "lucide-react";
 
-xschema converts JSON Schema to native validators (Zod, ArkType, Effect, Valibot) with full type inference. Every adapter is tested against the official JSON Schema Test Suite, so you know exactly what works.
+## Introduction
+
+XSchema converts [JSON Schema](https://json-schema.org/) to native validators in many languages (Zod, Pydantic, Effect, and more...) with full type inference. Every adapter runs against the official JSON Schema Test Suite, so you know exactly what works.
+
+### Components
+
+Under the hood, xschema has these building blocks:
+
+- **CLI** - Does the heavy lifting: finds your schemas, handles all the JSON Schema complexity, and calls adapters to generate code. Also runs [compliance tests](/docs/compliance) against the official JSON Schema Test Suite
+- **[Configuration files](/docs/configuration)** - Define which schemas to process and how
+- **Adapters** - Convert bundled schemas to native validation code for each language
+- **Clients** - Language-specific packages to use generated schemas
+
+These components don't have to be used together (**framework mode**). If you want to build your own pipeline and just use the conversion and adapters programmatically, see [Runtime Mode](/docs/runtime).
+
+<Callout>
+  Want to understand the architecture and design philosophy? Read [What is XSchema](/docs/what-is-xschema).
+</Callout>
+
+### Terminology
+
+**JSON Schema** is a vocabulary for annotating and validating JSON documents. It's used in OpenAPI specs, API contracts, and configuration files. xschema takes JSON Schema as input and generates code for your preferred validation library.
+
+## Quick Setup
+
+This example uses TypeScript. xschema supports multiple languages (see later)
+
+<Steps>
+<Step>
+### Install the client and adapter
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
+</Step>
+<Step>
+### Create a config file
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/zod"
+    }
+  ]
+}
+```
+</Step>
+<Step>
+### Run the generator
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx xschema generate
+    ```
+  </Tab>
+</Tabs>
+
+This creates `.xschema/xschema.gen.ts` with your validators.
+</Step>
+<Step>
+### Use the generated schemas
+
+```typescript
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+const profileSchema = xschema("user:Profile");
+
+const result = profileSchema.safeParse({ id: "123", email: "alice@example.com" });
+```
+</Step>
+</Steps>
+
+## FAQ
+
+<Accordions>
+  <Accordion title="Which adapter should I pick?">
+    Use whichever validation library you're already familiar with. See [Adapters](/docs/adapters) for a comparison.
+  </Accordion>
+  <Accordion title="What JSON Schema drafts are supported?">
+    All drafts from draft-03 to draft-2020-12. The CLI normalizes everything to draft-2020-12 internally.
+  </Accordion>
+  <Accordion title="What if a keyword isn't supported?">
+    You'll get a clear error at build time. No silent failures. See [Unsupported Features](/docs/compliance/unsupported-features) for the complete list.
+  </Accordion>
+  <Accordion title="Do I need to regenerate when schemas change?">
+    Yes. Run `xschema generate` after modifying your JSON Schema files. You can add it to your build script or use watch mode during development.
+  </Accordion>
+  <Accordion title="Can I use multiple adapters in one project?">
+    Yes. Each schema declaration in your config can specify a different adapter. Useful if different parts of your app use different validation libraries.
+  </Accordion>
+  <Accordion title="How do I handle schemas from external URLs?">
+    Set `sourceType: "url"` in your config. xschema will fetch and cache the schema. You can add custom headers for authenticated endpoints. See [Configuration Reference](/docs/configuration) for details.
+  </Accordion>
+  <Accordion title="Can I use xschema without the CLI and config files?">
+    Yes. [Runtime Mode](/docs/runtime) lets you call the adapters programmatically to convert schemas dynamically. Useful for building your own tools or handling schemas that aren't known at build time.
+  </Accordion>
+</Accordions>
+
+## Learn More
+
+New to xschema? Don't worry, we welcome your questions.
+
+If you find anything confusing, please give your feedback on [GitHub Discussions](https://github.com/xschemadev/xschema/discussions)!
+
+### Get Started With Any Language
 
 <Cards>
   <Card 
-    title="Getting Started" 
-    description="Set up xschema in your project in 5 minutes"
-    href="/docs/getting-started"
-    icon={<Rocket />}
+    title="TypeScript" 
+    description="Zod, ArkType, Effect, Valibot"
+    href="/docs/getting-started/typescript"
+    icon={<Code />}
   />
   <Card 
+    title="Python" 
+    description="Pydantic (coming soon)"
+    href="/docs/getting-started/python"
+    icon={<Code />}
+  />
+</Cards>
+
+### Reference
+
+<Cards>
+  <Card 
     title="What is XSchema" 
-    description="Architecture, philosophy, and how it compares"
+    description="Architecture, philosophy, and when to use it"
     href="/docs/what-is-xschema"
     icon={<Lightbulb />}
   />
   <Card 
     title="Adapters" 
-    description="Compare Zod, ArkType, Effect, and Valibot"
+    description="Compare validation libraries"
     href="/docs/adapters"
     icon={<Puzzle />}
   />
   <Card 
+    title="Configuration" 
+    description="All config file options"
+    href="/docs/configuration"
+    icon={<Settings />}
+  />
+  <Card 
     title="CLI Reference" 
-    description="xschema generate, compliance, and more"
+    description="Commands and flags"
     href="/docs/cli"
     icon={<Terminal />}
-  />
-  <Card 
-    title="Compliance" 
-    description="Test results and coverage reports"
-    href="/docs/compliance"
-    icon={<ShieldCheck />}
-  />
-  <Card 
-    title="Runtime Mode" 
-    description="Convert schemas at runtime (coming soon)"
-    href="/docs/runtime"
-    icon={<Zap />}
   />
 </Cards>

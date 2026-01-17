@@ -495,6 +495,10 @@ graph TD
         UI[ui]
     end
 
+    subgraph External["External Processes"]
+        ADAPTER_CLI[Adapter CLIs]
+    end
+
     subgraph Compliance
         COMP_FETCH[compliance/fetcher]
         COMP_LOADER[compliance/loader]
@@ -523,6 +527,7 @@ graph TD
     PROCESSOR --> FETCHER
     GENERATOR --> LANGUAGE
     GENERATOR --> ADAPTER
+    GENERATOR -.->|stdin/stdout| ADAPTER_CLI
     INJECTOR --> LANGUAGE
     INJECTOR --> ADAPTER
 
@@ -541,4 +546,5 @@ graph TD
     style Schema fill:#fff3e0
     style Support fill:#f3e5f5
     style Compliance fill:#fce4ec
+    style External fill:#ffe0b2
 ```

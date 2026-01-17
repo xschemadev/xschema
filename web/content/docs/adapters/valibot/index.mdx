@@ -5,8 +5,6 @@ icon: Shield
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
-import { Cards, Card } from "fumadocs-ui/components/card";
-import { ClipboardCheck, Rocket, Settings, Puzzle } from "lucide-react";
 
 The Valibot adapter converts JSON Schema definitions into [Valibot](https://valibot.dev) validation schemas with full TypeScript type inference.
 
@@ -174,31 +172,4 @@ import { object, string, optional, number, pipe, minLength } from "valibot";
 
 This makes Valibot an excellent choice for frontend applications where bundle size matters.
 
-## Next Steps
 
-<Cards>
-  <Card
-    title="Valibot Compliance"
-    description="View detailed compliance by JSON Schema draft"
-    href="/docs/adapters/valibot/compliance"
-    icon={<ClipboardCheck />}
-  />
-  <Card
-    title="Getting Started"
-    description="Complete setup guide"
-    href="/docs/getting-started"
-    icon={<Rocket />}
-  />
-  <Card
-    title="Configuration"
-    description="All config file options"
-    href="/docs/configuration"
-    icon={<Settings />}
-  />
-  <Card
-    title="Compare Adapters"
-    description="See all available adapters"
-    href="/docs/adapters"
-    icon={<Puzzle />}
-  />
-</Cards>

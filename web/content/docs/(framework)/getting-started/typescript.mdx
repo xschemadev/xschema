@@ -6,8 +6,6 @@ icon: FileCode
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
-import { Card, Cards } from "fumadocs-ui/components/card";
-import { Settings, Code, Puzzle, Terminal } from "lucide-react";
 
 This guide walks you through setting up xschema in framework mode - the recommended approach for TypeScript projects.
 
@@ -175,31 +173,4 @@ export type SchemaTypes = {
 };
 ```
 
-## Next steps
 
-<Cards>
-  <Card
-    title="Configuration"
-    description="All config file options: source types, headers, env vars"
-    href="/docs/configuration"
-    icon={<Settings />}
-  />
-  <Card
-    title="Client Reference"
-    description="createXSchemaClient API and XSchemaType utility"
-    href="/docs/typescript/client"
-    icon={<Code />}
-  />
-  <Card
-    title="Compare Adapters"
-    description="Choose between Zod, ArkType, Effect, Valibot"
-    href="/docs/adapters"
-    icon={<Puzzle />}
-  />
-  <Card
-    title="CLI Reference"
-    description="All xschema generate flags and options"
-    href="/docs/cli"
-    icon={<Terminal />}
-  />
-</Cards>

@@ -4,9 +4,7 @@ description: Parse config files, convert schemas, and output native validators
 icon: Play
 ---
 
-import { Card, Cards } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
-import { ShieldCheck, Settings, Puzzle } from "lucide-react";
 
 ```bash
 xschema generate [flags]
@@ -206,25 +204,4 @@ The manifest tracks which schemas were generated so the CLI can detect and remov
 | 0 | Success |
 | 1 | Error (config not found, fetch failed, adapter error, etc.) |
 
-## Next Steps
 
-<Cards>
-  <Card
-    title="Compliance Command"
-    description="Run adapter compliance tests"
-    href="/docs/cli/compliance"
-    icon={<ShieldCheck />}
-  />
-  <Card
-    title="Configuration"
-    description="Config file format reference"
-    href="/docs/configuration"
-    icon={<Settings />}
-  />
-  <Card
-    title="Adapters"
-    description="Available validation libraries"
-    href="/docs/adapters"
-    icon={<Puzzle />}
-  />
-</Cards>

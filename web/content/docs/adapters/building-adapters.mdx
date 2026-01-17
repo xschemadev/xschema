@@ -6,8 +6,7 @@ icon: Wrench
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
-import { Card, Cards } from "fumadocs-ui/components/card";
-import { Terminal, Ban, ShieldCheck } from "lucide-react";
+import { File, Folder, Files } from "fumadocs-ui/components/files";
 
 Adapters convert JSON Schema to native validation code. This guide explains how to build a new adapter using the `@xschemadev/core` package.
 
@@ -28,45 +27,9 @@ Your adapter receives **pre-bundled, normalized, validated schemas** via stdin a
 
 ## Adapter Protocol
 
-Adapters communicate with the Go CLI via stdin/stdout JSON:
+Adapters communicate with the Go CLI via stdin/stdout JSON. The CLI sends pre-bundled schemas; adapters return generated code.
 
-```
-CLI --[JSON array]--> stdin --> adapter --> stdout --[JSON array]--> CLI
-```
-
-### Input Format
-
-The CLI sends a JSON array of `ConvertInput` objects:
-
-```typescript
-interface ConvertInput {
-  namespace: string;  // e.g. "user"
-  id: string;         // e.g. "Profile"
-  varName: string;    // e.g. "userProfile" (safe for code)
-  schema: object;     // Pre-bundled JSON Schema (draft2020-12)
-}
-```
-
-### Output Format
-
-Your adapter returns a JSON array of `ConvertResult` objects:
-
-```typescript
-interface ConvertResult {
-  namespace: string;  // Echo back from input
-  id: string;         // Echo back from input
-  varName: string;    // Echo back from input
-  imports: string[];  // Import statements needed
-  schema?: string;    // Schema code (e.g. "z.string()")
-  type?: string;      // Type expression (e.g. "z.infer<typeof varName>")
-  validate?: string;  // Optional validation function
-  validationImports?: string[]; // Imports for validation function
-}
-```
-
-<Callout type="info">
-At least one of `schema` or `type` must be provided. Use `schema` for runtime validators, `type` for type-only generation.
-</Callout>
+See the [Adapter Protocol](/docs/adapters/protocol) reference for the complete specification.
 
 ## The `@xschemadev/core` Package
 
@@ -426,37 +389,22 @@ See [Unsupported Features](/docs/compliance/unsupported-features) for the comple
 
 The Zod adapter is a good reference implementation:
 
-```
-typescript/packages/adapters/zod/
-├── src/
-│   ├── cli.ts      # CLI entry point (5 lines)
-│   ├── index.ts    # convert() function (20 lines)
-│   └── renderer.ts # IR -> Zod code (~900 lines)
-├── package.json
-└── compliance/     # Test results
-```
+<Files>
+  <Folder name="typescript/packages/adapters/zod" defaultOpen>
+    <Folder name="src" defaultOpen>
+      <File name="cli.ts" />
+      <File name="index.ts" />
+      <File name="renderer.ts" />
+    </Folder>
+    <Folder name="compliance" />
+    <File name="package.json" />
+  </Folder>
+</Files>
+
+- `cli.ts` - CLI entry point (~5 lines)
+- `index.ts` - convert() function (~20 lines)
+- `renderer.ts` - IR to Zod code (~900 lines)
 
 See the full source at [`typescript/packages/adapters/zod/src/`](https://github.com/xschemadev/xschema/tree/main/typescript/packages/adapters/zod/src).
 
-## Next Steps
 
-<Cards>
-  <Card
-    title="CLI Compliance Command"
-    description="Full reference for the compliance command"
-    href="/docs/cli/compliance"
-    icon={<Terminal />}
-  />
-  <Card
-    title="Unsupported Features"
-    description="Features that can't be statically compiled"
-    href="/docs/compliance/unsupported-features"
-    icon={<Ban />}
-  />
-  <Card
-    title="Compliance Overview"
-    description="Understanding the compliance system"
-    href="/docs/compliance"
-    icon={<ShieldCheck />}
-  />
-</Cards>

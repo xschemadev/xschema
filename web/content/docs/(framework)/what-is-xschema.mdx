@@ -1,12 +1,12 @@
 ---
 title: What is XSchema
-description: Architecture, philosophy, and how xschema compares to alternatives
+description: Architecture and philosophy behind xschema
 icon: Lightbulb
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Cards, Card } from "fumadocs-ui/components/card";
-import { FileJson, ShieldCheck, Puzzle, Languages, Rocket } from "lucide-react";
+import { Code, Zap, BookOpen } from "lucide-react";
 
 ## Philosophy
 
@@ -49,6 +49,8 @@ flowchart LR
         F[Fetch external refs]
         B[Bundle into self-contained]
     end
+
+    A[Adapter CLIs]
     
     subgraph Output
         O[Native Code]
@@ -61,6 +63,7 @@ flowchart LR
     Pr -.-> V
     Pr -.-> F
     Pr -.-> B
+    G -.->|stdin/stdout| A
     I --> O
     I --> T
 ```
@@ -91,99 +94,10 @@ By the time an adapter receives a schema, it's:
 
 This separation means adapters only need ~500 lines of code to achieve 100% compliance.
 
-## Comparison
+## Adapter Protocol
 
-### vs json-schema-to-zod
+Adapters are standalone CLIs that communicate with the xschema CLI via stdin/stdout JSON. The CLI sends pre-bundled, normalized schemas; adapters return generated code.
 
-[json-schema-to-zod](https://github.com/StefanTerdell/json-schema-to-zod) converts JSON Schema to Zod schemas.
+This separation keeps adapters simple (~500 lines for 100% compliance) while the CLI handles the complex work of draft normalization, ref resolution, and validation.
 
-| Feature | xschema | json-schema-to-zod |
-|---------|---------|-------------------|
-| Compliance tested | Yes (100% on Zod) | No |
-| External `$ref` resolution | Yes, recursive | Limited |
-| Draft normalization | All drafts → 2020-12 | Partial |
-| Multiple adapters | Zod, ArkType, Effect, Valibot | Zod only |
-| Runtime mode | Planned | Yes |
-| Config-driven | Yes | No |
-
-**Choose json-schema-to-zod if:** You need runtime conversion or a single ad-hoc transform.
-
-**Choose xschema if:** You want tested compliance, multiple adapter options, or a build-time workflow.
-
-### vs TypeBox
-
-[TypeBox](https://github.com/sinclairzx81/typebox) is a TypeScript-first schema builder that can emit JSON Schema.
-
-| Feature | xschema | TypeBox |
-|---------|---------|---------|
-| Direction | JSON Schema → validators | TypeScript → JSON Schema |
-| Source of truth | JSON Schema | TypeScript types |
-| Existing schemas | Yes, any JSON Schema | Must rewrite in TypeBox |
-| Language support | TypeScript, Python (planned) | TypeScript only |
-| Validation library | Your choice (Zod, etc.) | TypeBox's built-in validator |
-
-**Choose TypeBox if:** You're starting fresh and want TypeScript as your schema source.
-
-**Choose xschema if:** You have existing JSON Schemas, use OpenAPI, or need a specific validator.
-
-### vs Zod (directly)
-
-Zod is excellent for writing schemas in TypeScript. The comparison is about workflow, not quality.
-
-| Approach | When to use |
-|----------|-------------|
-| **Zod directly** | TypeScript is your source of truth |
-| **xschema → Zod** | JSON Schema is your source of truth (OpenAPI, API contracts, shared schemas) |
-
-If you're already using Zod and don't have external JSON Schemas, you don't need xschema.
-
-## When to use xschema
-
-<Cards>
-  <Card title="You have JSON Schemas" icon={<FileJson />}>
-    OpenAPI specs, API contracts, shared schema definitions
-  </Card>
-  <Card title="You need compliance guarantees" icon={<ShieldCheck />}>
-    Know exactly which keywords work, with test results
-  </Card>
-  <Card title="You want adapter flexibility" icon={<Puzzle />}>
-    Switch between Zod, ArkType, Effect, or Valibot
-  </Card>
-  <Card title="You use multiple languages" icon={<Languages />}>
-    TypeScript today, Python tomorrow (same schemas)
-  </Card>
-</Cards>
-
-## When not to use xschema
-
-<Callout type="info">
-xschema isn't always the right tool. Here's when to skip it:
-</Callout>
-
-- **TypeScript is your source of truth** - Use Zod, ArkType, or TypeBox directly
-- **You need runtime conversion** - xschema is build-time only (runtime mode planned)
-- **Single ad-hoc conversion** - json-schema-to-zod is simpler for one-off transforms
-- **You need `$dynamicRef`** - Not supported (can't be statically compiled)
-
-## Next steps
-
-<Cards>
-  <Card 
-    title="Getting Started" 
-    description="Set up xschema in 5 minutes"
-    href="/docs/getting-started"
-    icon={<Rocket />}
-  />
-  <Card 
-    title="Adapters" 
-    description="Compare Zod, ArkType, Effect, Valibot"
-    href="/docs/adapters"
-    icon={<Puzzle />}
-  />
-  <Card 
-    title="Compliance" 
-    description="See test results for each adapter"
-    href="/docs/compliance"
-    icon={<ShieldCheck />}
-  />
-</Cards>
+See the [Adapter Protocol](/docs/adapters/protocol) reference for the complete specification.
