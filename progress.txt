@@ -733,3 +733,26 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Links should point to new consolidated paths (/docs/configuration, /docs/adapters, /docs/troubleshooting)
   - Page is accessible at /docs/typescript/client (not /docs/(framework)/typescript/client)
 ---
+
+## 2026-01-17 - US-013 (PRD: docs-restructure)
+- Created CLI compliance command reference at `web/content/docs/cli/compliance.mdx`
+- Content includes:
+  - Command usage synopsis: `xschema compliance [flags]`
+  - Complete flags table (8 flags: --adapter-path, --draft, --keyword, --dev-report, --verbose, --profile, --concurrency, --lang)
+  - Examples: basic usage, testing specific drafts, testing specific keywords, debugging, generating reports
+  - Callout warning about --dev-report restrictions
+  - How It Works section with 7 Steps (fetch test suite, load test cases, bundle schemas, generate code, generate harness, execute tests, report results)
+  - Coverage calculation formula explanation
+  - --dev-report flag detailed output format (JSON + REPORT.md)
+  - Supported drafts table (draft2020-12 through draft3)
+  - Docs generation flow diagram with 3 steps
+  - Exit codes table
+  - Next steps Cards linking to compliance overview, unsupported features, building adapters, generate command
+- Replaced placeholder that existed at this path
+- Typecheck passes, build passes (page prerendered at /docs/cli/compliance)
+- **Learnings for future iterations:**
+  - Placeholder pages may already exist - check before writing new content
+  - CLI command pages follow consistent structure: synopsis, flags table, examples, how it works, exit codes, next steps
+  - Steps component from fumadocs-ui/components/steps is useful for multi-step processes
+  - Build prerendering confirms page is accessible
+---

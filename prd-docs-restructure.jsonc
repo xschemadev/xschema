@@ -221,8 +221,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created cli/compliance.mdx with complete reference. Includes all flags table, basic/draft/keyword/debugging/report examples, 7-step How It Works with Steps component, coverage calculation formula, --dev-report output format, supported drafts table, docs generation flow, and exit codes. Content adapted from internals/compliance-testing.mdx. Build passes (page prerendered at /docs/cli/compliance)."
     },
     {
       "id": "US-014",
