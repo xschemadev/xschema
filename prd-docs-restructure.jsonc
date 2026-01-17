@@ -237,8 +237,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/index.mdx with comparison table, which adapter guidance, quick reference table, and Cards linking to individual adapters and building-adapters guide."
     },
     {
       "id": "US-015",
