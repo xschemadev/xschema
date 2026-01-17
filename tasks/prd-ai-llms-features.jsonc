@@ -69,8 +69,8 @@
         "Typecheck passes",
         "Verify `/docs/cli/generate.mdx` redirects to markdown content in browser"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created start.ts with global middleware. Uses rewritePath from fumadocs-core/negotiation with path-to-regexp v8 syntax (/docs/{*path}.mdx). Also configured tanstackStart vite plugin with srcDirectory: 'src' for auto-discovery. Verified 307 redirect works."
     },
     {
       "title": "Add page actions UI components via CLI",

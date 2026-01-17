@@ -7,17 +7,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
 
 ---
 
-## 2026-01-14 - US-001
-- Restructured content directory for fumadocs
-- Created directories: `/typescript/framework/`, `/typescript/library/`, `/internals/`
-- Added `.gitkeep` files to preserve empty directories in git
-- Removed `test.mdx` placeholder
-- `compliance/` stays at root level (per PRD navigation requirements)
+## 2026-01-17 - Set up path rewriting middleware (PRD: ai-llms-features)
+- Created `web/src/start.ts` with global request middleware
+- Middleware uses `rewritePath` from `fumadocs-core/negotiation`
+- Pattern: `/docs/{*path}.mdx` -> `/llms.mdx/docs/{*path}` (path-to-regexp v8 syntax)
+- Returns 307 redirect response when pattern matches
+- Updated `vite.config.ts` with `srcDirectory: 'src'` for TanStack Start plugin auto-discovery
+- Typecheck passes, build passes with 32 pages prerendered
+- Verified: `/docs/cli/generate.mdx` returns 307 redirect to `/llms.mdx/docs/cli/generate`
+- Verified: following redirect returns full markdown content
 - **Learnings for future iterations:**
-  - Empty directories need `.gitkeep` for git tracking
-  - Build command is `bun run build` in web/ directory - runs generate scripts first
-  - fumadocs content is at `web/content/docs/`
+  - TanStack Start looks for `start.ts` in the configured `srcDirectory` (default is project root)
+  - Must add `srcDirectory: 'src'` to tanstackStart() vite plugin options if start.ts is in src/
+  - path-to-regexp v8 uses `{*param}` syntax for catch-all parameters (not `:param(.+)` or `*param`)
+  - Request middleware can return a `Response` directly to short-circuit (e.g. `Response.redirect()`)
+  - `rewritePath()` returns `{ rewrite: (path) => string | false }` - false means no match
 ---
+
 
 ## 2026-01-14 - US-002
 - Created 7 meta.json files for fumadocs navigation structure
