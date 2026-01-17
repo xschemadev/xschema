@@ -251,8 +251,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/zod/index.mdx and adapters/zod/compliance.mdx with updated links pointing to new paths (/docs/adapters/*, /docs/getting-started, /docs/configuration, /docs/compliance/unsupported-features). Verified in browser."
     },
     {
       "id": "US-016",

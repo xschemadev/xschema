@@ -510,3 +510,22 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - New paths: `/docs/adapters/zod`, `/docs/adapters/arktype`, etc.
   - Cards with icons work well for adapter navigation
 ---
+
+## 2026-01-17 - US-015 (PRD: docs-restructure)
+- Moved Zod adapter pages to new location: `web/content/docs/adapters/zod/`
+- Files created:
+  - `adapters/zod/index.mdx` - main Zod adapter page with updated links
+  - `adapters/zod/compliance.mdx` - compliance report page with updated links
+- Updated internal links to new paths:
+  - `/docs/adapters/zod/compliance` (was `/docs/typescript/adapters/zod/compliance`)
+  - `/docs/getting-started` (was `/docs/typescript/framework/getting-started`)
+  - `/docs/configuration` (was `/docs/typescript/framework/configuration`)
+  - `/docs/adapters` (was `/docs/typescript/adapters`)
+  - `/docs/compliance/unsupported-features` (unchanged)
+- Sidebar shows Zod and Zod Compliance under Adapters tab
+- Typecheck passes, verified in browser
+- **Learnings for future iterations:**
+  - Compliance page uses Tabs/Tab/Accordions/Accordion components from fumadocs
+  - Adapter pages should link to new consolidated pages (getting-started, configuration) not old typescript-specific paths
+  - Icon `Shield` works well for adapter index pages
+---
