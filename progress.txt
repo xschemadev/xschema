@@ -56,3 +56,22 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
 - **Learnings for future iterations:**
   - When moving pages to new locations, update internal links (hrefs) to reflect the new structure
 ---
+
+## 2026-01-18 02:00 - Update navigation and cleanup old folders
+- Updated `(framework)/meta.json` pages array to new structure:
+  - index, what-is-xschema, configuration, ---Languages---, typescript, python, ---Help---, faq, troubleshooting
+  - Removed "---Getting Started---" section header
+  - Removed "getting-started" folder reference
+  - Removed "---Language Reference---" in favor of "---Languages---"
+  - Added python to pages array
+- Deleted `(framework)/getting-started/` folder (typescript.mdx, python.mdx, meta.json)
+- Deleted `(framework)/typescript/` folder (client.mdx, meta.json)
+- Verified in browser: sidebar shows correct order with Languages section header
+- Configuration appears directly after what-is-xschema (no section header between)
+- Typecheck passes
+- Files changed: `web/content/docs/(framework)/meta.json`, deleted 5 files in 2 folders
+- **Learnings for future iterations:**
+  - Section headers in fumadocs use `---Title---` format in the pages array
+  - Content pages should be at root level (not in subfolders) for cleaner URLs
+  - When deleting folders, ensure no other pages reference the old paths (index.mdx had stale links to `/docs/getting-started/typescript` - not part of this task but noted)
+---

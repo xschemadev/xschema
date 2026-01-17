@@ -6,11 +6,10 @@
   "pages": [
     "index",
     "what-is-xschema",
-    "---Getting Started---",
-    "getting-started",
     "configuration",
-    "---Language Reference---",
+    "---Languages---",
     "typescript",
+    "python",
     "---Help---",
     "faq",
     "troubleshooting"
