@@ -1,0 +1,203 @@
+---
+title: Valibot
+description: Generate Valibot schemas from JSON Schema definitions
+icon: Shield
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+The Valibot adapter converts JSON Schema definitions into [Valibot](https://valibot.dev) validation schemas with full TypeScript type inference.
+
+## Overview
+
+| | |
+|---|---|
+| **Package** | `@xschemadev/valibot` |
+| **Peer Dependency** | `valibot ^0.42.0` |
+| **Compliance** | 98.9% |
+
+Valibot is a modular validation library focused on bundle size. xschema's Valibot adapter provides:
+
+- **Near-complete compliance** with JSON Schema specifications (98.9% for draft2020-12)
+- **Full type inference** - generated schemas include TypeScript types
+- **Tree-shakeable** - only include what you use
+- **Minimal bundle size** - modular design keeps bundles small
+
+<Callout type="warn" title="Known Limitation">
+Valibot has a bug with properties named `__proto__`, `constructor`, or `toString`. Schemas with these property names will cause runtime errors. This is a Valibot library bug, not an xschema issue. See [Known Limitation](#known-limitation) below.
+</Callout>
+
+## Installation
+
+```bash
+# with bun
+bun add @xschemadev/valibot valibot
+
+# with npm
+npm install @xschemadev/valibot valibot
+
+# with pnpm
+pnpm add @xschemadev/valibot valibot
+```
+
+## Usage with Framework Mode
+
+The recommended way to use xschema is with the client. First, set up your config:
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/valibot"
+    }
+  ]
+}
+```
+
+Run the generator:
+
+```bash
+bunx xschema generate
+```
+
+Then use the generated schemas:
+
+```typescript title="app.ts"
+import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+import * as v from "valibot";
+
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Get schema - returns a Valibot schema
+const profileSchema = xschema("Profile");
+
+// Validate with safeParse (returns result object)
+const result = v.safeParse(profileSchema, {
+  id: "123",
+  email: "alice@example.com",
+});
+
+if (result.success) {
+  console.log(result.output); // Fully typed!
+} else {
+  console.error(result.issues);
+}
+
+// Or use parse (throws on error)
+const profile = v.parse(profileSchema, userData);
+
+// Extract type for function signatures
+type Profile = XSchemaType<"user:Profile">;
+```
+
+## Generated Output
+
+For a JSON Schema like:
+
+```json title="profile.schema.json"
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["id", "email"]
+}
+```
+
+xschema generates:
+
+```typescript
+import * as v from "valibot";
+
+const user_Profile = v.object({
+  id: v.string(),
+  email: v.pipe(v.string(), v.email()),
+  age: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
+});
+type user_ProfileType = v.InferOutput<typeof user_Profile>;
+```
+
+## Supported Features
+
+The Valibot adapter supports most JSON Schema keywords. See the [Compliance](/docs/adapters/valibot/compliance) page for detailed coverage by JSON Schema draft.
+
+### Highlights
+
+- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
+- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
+- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
+- String constraints (`minLength`, `maxLength`, `pattern`)
+- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `prefixItems`)
+- Object constraints (`required`, `additionalProperties`, `unevaluatedProperties`)
+- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
+- Conditional (`if`/`then`/`else`)
+- References (`$ref`, `$defs`)
+
+## Known Limitation
+
+Valibot has a bug where object properties with prototype-related names cause runtime errors:
+
+- `__proto__`
+- `constructor`
+- `toString`
+
+When validating an object schema that includes any of these property names, Valibot throws:
+
+```
+this.entries[key]._run is not a function
+```
+
+**This is a Valibot library bug**, not an xschema issue. The generated code is correct, but Valibot's internal object handling conflicts with JavaScript's prototype chain.
+
+**Workaround**: Avoid using these property names in your JSON Schemas when using the Valibot adapter. If you need to support schemas with these property names, consider using a different adapter like [Zod](/docs/adapters/zod) or [ArkType](/docs/adapters/arktype), which have 100% compliance.
+
+## Bundle Size Advantage
+
+Valibot's modular design means generated schemas only include the validators actually used:
+
+```typescript
+// Only these functions are included in your bundle
+import { object, string, optional, number, pipe, minLength } from "valibot";
+```
+
+This makes Valibot an excellent choice for frontend applications where bundle size matters.
+
+## Next Steps
+
+<Cards>
+  <Card
+    title="Valibot Compliance"
+    description="View detailed compliance by JSON Schema draft"
+    href="/docs/adapters/valibot/compliance"
+    icon="ClipboardCheck"
+  />
+  <Card
+    title="Getting Started"
+    description="Complete setup guide"
+    href="/docs/getting-started"
+    icon="Rocket"
+  />
+  <Card
+    title="Configuration"
+    description="All config file options"
+    href="/docs/configuration"
+    icon="Settings"
+  />
+  <Card
+    title="Compare Adapters"
+    description="See all available adapters"
+    href="/docs/adapters"
+    icon="Puzzle"
+  />
+</Cards>

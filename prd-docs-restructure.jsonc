@@ -281,8 +281,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created adapters/valibot/index.mdx and adapters/valibot/compliance.mdx with updated links pointing to new paths (/docs/adapters/valibot/compliance, /docs/getting-started, /docs/configuration, /docs/adapters, /docs/compliance/unsupported-features). Fixed client API to use consistent pattern with { schemas, defaultNamespace } and import { schemas } from './.xschema/xschema.gen'. Verified in browser."
     },
     {
       "id": "US-018",
