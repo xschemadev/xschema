@@ -886,3 +886,23 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Runtime mode trades TypeScript inference for flexibility (dynamic schemas)
   - Python runtime planned to use Pydantic v2 adapter
 ---
+
+## 2026-01-17 - US-024 (PRD: docs-restructure)
+- Verified no broken internal links in documentation
+- Fixed icon names: CircleHelp -> CircleQuestionMark in faq.mdx and troubleshooting.mdx
+- Build passes without warnings or errors
+- All 30 pages prerendered successfully
+- Verified all 30 page routes return HTTP 200:
+  - Framework section: /docs, /docs/what-is-xschema, /docs/configuration, /docs/getting-started, /docs/getting-started/typescript, /docs/getting-started/python, /docs/typescript/client, /docs/faq, /docs/troubleshooting
+  - CLI section: /docs/cli, /docs/cli/generate, /docs/cli/compliance
+  - Adapters section: /docs/adapters, /docs/adapters/zod, /docs/adapters/zod/compliance, /docs/adapters/arktype, /docs/adapters/arktype/compliance, /docs/adapters/effect, /docs/adapters/effect/compliance, /docs/adapters/valibot, /docs/adapters/valibot/compliance, /docs/adapters/building-adapters
+  - Compliance section: /docs/compliance, /docs/compliance/unsupported-features, /docs/compliance/how-it-works
+  - Runtime section: /docs/runtime, /docs/runtime/api-reference, /docs/runtime/getting-started/typescript, /docs/runtime/getting-started/python
+- All internal links verified - one false positive (/docs/schema/introduction) was actually external link to effect.website
+- Typecheck passes
+- **Learnings for future iterations:**
+  - Lucide icon names: CircleQuestionMark not CircleHelp (naming convention changed)
+  - Build with prerender discovers broken links during crawl
+  - grep for /docs/ links can find both internal and external links (need to check context)
+  - All 24 user stories in docs-restructure PRD now complete
+---

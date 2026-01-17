@@ -394,8 +394,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Fixed CircleHelp -> CircleQuestionMark icon name in faq.mdx and troubleshooting.mdx. Build passes without broken link warnings. All 30 pages return HTTP 200. All internal links verified - /docs/schema/introduction was external link to effect.website. Typecheck passes."
     }
   ]
 }
