@@ -346,8 +346,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "compliance/unsupported-features.mdx already existed from previous work. Created compliance/how-it-works.mdx with 7-step testing pipeline, coverage calculation formula, unsupported feature detection methods, schema preprocessing table, report generation section, and Next Steps cards. Typecheck passes, build passes (page prerendered at /docs/compliance/how-it-works)."
     },
     {
       "id": "US-022",
