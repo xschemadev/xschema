@@ -1,12 +1,9 @@
 {
   "pages": [
-    "index",
-    "getting-started",
-    "configuration",
+    "(framework)",
+    "runtime",
     "cli",
-    "compliance",
-    "internals",
-    "typescript",
-    "troubleshooting"
+    "adapters",
+    "compliance"
   ]
 }

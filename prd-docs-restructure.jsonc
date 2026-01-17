@@ -15,8 +15,8 @@
         "Create content/docs/meta.json with pages array: [\"(framework)\", \"runtime\", \"cli\", \"adapters\", \"compliance\"]",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Directories already existed (created previously). Updated meta.json with new pages array."
     },
     {
       "id": "US-002",

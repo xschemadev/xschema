@@ -429,3 +429,13 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Auto-generated files need icons added in the generator scripts, not manually
   - Build will show `[lucide-icons-plugin] Unknown icon detected:` if icon name is invalid
 ---
+
+## 2026-01-17 - US-001 (PRD: docs-restructure)
+- Updated meta.json with new pages array for 5-section structure
+- Directories already existed: (framework)/, runtime/, cli/, adapters/, compliance/
+- Files changed: web/content/docs/meta.json
+- **Learnings for future iterations:**
+  - Previous work had already created the directory structure
+  - fumadocs route groups use parentheses: (framework) becomes the default route
+  - meta.json pages array controls sidebar section ordering
+---
