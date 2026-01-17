@@ -97,8 +97,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created getting-started/ folder with index.mdx (language selection with Cards linking to TS/Python), typescript.mdx (full guide with prerequisites, installation, config, generate, usage, next steps Cards), and python.mdx (coming soon placeholder with planned features and preview examples). Also created meta.json for navigation ordering. Verified all three pages render correctly in browser."
     },
     {
       "id": "US-007",

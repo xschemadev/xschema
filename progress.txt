@@ -635,3 +635,33 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Concurrency default is `min(8, num_cpus)` not just `8`
   - packageManager field in package.json takes priority over lockfile detection
 ---
+
+## 2026-01-17 - US-006 (PRD: docs-restructure)
+- Created Getting Started section with language-specific pages
+- Files created:
+  - `web/content/docs/(framework)/getting-started/index.mdx` - language selection overview with Cards linking to TS/Python
+  - `web/content/docs/(framework)/getting-started/typescript.mdx` - full TS guide with Steps component (prerequisites, installation, config, generate, usage)
+  - `web/content/docs/(framework)/getting-started/python.mdx` - coming soon placeholder with planned features and preview examples
+  - `web/content/docs/(framework)/getting-started/meta.json` - navigation ordering
+- TypeScript guide includes:
+  - Prerequisites (Node.js 18+, moduleResolution settings)
+  - Installation with adapter options table
+  - Config file creation with example
+  - Run generator instructions
+  - Usage example with createXSchemaClient and XSchemaType
+  - What's generated section with example output
+  - Next steps Cards linking to configuration, client, adapters, CLI
+- Python page includes:
+  - Info callout about coming soon status
+  - Planned workflow preview
+  - Planned features list (Pydantic v2, type hints, compliance, config format)
+  - Example config and expected output
+  - Cards linking to TypeScript and GitHub
+- All three pages verified in browser, typecheck passes
+- **Learnings for future iterations:**
+  - Old getting-started.mdx at root still exists and serves at /docs/getting-started (US-023 will clean up)
+  - New pages accessible at /docs/getting-started/index, /docs/getting-started/typescript, /docs/getting-started/python
+  - meta.json in folder controls page ordering within that folder
+  - Steps/Step components from fumadocs-ui/components/steps for numbered guides
+  - Cards with icons work well for "Next steps" sections
+---

@@ -1,0 +1,54 @@
+---
+title: Getting Started
+description: Choose your language and start using xschema in minutes
+icon: Rocket
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+xschema generates native validators from JSON Schema. Choose your language to get started:
+
+<Cards>
+  <Card
+    title="TypeScript"
+    description="Generate Zod, ArkType, Effect, or Valibot validators"
+    href="/docs/getting-started/typescript"
+    icon="FileCode"
+  />
+  <Card
+    title="Python"
+    description="Generate Pydantic validators (coming soon)"
+    href="/docs/getting-started/python"
+    icon="FileCode"
+  />
+</Cards>
+
+## Quick Overview
+
+xschema works in two steps:
+
+1. **Define** - Write JSON Schema files and xschema config
+2. **Generate** - Run `xschema generate` to produce native validators
+
+```bash
+# 1. Create a config file (e.g., user.xschema.jsonc)
+# 2. Run the generator
+bunx xschema generate
+
+# Output: .xschema/xschema.gen.ts with native validators
+```
+
+The generated code is:
+
+- **Type-safe** - Full TypeScript types inferred from schemas
+- **Native** - Uses your chosen validation library directly (Zod, ArkType, etc.)
+- **Compliance-tested** - Validated against the JSON Schema Test Suite
+
+## Not sure which language?
+
+<Callout>
+Currently, xschema fully supports **TypeScript** with 4 adapter options. Python support with Pydantic is planned.
+</Callout>
+
+If you're using TypeScript, continue with the [TypeScript guide](/docs/getting-started/typescript).
