@@ -832,3 +832,21 @@ Started: Wed Jan 14 03:24:03 PM CET 2026
   - Accordion format works well for FAQ with collapsible answers
   - CircleHelp is the correct Lucide icon for FAQ pages
 ---
+
+## 2026-01-17 - US-023 (PRD: docs-restructure)
+- Removed deprecated files from old structure
+- Files removed:
+  - `web/content/docs/getting-started.mdx` (replaced by framework structure)
+  - `web/content/docs/cli.mdx` (moved to cli section)
+  - `web/content/docs/typescript/` folder entirely (19 files - content moved to adapters and framework)
+  - `web/content/docs/internals/` folder entirely (6 files - content distributed to other sections)
+- Files already removed previously:
+  - `configuration.mdx` and `troubleshooting.mdx` (removed during US-007 consolidation)
+- compliance/index.mdx was kept (updated in place for US-020, not replaced)
+- Final structure: 5 sections only (framework, runtime, cli, adapters, compliance)
+- Build passes with 26 pages prerendered
+- **Learnings for future iterations:**
+  - Some PRD acceptance criteria may be outdated if work was done out of order
+  - compliance/index.mdx was updated in place, not replaced - verify before deleting
+  - Build prerendering is a good way to verify all pages exist
+---

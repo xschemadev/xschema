@@ -380,8 +380,8 @@
         "Remove content/docs/compliance/index.mdx (replaced by new compliance section)",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Removed getting-started.mdx, cli.mdx at root. Removed entire typescript/ and internals/ folders. configuration.mdx and troubleshooting.mdx were already removed previously. compliance/index.mdx was kept (it was updated in place for US-020, not replaced). Build passes with 26 pages prerendered."
     },
     {
       "id": "US-024",
