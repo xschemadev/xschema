@@ -4,17 +4,15 @@ description: Generate Zod schemas from JSON Schema definitions
 icon: Shield
 ---
 
-
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
 The Zod adapter converts JSON Schema definitions into [Zod](https://zod.dev) validation schemas with full TypeScript type inference.
 
 ## Overview
 
-| | |
-|---|---|
-| **Package** | `@xschemadev/zod` |
-| **Peer Dependency** | `zod ^3.0.0` |
-| **Compliance** | 100% |
+- **Package:** `@xschemadev/zod`
+- **Peer Dependency:** `zod ^3.0.0`
+- **Compliance:** [100%](/docs/adapters/zod/compliance)
 
 Zod is the most popular TypeScript validation library with a large ecosystem of integrations. The xschema Zod adapter generates native Zod schemas from JSON Schema with:
 
@@ -24,16 +22,28 @@ Zod is the most popular TypeScript validation library with a large ecosystem of 
 
 ## Installation
 
-```bash
-# with bun
-bun add @xschemadev/zod zod
-
-# with npm
-npm install @xschemadev/zod zod
-
-# with pnpm
-pnpm add @xschemadev/zod zod
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
 
 ## Usage with Framework Mode
 
@@ -55,11 +65,30 @@ The recommended way to use xschema is with the client. First, set up your config
 
 Run the generator:
 
-```bash
-bunx xschema generate
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx xschema generate
+    ```
+  </Tab>
+</Tabs>
 
-Then use the generated schemas:
+Then use the generated schemas with the [xschema client](/docs/typescript/client):
 
 ```typescript title="app.ts"
 import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
@@ -126,17 +155,5 @@ type user_ProfileType = z.infer<typeof user_Profile>;
 The Zod adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
 
 See the [Compliance](/docs/adapters/zod/compliance) page for the full breakdown by draft.
-
-### Highlights
-
-- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
-- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
-- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
-- String constraints (`minLength`, `maxLength`, `pattern`)
-- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `contains`, `prefixItems`)
-- Object constraints (`required`, `additionalProperties`, `propertyNames`, `unevaluatedProperties`)
-- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
-- Conditionals (`if`/`then`/`else`)
-- References (`$ref`, `$defs`)
 
 

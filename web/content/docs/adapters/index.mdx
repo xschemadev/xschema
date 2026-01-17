@@ -4,114 +4,32 @@ description: Compare validation library adapters supported by xschema
 icon: Puzzle
 ---
 
-import { Cards, Card } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
-import { Shield, Sparkles, Layers, Package } from "lucide-react";
 
 # Adapters
 
-xschema generates native validation code for multiple libraries. Each adapter converts JSON Schema to idiomatic code for your chosen library.
+Adapters convert JSON Schema into native validation code for your chosen library. Each adapter is a standalone CLI that receives pre-processed schemas from xschema and outputs idiomatic code.
 
-## Comparison
+See [What is XSchema](/docs/what-is-xschema) for the full architecture and [Adapter Protocol](/docs/adapters/protocol) for the technical specification.
 
-| Adapter | Compliance | Peer Dependency | Key Features |
-|---------|------------|-----------------|--------------|
-| [@xschemadev/zod](/docs/adapters/zod) | 100% | `zod ^3.0.0` | Most popular, large ecosystem |
-| [@xschemadev/arktype](/docs/adapters/arktype) | 100% | `arktype ^2.0.0` | TypeScript-native, type-level validation |
-| [@xschemadev/effect](/docs/adapters/effect) | 100% | `effect ^3.0.0` | Effect ecosystem integration |
-| [@xschemadev/valibot](/docs/adapters/valibot) | 98.9% | `valibot ^0.42.0` | Smallest bundle size |
+## TypeScript Adapters
 
-<Callout type="info">
-  Compliance percentages are calculated against the official JSON Schema Test Suite, excluding features that cannot be statically compiled.
-  [Learn more about compliance testing](/docs/compliance).
-</Callout>
+| Adapter | Compliance | Peer Dependency |
+|---------|------------|-----------------|
+| [@xschemadev/zod](/docs/adapters/zod) | [100%](/docs/adapters/zod/compliance) | `zod ^3.0.0` |
+| [@xschemadev/arktype](/docs/adapters/arktype) | [100%](/docs/adapters/arktype/compliance) | `arktype ^2.0.0` |
+| [@xschemadev/effect](/docs/adapters/effect) | [100%](/docs/adapters/effect/compliance) | `effect ^3.0.0` |
+| [@xschemadev/valibot](/docs/adapters/valibot) | [98.9%](/docs/adapters/valibot/compliance) | `valibot ^0.42.0` |
 
-## Which Adapter Should I Choose?
+## Python Adapters
 
-### Zod
+| Adapter | Compliance | Peer Dependency |
+|---------|------------|-----------------|
+| [@xschemadev/pydantic](/docs/adapters/pydantic) | Coming soon | `pydantic ^2.0.0` |
 
-The most popular choice with the largest ecosystem. Integrates with form libraries (React Hook Form, Formik), API frameworks (tRPC, Hono), and ORMs (Drizzle, Prisma).
+## About Compliance
 
-**Choose Zod if:** You want maximum ecosystem compatibility or are unsure which to pick.
-
-```bash
-bun add @xschemadev/zod zod
-```
-
-### ArkType
-
-TypeScript-native validation that compiles schemas at the type level. Provides the most advanced type inference and descriptive error messages.
-
-**Choose ArkType if:** You want cutting-edge TypeScript inference and don't need broad ecosystem support.
-
-```bash
-bun add @xschemadev/arktype arktype
-```
-
-### Effect
-
-Integrates with the Effect ecosystem for functional programming in TypeScript. Provides composable validation with Effect's error handling patterns.
-
-**Choose Effect if:** You're already using Effect in your project.
-
-```bash
-bun add @xschemadev/effect effect
-```
-
-### Valibot
-
-The smallest bundle size of any adapter. Tree-shakeable design keeps your bundle minimal.
-
-**Choose Valibot if:** Bundle size is your primary concern.
-
-<Callout type="warn">
-  Valibot has a known bug with JavaScript prototype property names (`__proto__`, `constructor`, `toString`). Schemas using these property names will cause runtime errors. This is a Valibot library bug, not an xschema issue.
-</Callout>
-
-```bash
-bun add @xschemadev/valibot valibot
-```
-
-## Quick Reference
-
-| Use Case | Recommended |
-|----------|-------------|
-| General purpose | Zod |
-| Effect ecosystem | Effect |
-| Advanced TypeScript inference | ArkType |
-| Minimal bundle size | Valibot |
-| Maximum ecosystem compatibility | Zod |
-| Form validation | Zod |
-| tRPC / Hono APIs | Zod |
-
-## Adapter Pages
-
-<Cards>
-  <Card
-    icon={<Shield />}
-    title="Zod"
-    description="Most popular, 100% compliant"
-    href="/docs/adapters/zod"
-  />
-  <Card
-    icon={<Sparkles />}
-    title="ArkType"
-    description="TypeScript-native, 100% compliant"
-    href="/docs/adapters/arktype"
-  />
-  <Card
-    icon={<Layers />}
-    title="Effect"
-    description="Effect ecosystem, 100% compliant"
-    href="/docs/adapters/effect"
-  />
-  <Card
-    icon={<Package />}
-    title="Valibot"
-    description="Smallest bundle, 98.9% compliant"
-    href="/docs/adapters/valibot"
-  />
-</Cards>
+Compliance percentages are calculated against the official JSON Schema Test Suite, excluding features that cannot be statically compiled. [Learn more about compliance testing](/docs/compliance).
 
 ## Building Custom Adapters
 

@@ -5,6 +5,7 @@ icon: Play
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
 ```bash
 xschema generate [flags]
@@ -145,7 +146,10 @@ The file extension pattern is `*.xschema.jsonc` by convention, but any JSON/JSON
 
 ## Runner Detection
 
-The CLI auto-detects which package runner to use for invoking adapters:
+The CLI auto-detects which package runner to use for invoking adapters based on your project's configuration.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
 
 | Detection Method | Runner |
 |-----------------|--------|
@@ -159,6 +163,22 @@ The CLI auto-detects which package runner to use for invoking adapters:
 <Callout>
 The `packageManager` field in `package.json` takes priority over lockfile detection.
 </Callout>
+
+</Tab>
+<Tab value="Python">
+
+| Detection Method | Runner |
+|-----------------|--------|
+| `uv.lock` exists | `uv run` |
+| `pyproject.toml` exists | `python -m` |
+| Default | `python -m` |
+
+<Callout>
+Python runner detection is coming soon. Currently defaults to `python -m`.
+</Callout>
+
+</Tab>
+</Tabs>
 
 ## JSON Schema Drafts
 
@@ -187,13 +207,28 @@ All schemas are normalized to draft2020-12 internally. Legacy syntax is automati
 
 ## Output Structure
 
-After running `xschema generate`, the output directory contains:
+After running `xschema generate`, the output directory contains generated validators and a manifest file.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
 
 ```
 .xschema/
-  xschema.gen.ts      # Generated validators and types
+  xschema.gen.ts         # Generated validators and types
   xschema.manifest.json  # Tracking file for stale detection
 ```
+
+</Tab>
+<Tab value="Python">
+
+```
+.xschema/
+  xschema_gen.py         # Generated validators and types
+  xschema.manifest.json  # Tracking file for stale detection
+```
+
+</Tab>
+</Tabs>
 
 The manifest tracks which schemas were generated so the CLI can detect and remove stale files when schemas are removed from config.
 

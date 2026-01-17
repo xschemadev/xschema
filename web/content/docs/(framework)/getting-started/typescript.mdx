@@ -35,10 +35,10 @@ The example uses Zod, but you can use any [adapter](/docs/adapters):
 
 | Adapter | Package | Peer Dependency |
 |---------|---------|-----------------|
-| Zod | `@xschemadev/zod` | `zod@^3.0.0` |
-| ArkType | `@xschemadev/arktype` | `arktype@^2.0.0` |
-| Effect | `@xschemadev/effect` | `effect@^3.0.0` |
-| Valibot | `@xschemadev/valibot` | `valibot@^0.42.0` |
+| [Zod](/docs/adapters/zod) | `@xschemadev/zod` | `zod@^3.0.0` |
+| [ArkType](/docs/adapters/arktype) | `@xschemadev/arktype` | `arktype@^2.0.0` |
+| [Effect](/docs/adapters/effect) | `@xschemadev/effect` | `effect@^3.0.0` |
+| [Valibot](/docs/adapters/valibot) | `@xschemadev/valibot` | `valibot@^0.42.0` |
 
 </Step>
 <Step>
@@ -76,12 +76,14 @@ And create the JSON Schema file:
 ```
 
 <Callout>
-The `$schema` URL is required - xschema uses it to discover config files. The filename (without extension) becomes the namespace: `user.xschema.jsonc` -> `user` namespace.
+The `$schema` URL is required - xschema uses it to discover config files. The filename (without extension) becomes the namespace: `user.xschema.jsonc` -> `user` namespace. More on that in [Configuration Reference](/docs/configuration).
 </Callout>
 
 </Step>
 <Step>
 ### Run the generator
+
+Use the [CLI](/docs/cli) to generate validators:
 
 ```bash
 # with bunx (auto-detected from bun.lock)

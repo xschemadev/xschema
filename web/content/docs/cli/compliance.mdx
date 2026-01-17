@@ -4,9 +4,9 @@ description: Run JSON Schema Test Suite compliance tests against adapters
 icon: ShieldCheck
 ---
 
-import { Card, Cards } from "fumadocs-ui/components/card";
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { ShieldCheck, AlertCircle, Puzzle, Play } from "lucide-react";
 
 ```bash
@@ -26,11 +26,14 @@ The `compliance` command runs adapters against the official [JSON Schema Test Su
 | `--verbose` | `-v` | `false` | Show detailed output |
 | `--profile` | | `false` | Print timing breakdown |
 | `--concurrency` | `-c` | `min(8, num_cpus)` | Number of parallel jobs |
-| `--lang` | `-l` | `typescript` | Language |
+| `--lang` | `-l` | `typescript` | Target language (`typescript`, `python`) |
 
 ## Examples
 
 ### Basic Usage
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
 
 ```bash
 # Run from adapter directory
@@ -40,6 +43,21 @@ xschema compliance
 # Or specify adapter path
 xschema compliance --adapter-path ./typescript/packages/adapters/zod
 ```
+
+</Tab>
+<Tab value="Python">
+
+```bash
+# Run from adapter directory
+cd python/packages/adapters/pydantic
+xschema compliance --lang python
+
+# Or specify adapter path
+xschema compliance --adapter-path ./python/packages/adapters/pydantic --lang python
+```
+
+</Tab>
+</Tabs>
 
 ### Testing Specific Drafts
 
@@ -144,7 +162,22 @@ A language-specific test harness is generated that:
 <Step>
 ### Execute Tests
 
-The harness is executed (e.g., via `bun run`) and results are collected. Each test is marked as:
+The harness is executed using the detected language runtime and results are collected.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+Executed via `bun run` (or `npx`/`pnpm exec` based on runner detection).
+
+</Tab>
+<Tab value="Python">
+
+Executed via `python` (or `uv run` if detected).
+
+</Tab>
+</Tabs>
+
+Each test is marked as:
 - **Passed**: Output matched expected `valid` value
 - **Failed**: Output didn't match expected value
 - **Skipped**: Adapter returned type-only output (no runtime validator)
@@ -174,8 +207,11 @@ Unsupported features are excluded because they represent fundamental limitations
 
 The `--dev-report` flag writes results to the adapter's `compliance/results/` directory:
 
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
 ```
-typescript/packages/adapters/zod/compliance/results/
+typescript/packages/adapters/{adapter}/compliance/results/
   draft2020-12.json
   draft2019-09.json
   draft7.json
@@ -184,6 +220,23 @@ typescript/packages/adapters/zod/compliance/results/
   draft3.json
   REPORT.md
 ```
+
+</Tab>
+<Tab value="Python">
+
+```
+python/packages/adapters/{adapter}/compliance/results/
+  draft2020-12.json
+  draft2019-09.json
+  draft7.json
+  draft6.json
+  draft4.json
+  draft3.json
+  REPORT.md
+```
+
+</Tab>
+</Tabs>
 
 ### JSON Files
 
@@ -291,32 +344,3 @@ bun run build
 |------|---------|
 | 0 | Success |
 | 1 | Error (adapter not found, test failures in strict mode, etc.) |
-
-## Next Steps
-
-<Cards>
-  <Card
-    title="Compliance Overview"
-    description="What compliance means"
-    href="/docs/compliance"
-    icon={<ShieldCheck />}
-  />
-  <Card
-    title="Unsupported Features"
-    description="Features excluded from testing"
-    href="/docs/compliance/unsupported-features"
-    icon={<AlertCircle />}
-  />
-  <Card
-    title="Building Adapters"
-    description="Create a new adapter"
-    href="/docs/adapters/building-adapters"
-    icon={<Puzzle />}
-  />
-  <Card
-    title="Generate Command"
-    description="Main generation command"
-    href="/docs/cli/generate"
-    icon={<Play />}
-  />
-</Cards>

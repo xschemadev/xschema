@@ -6,20 +6,16 @@ icon: Cog
 
 import { Steps, Step } from "fumadocs-ui/components/steps";
 
-xschema tests adapters against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to verify correctness. This page explains how the compliance testing pipeline works internally.
+xschema tests adapters against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to verify correctness. This page explains how the compliance testing pipeline works internally. For command-line usage, see the [CLI Reference](/docs/cli/compliance).
 
 ## Testing Pipeline Overview
 
 The compliance runner executes a 7-step pipeline:
 
-```
-┌──────────────┐    ┌─────────────┐    ┌──────────┐    ┌──────────────┐
-│ Fetch Suite  │───▶│ Load Tests  │───▶│  Bundle  │───▶│   Generate   │
-└──────────────┘    └─────────────┘    └──────────┘    └──────────────┘
-                                                              │
-┌──────────────┐    ┌─────────────┐    ┌──────────┐          │
-│    Report    │◀───│   Execute   │◀───│  Harness │◀─────────┘
-└──────────────┘    └─────────────┘    └──────────┘
+```mermaid
+flowchart LR
+    A[Fetch Suite] --> B[Load Tests] --> C[Bundle] --> D[Generate]
+    D --> E[Harness] --> F[Execute] --> G[Report]
 ```
 
 <Steps>

@@ -13,18 +13,18 @@ import { Lightbulb, Puzzle, Terminal, Code, Settings } from "lucide-react";
 
 ## Introduction
 
-XSchema converts [JSON Schema](https://json-schema.org/) to native validators in many languages (Zod, Pydantic, Effect, and more...) with full type inference. Every adapter runs against the official JSON Schema Test Suite, so you know exactly what works.
+XSchema converts [JSON Schema](https://json-schema.org/) to native validators _(Zod, Pydantic, Effect, and more...)_ in many languages _(Typescript, Python, Go, and more...)_ with full type inference. Every adapter runs against the official JSON Schema Test Suite, so you know exactly what works.
 
 ### Components
 
 Under the hood, xschema has these building blocks:
 
-- **CLI** - Does the heavy lifting: finds your schemas, handles all the JSON Schema complexity, and calls adapters to generate code. Also runs [compliance tests](/docs/compliance) against the official JSON Schema Test Suite
+- **[CLI](/docs/cli)** - Does the heavy lifting: finds your schemas, handles all the JSON Schema complexity, and calls adapters to generate code. Also runs [compliance tests](/docs/compliance) against the official JSON Schema Test Suite
 - **[Configuration files](/docs/configuration)** - Define which schemas to process and how
-- **Adapters** - Convert bundled schemas to native validation code for each language
+- **[Adapters](/docs/adapters)** - Convert bundled schemas to native validation code for each language
 - **Clients** - Language-specific packages to use generated schemas
 
-These components don't have to be used together (**framework mode**). If you want to build your own pipeline and just use the conversion and adapters programmatically, see [Runtime Mode](/docs/runtime).
+These components don't have to be used together (**framework mode**): if you want to build your own pipeline and just use the conversion and adapters programmatically, see [Runtime Mode](/docs/runtime).
 
 <Callout>
   Want to understand the architecture and design philosophy? Read [What is XSchema](/docs/what-is-xschema).
@@ -81,6 +81,8 @@ This example uses TypeScript. xschema supports multiple languages (see later)
   ]
 }
 ```
+
+More on config files in [Configuration Reference](/docs/configuration).
 </Step>
 <Step>
 ### Run the generator

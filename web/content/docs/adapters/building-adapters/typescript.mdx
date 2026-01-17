@@ -1,43 +1,39 @@
 ---
-title: Building Adapters
-description: How to create a new adapter using @xschemadev/core
-icon: Wrench
+title: TypeScript Adapters
+description: Build TypeScript adapters using @xschemadev/core
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { File, Folder, Files } from "fumadocs-ui/components/files";
 
-Adapters convert JSON Schema to native validation code. This guide explains how to build a new adapter using the `@xschemadev/core` package.
-
-## Overview
-
-Adapters are simple by design. The Go CLI handles all the hard work:
-
-| CLI handles | Adapter handles |
-|-------------|-----------------|
-| Config discovery | Parse IR to code |
-| Schema fetching | Render validation library syntax |
-| `$ref` resolution | Generate import statements |
-| Draft normalization | Return type expressions |
-| Bundling `$defs` | |
-| Validation against meta-schema | |
-
-Your adapter receives **pre-bundled, normalized, validated schemas** via stdin and outputs generated code via stdout.
-
-## Adapter Protocol
-
-Adapters communicate with the Go CLI via stdin/stdout JSON. The CLI sends pre-bundled schemas; adapters return generated code.
-
-See the [Adapter Protocol](/docs/adapters/protocol) reference for the complete specification.
+This guide covers building adapters in TypeScript using the `@xschemadev/core` package.
 
 ## The `@xschemadev/core` Package
 
-The core package provides everything you need to build an adapter:
-
-```bash
-bun add @xschemadev/core
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/core
+    ```
+  </Tab>
+</Tabs>
 
 ### Exports
 
@@ -67,11 +63,7 @@ import {
 
 ## Intermediate Representation (IR)
 
-The `parse()` function converts JSON Schema into a **discriminated union** called `SchemaNode`. This IR is designed to be:
-
-1. **Exhaustively matchable** via the `kind` discriminator
-2. **Renderer-friendly** - contains all info needed for code generation
-3. **Pre-processed** - no `$ref` resolution needed, drafts normalized
+The `parse()` function converts JSON Schema into a **discriminated union** called `SchemaNode`.
 
 ### Node Kinds
 
@@ -282,60 +274,34 @@ JSON.stringify with sorted object keys (for stable equality):
 sortedStringify({ b: 2, a: 1 }) // '{"a":1,"b":2}'
 ```
 
-## Important Notes
-
-### Schemas are Pre-Bundled
-
-The Go CLI resolves all `$ref` and embeds definitions in `$defs`. Your adapter will **never** see unresolved references:
-
-```typescript
-// This will throw - adapters should never encounter $ref
-if (schema.$ref) {
-  throw new Error("$ref should be resolved by CLI");
-}
-```
-
-### Drafts are Normalized
-
-All schemas are normalized to draft2020-12 syntax. You don't need to handle:
-- `definitions` (converted to `$defs`)
-- `items` as array (converted to `prefixItems`)
-- `additionalItems` (converted to `items`)
-- Boolean `exclusiveMinimum`/`exclusiveMaximum` (converted to numeric)
-
-### Forbidden Keywords
-
-The CLI blocks schemas using dynamic features that can't be statically compiled:
-- `$dynamicRef` / `$dynamicAnchor`
-- `$recursiveRef` / `$recursiveAnchor`
-
-## Testing with Compliance Suite
-
-After building your adapter, test it against the official JSON Schema Test Suite:
-
-```bash
-# Run compliance tests for your adapter
-xschema compliance --adapter-path ./path/to/your-adapter
-
-# Test a specific draft
-xschema compliance --adapter-path ./path/to/your-adapter --draft draft2020-12
-
-# Test specific keywords during development
-xschema compliance --adapter-path ./path/to/your-adapter --keyword properties --keyword required
-
-# Generate full compliance report
-xschema compliance --adapter-path ./path/to/your-adapter --dev-report
-```
-
-### Compliance Workflow
+## Compliance Workflow
 
 <Steps>
 <Step>
 ### Build your adapter
 
-```bash
-bun run build
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun run build
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm run build
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm run build
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn build
+    ```
+  </Tab>
+</Tabs>
 </Step>
 
 <Step>
@@ -373,18 +339,6 @@ This creates:
 </Step>
 </Steps>
 
-### Understanding Coverage
-
-Coverage is calculated as:
-
-```
-Coverage = Passed / (Total - Unsupported) * 100
-```
-
-"Unsupported" tests involve features that cannot be statically compiled (e.g., `$dynamicRef`). These are excluded from the denominator, so 100% coverage means "handles everything that can be handled."
-
-See [Unsupported Features](/docs/compliance/unsupported-features) for the complete list.
-
 ## Example: Zod Adapter
 
 The Zod adapter is a good reference implementation:
@@ -406,5 +360,3 @@ The Zod adapter is a good reference implementation:
 - `renderer.ts` - IR to Zod code (~900 lines)
 
 See the full source at [`typescript/packages/adapters/zod/src/`](https://github.com/xschemadev/xschema/tree/main/typescript/packages/adapters/zod/src).
-
-

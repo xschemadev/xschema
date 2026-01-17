@@ -5,16 +5,15 @@ icon: Shield
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
 The Valibot adapter converts JSON Schema definitions into [Valibot](https://valibot.dev) validation schemas with full TypeScript type inference.
 
 ## Overview
 
-| | |
-|---|---|
-| **Package** | `@xschemadev/valibot` |
-| **Peer Dependency** | `valibot ^0.42.0` |
-| **Compliance** | 98.9% |
+- **Package:** `@xschemadev/valibot`
+- **Peer Dependency:** `valibot ^0.42.0`
+- **Compliance:** [98.9%](/docs/adapters/valibot/compliance)
 
 Valibot is a modular validation library focused on bundle size. xschema's Valibot adapter provides:
 
@@ -29,16 +28,28 @@ Valibot has a bug with properties named `__proto__`, `constructor`, or `toString
 
 ## Installation
 
-```bash
-# with bun
-bun add @xschemadev/valibot valibot
-
-# with npm
-npm install @xschemadev/valibot valibot
-
-# with pnpm
-pnpm add @xschemadev/valibot valibot
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/valibot valibot
+    ```
+  </Tab>
+</Tabs>
 
 ## Usage with Framework Mode
 
@@ -60,11 +71,30 @@ The recommended way to use xschema is with the client. First, set up your config
 
 Run the generator:
 
-```bash
-bunx xschema generate
-```
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx xschema generate
+    ```
+  </Tab>
+</Tabs>
 
-Then use the generated schemas:
+Then use the generated schemas with the [xschema client](/docs/typescript/client):
 
 ```typescript title="app.ts"
 import { createXSchemaClient, XSchemaType } from "@xschemadev/client";
@@ -130,18 +160,6 @@ type user_ProfileType = v.InferOutput<typeof user_Profile>;
 ## Supported Features
 
 The Valibot adapter supports most JSON Schema keywords. See the [Compliance](/docs/adapters/valibot/compliance) page for detailed coverage by JSON Schema draft.
-
-### Highlights
-
-- All primitive types (`string`, `number`, `integer`, `boolean`, `null`, `array`, `object`)
-- String formats (`email`, `uuid`, `uri`, `date-time`, etc.)
-- Numeric constraints (`minimum`, `maximum`, `multipleOf`, `exclusiveMinimum`, etc.)
-- String constraints (`minLength`, `maxLength`, `pattern`)
-- Array constraints (`minItems`, `maxItems`, `uniqueItems`, `prefixItems`)
-- Object constraints (`required`, `additionalProperties`, `unevaluatedProperties`)
-- Composition (`allOf`, `anyOf`, `oneOf`, `not`)
-- Conditional (`if`/`then`/`else`)
-- References (`$ref`, `$defs`)
 
 ## Known Limitation
 
