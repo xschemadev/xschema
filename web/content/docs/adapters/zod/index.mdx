@@ -60,10 +60,39 @@ Zod is the most popular TypeScript validation library with a large ecosystem of 
 }
 ```
 
-```typescript title="app.ts"
-import { xschema } from "./.xschema/client";
+```ts twoslash
+// @filename: node_modules/zod/index.d.ts
+export declare const z: {
+  string: () => ZodString;
+  boolean: () => ZodBoolean;
+  object: <T extends Record<string, ZodType>>(shape: T) => ZodObject<T>;
+  enum: <T extends [string, ...string[]]>(values: T) => ZodEnum<T>;
+};
+export type ZodType = { _output: unknown; optional: () => ZodType; parse: (data: unknown) => unknown };
+export type ZodString = { _output: string; optional: () => ZodOptional<ZodString>; email: () => ZodString; parse: (data: unknown) => string };
+export type ZodOptional<T> = { _output: T extends { _output: infer O } ? O | undefined : never };
+export type ZodBoolean = { _output: boolean; optional: () => ZodOptional<ZodBoolean>; parse: (data: unknown) => boolean };
+export type ZodEnum<T extends [string, ...string[]]> = { _output: T[number]; parse: (data: unknown) => T[number] };
+type InferShape<T> = { [K in keyof T]: T[K] extends { _output: infer O } ? O : never };
+export type ZodObject<T, Mode extends "passthrough" | "strict" = "strict"> = {
+  _output: Mode extends "passthrough" ? InferShape<T> & { [x: string]: unknown } : InferShape<T>;
+  passthrough: () => ZodObject<T, "passthrough">;
+  parse: (data: unknown) => ZodObject<T, Mode>["_output"];
+};
+export type infer<T extends { _output: unknown }> = T["_output"];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const User = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+export const schemas = { "User": User } as const;
+// @filename: client.ts
+import { schemas } from "./xschema.gen";
+export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key];
+// @filename: app.ts
+// ---cut---
+import { xschema } from "./client";
 
-const user = xschema("User").parse(data);
+const user = xschema("User").parse({ id: "1", name: "Alice", email: "alice@example.com" });
+//    ^?
 ```
 
 See the [TypeScript guide](/docs/typescript) for full setup instructions.

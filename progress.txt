@@ -271,3 +271,18 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Quick Start page only needs user:Profile schema, while typescript.mdx needs both user:Profile and app:Config for multi-namespace examples
   - The virtual file setup can be simplified when fewer schemas are needed
 ---
+
+## 2026-01-18 - Add Twoslash to Zod adapter usage
+- Added twoslash to usage code block in adapters/zod/index.mdx
+- Created virtual files pattern with inline Zod types (ZodString, ZodObject, etc.) and generated schema
+- Used simplified client helper function for schema lookup
+- Added ^? annotation under user variable showing parsed type
+- Type popup shows: `{ [x: string]: unknown; id: string; email: string; name?: string | undefined; }`
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/adapters/zod - Twoslash popup working correctly
+- Files changed: `web/content/docs/adapters/zod/index.mdx`
+- **Learnings for future iterations:**
+  - Adapter pages use simpler import pattern (`"./client"`) vs the full @xschemadev/client
+  - For Zod type inference, need to define custom ZodType interfaces with `_output` property and `passthrough()` method that changes the Mode generic
+  - The `passthrough()` mode adds `{ [x: string]: unknown }` to the inferred type via intersection
+---
