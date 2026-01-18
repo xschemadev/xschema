@@ -1,0 +1,11 @@
+{
+	"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+	"schemas": [
+		{
+			"id": "Config",
+			"sourceType": "file",
+			"source": "../../schemas/app.schema.json",
+			"adapter": "@xschemadev/effect"
+		}
+	]
+}

@@ -149,3 +149,17 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Twoslash depends on TypeScript compiler which is Node.js only - must be externalized for SSR
   - The ssr.external config tells Vite to not bundle these modules, keeping them as require() calls for Node
 ---
+
+## 2026-01-18 - Create Effect example and generate
+- Created `web/examples/typescript/effect/user.xschema.jsonc` (namespace 'user', id 'Profile')
+- Created `web/examples/typescript/effect/app.xschema.jsonc` (namespace 'app', id 'Config')
+- Generated `web/examples/typescript/effect/.xschema/xschema.gen.ts` via adapter CLI
+- Generated file exports schemas with keys 'user:Profile' and 'app:Config'
+- Effect adapter uses S.Unknown.pipe(S.filter(...)) pattern for object validation
+- Typecheck passes
+- Files changed: 3 new files in web/examples/typescript/effect/
+- **Learnings for future iterations:**
+  - Effect Schema uses `S.Unknown.pipe(S.filter(...))` pattern for object schemas with validation
+  - Type extraction uses `typeof schema.Type` pattern (different from Zod's `z.infer<typeof schema>`)
+  - Generated Effect schemas have inline validation logic checking each property manually
+---
