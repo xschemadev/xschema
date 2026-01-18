@@ -178,3 +178,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - ArkType uses `type.enumerated("a", "b")` for enums (not `type.literal`)
   - Generated ArkType schemas include `.narrow()` check to reject arrays (JSON Schema object != array)
 ---
+
+## 2026-01-18 - Create Valibot example and generate
+- Created `web/examples/typescript/valibot/user.xschema.jsonc` (namespace 'user', id 'Profile')
+- Created `web/examples/typescript/valibot/app.xschema.jsonc` (namespace 'app', id 'Config')
+- Generated `web/examples/typescript/valibot/.xschema/xschema.gen.ts` via adapter CLI
+- Generated file exports schemas with keys 'user:Profile' and 'app:Config'
+- Valibot adapter uses `v.pipe(v.unknown(), v.rawCheck(...), v.looseObject({...}))` pattern
+- Typecheck passes
+- Files changed: 3 new files in web/examples/typescript/valibot/
+- **Learnings for future iterations:**
+  - Valibot uses `v.looseObject()` for passthrough behavior (allows extra properties)
+  - Optional properties use `v.optional(v.type())` pattern
+  - Type extraction uses `v.InferOutput<typeof schema>` pattern
+  - Valibot uses `v.picklist([...])` for enum values
+  - rawCheck is used to reject arrays (JSON Schema object type doesn't include arrays)
+---

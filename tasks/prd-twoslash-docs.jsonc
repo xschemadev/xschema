@@ -75,8 +75,8 @@
         "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
         "Typecheck passes"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used two config files (user.xschema.jsonc, app.xschema.jsonc) since xschema namespace is per-file. Generated output manually via adapter CLI since packages aren't on npm yet."
     },
     {
       "title": "Install Twoslash packages",
