@@ -9,6 +9,9 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  ssr: {
+    external: ['typescript', 'twoslash'],
+  },
   plugins: [
     mdx(await import('./source.config')),
     tailwindcss(),

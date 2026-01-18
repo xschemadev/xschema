@@ -123,7 +123,7 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill - docs pages load without SSR errors"
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

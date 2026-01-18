@@ -138,3 +138,14 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Twoslash UI uses namespace import (`* as Twoslash`) then spread into components
   - CSS import goes after fumadocs preset in app.css
 ---
+
+## 2026-01-18 - Configure Vite SSR externals for Twoslash
+- Added `ssr.external` array to `web/vite.config.ts` with 'typescript' and 'twoslash'
+- This prevents SSR bundling issues where Node.js-only modules would fail in the browser bundle
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript - page loads without SSR errors, all content renders correctly
+- Files changed: `web/vite.config.ts`
+- **Learnings for future iterations:**
+  - Twoslash depends on TypeScript compiler which is Node.js only - must be externalized for SSR
+  - The ssr.external config tells Vite to not bundle these modules, keeping them as require() calls for Node
+---
