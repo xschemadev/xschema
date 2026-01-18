@@ -163,3 +163,18 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Type extraction uses `typeof schema.Type` pattern (different from Zod's `z.infer<typeof schema>`)
   - Generated Effect schemas have inline validation logic checking each property manually
 ---
+
+## 2026-01-18 - Create ArkType example and generate
+- Created `web/examples/typescript/arktype/user.xschema.jsonc` (namespace 'user', id 'Profile')
+- Created `web/examples/typescript/arktype/app.xschema.jsonc` (namespace 'app', id 'Config')
+- Generated `web/examples/typescript/arktype/.xschema/xschema.gen.ts` via adapter CLI
+- Generated file exports schemas with keys 'user:Profile' and 'app:Config'
+- ArkType adapter uses `type({ ... })` pattern with `.narrow()` for array rejection
+- Typecheck passes
+- Files changed: 3 new files in web/examples/typescript/arktype/
+- **Learnings for future iterations:**
+  - ArkType uses `"name?"` (question mark in key) for optional properties
+  - Type extraction uses `typeof schema.infer` pattern
+  - ArkType uses `type.enumerated("a", "b")` for enums (not `type.literal`)
+  - Generated ArkType schemas include `.narrow()` check to reject arrays (JSON Schema object != array)
+---

@@ -1,0 +1,11 @@
+{
+	"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+	"schemas": [
+		{
+			"id": "Profile",
+			"sourceType": "file",
+			"source": "../../schemas/user.schema.json",
+			"adapter": "@xschemadev/arktype"
+		}
+	]
+}
