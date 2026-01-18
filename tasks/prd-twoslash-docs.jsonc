@@ -229,8 +229,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used virtual files pattern with inline ArkType types. TypeConstructor creates object types with optional key support via '?' suffix in key names. Type popup shows { id: string; name: string | undefined; email: string; }"
     },
     {
       "title": "Add Twoslash to Valibot adapter usage",

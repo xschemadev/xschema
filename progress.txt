@@ -302,3 +302,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The generated Effect schemas use S.Unknown.pipe(S.filter(...)) which results in `unknown` type - this is accurate to the current adapter implementation
   - Virtual type definitions need to match how the actual code uses the types (pipe on instance, not static method)
 ---
+
+## 2026-01-18 - Add Twoslash to ArkType adapter usage
+- Added twoslash to usage code block in adapters/arktype/index.mdx
+- Created virtual files pattern with inline ArkType types
+- TypeConstructor uses mapped type to handle `"name?"` optional key syntax - strips `?` from key name and makes value `T | undefined`
+- Type interface includes `infer` property for type extraction and `narrow()` for validation refinement
+- Added ^? annotation under user variable
+- Type popup shows `{ id: string; name: string | undefined; email: string; }`
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/adapters/arktype - Twoslash popup working correctly
+- Files changed: `web/content/docs/adapters/arktype/index.mdx`
+- **Learnings for future iterations:**
+  - ArkType uses `"key?"` string literal keys for optional properties - must handle in virtual type definitions via template literal type
+  - The `infer` property on Type gives the inferred TypeScript type (similar to Zod's `_output`)
+  - ArkType's `narrow()` is for runtime validation refinement, similar to Zod's `refine()`
+---
