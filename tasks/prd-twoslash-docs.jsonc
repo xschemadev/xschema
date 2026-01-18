@@ -177,8 +177,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill - autocomplete popup and error highlight visible"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added ^| autocomplete annotation showing user:Profile and app:Config suggestions when typing 'u'. Error example uses // @errors: 2345 with typo 'user:Proflie'. Both render correctly in browser - autocomplete shows inline suggestions, error shows red text with full type error message."
     },
     {
       "title": "Add Twoslash to Quick Start index.mdx",

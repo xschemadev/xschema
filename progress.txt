@@ -241,3 +241,18 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - XSchemaType extracts the inferred type (not the schema type), so it shows the value shape with index signature from .passthrough()
   - For function signatures block, need to also import createXSchemaClient and schemas since the code uses xschema() client
 ---
+
+## 2026-01-18 - Add autocomplete and error examples to typescript.mdx
+- Added autocomplete example in Developer Experience section using `^|` annotation
+- Added `// @noErrors` directive since incomplete code like `xschema("u` is invalid TypeScript
+- Autocomplete shows `user:Profile` and `app:Config` suggestions inline
+- Error example already existed with `// @errors: 2345` showing type error for typo `user:Proflie`
+- Callout already existed reminding users to run `xschema generate` after schema changes
+- Typecheck passes
+- Verified in browser - autocomplete popup and error highlight both visible
+- Files changed: `web/content/docs/(framework)/typescript.mdx`
+- **Learnings for future iterations:**
+  - Twoslash `^|` completions require `// @noErrors` because partial code is invalid TypeScript
+  - The `^|` annotation should be placed on the line after the partial text, with caret aligned to where completions should appear
+  - Completions are filtered by text after the cursor position (e.g., `"u` filters to keys starting with "u")
+---
