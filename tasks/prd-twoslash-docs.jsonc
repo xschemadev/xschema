@@ -27,8 +27,8 @@
           "Typecheck passes",
           "Verify in browser"
         ],
-        "passes": false,
-        "notes": ""
+        "passes": true,
+        "notes": "Simplified from complex @xschemadev/client types to simple client helper pattern (same as index.mdx). Virtual types now use minimal Zod definitions. Code shows profileSchema type, result safeParse type, and data.id property access. Added if block to demonstrate narrowing after safeParse success check."
       },
       {
         "title": "Show actual compile error for type-only example",

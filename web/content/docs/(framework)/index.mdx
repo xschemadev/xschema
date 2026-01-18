@@ -130,16 +130,24 @@ export type ZodObject<T, Mode extends "passthrough" | "strict" = "strict"> = {
   passthrough: () => ZodObject<T, "passthrough">;
   safeParse: (data: unknown) => { success: true; data: ZodObject<T, Mode>["_output"] } | { success: false; error: unknown };
 };
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
 // @filename: xschema.gen.ts
 import { z } from "zod"
 const Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
 export const schemas = { "user:Profile": Profile } as const;
-// @filename: client.ts
-import { schemas } from "./xschema.gen";
-export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key];
 // @filename: app.ts
 // ---cut---
-import { xschema } from "./client";
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
 
 const profileSchema = xschema("user:Profile");
 //    ^?

@@ -394,3 +394,21 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Twoslash still makes all identifiers hoverable by default - ^? annotations control which ones get inline type popups
   - Minimal virtual types (just enough for inference) reduce noise and improve readability
 ---
+
+## 2026-01-18 - Reduce hover noise in typescript.mdx client setup
+- Simplified twoslash virtual types in "Use the client" code block (Step 4)
+- Changed from complex @xschemadev/client types to simple client helper pattern
+- Used minimal Zod type definitions (same pattern as index.mdx Quick Start)
+- Added `if (result.success)` block to show property access on narrowed result
+- ^? annotations now on: profileSchema, result, and data.id (inside if block)
+- profileSchema shows: `ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString; }, $loose>`
+- result shows: full safeParse return type with union
+- data.id shows: object type after narrowing through success check
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript#use-the-client
+- Files changed: `web/content/docs/(framework)/typescript.mdx`, `tasks/prd-twoslash-docs.jsonc`
+- **Learnings for future iterations:**
+  - The same virtual type pattern used in index.mdx can be reused in typescript.mdx for consistency
+  - Adding `if (result.success)` demonstrates TypeScript narrowing, making the safeParse example more complete
+  - Aligning ^? under data.id (not result.data.id) shows the narrowed data type cleanly
+---
