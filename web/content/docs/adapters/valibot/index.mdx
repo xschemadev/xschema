@@ -62,11 +62,36 @@ Valibot is a modular validation library focused on bundle size. xschema's Valibo
 }
 ```
 
-```typescript title="app.ts"
-import { xschema } from "./.xschema/client";
+```ts twoslash
+// @filename: node_modules/valibot/index.d.ts
+type BaseSchema<T> = { _output: T };
+type ObjectEntries = Record<string, BaseSchema<unknown>>;
+type InferEntries<T extends ObjectEntries> = { [K in keyof T]: T[K]["_output"] };
+export type InferOutput<T extends BaseSchema<unknown>> = T["_output"];
+export declare function pipe<T>(...args: unknown[]): BaseSchema<T>;
+export declare function unknown(): BaseSchema<unknown>;
+export declare function rawCheck(fn: unknown): unknown;
+export declare function looseObject<T extends ObjectEntries>(entries: T): BaseSchema<InferEntries<T> & { [x: string]: unknown }>;
+export declare function string(): BaseSchema<string>;
+export declare function boolean(): BaseSchema<boolean>;
+export declare function optional<T extends BaseSchema<unknown>>(schema: T): BaseSchema<T["_output"] | undefined>;
+export declare function picklist<T extends [string, ...string[]]>(values: T): BaseSchema<T[number]>;
+export declare function email(): unknown;
+export declare function parse<T extends BaseSchema<unknown>>(schema: T, data: unknown): T["_output"];
+// @filename: xschema.gen.ts
+import * as v from "valibot"
+const User = v.pipe(v.unknown(), v.rawCheck(() => {}), v.looseObject({ id: v.string(), name: v.optional(v.string()), email: v.string() }));
+export const schemas = { "User": User } as const;
+// @filename: client.ts
+import { schemas } from "./xschema.gen";
+export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key];
+// @filename: app.ts
+// ---cut---
+import { xschema } from "./client";
 import * as v from "valibot";
 
-const user = v.parse(xschema("User"), data);
+const user = v.parse(xschema("User"), { id: "1", name: "Alice", email: "alice@example.com" });
+//    ^?
 ```
 
 See the [TypeScript guide](/docs/typescript) for full setup instructions.

@@ -318,3 +318,20 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The `infer` property on Type gives the inferred TypeScript type (similar to Zod's `_output`)
   - ArkType's `narrow()` is for runtime validation refinement, similar to Zod's `refine()`
 ---
+
+## 2026-01-18 - Add Twoslash to Valibot adapter usage
+- Added twoslash to usage code block in adapters/valibot/index.mdx
+- Created virtual files pattern with inline Valibot types
+- BaseSchema<T> interface with `_output` property for type inference
+- InferOutput<T> extracts `_output` from schema
+- looseObject returns intersection type with `{ [x: string]: unknown }` for extra properties
+- Added ^? annotation under user variable
+- Type popup shows `{ id: string; email: string; name: string | undefined; } & { [x: string]: unknown }`
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/adapters/valibot - page loads correctly
+- Files changed: `web/content/docs/adapters/valibot/index.mdx`
+- **Learnings for future iterations:**
+  - Valibot uses modular function pattern: `v.parse(schema, data)` not `schema.parse(data)`
+  - Virtual types need BaseSchema<T> with `_output` property for InferOutput to work
+  - looseObject adds index signature for passthrough behavior (extra properties allowed)
+---
