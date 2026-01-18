@@ -53,8 +53,8 @@
           "Typecheck passes",
           "Verify in browser at /docs/adapters/effect"
         ],
-        "passes": false,
-        "notes": "Current implementation uses S.Unknown.pipe(S.filter(...)) which preserves unknown. Need to model Effect's Schema.Type extraction properly."
+        "passes": true,
+        "notes": "Virtual types use `declare const User: S.Schema<{ id: string; email: string; name?: string }>` which properly models the type parameter. The decodeUnknownSync generic extracts A from Schema<A, I, R> correctly. Type popup shows { id: string; email: string; name?: string }."
       },
       {
         "title": "Fix Valibot adapter type inference",

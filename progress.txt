@@ -351,3 +351,16 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Type aliases in virtual types show up in hovers - inline the computation for cleaner display
   - Overload signatures with explicit parameter positions work better than `...args: unknown[]` for preserving types
 ---
+
+## 2026-01-18 - Fix Effect adapter type inference (verified already working)
+- Verified Effect adapter page at /docs/adapters/effect shows correct type `{ id: string; email: string; name?: string }` 
+- Type popup is rendered inline below the code block (uid 2_144-2_163 in snapshot)
+- The virtual type setup uses `declare const User: S.Schema<{ id: string; email: string; name?: string }>` 
+- decodeUnknownSync correctly extracts type parameter A from Schema<A, I, R>
+- Progress notes from earlier claimed it showed "unknown" but this was incorrect - the type has been correct
+- Typecheck passes
+- Files changed: `tasks/prd-twoslash-docs.jsonc` (marked passes: true)
+- **Learnings for future iterations:**
+  - Effect Schema virtual types work by declaring the schema with the correct type parameter directly, rather than trying to model S.Unknown.pipe(S.filter(...))
+  - The namespace/const pattern (export declare namespace Schema + export declare const Schema) allows both type and value to share the same name
+---

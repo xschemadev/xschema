@@ -67,23 +67,14 @@ export declare namespace Schema {
   interface Schema<A, I = A, R = never> {
     Type: A;
     Encoded: I;
-    pipe<B, I2, R2>(fn: (s: Schema<A, I, R>) => Schema<B, I2, R2>): Schema<B, I2, R2>;
   }
-  type Type<S> = S extends Schema<infer A, any, any> ? A : never;
 }
 export declare const Schema: {
-  Unknown: Schema.Schema<unknown>;
-  String: Schema.Schema<string>;
-  Boolean: Schema.Schema<boolean>;
-  filter: <A>(
-    predicate: (a: A) => boolean,
-    options?: { message: () => string }
-  ) => <I, R>(schema: Schema.Schema<A, I, R>) => Schema.Schema<A, I, R>;
   decodeUnknownSync: <A, I>(schema: Schema.Schema<A, I, never>) => (u: unknown) => A;
 };
 // @filename: xschema.gen.ts
 import { Schema as S } from "effect"
-const User = S.Unknown.pipe(S.filter((val) => typeof val === "object" && val !== null));
+declare const User: S.Schema<{ id: string; email: string; name?: string }>;
 export const schemas = { "User": User } as const;
 // @filename: client.ts
 import { schemas } from "./xschema.gen";
