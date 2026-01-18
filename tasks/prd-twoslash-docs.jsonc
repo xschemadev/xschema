@@ -163,8 +163,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added twoslash to both XSchemaType code blocks. First block shows Profile ({ id, email, name? }) and Config ({ theme enum, language, debug? }) extracted types. Second block shows function signatures with typed property access (data.email: string) and schema.parse() return type."
     },
     {
       "title": "Add autocomplete and error examples to typescript.mdx",

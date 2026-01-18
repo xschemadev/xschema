@@ -227,3 +227,17 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The virtual file setup (client types + generated schemas) can be duplicated across multiple code blocks in the same file - each block is independent
   - Multiple ^? annotations work within a single code block - place each one on the line directly below the variable
 ---
+
+## 2026-01-18 - Add Twoslash to typescript.mdx XSchemaType section
+- Added twoslash to XSchemaType example code block
+- Added ^? annotations showing extracted types: Profile ({ [x: string]: unknown; id: string; email: string; name?: string | undefined }) and Config ({ [x: string]: unknown; theme: "light" | "dark"; language: string; debug?: boolean | undefined })
+- Added twoslash to "Using in function signatures" code block
+- Added ^? under data.email showing `email: string`
+- Added ^? under schema.parse() showing full method signature with return type
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript - Twoslash popups working correctly
+- Files changed: `web/content/docs/(framework)/typescript.mdx`
+- **Learnings for future iterations:**
+  - XSchemaType extracts the inferred type (not the schema type), so it shows the value shape with index signature from .passthrough()
+  - For function signatures block, need to also import createXSchemaClient and schemas since the code uses xschema() client
+---
