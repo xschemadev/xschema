@@ -40,8 +40,8 @@
           "Typecheck passes",
           "Verify in browser - red error text is visible"
         ],
-        "passes": false,
-        "notes": "Currently just a comment. Should use twoslash @errors annotation to show real error."
+        "passes": true,
+        "notes": "Used twoslash with @errors: 2345 annotation. Virtual files simulate type-only adapter output where schemas = {} but SchemaTypes has \"user:Profile\". Error shown: \"Argument of type '\"user:Profile\"' is not assignable to parameter of type 'never'.\""
       },
       {
         "title": "Fix Effect adapter type inference",

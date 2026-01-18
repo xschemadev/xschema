@@ -332,12 +332,34 @@ type Profile = XSchemaType<"user:Profile">; // extracted type
 
 Some adapters may generate only types without runtime validators:
 
-```typescript
-// Only XSchemaType works
+```ts twoslash
+// @errors: 2345
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown>> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown>, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+// Type-only adapter generates SchemaTypes but no schemas
+export const schemas = {} as const;
+export type SchemaTypes = { "user:Profile": { id: string; name?: string; email: string } };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import type { XSchemaType } from "@xschemadev/client";
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+// XSchemaType works - types are available
 type Profile = XSchemaType<"user:Profile">;
 
-// This would be a compile error - no runtime validator
-// const schema = xschema("user:Profile");
+// Compile error - no runtime validator for this key
+const xschema = createXSchemaClient({ schemas });
+const schema = xschema("user:Profile");
 ```
 
 #### Schema-only

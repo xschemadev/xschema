@@ -364,3 +364,17 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Effect Schema virtual types work by declaring the schema with the correct type parameter directly, rather than trying to model S.Unknown.pipe(S.filter(...))
   - The namespace/const pattern (export declare namespace Schema + export declare const Schema) allows both type and value to share the same name
 ---
+
+## 2026-01-18 - Show actual compile error for type-only example
+- Changed typescript.mdx Type-only section from static code block to twoslash with @errors: 2345
+- Created virtual files simulating type-only adapter output: `schemas = {}` but `SchemaTypes = { "user:Profile": {...} }`
+- XSchemaType<"user:Profile"> works (types exist) but xschema("user:Profile") shows compile error
+- Error message displayed in red: "Argument of type '"user:Profile"' is not assignable to parameter of type 'never'."
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript - error renders correctly
+- Files changed: `web/content/docs/(framework)/typescript.mdx`, `tasks/prd-twoslash-docs.jsonc`
+- **Learnings for future iterations:**
+  - To simulate type-only adapters: set `schemas = {}` (empty) but include types in SchemaTypes
+  - The error type 2345 is the standard TypeScript "argument not assignable" error
+  - When ValidKeys<T> resolves to `never` (empty schemas object), any string argument fails typecheck
+---
