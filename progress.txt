@@ -256,3 +256,18 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The `^|` annotation should be placed on the line after the partial text, with caret aligned to where completions should appear
   - Completions are filtered by text after the cursor position (e.g., `"u` filters to keys starting with "u")
 ---
+
+## 2026-01-18 - Add Twoslash to Quick Start index.mdx
+- Added twoslash to "Use the generated schemas" code block (Step 4) in index.mdx
+- Used virtual file pattern with `// @filename:` directives for @xschemadev/client types and generated schemas
+- Used `// ---cut---` to hide setup code from rendered output
+- Added `^?` annotation under profileSchema variable to show type popup
+- Type popup shows: `const profileSchema: ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString; }, $loose>`
+- Only included user:Profile schema (not app:Config) since Quick Start example only uses one schema
+- Typecheck passes
+- Verified in browser at localhost:3000/docs - Twoslash popup working correctly
+- Files changed: `web/content/docs/(framework)/index.mdx`
+- **Learnings for future iterations:**
+  - Quick Start page only needs user:Profile schema, while typescript.mdx needs both user:Profile and app:Config for multi-namespace examples
+  - The virtual file setup can be simplified when fewer schemas are needed
+---

@@ -190,8 +190,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used virtual files pattern with // @filename: directives and // ---cut--- to hide setup. Type popup shows ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString }, $loose>"
     },
     {
       "title": "Add Twoslash to Zod adapter usage",
