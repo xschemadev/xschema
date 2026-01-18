@@ -378,3 +378,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The error type 2345 is the standard TypeScript "argument not assignable" error
   - When ValidKeys<T> resolves to `never` (empty schemas object), any string argument fails typecheck
 ---
+
+## 2026-01-18 - Reduce hover noise in Quick Start (index.mdx)
+- Simplified twoslash virtual types from complex @xschemadev/client pattern to simple client helper
+- Changed from `createXSchemaClient({ schemas })` to simple `export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key]`
+- Reduced Zod virtual types to minimal definitions needed (ZodType, ZodString, ZodOptional, ZodObject)
+- Now only `profileSchema` and `result` have explicit ^? annotations with type popups
+- profileSchema shows: `ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString; }, $loose>`
+- result shows: `{ success: true; data: {...} } | { success: false; error: unknown }` with full object type
+- Typecheck passes
+- Verified in browser at localhost:3000/docs
+- Files changed: `web/content/docs/(framework)/index.mdx`
+- **Learnings for future iterations:**
+  - Simple client helper pattern `<K extends keyof typeof schemas>(key: K) => schemas[key]` is cleaner than full @xschemadev/client types for docs examples
+  - Twoslash still makes all identifiers hoverable by default - ^? annotations control which ones get inline type popups
+  - Minimal virtual types (just enough for inference) reduce noise and improve readability
+---

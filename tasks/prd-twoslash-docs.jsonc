@@ -14,8 +14,8 @@
           "Typecheck passes",
           "Verify in browser - only key variables show type popups"
         ],
-        "passes": false,
-        "notes": "Currently too many things are hoverable. Simplify virtual types and focus annotations on what matters."
+        "passes": true,
+        "notes": "Simplified from complex @xschemadev/client types to simple client helper pattern. Now uses `export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key]`. Only profileSchema and result have ^? annotations showing type popups. Virtual Zod types reduced to minimal definitions needed for type inference."
       },
       {
         "title": "Reduce hover noise in typescript.mdx client setup",
