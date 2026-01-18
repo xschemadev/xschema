@@ -12,8 +12,11 @@ import {
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import * as Twoslash from "fumadocs-twoslash/ui";
+import { Mermaid } from "@/components/mdx/mermaid";
 import { baseOptions } from "@/lib/layout.shared";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
+import { LLMCopyButton, ViewOptions } from "@/components/page-actions";
 
 export const Route = createFileRoute("/docs/$")({
   component: Page,
@@ -35,24 +38,45 @@ const serverLoader = createServerFn({
 
     return {
       path: page.path,
+      pageUrl: page.url,
+      pagePath: page.path,
       pageTree: await source.serializePageTree(source.getPageTree()),
     };
   });
 
-const clientLoader = browserCollections.docs.createClientLoader({
-  component({ toc, frontmatter, default: MDX }) {
+interface PageActionsProps {
+  pageUrl: string;
+  pagePath: string;
+}
+
+const clientLoader = browserCollections.docs.createClientLoader<PageActionsProps>({
+  component({ toc, frontmatter, default: MDX }, { pageUrl, pagePath }) {
+    const markdownUrl = `${pageUrl}.mdx`;
+    // pagePath already includes .mdx extension, so don't add it again
+    const githubUrl = `https://github.com/xschemadev/xschema/blob/main/web/content/docs/${pagePath}`;
+
     return (
-      <DocsPage toc={toc}>
+      <DocsPage
+        toc={toc}
+        tableOfContent={{ style: "clerk" }}
+        tableOfContentPopover={{ style: "clerk" }}
+      >
         <DocsTitle>{frontmatter.title}</DocsTitle>
         <DocsDescription>{frontmatter.description}</DocsDescription>
+        <div className="flex flex-row gap-2 items-center -mt-6 border-b pb-6">
+          <LLMCopyButton markdownUrl={markdownUrl} />
+          <ViewOptions markdownUrl={markdownUrl} githubUrl={githubUrl} />
+        </div>
         <DocsBody>
           <MDX
             components={{
               ...defaultMdxComponents,
+              ...Twoslash,
               Accordion,
               Accordions,
               Tab,
               Tabs,
+              Mermaid,
             }}
           />
         </DocsBody>
@@ -68,7 +92,7 @@ function Page() {
 
   return (
     <DocsLayout {...baseOptions()} tree={pageTree}>
-      <Content />
+      <Content pageUrl={data.pageUrl} pagePath={data.pagePath} />
     </DocsLayout>
   );
 }

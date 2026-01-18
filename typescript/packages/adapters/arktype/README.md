@@ -43,6 +43,8 @@ Then run:
 xschema generate
 ```
 
+Then use the generated schemas with the [xschema client](/docs/typescript/client).
+
 ## ArkType Features Used
 
 The adapter leverages ArkType's powerful features:

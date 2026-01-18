@@ -43,6 +43,8 @@ Then run:
 xschema generate
 ```
 
+Then use the generated schemas with the [xschema client](/docs/typescript/client).
+
 This will generate:
 
 ```typescript

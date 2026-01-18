@@ -1,0 +1,362 @@
+---
+title: TypeScript Adapters
+description: Build TypeScript adapters using @xschemadev/core
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+
+This guide covers building adapters in TypeScript using the `@xschemadev/core` package.
+
+## The `@xschemadev/core` Package
+
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/core
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/core
+    ```
+  </Tab>
+</Tabs>
+
+### Exports
+
+```typescript
+import {
+  // CLI helper
+  createAdapterCLI,
+  
+  // Parser
+  parse,
+  
+  // Types
+  type ConvertInput,
+  type ConvertResult,
+  type JSONSchema,
+  type SchemaNode,
+  
+  // Utilities
+  escapeString,
+  isPrimitive,
+  hasPrototypeProperties,
+  PROTOTYPE_PROPERTY_NAMES,
+  sortedStringify,
+  // ... and more
+} from "@xschemadev/core";
+```
+
+## Intermediate Representation (IR)
+
+The `parse()` function converts JSON Schema into a **discriminated union** called `SchemaNode`.
+
+### Node Kinds
+
+```typescript
+type SchemaNode =
+  | StringNode       // { kind: "string", constraints, format? }
+  | NumberNode       // { kind: "number", constraints, integer }
+  | BooleanNode      // { kind: "boolean" }
+  | NullNode         // { kind: "null" }
+  | ObjectNode       // { kind: "object", properties, additionalProperties, ... }
+  | ArrayNode        // { kind: "array", items, constraints }
+  | TupleNode        // { kind: "tuple", prefixItems, restItems, constraints }
+  | UnionNode        // { kind: "union", variants } (anyOf)
+  | IntersectionNode // { kind: "intersection", schemas } (allOf)
+  | OneOfNode        // { kind: "oneOf", schemas }
+  | NotNode          // { kind: "not", schema }
+  | LiteralNode      // { kind: "literal", value } (const)
+  | EnumNode         // { kind: "enum", values }
+  | AnyNode          // { kind: "any" } (true schema, {})
+  | NeverNode        // { kind: "never" } (false schema, not: {})
+  | ConditionalNode  // { kind: "conditional", if, then?, else? }
+  | TypeGuardedNode  // { kind: "typeGuarded", guards }
+  | NullableNode;    // { kind: "nullable", inner } (OpenAPI nullable)
+```
+
+### Constraint Types
+
+```typescript
+interface StringConstraints {
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+}
+
+interface NumberConstraints {
+  minimum?: number;
+  maximum?: number;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
+  multipleOf?: number;
+}
+
+interface ArrayConstraints {
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
+  contains?: ContainsConstraint;
+}
+```
+
+## Building an Adapter
+
+<Steps>
+<Step>
+### Create the convert function
+
+This is your main logic - parse the schema to IR and render it:
+
+```typescript
+// src/index.ts
+import { 
+  parse, 
+  type ConvertInput, 
+  type ConvertResult,
+  type JSONSchema 
+} from "@xschemadev/core";
+import { render } from "./renderer.js";
+
+export function convert(input: ConvertInput): ConvertResult {
+  const { namespace, id, varName, schema } = input;
+  
+  // Parse JSON Schema -> IR
+  const ir = parse(schema as JSONSchema);
+  
+  // Render IR -> code string
+  const schemaCode = render(ir);
+  
+  return {
+    namespace,
+    id,
+    varName,
+    imports: ['import { z } from "zod"'],
+    schema: schemaCode,
+    type: `z.infer<typeof ${varName}>`,
+  };
+}
+```
+</Step>
+
+<Step>
+### Create the renderer
+
+Implement a switch on `node.kind` to handle each IR type:
+
+```typescript
+// src/renderer.ts
+import type { SchemaNode } from "@xschemadev/core";
+
+export function render(node: SchemaNode): string {
+  switch (node.kind) {
+    case "string":
+      return renderString(node);
+    case "number":
+      return renderNumber(node);
+    case "boolean":
+      return "z.boolean()";
+    case "null":
+      return "z.null()";
+    case "object":
+      return renderObject(node);
+    case "array":
+      return renderArray(node);
+    // ... handle all node kinds
+    default:
+      // TypeScript exhaustive check
+      const _exhaustive: never = node;
+      throw new Error(`Unhandled: ${(node as any).kind}`);
+  }
+}
+```
+
+<Callout type="warn">
+Always handle ALL node kinds. TypeScript's exhaustive check (`const _: never = node`) catches missing cases at compile time.
+</Callout>
+</Step>
+
+<Step>
+### Create the CLI entry point
+
+Use `createAdapterCLI()` to wire up stdin/stdout:
+
+```typescript
+// src/cli.ts
+#!/usr/bin/env node
+import { createAdapterCLI } from "@xschemadev/core";
+import { convert } from "./index.js";
+
+createAdapterCLI(convert);
+```
+</Step>
+
+<Step>
+### Configure package.json
+
+```json
+{
+  "name": "@xschemadev/my-adapter",
+  "bin": {
+    "xschema-my-adapter": "./dist/cli.js"
+  },
+  "peerDependencies": {
+    "my-validation-library": "^1.0.0"
+  }
+}
+```
+
+The `bin` name must match the adapter name used in xschema configs.
+</Step>
+</Steps>
+
+## Key Utilities
+
+### `escapeString(str)`
+
+Escapes a string for use in generated code:
+
+```typescript
+escapeString("hello\nworld") // '"hello\\nworld"'
+```
+
+### `isPrimitive(value)`
+
+Checks if a value is a JSON primitive (string, number, boolean, null):
+
+```typescript
+isPrimitive("hello")  // true
+isPrimitive({ a: 1 }) // false
+```
+
+### `hasPrototypeProperties(keys)`
+
+Checks if property names include dangerous prototype properties:
+
+```typescript
+hasPrototypeProperties(["name", "__proto__"]) // true
+hasPrototypeProperties(["name", "email"])     // false
+```
+
+<Callout type="warn">
+Properties like `__proto__`, `constructor`, and `toString` exist on `Object.prototype`. Some validation libraries (like Valibot) crash when validating these. Always check with `hasPrototypeProperties()` and handle specially if needed.
+</Callout>
+
+### `PROTOTYPE_PROPERTY_NAMES`
+
+Set of all prototype property names to watch for:
+
+```typescript
+PROTOTYPE_PROPERTY_NAMES.has("__proto__")     // true
+PROTOTYPE_PROPERTY_NAMES.has("constructor")   // true
+PROTOTYPE_PROPERTY_NAMES.has("normalProp")    // false
+```
+
+### `sortedStringify(value)`
+
+JSON.stringify with sorted object keys (for stable equality):
+
+```typescript
+sortedStringify({ b: 2, a: 1 }) // '{"a":1,"b":2}'
+```
+
+## Compliance Workflow
+
+<Steps>
+<Step>
+### Build your adapter
+
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun run build
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm run build
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm run build
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn build
+    ```
+  </Tab>
+</Tabs>
+</Step>
+
+<Step>
+### Run initial compliance check
+
+Start with a single keyword to see immediate results:
+
+```bash
+xschema compliance --adapter-path . --keyword type
+```
+</Step>
+
+<Step>
+### Iterate on failing tests
+
+Run with `--verbose` to see detailed error messages:
+
+```bash
+xschema compliance --adapter-path . --verbose
+```
+</Step>
+
+<Step>
+### Generate full report
+
+Once most tests pass, generate the complete report:
+
+```bash
+xschema compliance --adapter-path . --dev-report
+```
+
+This creates:
+- `compliance/results/{draft}.json` - detailed results per draft
+- `compliance/REPORT.md` - human-readable summary
+</Step>
+</Steps>
+
+## Example: Zod Adapter
+
+The Zod adapter is a good reference implementation:
+
+<Files>
+  <Folder name="typescript/packages/adapters/zod" defaultOpen>
+    <Folder name="src" defaultOpen>
+      <File name="cli.ts" />
+      <File name="index.ts" />
+      <File name="renderer.ts" />
+    </Folder>
+    <Folder name="compliance" />
+    <File name="package.json" />
+  </Folder>
+</Files>
+
+- `cli.ts` - CLI entry point (~5 lines)
+- `index.ts` - convert() function (~20 lines)
+- `renderer.ts` - IR to Zod code (~900 lines)
+
+See the full source at [`typescript/packages/adapters/zod/src/`](https://github.com/xschemadev/xschema/tree/main/typescript/packages/adapters/zod/src).

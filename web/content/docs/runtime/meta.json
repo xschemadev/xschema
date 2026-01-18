@@ -1,0 +1,7 @@
+{
+  "root": true,
+  "title": "Runtime",
+  "description": "Convert JSON Schema to validators at runtime",
+  "icon": "Zap",
+  "pages": ["index", "---Getting Started---", "getting-started", "---Reference---", "api-reference"]
+}

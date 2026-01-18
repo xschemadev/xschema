@@ -312,6 +312,7 @@ function generateComplianceMdx(info: AdapterInfo): string {
   lines.push(
     `description: JSON Schema compliance report for @xschemadev/${info.adapter}`,
   );
+  lines.push("icon: ClipboardCheck");
   lines.push("---");
   lines.push("");
   lines.push("{/* This file is auto-generated. Do not edit manually. */}");

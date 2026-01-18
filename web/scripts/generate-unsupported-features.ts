@@ -52,6 +52,7 @@ function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): stri
   lines.push(
     "description: Fundamental limitations of static JSON Schema code generation",
   );
+  lines.push("icon: Ban");
   lines.push("---");
   lines.push("");
   lines.push("{/* This file is auto-generated. Do not edit manually. */}");

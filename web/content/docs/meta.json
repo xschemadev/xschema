@@ -1,0 +1,9 @@
+{
+  "pages": [
+    "(framework)",
+    "runtime",
+    "cli",
+    "adapters",
+    "compliance"
+  ]
+}
