@@ -335,3 +335,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Virtual types need BaseSchema<T> with `_output` property for InferOutput to work
   - looseObject adds index signature for passthrough behavior (extra properties allowed)
 ---
+
+## 2026-01-18 - Fix Valibot adapter type inference
+- Fixed virtual `pipe()` function type definition to extract type from last argument
+- Changed from `pipe<T>(...args: unknown[]): BaseSchema<T>` (T never inferred, defaults to unknown)
+- To `pipe<A, B, C extends BaseSchema<unknown>>(a: A, b: B, c: C): C` (returns exact type of last arg)
+- Inlined InferEntries type alias into looseObject return type for cleaner type display
+- Removed separate InferEntries type alias (no longer needed)
+- Type popup now shows: `{ id: string; name: string | undefined; email: string; } & { [x: string]: unknown; }`
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/adapters/valibot - type popup shows actual object type
+- Files changed: `web/content/docs/adapters/valibot/index.mdx`
+- **Learnings for future iterations:**
+  - When virtual typing `pipe()` or similar variadic functions, the generic must extract from the last argument, not be a separate type parameter
+  - Type aliases in virtual types show up in hovers - inline the computation for cleaner display
+  - Overload signatures with explicit parameter positions work better than `...args: unknown[]` for preserving types
+---

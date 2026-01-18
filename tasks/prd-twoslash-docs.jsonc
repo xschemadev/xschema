@@ -1,6 +1,77 @@
 {
   "project": "xschema-docs",
   "description": "Twoslash Integration - Show autocomplete, type inference, and error prevention in docs using real generated code",
+  "phase2": {
+    "description": "Polish and fix issues from phase 1",
+    "userStories": [
+      {
+        "title": "Reduce hover noise in Quick Start (index.mdx)",
+        "description": "As a reader, I want only meaningful things to be hoverable so I can focus on what matters.",
+        "acceptanceCriteria": [
+          "Only these identifiers should have ^? annotations showing types: profileSchema, result",
+          "Imports (createXSchemaClient, schemas) should not be distracting",
+          "Consider using simpler client helper pattern (like adapter pages) instead of full @xschemadev/client types",
+          "Typecheck passes",
+          "Verify in browser - only key variables show type popups"
+        ],
+        "passes": false,
+        "notes": "Currently too many things are hoverable. Simplify virtual types and focus annotations on what matters."
+      },
+      {
+        "title": "Reduce hover noise in typescript.mdx client setup",
+        "description": "As a reader, I want only meaningful things to be hoverable so I can focus on what matters.",
+        "acceptanceCriteria": [
+          "Only these identifiers should have ^? annotations: profileSchema, safeParse result, parsed properties (id, email)",
+          "createXSchemaClient, schemas, xschema should not have prominent type hovers",
+          "Simplify virtual type setup to reduce noise",
+          "Typecheck passes",
+          "Verify in browser"
+        ],
+        "passes": false,
+        "notes": ""
+      },
+      {
+        "title": "Show actual compile error for type-only example",
+        "description": "As a reader, when the docs say 'this would be a compile error', I want to see the actual error.",
+        "acceptanceCriteria": [
+          "In typescript.mdx 'Type-only' section, use @errors annotation to show the actual compile error",
+          "The error should appear when trying to call xschema() when no runtime validator exists",
+          "Remove the comment '// This would be a compile error - no runtime validator' and replace with actual error display",
+          "Typecheck passes",
+          "Verify in browser - red error text is visible"
+        ],
+        "passes": false,
+        "notes": "Currently just a comment. Should use twoslash @errors annotation to show real error."
+      },
+      {
+        "title": "Fix Effect adapter type inference",
+        "description": "As a reader viewing the Effect adapter page, I want to see the actual parsed type, not 'unknown'.",
+        "acceptanceCriteria": [
+          "User variable shows actual object type { id: string; email: string; name?: string | undefined } or similar",
+          "NOT showing 'unknown' which is current behavior",
+          "Virtual type definitions properly model Effect Schema type inference",
+          "Typecheck passes",
+          "Verify in browser at /docs/adapters/effect"
+        ],
+        "passes": false,
+        "notes": "Current implementation uses S.Unknown.pipe(S.filter(...)) which preserves unknown. Need to model Effect's Schema.Type extraction properly."
+      },
+      {
+        "title": "Fix Valibot adapter type inference",
+        "description": "As a reader viewing the Valibot adapter page, I want to see the actual parsed type, not 'unknown'.",
+        "acceptanceCriteria": [
+          "User variable shows actual object type { id: string; email: string; name?: string | undefined } with index signature",
+          "NOT showing 'unknown'",
+          "Virtual type definitions properly model Valibot's InferOutput pattern",
+          "The v.pipe() call must preserve type through the chain, not lose it to unknown",
+          "Typecheck passes",
+          "Verify in browser at /docs/adapters/valibot"
+        ],
+        "passes": true,
+        "notes": "Fixed by changing pipe() generic from `pipe<T>(...args: unknown[]): BaseSchema<T>` to `pipe<A, B, C extends BaseSchema<unknown>>(a: A, b: B, c: C): C` which extracts the return type from the last argument. Also inlined the InferEntries type alias into looseObject to get cleaner type display."
+      }
+    ]
+  },
   "userStories": [
     {
       "title": "Create shared example schemas",
@@ -217,7 +288,7 @@
         "Verify in browser using dev-browser skill"
       ],
       "passes": true,
-      "notes": "Used virtual files pattern with inline Effect Schema types. Schema interface includes pipe() method for chaining. Type popup shows 'unknown' which is accurate since the Effect adapter uses S.Unknown.pipe(S.filter(...)) pattern."
+      "notes": "Used virtual files pattern with inline Effect Schema types. Schema interface includes pipe() method for chaining. Type popup shows 'unknown' - see phase2 story 'Fix Effect adapter type inference' for the fix."
     },
     {
       "title": "Add Twoslash to ArkType adapter usage",

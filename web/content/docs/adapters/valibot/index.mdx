@@ -66,12 +66,12 @@ Valibot is a modular validation library focused on bundle size. xschema's Valibo
 // @filename: node_modules/valibot/index.d.ts
 type BaseSchema<T> = { _output: T };
 type ObjectEntries = Record<string, BaseSchema<unknown>>;
-type InferEntries<T extends ObjectEntries> = { [K in keyof T]: T[K]["_output"] };
 export type InferOutput<T extends BaseSchema<unknown>> = T["_output"];
-export declare function pipe<T>(...args: unknown[]): BaseSchema<T>;
+// pipe returns type of last argument - use overloads
+export declare function pipe<A, B, C extends BaseSchema<unknown>>(a: A, b: B, c: C): C;
 export declare function unknown(): BaseSchema<unknown>;
 export declare function rawCheck(fn: unknown): unknown;
-export declare function looseObject<T extends ObjectEntries>(entries: T): BaseSchema<InferEntries<T> & { [x: string]: unknown }>;
+export declare function looseObject<T extends ObjectEntries>(entries: T): BaseSchema<{ [K in keyof T]: T[K]["_output"] } & { [x: string]: unknown }>;
 export declare function string(): BaseSchema<string>;
 export declare function boolean(): BaseSchema<boolean>;
 export declare function optional<T extends BaseSchema<unknown>>(schema: T): BaseSchema<T["_output"] | undefined>;
