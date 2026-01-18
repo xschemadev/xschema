@@ -7,6 +7,7 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
 - **Tabs pattern**: Use `<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>` with nested `<Tab value="x">` for package manager selection
 - **Import fumadocs components**: `import { Tabs, Tab } from "fumadocs-ui/components/tabs"`
 - **Typecheck command**: `bun run types:check` from web/ directory
+- **Twoslash virtual files**: For npm packages not published, create virtual type definitions with `// @filename: node_modules/pkg/index.d.ts`. Use `// ---cut---` after setup to hide from output. Place `^?` directly below variable for type popup.
 
 ---
 
@@ -193,4 +194,22 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - Type extraction uses `v.InferOutput<typeof schema>` pattern
   - Valibot uses `v.picklist([...])` for enum values
   - rawCheck is used to reject arrays (JSON Schema object type doesn't include arrays)
+---
+
+## 2026-01-18 - Add Twoslash to typescript.mdx client setup
+- Added twoslash to "Use the client" code block in Step 4 of Getting Started
+- Used `// @filename:` directive to create virtual files for Twoslash
+- Inlined @xschemadev/client types as `node_modules/@xschemadev/client/index.d.ts` virtual file (package not on npm yet)
+- Inlined xschema.gen.ts content with schemas for user:Profile and app:Config
+- Used `// ---cut---` to hide setup code, showing only the user-facing imports and usage
+- Added `^?` annotation under profileSchema to show type popup
+- Type popup shows: `const profileSchema: ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString; }, $loose>`
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/typescript - Twoslash popups working
+- Files changed: `web/content/docs/(framework)/typescript.mdx`
+- **Learnings for future iterations:**
+  - Twoslash uses virtual file system, so npm packages must be provided inline via `// @filename: node_modules/pkg/index.d.ts`
+  - Use `// ---cut---` after all setup files to hide them from rendered output
+  - The `^?` annotation must be placed on the line directly below the variable, with the caret aligned to the variable name
+  - Declaration merging with `declare module` works in virtual files but requires the module to exist first
 ---

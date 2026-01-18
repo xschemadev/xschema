@@ -136,8 +136,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill - hovering shows Zod schema type"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used virtual files pattern with // @filename: directives. Had to inline @xschemadev/client types since it's not published to npm. The ^? annotation shows ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString }, $loose>"
     },
     {
       "title": "Add Twoslash to typescript.mdx schema lookup section",
