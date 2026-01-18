@@ -213,3 +213,17 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - The `^?` annotation must be placed on the line directly below the variable, with the caret aligned to the variable name
   - Declaration merging with `declare module` works in virtual files but requires the module to exist first
 ---
+
+## 2026-01-18 - Add Twoslash to typescript.mdx schema lookup section
+- Added twoslash to both "Schema lookup" code blocks in typescript.mdx
+- First block: full key format showing types for `xschema("user:Profile")` and `xschema("app:Config")`
+- Second block: defaultNamespace example showing shorthand `xschema("Profile")` resolving to user:Profile
+- Both blocks use same virtual file setup pattern as the earlier "Use the client" block
+- Type popups show full ZodObject types with property details (id, name?, email for Profile; theme enum, language, debug? for Config)
+- Typecheck passes
+- Verified in browser - Twoslash popups working correctly
+- Files changed: `web/content/docs/(framework)/typescript.mdx`
+- **Learnings for future iterations:**
+  - The virtual file setup (client types + generated schemas) can be duplicated across multiple code blocks in the same file - each block is independent
+  - Multiple ^? annotations work within a single code block - place each one on the line directly below the variable
+---

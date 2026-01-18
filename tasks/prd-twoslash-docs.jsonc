@@ -150,8 +150,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added twoslash to both Schema lookup code blocks. First block shows full key format with types for both user:Profile (ZodObject with id, name?, email) and app:Config (ZodObject with theme enum, language, debug?). Second block shows defaultNamespace example with shorthand Profile lookup resolving correctly."
     },
     {
       "title": "Add Twoslash to typescript.mdx XSchemaType section",
