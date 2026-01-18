@@ -286,3 +286,19 @@ Started: Sat Jan 17 11:52:30 PM CET 2026
   - For Zod type inference, need to define custom ZodType interfaces with `_output` property and `passthrough()` method that changes the Mode generic
   - The `passthrough()` mode adds `{ [x: string]: unknown }` to the inferred type via intersection
 ---
+
+## 2026-01-18 01:30 - Add Twoslash to Effect adapter usage
+- Added twoslash to usage code block in adapters/effect/index.mdx
+- Created virtual files pattern with inline Effect Schema types
+- Schema interface includes `pipe()` method for chaining (required for S.Unknown.pipe(S.filter(...)) pattern)
+- Added ^? annotation under user variable
+- Type popup shows `unknown` which is accurate - the Effect adapter uses S.Unknown.pipe(S.filter(...)) pattern which preserves unknown type
+- Simplified type definitions: Schema namespace with Schema interface, Unknown, String, Boolean, filter, decodeUnknownSync
+- Typecheck passes
+- Verified in browser at localhost:3000/docs/adapters/effect - Twoslash popup working correctly
+- Files changed: `web/content/docs/adapters/effect/index.mdx`
+- **Learnings for future iterations:**
+  - Effect Schema's pipe() method is on the Schema interface, not a standalone function
+  - The generated Effect schemas use S.Unknown.pipe(S.filter(...)) which results in `unknown` type - this is accurate to the current adapter implementation
+  - Virtual type definitions need to match how the actual code uses the types (pipe on instance, not static method)
+---

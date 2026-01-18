@@ -216,8 +216,8 @@
         "Typecheck passes",
         "Verify in browser using dev-browser skill"
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used virtual files pattern with inline Effect Schema types. Schema interface includes pipe() method for chaining. Type popup shows 'unknown' which is accurate since the Effect adapter uses S.Unknown.pipe(S.filter(...)) pattern."
     },
     {
       "title": "Add Twoslash to ArkType adapter usage",
