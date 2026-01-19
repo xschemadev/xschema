@@ -123,7 +123,7 @@ class TestConverterValidation:
 
     def test_unexpected_ref_in_schema(self):
         """$ref in schema raises InvalidSchemaError (should be pre-bundled)."""
-        with pytest.raises(InvalidSchemaError, match="Unexpected \\$ref"):
+        with pytest.raises(InvalidSchemaError, match="Failed to resolve \\$ref"):
             convert(
                 {
                     "namespace": "test",
@@ -221,7 +221,7 @@ class TestCLIErrorHandling:
         assert stdout == ""
 
         error = json.loads(stderr)
-        assert "Unexpected $ref" in error["error"]
+        assert "Failed to resolve $ref" in error["error"]
         assert error["schemaId"] == "Foo"
         assert "schemaPath" in error
 

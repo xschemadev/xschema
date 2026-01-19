@@ -63,7 +63,7 @@
         "run 'uv run pytest' from python/ - tests must pass",
         "run compliance on pydantic adapter - must not regress"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Follow TS pattern: adapters receive fully bundled schemas from CLI"
     },
     {

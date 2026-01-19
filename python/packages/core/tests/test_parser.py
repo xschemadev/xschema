@@ -643,7 +643,12 @@ class TestRefParsing:
     """Test parsing $ref schemas - should throw since CLI pre-bundles."""
 
     def test_ref_throws_error(self):
-        with pytest.raises(ValueError, match="Unexpected \\$ref"):
+        # Test that external $refs are rejected
+        with pytest.raises(ValueError, match="external \\$ref"):
+            parse({"$ref": "https://example.com/schema.json"})
+
+        # Test that invalid internal refs produce helpful error
+        with pytest.raises(ValueError, match="Failed to resolve \\$ref"):
             parse({"$ref": "#/definitions/User"})
 
 
@@ -744,12 +749,9 @@ class TestNotNode:
         assert isinstance(result.schema, StringNode)
 
     def test_not_object(self):
-        result = parse({
-            "not": {
-                "type": "object",
-                "properties": {"excluded": {"type": "string"}}
-            }
-        })
+        result = parse(
+            {"not": {"type": "object", "properties": {"excluded": {"type": "string"}}}}
+        )
         assert isinstance(result, NotNode)
         assert isinstance(result.schema, ObjectNode)
 
@@ -758,10 +760,7 @@ class TestConditionalNode:
     """Test parsing if/then/else keywords."""
 
     def test_conditional_with_then(self):
-        result = parse({
-            "if": {"type": "string"},
-            "then": {"minLength": 5}
-        })
+        result = parse({"if": {"type": "string"}, "then": {"minLength": 5}})
         assert isinstance(result, ConditionalNode)
         assert result.kind == "conditional"
         assert isinstance(result.if_schema, StringNode)
@@ -769,21 +768,20 @@ class TestConditionalNode:
         assert result.else_schema is None
 
     def test_conditional_with_else(self):
-        result = parse({
-            "if": {"type": "number"},
-            "else": {"type": "string"}
-        })
+        result = parse({"if": {"type": "number"}, "else": {"type": "string"}})
         assert isinstance(result, ConditionalNode)
         assert isinstance(result.if_schema, NumberNode)
         assert result.then_schema is None
         assert isinstance(result.else_schema, StringNode)
 
     def test_conditional_with_both(self):
-        result = parse({
-            "if": {"type": "string"},
-            "then": {"minLength": 1},
-            "else": {"type": "number"}
-        })
+        result = parse(
+            {
+                "if": {"type": "string"},
+                "then": {"minLength": 1},
+                "else": {"type": "number"},
+            }
+        )
         assert isinstance(result, ConditionalNode)
         assert isinstance(result.if_schema, StringNode)
         assert isinstance(result.then_schema, StringNode)
@@ -800,11 +798,13 @@ class TestNullableNode:
         assert isinstance(result.inner, StringNode)
 
     def test_nullable_object(self):
-        result = parse({
-            "type": "object",
-            "properties": {"name": {"type": "string"}},
-            "nullable": True
-        })
+        result = parse(
+            {
+                "type": "object",
+                "properties": {"name": {"type": "string"}},
+                "nullable": True,
+            }
+        )
         assert isinstance(result, NullableNode)
         assert isinstance(result.inner, ObjectNode)
 
@@ -813,27 +813,31 @@ class TestTypeGuardedNode:
     """Test parsing type-guarded schemas (no type, multiple type-specific keywords)."""
 
     def test_typeguarded_string_and_number(self):
-        result = parse({
-            "minLength": 5,  # string-specific
-            "minimum": 0     # number-specific
-        })
+        result = parse(
+            {
+                "minLength": 5,  # string-specific
+                "minimum": 0,  # number-specific
+            }
+        )
         assert isinstance(result, TypeGuardedNode)
         assert result.kind == "typeGuarded"
         assert len(result.guards) == 2
-        
+
         # Check that we have both string and number guards
         checks = {guard.check for guard in result.guards}
         assert "string" in checks
         assert "number" in checks
 
     def test_typeguarded_object_and_array(self):
-        result = parse({
-            "properties": {"name": {"type": "string"}},  # object-specific
-            "items": {"type": "number"}                   # array-specific
-        })
+        result = parse(
+            {
+                "properties": {"name": {"type": "string"}},  # object-specific
+                "items": {"type": "number"},  # array-specific
+            }
+        )
         assert isinstance(result, TypeGuardedNode)
         assert len(result.guards) == 2
-        
+
         checks = {guard.check for guard in result.guards}
         assert "object" in checks
         assert "array" in checks

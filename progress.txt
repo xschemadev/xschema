@@ -687,3 +687,57 @@ cli/
 - _xschema folder naming works correctly for Python imports
 
 **Result**: Python example fully functional, no workarounds, clean imports, all schemas accessible.
+## 2026-01-19: python-remove-ref-handling (COMPLETE)
+
+**Task**: Remove redundant $ref resolution from Python core parser
+
+**Root Cause**: Python core had extensive $ref handling duplicating CLI bundler work
+- 100+ lines handling $id, $anchor, base URI resolution, external refs
+- _build_id_index() recursively indexed all $id/$anchor declarations
+- _ParseContext tracked base_uri, current_doc, id_index, anchor_index
+- CLI bundler already resolves all external refs to #/$defs/key format
+
+**Implementation**:
+1. Simplified _ParseContext class (parser.py lines 39-45)
+   - Removed: base_uri, current_doc, id_index, anchor_index fields
+   - Kept: root (for internal JSON pointer resolution), resolving (cycle detection)
+   - Removed: with_new_document() method (no longer needed)
+
+2. Removed _build_id_index() function (was lines 72-157)
+   - Function built indexes of $id and $anchor declarations
+   - Not needed: CLI bundles all external refs, adapters only see #/$defs/Name
+
+3. Simplified _resolve_ref() function (parser.py lines 101-128)
+   - Before: 110 lines handling external refs, $id refs, $anchor refs, metaschemas
+   - After: 28 lines - only handles internal JSON pointers starting with #
+   - Throws clear error for external refs: "schemas must be bundled by the Go CLI"
+   - Kept: JSON pointer resolution (#/$defs/Name), cycle detection, RefNode for recursion
+
+4. Removed $id tracking from _parse_with_ctx() (parser.py lines 149-151)
+   - Before: Updated base URI and current document when encountering $id
+   - After: Simple $ref check - delegates to _resolve_ref()
+
+5. Updated parse() docstring (parser.py lines 48-50)
+   - Documents expectation: schemas pre-bundled by CLI
+   - Internal refs (#/$defs/Name) supported, external refs rejected
+
+6. Updated 3 tests to match new error messages
+   - packages/core/tests/test_parser.py::TestRefParsing::test_ref_throws_error
+     - Added test for external ref rejection
+     - Updated internal ref failure message match
+   - packages/adapters/pydantic/tests/test_error_handling.py
+     - Changed "Unexpected $ref" pattern to "Failed to resolve $ref"
+     - 2 tests updated: test_unexpected_ref_in_schema, test_unexpected_ref
+
+**Quality Checks**:
+- uv run pytest: 173/173 tests pass ✓
+- Compliance: 96.8-98.5% across all drafts (unchanged) ✓
+- Lines removed: ~200 lines of redundant $ref handling ✓
+
+**Decisions**:
+- Followed TypeScript pattern exactly (see typescript/packages/core/src/parser/index.ts:51-57)
+- Kept _resolve_json_pointer() for internal refs - CLI preserves #/$defs/Name format
+- Error messages guide users: "Run schema through xschema generate to bundle"
+- RefNode still used for cyclic refs and root ref (#) - enables recursive type generation
+
+**Result**: Python parser simplified, follows TS pattern, all tests pass, compliance unchanged.
