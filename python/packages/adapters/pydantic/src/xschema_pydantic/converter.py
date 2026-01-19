@@ -6,7 +6,7 @@ from xschema_core import parse
 
 from .errors import ConversionError, InvalidSchemaError
 from .import_collector import ImportCollector
-from .renderer import render
+from .renderer import render, _reset_helper_registry, get_needed_helpers
 
 
 def _is_object_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
@@ -183,6 +183,9 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     # Generate class name from varName
     class_name = to_pascal_case(var_name)
 
+    # Reset helper registry before rendering
+    _reset_helper_registry()
+
     # Render the IR to Pydantic code
     try:
         result = render(ir_node, class_name)
@@ -190,6 +193,9 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         raise ConversionError(
             f"Failed to render Pydantic code: {e}", schema_path=schema_path
         ) from e
+
+    # Get needed helper functions
+    helpers = get_needed_helpers()
 
     # Collect and deduplicate imports using ImportCollector
     collector = ImportCollector()
@@ -228,7 +234,11 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         type_guard_wrapper = "isinstance(v, list)"
 
     if is_simple_class:
-        schema_code = result.code
+        # Prepend helpers if any
+        if helpers:
+            schema_code = f"{helpers}\n\n\n{result.code}"
+        else:
+            schema_code = result.code
         if type_guard_wrapper:
             # Wrap with isinstance check - non-matching types pass validation
             validate_expr = f"(lambda v: True if not {type_guard_wrapper} else _try_validate({class_name}.model_validate)(v))"
@@ -239,12 +249,15 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         # For all other cases (primitives, unions, oneOf, etc.), use TypeAdapter
         collector.add("from pydantic import TypeAdapter")
 
-        # If there's helper code, prepend it
+        # Build schema code with helpers and type adapter
         type_adapter_stmt = f"{var_name} = TypeAdapter({result.type_expr})"
+        parts = []
+        if helpers:
+            parts.append(helpers)
         if result.code:
-            schema_code = f"{result.code}\n\n{type_adapter_stmt}"
-        else:
-            schema_code = type_adapter_stmt
+            parts.append(result.code)
+        parts.append(type_adapter_stmt)
+        schema_code = "\n\n".join(parts)
 
         if type_guard_wrapper:
             # Wrap with isinstance check - non-matching types pass validation

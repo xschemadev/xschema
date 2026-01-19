@@ -166,6 +166,86 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
     return sanitized
 
 
+# Helper function registry - tracks which helpers are needed for the generated code
+_helper_registry: set[str] = set()
+
+
+def _reset_helper_registry() -> None:
+    """Reset the helper registry. Called before rendering each schema."""
+    global _helper_registry
+    _helper_registry = set()
+
+
+def _register_helper(helper_name: str) -> None:
+    """Register a helper function as needed."""
+    _helper_registry.add(helper_name)
+
+
+# Helper function definitions - emitted once at module top if used
+_HELPER_FUNCTIONS = {
+    "_json_equals": """def _json_equals(a, b):
+    \"\"\"Check JSON Schema equality semantics: false != 0, true != 1, deep equality.\"\"\"
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b""",
+    "_validates_against": """def _validates_against(validator, value):
+    \"\"\"Check if a value validates against a TypeAdapter without raising.\"\"\"
+    try:
+        validator.validate_python(value)
+        return True
+    except Exception:
+        return False""",
+    "_make_const_validator": """def _make_const_validator(expected):
+    \"\"\"Create a validator that checks for exact JSON Schema equality with a constant.\"\"\"
+    def validator(v):
+        if not _json_equals(v, expected):
+            raise ValueError(f"Value must equal {expected}")
+        return v
+    return validator""",
+    "_make_enum_validator": """def _make_enum_validator(allowed_values):
+    \"\"\"Create a validator that checks if value is in enum using JSON Schema equality.\"\"\"
+    def validator(v):
+        if not any(_json_equals(v, allowed) for allowed in allowed_values):
+            raise ValueError(f"Value must be one of {allowed_values}")
+        return v
+    return validator""",
+}
+
+
+def get_needed_helpers() -> str:
+    """Get all needed helper functions as a single code block."""
+    if not _helper_registry:
+        return ""
+
+    # Resolve dependencies: _make_const_validator and _make_enum_validator need _json_equals
+    if (
+        "_make_const_validator" in _helper_registry
+        or "_make_enum_validator" in _helper_registry
+    ):
+        _register_helper("_json_equals")
+
+    # Emit helpers in dependency order
+    helpers = []
+    if "_json_equals" in _helper_registry:
+        helpers.append(_HELPER_FUNCTIONS["_json_equals"])
+    if "_validates_against" in _helper_registry:
+        helpers.append(_HELPER_FUNCTIONS["_validates_against"])
+    if "_make_const_validator" in _helper_registry:
+        helpers.append(_HELPER_FUNCTIONS["_make_const_validator"])
+    if "_make_enum_validator" in _helper_registry:
+        helpers.append(_HELPER_FUNCTIONS["_make_enum_validator"])
+
+    return "\n\n\n".join(helpers)
+
+
 @dataclass
 class RenderResult:
     """Result of rendering a schema node."""
@@ -619,8 +699,9 @@ def render_literal(node: LiteralNode) -> RenderResult:
 
     expected_repr = _format_json_value(value)
 
-    # generate a factory function call that creates a closure-based validator
-    # _make_const_validator is a helper that will be provided in the template
+    # Register helper for const validation
+    _register_helper("_make_const_validator")
+
     type_expr = (
         f"Annotated[Any, BeforeValidator(_make_const_validator({expected_repr}))]"
     )
@@ -658,6 +739,9 @@ def render_enum(node: EnumNode) -> RenderResult:
         "from typing import Annotated, Any",
         "from pydantic import BeforeValidator",
     }
+
+    # Register helper for enum validation
+    _register_helper("_make_enum_validator")
 
     # generate list of allowed values for the validator
     values_repr = "[" + ", ".join(_format_json_value(v) for v in node.values) + "]"
@@ -733,25 +817,10 @@ def render_array(node: ArrayNode, name: str) -> RenderResult:
         # uniqueItems constraint via custom validator
         if node.constraints.unique_items:
             imports.add("from pydantic import AfterValidator")
+            _register_helper("_json_equals")
             validator_name = f"_unique_{name.lower()}"
-            # Generate a validator that uses proper JSON Schema equality semantics:
-            # - false != 0 and true != 1 (unlike Python's ==)
-            # - deep equality for objects/arrays regardless of order of keys
-            validator_code = f"""def _json_equals(a, b):
-    # JSON Schema treats false != 0 and true != 1
-    if isinstance(a, bool) != isinstance(b, bool):
-        return False
-    if isinstance(a, list):
-        if not isinstance(b, list) or len(a) != len(b):
-            return False
-        return all(_json_equals(x, y) for x, y in zip(a, b))
-    if isinstance(a, dict):
-        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
-            return False
-        return all(_json_equals(a[k], b[k]) for k in a)
-    return a == b
-
-def {validator_name}(v: list) -> list:
+            # Uses _json_equals for proper JSON Schema equality semantics
+            validator_code = f"""def {validator_name}(v: list) -> list:
     for i in range(len(v)):
         for j in range(i + 1, len(v)):
             if _json_equals(v[i], v[j]):
@@ -789,18 +858,7 @@ def {validator_name}(v: list) -> list:
 
             code_parts.append(validator_code)
             annotations.append(f"AfterValidator({validator_name})")
-
-            # Add helper for validation checking
-            if "_validates_against" not in [
-                part for part in code_parts if "_validates_against" in part
-            ]:
-                helper_code = """def _validates_against(validator, value):
-    try:
-        validator.validate_python(value)
-        return True
-    except Exception:
-        return False"""
-                code_parts.insert(0, helper_code)
+            _register_helper("_validates_against")
 
         type_expr = f"Annotated[{base_type}, {', '.join(annotations)}]"
     else:
@@ -1011,33 +1069,11 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
             )
 
         if node.constraints.unique_items:
-            # Use pairwise comparison with JSON Schema equality semantics
-            # (false != 0, true != 1, deep equality for objects/arrays)
-            validator_lines.append("    def _json_equals_tuple(a, b):")
-            validator_lines.append(
-                "        if isinstance(a, bool) != isinstance(b, bool):"
-            )
-            validator_lines.append("            return False")
-            validator_lines.append("        if isinstance(a, (list, tuple)):")
-            validator_lines.append(
-                "            if not isinstance(b, (list, tuple)) or len(a) != len(b):"
-            )
-            validator_lines.append("                return False")
-            validator_lines.append(
-                "            return all(_json_equals_tuple(x, y) for x, y in zip(a, b))"
-            )
-            validator_lines.append("        if isinstance(a, dict):")
-            validator_lines.append(
-                "            if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):"
-            )
-            validator_lines.append("                return False")
-            validator_lines.append(
-                "            return all(_json_equals_tuple(a[k], b[k]) for k in a)"
-            )
-            validator_lines.append("        return a == b")
+            # Use JSON Schema equality semantics
+            _register_helper("_json_equals")
             validator_lines.append("    for i in range(len(v)):")
             validator_lines.append("        for j in range(i + 1, len(v)):")
-            validator_lines.append("            if _json_equals_tuple(v[i], v[j]):")
+            validator_lines.append("            if _json_equals(v[i], v[j]):")
             validator_lines.append(
                 "                raise ValueError('Tuple items must be unique')"
             )
@@ -1070,15 +1106,7 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
                     f"        raise ValueError(f'At most {max_c} items must match contains schema, found {{matching}}')"
                 )
 
-            # Add helper if not already present
-            if not any("_validates_against" in part for part in code_parts):
-                helper_code = """def _validates_against(validator, value):
-    try:
-        validator.validate_python(value)
-        return True
-    except Exception:
-        return False"""
-                code_parts.insert(0, helper_code)
+            _register_helper("_validates_against")
 
         validator_lines.append("    return v")
         code_parts.append("\n".join(validator_lines))

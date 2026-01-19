@@ -33,8 +33,8 @@
         "verify _json_equals appears exactly once in generated __init__.py",
         "run uv run pytest from python/ - all tests must pass"
       ],
-      "passes": false,
-      "notes": "Currently 80 copies of _json_equals in generated output. Keep helper logic in Python adapter (not Go merge)."
+      "passes": true,
+      "notes": "Reduced from 80 definitions to 1 definition + 22 references. Helpers emitted once at module level."
     },
     {
       "id": "pydantic-dedup-imports",

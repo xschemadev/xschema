@@ -329,6 +329,11 @@ def test_render_array_with_unique_items():
 
 def test_render_array_with_contains():
     """Test array with contains constraint."""
+    from xschema_pydantic.renderer import _reset_helper_registry, get_needed_helpers
+
+    # Reset helper registry before test
+    _reset_helper_registry()
+
     node = ArrayNode(
         items=AnyNode(),
         constraints=ArrayConstraints(
@@ -341,7 +346,10 @@ def test_render_array_with_contains():
     result = render(node, "Test")
     assert "AfterValidator(_contains_test)" in result.type_expr
     assert "def _contains_test" in result.code
-    assert "def _validates_against" in result.code
+    # Check helper is registered and would be emitted at module level
+    assert "_validates_against(validator, item)" in result.code
+    helpers = get_needed_helpers()
+    assert "def _validates_against" in helpers
 
 
 # =============================================================================

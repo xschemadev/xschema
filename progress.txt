@@ -530,3 +530,62 @@ cli/
 
 **Result**: Python projects now generate to `_xschema/` by default, enabling proper imports. TypeScript unchanged. Unblocks `update-python-example` task.
 
+## 2026-01-19: pydantic-dedup-helpers (COMPLETE)
+
+**Task**: Deduplicate helper functions in generated Python code
+
+**Implementation**:
+1. Added helper registry system in renderer.py
+   - Global _helper_registry set tracks needed helpers per schema
+   - _reset_helper_registry() called before each schema render
+   - _register_helper(name) marks helper as needed
+   - get_needed_helpers() returns all registered helpers as code block
+
+2. Defined helper functions as constants
+   - _HELPER_FUNCTIONS dict maps name -> implementation
+   - _json_equals: JSON Schema equality (false != 0, true != 1, deep equality)
+   - _validates_against: Check if value validates without raising
+   - _make_const_validator: Factory for const value validators
+   - _make_enum_validator: Factory for enum validators
+   - Automatic dependency resolution (_make_* helpers need _json_equals)
+
+3. Refactored inlined helpers to use registry
+   - render_literal: registers _make_const_validator for complex values
+   - render_enum: registers _make_enum_validator for complex/strict enums
+   - render_array uniqueItems: registers _json_equals (removed 13-line inline def)
+   - render_array contains: registers _validates_against
+   - render_tuple uniqueItems: registers _json_equals (removed nested function)
+   - render_tuple contains: registers _validates_against
+
+4. Updated converter.py to emit helpers
+   - Imports _reset_helper_registry, get_needed_helpers from renderer
+   - Resets registry before each render() call
+   - Gets helpers after render completes
+   - Prepends helpers to schema_code for both simple classes and TypeAdapters
+   - Helpers separated by \n\n\n for readability
+
+5. Updated test to match new design
+   - test_render_array_with_contains now imports helper registry functions
+   - Verifies _validates_against is referenced (not inlined)
+   - Checks helper appears in get_needed_helpers() output
+
+6. Verified deduplication works
+   - Regenerated python/example
+   - Before: 80 copies of _json_equals inlined everywhere
+   - After: 1 definition at module top + 22 references
+   - Example runs correctly, all 173 tests pass
+
+**Decisions**:
+- Helpers emitted at module level, not per-schema (CLI merges schemas)
+- Registry reset per-schema but helpers collected at converter level
+- Used factory pattern for _make_const_validator/_make_enum_validator (cleaner closures)
+- Simplified _json_equals in tuples (removed duplicate _json_equals_tuple nested func)
+- Kept helper definitions in Python adapter (not Go) per PRD guidance
+
+**Quality Checks**:
+- uv run pytest: 173/173 tests pass ✓
+- Example regenerated and runs correctly ✓
+- Deduplication verified: 80 defs → 1 def + 22 refs ✓
+
+**Result**: Helper deduplication complete. Generated code cleaner, more maintainable. No behavioral changes.
+
