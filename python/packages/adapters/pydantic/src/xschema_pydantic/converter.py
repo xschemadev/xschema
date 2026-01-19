@@ -234,17 +234,25 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         type_guard_wrapper = "isinstance(v, list)"
 
     if is_simple_class:
-        # Prepend helpers if any
+        # For simple classes, create TypeAdapter for consistency
+        # The template expects all schemas to have TypeAdapter assignments
+        collector.add("from pydantic import TypeAdapter")
+
+        # Build schema code with helpers, class, and type adapter
+        type_adapter_stmt = f"{var_name} = TypeAdapter({class_name})"
+        parts = []
         if helpers:
-            schema_code = f"{helpers}\n\n\n{result.code}"
-        else:
-            schema_code = result.code
+            parts.append(helpers)
+        parts.append(result.code)
+        parts.append(type_adapter_stmt)
+        schema_code = "\n\n".join(parts)
+
         if type_guard_wrapper:
             # Wrap with isinstance check - non-matching types pass validation
-            validate_expr = f"(lambda v: True if not {type_guard_wrapper} else _try_validate({class_name}.model_validate)(v))"
+            validate_expr = f"(lambda v: True if not {type_guard_wrapper} else _try_validate({var_name}.validate_python)(v))"
         else:
-            # For simple class definitions, use model_validate directly
-            validate_expr = f"_try_validate({class_name}.model_validate)"
+            # For TypeAdapter, use validate_python
+            validate_expr = f"_try_validate({var_name}.validate_python)"
     else:
         # For all other cases (primitives, unions, oneOf, etc.), use TypeAdapter
         collector.add("from pydantic import TypeAdapter")

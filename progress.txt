@@ -636,3 +636,54 @@ cli/
 - Future: could add TemplateImports field to Language struct for extensibility
 
 **Result**: Imports properly deduplicated. Generated code cleaner, no duplicate import statements.
+
+## 2026-01-19: update-python-example (COMPLETE)
+
+**Task**: Update Python example to use _xschema output dir and demonstrate working functionality
+
+**Root Issue Discovered**: Pydantic adapter inconsistently created TypeAdapter assignments
+- Simple BaseModel classes (e.g. UserUser) only got class definition, no TypeAdapter
+- Complex types (unions, annotations) got TypeAdapter assignments
+- Template expected ALL schemas to have runtime validators in schemas dict
+- Result: NameError when referencing missing TypeAdapter variable
+
+**Implementation**:
+1. Deleted python/example/.xschema/ folder
+   - Old output from before OutputDir field was added
+
+2. Fixed Pydantic adapter converter.py (line 236-248)
+   - Changed simple class handling to ALWAYS create TypeAdapter
+   - Before: only output class definition, use model_validate directly
+   - After: output class definition + TypeAdapter assignment, use validate_python
+   - Maintains consistency: all schemas get TypeAdapter regardless of complexity
+   - TypeAdapter provides uniform interface for both simple and complex schemas
+
+3. Regenerated python/example with CLI
+   - Output now goes to _xschema/ (not .xschema/) per OutputDir config
+   - All 4 schemas get TypeAdapter: another_ts_config, another_native, user_calendar, user_user
+   - Verified user_user = TypeAdapter(UserUser) appears at line 894
+
+4. Updated python/example/main.py
+   - Changed import from `.xschema` to `_xschema`
+   - Removed sys.path manipulation hack (lines 12-16)
+   - Now uses normal Python import: `from _xschema import schemas`
+   - Removed type: ignore comment (no longer needed)
+
+5. Verified example functionality
+   - `uv run python main.py`: executes successfully
+   - All 4 validations work: Calendar, User, TSConfig, Native
+   - Output shows expected validation results
+
+**Quality Checks**:
+- uv run pytest: 173/173 tests pass ✓
+- Python example runs without errors ✓
+- All 4 schemas accessible via client ✓
+- No import workarounds needed ✓
+
+**Decisions**:
+- Fixed at adapter level (converter.py) not template level
+- TypeAdapter provides better consistency than mixing model_validate/validate_python
+- All schemas now have uniform interface regardless of implementation (class vs complex type)
+- _xschema folder naming works correctly for Python imports
+
+**Result**: Python example fully functional, no workarounds, clean imports, all schemas accessible.

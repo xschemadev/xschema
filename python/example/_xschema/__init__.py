@@ -891,6 +891,8 @@ class UserUser(BaseModel):
     id: StrictStr
     name: StrictStr | None = None
 
+user_user = TypeAdapter(UserUser)
+
 # Schema registry - maps "namespace:id" to validator
 # Use with create_xschema_client() from xschema-client package
 schemas: Dict[str, Any] = {

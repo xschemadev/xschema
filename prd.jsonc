@@ -96,8 +96,8 @@
         "verify 'uv run python main.py' from python/example works",
         "add type: ignore comments only where truly needed, not as blanket"
       ],
-      "passes": false,
-      "notes": "Example should demonstrate best practices without workarounds"
+      "passes": true,
+      "notes": "Fixed Pydantic adapter to always create TypeAdapter for simple classes. Removed sys.path hack, example works with normal imports."
     },
     {
       "id": "pydantic-compliance-additionalprops",
