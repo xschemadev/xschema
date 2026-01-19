@@ -589,3 +589,50 @@ cli/
 
 **Result**: Helper deduplication complete. Generated code cleaner, more maintainable. No behavioral changes.
 
+## 2026-01-19: pydantic-dedup-imports (COMPLETE)
+
+**Task**: Fix import deduplication in generated Python code
+
+**Root Cause**: Template hardcoded `from typing import TYPE_CHECKING, Any, Dict` on line 10, adapter outputted `from typing import Annotated, Any, Literal`. MergeImports worked correctly but ran AFTER template rendered hardcoded line, resulting in 2 separate import statements.
+
+**Implementation**:
+1. Analyzed generated output: python/example/_xschema/__init__.py
+   - Line 6: `from typing import TYPE_CHECKING, Any, Dict` (hardcoded)
+   - Line 8: `from typing import Annotated, Any, Literal` (from adapter)
+   - Both have `Any` but not merged - template issue not MergeImports bug
+
+2. Updated cli/language/langs/python/templates.go
+   - Removed hardcoded `from typing import TYPE_CHECKING, Any, Dict` line
+   - Template now starts with just `from __future__ import annotations`
+   - Blank line before .Imports section for clean separation
+
+3. Updated cli/injector/injector.go buildTemplateData()
+   - Added template-required imports for Python before merge
+   - Appends `from typing import TYPE_CHECKING, Any, Dict` to allImports
+   - MergeImports then deduplicates with adapter imports
+   - Result: single merged line with all typing imports
+
+4. Verified deduplication works
+   - Regenerated python/example
+   - `rg "^from typing import" | wc -l` returns 1 (was 2)
+   - Line 7: `from typing import Annotated, Any, Dict, Literal, TYPE_CHECKING`
+   - All 5 names merged into single import
+
+5. Verified example functionality
+   - `uv run python main.py` executes correctly
+   - All 4 schemas validate as expected
+
+**Quality Checks**:
+- go build: compiles ✓
+- go vet: no warnings ✓
+- go test ./...: all tests pass ✓
+- uv run pytest: 173/173 tests pass ✓
+- Import count: 2 → 1 ✓
+
+**Decisions**:
+- Fixed at injector level not template level - cleaner separation of concerns
+- Template-required imports added programmatically not hardcoded
+- Language-specific check (`lang.Name == "python"`) acceptable for now
+- Future: could add TemplateImports field to Language struct for extensibility
+
+**Result**: Imports properly deduplicated. Generated code cleaner, no duplicate import statements.

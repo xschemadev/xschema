@@ -46,8 +46,8 @@
         "verify imports like 'from typing import Annotated, Any, Literal' appear only once",
         "regenerate python/example and verify no duplicate import lines"
       ],
-      "passes": false,
-      "notes": "Generated code currently has duplicate import statements"
+      "passes": true,
+      "notes": "Fixed: removed hardcoded imports from template, added template-required imports to injector before merge"
     },
     {
       "id": "python-remove-ref-handling",

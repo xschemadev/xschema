@@ -6,12 +6,12 @@ const (
 https://xschema.dev/docs
 """
 from __future__ import annotations
-
-from typing import TYPE_CHECKING, Any, Dict
 {{- if .Header}}
+
 {{.Header}}
 {{- end}}
 {{if .Imports}}
+
 {{.Imports}}
 {{- end}}
 {{range .Schemas}}
