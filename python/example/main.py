@@ -9,14 +9,12 @@ This example shows how to use xschema to:
 Run `uv run generate` to regenerate schemas, then `uv run python main.py` to run this file.
 """
 
-from xschema_client import create_xschema_client
+# Import generated schemas and typed client
+from _xschema import create_typed_client
 
-# Import generated schemas
-from _xschema import schemas
-
-# Create the xschema client with generated schemas
+# Create the typed xschema client with full autocomplete support
 # defaultNamespace allows shorthand lookups: xschema("Calendar") instead of xschema("user:Calendar")
-xschema = create_xschema_client(schemas, default_namespace="user")
+xschema = create_typed_client(default_namespace="user")
 
 # ============================================
 # Type extraction using type annotations

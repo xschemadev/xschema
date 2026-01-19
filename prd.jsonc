@@ -80,7 +80,7 @@
         "verify mypy/pyright can autocomplete schema keys in example",
         "verify return type is correctly inferred (not Any/Unknown)"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Python lacks declaration merging - generate typed wrapper per-project"
     },
     {

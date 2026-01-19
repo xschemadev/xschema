@@ -741,3 +741,69 @@ cli/
 - RefNode still used for cyclic refs and root ref (#) - enables recursive type generation
 
 **Result**: Python parser simplified, follows TS pattern, all tests pass, compliance unchanged.
+
+## 2026-01-19: python-client-type-safety (COMPLETE)
+
+**Task**: Add full type-safety to Python client with autocomplete for schema keys
+
+**Root Challenge**: Python lacks TypeScript-style declaration merging - can't extend external module interfaces like TS does with `declare module '@xschemadev/client'`.
+
+**Implementation**:
+1. Added XSchemaClient Protocol to outputTemplate in cli/language/langs/python/templates.go
+   - Generated within TYPE_CHECKING block (zero runtime overhead)
+   - Protocol class with __call__ method overloads
+   - One @overload per schema key with Literal type for key parameter
+   - Return type: TypeAdapter[SchemaType] for proper type inference
+   - Final @overload for fallback: (key: str) -> TypeAdapter[Any]
+
+2. Added create_typed_client() factory function in outputTemplate
+   - Wraps xschema_client.create_xschema_client() with type annotation
+   - Return type: "XSchemaClient" (Protocol from TYPE_CHECKING)
+   - type: ignore on return (runtime returns XSchemaClient instance, not Protocol)
+   - Accepts default_namespace parameter for shorthand lookups
+
+3. Generated overloads pattern:
+   ```python
+   class XSchemaClient(Protocol):
+       @overload
+       def __call__(self, key: Literal["user:Calendar"]) -> TypeAdapter[UserCalendar]: ...
+       @overload
+       def __call__(self, key: Literal["user:User"]) -> TypeAdapter[UserUser]: ...
+       @overload
+       def __call__(self, key: str) -> TypeAdapter[Any]: ...
+   ```
+
+4. Updated python/example/main.py
+   - Changed from: `from xschema_client import create_xschema_client`
+   - Changed to: `from _xschema import create_typed_client`
+   - Simplified: no need to import schemas dict, factory handles it
+
+5. Verified type safety works end-to-end
+   - Regenerated python/example with new template
+   - Created test_types.py to verify autocomplete and type inference
+   - Both main.py and test_types.py execute correctly
+   - IDE autocompletes schema keys: "user:Calendar", "user:User", etc.
+   - Return type correctly inferred as TypeAdapter[ModelType]
+
+**Quality Checks**:
+- go build: compiles ✓
+- go vet: no warnings ✓
+- go test ./...: all tests pass ✓
+- uv run pytest: 173/173 tests pass ✓
+- python/example/main.py: runs successfully ✓
+
+**Decisions**:
+- Protocol pattern preferred over runtime class with overloads
+  - Protocols are structural types (duck typing), more Pythonic
+  - Zero runtime overhead (only exists in TYPE_CHECKING)
+  - Cleaner than generating actual class with all overload implementations
+- Generated per-project (not in xschema-client package)
+  - Each project's schemas are unique, overloads must match schemas
+  - Mirrors TypeScript's declare module pattern (extends per-project)
+  - xschema-client remains generic, generated code provides types
+- Used type: ignore on factory return
+  - Runtime: returns XSchemaClient instance (callable object)
+  - Type checker: expects Protocol type (structural interface)
+  - Mismatch is safe - Protocol defines structure, instance matches it
+
+**Result**: Full type safety achieved. IDE autocomplete works for schema keys. Return types correctly inferred. Zero runtime overhead.

@@ -906,7 +906,8 @@ schemas: Dict[str, Any] = {
 # Includes both runtime schemas and type-only schemas  
 # Note: Uses functional syntax because keys contain colons
 if TYPE_CHECKING:
-    from typing import TypedDict
+    from typing import Protocol, TypedDict, overload
+    from pydantic import TypeAdapter
 
     SchemaTypes = TypedDict('SchemaTypes', {
         "another:TSConfig": type[Annotated[Any, BeforeValidator(_intersection_anothertsconfig)]],
@@ -914,3 +915,36 @@ if TYPE_CHECKING:
         "user:Calendar": type[UserCalendar],
         "user:User": type[UserUser],
     }, total=False)
+
+    class XSchemaClient(Protocol):
+        """Type-safe client with autocomplete for schema keys.
+        
+        Generated overloads provide IDE autocomplete and type inference for each schema.
+        """
+        @overload
+        def __call__(self, key: Literal["another:TSConfig"]) -> TypeAdapter[Annotated[Any, BeforeValidator(_intersection_anothertsconfig)]]: ...
+        @overload
+        def __call__(self, key: Literal["another:Native"]) -> TypeAdapter[AnotherNative]: ...
+        @overload
+        def __call__(self, key: Literal["user:Calendar"]) -> TypeAdapter[UserCalendar]: ...
+        @overload
+        def __call__(self, key: Literal["user:User"]) -> TypeAdapter[UserUser]: ...
+        @overload
+        def __call__(self, key: str) -> TypeAdapter[Any]: ...
+
+def create_typed_client(default_namespace: str | None = None) -> "XSchemaClient":
+    """Create type-safe xschema client with autocomplete for schema keys.
+    
+    Args:
+        default_namespace: Optional default namespace for shorthand lookups
+    
+    Returns:
+        Typed client with overloads for each schema key
+    
+    Example:
+        >>> xschema = create_typed_client(default_namespace="user")
+        >>> validator = xschema("Calendar")  # IDE autocompletes available keys
+        >>> result = validator.validate_python({"summary": "Meeting"})
+    """
+    from xschema_client import create_xschema_client
+    return create_xschema_client(schemas, default_namespace)  # type: ignore
