@@ -477,3 +477,56 @@ cli/
 
 **Result**: PyPI CLI publishing ready. On cli-* tag releases, 7 packages auto-publish to PyPI (1 main xschema-cli + 6 platform-specific). Requires PYPI_TOKEN secret configured.
 
+---
+
+## 2026-01-19: PRD Status Review
+
+**Current state**: 10 PRD items, all `passes: false`
+
+**Findings**:
+- `cli-output-dir-config`: Language struct has no OutputDir field
+- `pydantic-dedup-helpers`: `_json_equals` appears 80x in generated output (!)
+- `pydantic-dedup-imports`: duplicate imports visible in generated code
+- `update-python-example`: still uses `.xschema/` folder
+
+**Dedup approach decided**: Emit shared helpers once at module top in renderer.py, reference from validators. Cleaner than tracking/deduping at Go merge time - keeps logic in Python adapter where it belongs.
+
+**Next iteration**: Implement PRD items starting with `cli-output-dir-config`.
+
+## 2026-01-19: cli-output-dir-config (COMPLETE)
+
+**Task**: Add OutputDir field to Language interface for customizable output folder names
+
+**Implementation**:
+1. Added OutputDir field to Language struct in cli/language/language.go
+   - Added field comment: "default output directory when --output not specified"
+   - Positioned after ClientFactoryPattern, before OutputFile (in Output generation section)
+
+2. Updated cli/cmd/generate.go to use language-specific output directory
+   - Changed --output flag default from ".xschema" to "" (empty string)
+   - Updated flag help text to "(default: language-specific)"
+   - Moved output directory resolution AFTER parser.Parse() to access result.Language
+   - Logic: if outputDir == "" use lang.OutputDir, fallback to ".xschema" if lang doesn't specify
+   - Maintains absolute path resolution logic (filepath.Join(root, outDir))
+
+3. Set OutputDir: ".xschema" in cli/language/langs/typescript/typescript.go
+   - Added before OutputFiles field for consistency
+   - TypeScript continues using `.xschema` (no breaking change)
+
+4. Set OutputDir: "_xschema" in cli/language/langs/python/python.go
+   - Added before OutputFile field
+   - Python now uses `_xschema` (can't import from folders starting with `.`)
+
+**Quality Checks**:
+- go build: compiles ✓
+- go vet: no warnings ✓
+- go test ./...: all tests pass ✓
+
+**Decisions**:
+- Flag default changed to empty string so we can detect "not specified" vs "user set .xschema"
+- Output dir resolution moved after parser to access detected language config
+- Fallback to ".xschema" ensures backward compatibility if future language forgets to set OutputDir
+- No breaking changes for existing users (TS keeps .xschema, flag still works)
+
+**Result**: Python projects now generate to `_xschema/` by default, enabling proper imports. TypeScript unchanged. Unblocks `update-python-example` task.
+

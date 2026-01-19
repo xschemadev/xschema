@@ -1,160 +1,156 @@
 {
-  "description": "Python ecosystem setup: uv workspace, client package, CI/CD, PyPI publishing, and release automation. Goal is feature parity with TypeScript for DX.",
+  "description": "Python Pydantic adapter fixes: dedup helper functions, fix output dir naming, add type-safe client, remove redundant ref handling, improve compliance",
+  "status": "in_progress",
+  "last_reviewed": "2026-01-19",
   "items": [
     {
-      "id": "uv-workspace",
+      "id": "cli-output-dir-config",
       "category": "architectural",
-      "description": "Convert python/ to uv workspace with root pyproject.toml",
+      "description": "Add OutputDir field to Language interface for customizable output folder names",
       "steps": [
-        "create python/pyproject.toml with [tool.uv.workspace] members = ['packages/*', 'packages/adapters/*']",
-        "verify workspace members: core, client (new), pydantic adapter",
-        "run 'uv sync' from python/ root - should install all workspace members",
-        "remove individual uv.lock files from packages (workspace uses single root lock)",
-        "remove individual .venv dirs from packages",
-        "verify 'uv run --package xschema-pydantic pytest' works from root"
+        "edit cli/language/language.go and add OutputDir field to Language struct with default '.xschema'",
+        "edit cli/cmd/generate.go to use lang.OutputDir instead of hardcoded '.xschema' when --output not specified",
+        "edit cli/language/langs/typescript/typescript.go to set OutputDir: '.xschema' explicitly",
+        "edit cli/language/langs/python/python.go to set OutputDir: '_xschema'",
+        "run 'go build -o xschema .' from cli/ - must compile",
+        "run 'go vet ./...' from cli/ - must pass",
+        "run 'go test ./...' from cli/ - must pass"
       ],
       "passes": true,
-      "notes": "Workspace provides single lockfile, shared deps, no relative path imports needed"
+      "notes": "Python can't import from folders starting with '.' - use '_xschema' instead"
     },
     {
-      "id": "python-client-package",
+      "id": "pydantic-dedup-helpers",
+      "category": "refactor",
+      "description": "Deduplicate helper functions in generated Python code (_json_equals, etc.)",
+      "steps": [
+        "edit python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py",
+        "add module-level helper registry (set of helper names needed)",
+        "when generating uniqueItems/const validators, add helper name to registry instead of inlining",
+        "emit all registered helpers once at start of render output",
+        "validator functions reference helpers by name (_json_equals, _deep_equals)",
+        "regenerate python/example: go run . generate --project ../python/example from cli/",
+        "verify _json_equals appears exactly once in generated __init__.py",
+        "run uv run pytest from python/ - all tests must pass"
+      ],
+      "passes": false,
+      "notes": "Currently 80 copies of _json_equals in generated output. Keep helper logic in Python adapter (not Go merge)."
+    },
+    {
+      "id": "pydantic-dedup-imports",
+      "category": "refactor",
+      "description": "Fix import deduplication in generated Python code",
+      "steps": [
+        "review python/packages/adapters/pydantic/src/xschema_pydantic/import_collector.py",
+        "ensure MergeImports in cli/language/langs/python/imports.go properly deduplicates",
+        "verify imports like 'from typing import Annotated, Any, Literal' appear only once",
+        "regenerate python/example and verify no duplicate import lines"
+      ],
+      "passes": false,
+      "notes": "Generated code currently has duplicate import statements"
+    },
+    {
+      "id": "python-remove-ref-handling",
+      "category": "cleanup",
+      "description": "Remove redundant $ref resolution code from Python core - CLI handles bundling",
+      "steps": [
+        "read typescript/packages/core/src/parser/index.ts to confirm it throws on $ref",
+        "edit python/packages/core/src/xschema_core/parser.py",
+        "simplify _resolve_ref to throw error: CLI should pre-bundle all schemas",
+        "remove _build_id_index function - not needed if CLI bundles",
+        "remove _ParseContext fields: resolving, id_index, anchor_index",
+        "keep minimal handling for internal $defs refs (#/$defs/Name) if bundler preserves them",
+        "run 'uv run pytest' from python/ - tests must pass",
+        "run compliance on pydantic adapter - must not regress"
+      ],
+      "passes": false,
+      "notes": "Follow TS pattern: adapters receive fully bundled schemas from CLI"
+    },
+    {
+      "id": "python-client-type-safety",
       "category": "functional",
-      "description": "Create xschema-client package with type-safe schema lookup",
+      "description": "Add full type-safety to Python client with autocomplete for schema keys",
       "steps": [
-        "create python/packages/client/ with pyproject.toml (name: xschema-client)",
-        "implement create_xschema_client(schemas, default_namespace) returning callable",
-        "client('namespace:id') returns validator from schemas dict",
-        "client('id') with default_namespace prepends namespace",
-        "raises XSchemaError if schema not found with helpful message",
-        "full type inference via TypeVar and Generic - mypy should infer return types",
-        "verify 'from xschema_client import create_xschema_client' works",
-        "add py.typed marker for PEP 561",
-        "add pytest tests for client: lookup, shorthand, error cases, type inference"
+        "edit python/packages/client/src/xschema_client/__init__.py",
+        "add overload signatures for create_xschema_client with TypedDict schemas param",
+        "use Literal types for known schema keys to enable autocomplete",
+        "return type should be TypeAdapter[T] where T is the schema's model type",
+        "edit cli/language/langs/python/templates.go to generate typed client wrapper",
+        "generate XSchemaClient Protocol with __call__ overloads for each schema key",
+        "verify mypy/pyright can autocomplete schema keys in example",
+        "verify return type is correctly inferred (not Any/Unknown)"
       ],
-      "passes": true,
-      "notes": "Mirror TS client API. Use generics for type safety since Python lacks declaration merging."
+      "passes": false,
+      "notes": "Python lacks declaration merging - generate typed wrapper per-project"
     },
     {
-      "id": "python-example",
+      "id": "update-python-example",
       "category": "functional",
-      "description": "Create example project demonstrating Python xschema usage",
+      "description": "Update Python example to use _xschema output dir and demonstrate type safety",
       "steps": [
-        "create python/example/ with pyproject.toml",
-        "add xschema config files using $schema: https://xschema.dev/schemas/python.jsonc",
-        "add user.xschema.jsonc with Calendar schema (xschema-pydantic adapter)",
-        "add subdir/another.xschema.jsonc with User schema (xschema-pydantic adapter)",
-        "use similar JSON Schema sources as TS example (calendar.json, source.json)",
-        "create main.py that imports generated schemas and uses client",
-        "demonstrate: full key lookup ('user:Calendar'), shorthand with default_namespace ('User')",
-        "demonstrate: Pydantic validation with model_validate()",
-        "add 'generate' script that runs xschema generate --project .",
-        "verify example works end-to-end: generate then run main.py"
+        "delete python/example/.xschema/ folder",
+        "run 'go run . generate' from cli/ targeting python/example",
+        "verify python/example/_xschema/ is created (not .xschema)",
+        "edit python/example/main.py to import from _xschema instead of .xschema",
+        "remove sys.path manipulation hack - should work with normal import",
+        "verify 'uv run python main.py' from python/example works",
+        "add type: ignore comments only where truly needed, not as blanket"
       ],
-      "passes": true,
-      "notes": "Example uses only Pydantic adapter (Python only has this adapter currently)"
+      "passes": false,
+      "notes": "Example should demonstrate best practices without workarounds"
     },
     {
-      "id": "python-ci-setup",
-      "category": "integration",
-      "description": "Create python/.ci/ for compliance workflow integration",
-      "steps": [
-        "create python/.ci/runtime.txt containing 'python'",
-        "create python/.ci/setup.sh that runs 'uv sync'",
-        "verify compliance.yml detects python runtime correctly",
-        "run compliance workflow locally: go run . compliance --lang python --adapter-path ../python/packages/adapters/pydantic",
-        "verify no errors in setup phase"
-      ],
-      "passes": true,
-      "notes": "compliance.yml already supports python runtime detection, just need the files"
-    },
-    {
-      "id": "pypi-cli-packages",
-      "category": "architectural",
-      "description": "Create platform-specific CLI packages for PyPI distribution",
-      "steps": [
-        "create python/cli/ directory structure mirroring cli/npm/",
-        "create python/cli/xschema-cli/pyproject.toml with console_scripts entry point",
-        "create python/cli/xschema-cli/src/xschema_cli/__init__.py with platform detection + exec",
-        "create 6 platform packages: xschema-cli-{darwin,linux,win32}-{arm64,x64}/",
-        "each platform package has pyproject.toml with classifier for os/arch",
-        "main package declares platform packages as optional dependencies",
-        "verify 'uv pip install xschema-cli' installs correct platform binary",
-        "verify 'xschema --help' executes the Go binary"
-      ],
-      "passes": true,
-      "notes": "Match npm pattern. Platform packages contain Go binary, main package does detection."
-    },
-    {
-      "id": "ci-workflow-python",
-      "category": "integration",
-      "description": "Update CI workflow to build and typecheck Python packages",
-      "steps": [
-        "add paths filter for python/ in .github/workflows/ci.yml",
-        "add py-build job: uv sync, uv run mypy, uv run pytest (if tests exist)",
-        "add py-result passthrough job for branch protection",
-        "verify CI runs on python/ changes only",
-        "verify CI passes with current python code"
-      ],
-      "passes": true,
-      "notes": "Follow same pattern as go-test and ts-build jobs"
-    },
-    {
-      "id": "release-please-python",
-      "category": "integration",
-      "description": "Add Python packages to release-please configuration",
-      "steps": [
-        "add python/packages/core to release-please-config.json with release-type: python, component: py-core",
-        "add python/packages/client to config with release-type: python, component: py-client",
-        "add python/packages/adapters/pydantic to config with release-type: python, component: py-pydantic",
-        "add initial versions to .release-please-manifest.json (all 0.1.0)",
-        "verify release-please can parse the config: validate JSON syntax",
-        "tags will be: py-core-v0.1.0, py-client-v0.1.0, py-pydantic-v0.1.0"
-      ],
-      "passes": true,
-      "notes": "Component names prefixed with py- to avoid collision with TS (core, client, zod). python release-type updates pyproject.toml version and CHANGELOG.md automatically."
-    },
-    {
-      "id": "release-workflow-pypi",
-      "category": "integration",
-      "description": "Add PyPI publishing to release workflow",
-      "steps": [
-        "add release-py job to .github/workflows/release-please.yml",
-        "job triggers on py-* tags (py-core, py-client, py-pydantic)",
-        "uses uv to build: uv build",
-        "publishes to PyPI using uv publish with PYPI_TOKEN secret",
-        "add comment documenting PYPI_TOKEN secret requirement",
-        "verify workflow syntax is valid"
-      ],
-      "passes": true,
-      "notes": "PYPI_TOKEN secret must be configured in GitHub repo settings"
-    },
-    {
-      "id": "release-workflow-pypi-cli",
-      "category": "integration",
-      "description": "Add PyPI CLI binary publishing to release workflow",
-      "steps": [
-        "extend release-cli job to also publish Python CLI packages",
-        "after Go binaries built, copy to python/cli/xschema-cli-{platform}/",
-        "build and publish each platform package to PyPI",
-        "build and publish main xschema-cli package",
-        "verify all 7 packages (1 main + 6 platform) publish correctly"
-      ],
-      "passes": true,
-      "notes": "CLI publishes on cli-* tags, same as npm. Requires PYPI_TOKEN."
-    },
-    {
-      "id": "update-injector-template",
+      "id": "pydantic-compliance-additionalprops",
       "category": "functional",
-      "description": "Update Python output template to work with new client",
+      "description": "Fix additionalProperties interaction with patternProperties",
       "steps": [
-        "review cli/language/langs/python/templates.go outputTemplate",
-        "ensure generated code exports schemas dict compatible with client",
-        "ensure SchemaTypes TypedDict is correct for type inference",
-        "verify register_schemas() function works with client._register_schemas()",
-        "regenerate example output and verify it works with client"
+        "analyze failing tests: 'patternProperties are not additional properties'",
+        "edit renderer.py to correctly validate additionalProperties excluding patternProperties matches",
+        "run 'uv run --package xschema-pydantic xschema-pydantic' compliance tests",
+        "verify additionalProperties tests pass"
       ],
-      "passes": true,
-      "notes": "Template already has most of what's needed, may need minor adjustments"
+      "passes": false,
+      "notes": "6 failing additionalProperties tests per REPORT.md"
+    },
+    {
+      "id": "pydantic-compliance-allof-anyof",
+      "category": "functional",
+      "description": "Fix allOf combined with anyOf/oneOf validation",
+      "steps": [
+        "analyze failing tests: 'allOf combined with anyOf, oneOf'",
+        "edit renderer.py intersection handling to properly validate all branches",
+        "run compliance tests",
+        "verify allOf tests pass"
+      ],
+      "passes": false,
+      "notes": "3 failing allOf tests per REPORT.md"
+    },
+    {
+      "id": "pydantic-compliance-items-tuple",
+      "category": "functional",
+      "description": "Fix items with boolean schemas and legacy tuple validation",
+      "steps": [
+        "analyze failing tests: 'items with boolean schemas', 'an array of schemas for items'",
+        "edit renderer.py tuple handling to allow empty arrays and partial tuples",
+        "run compliance tests",
+        "verify items tests pass"
+      ],
+      "passes": false,
+      "notes": "5 failing items tests in draft2019-09 per REPORT.md"
+    },
+    {
+      "id": "pydantic-compliance-refs",
+      "category": "functional",
+      "description": "Fix $ref interaction with sibling keywords",
+      "steps": [
+        "analyze failing tests: 'ref applies alongside sibling keywords', 'root pointer ref'",
+        "verify CLI bundler handles these cases - may be bundler issue not adapter",
+        "if adapter issue, fix in renderer.py",
+        "run compliance tests",
+        "verify ref tests pass"
+      ],
+      "passes": false,
+      "notes": "8 failing ref tests - some may be CLI bundler issues"
     }
   ]
 }

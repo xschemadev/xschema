@@ -32,6 +32,7 @@ func Language() language.Language {
 		ImportPattern:        `(?m)^(?:from\s+\S+\s+import\s+.*|import\s+.*)$`,
 		InjectSchemasKey:     injectSchemasKeyDict,
 		ClientFactoryPattern: `create_xschema_client\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputDir:            "_xschema",
 		OutputFile:           "__init__.py",
 		Template:             outputTemplate,
 		MergeImports:         MergeImports,

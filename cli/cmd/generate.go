@@ -44,7 +44,7 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 
 	generateCmd.Flags().StringVarP(&projectDir, "project", "p", "", "project root directory (default: current directory)")
-	generateCmd.Flags().StringVarP(&outputDir, "output", "o", ".xschema", "output directory for generated files")
+	generateCmd.Flags().StringVarP(&outputDir, "output", "o", "", "output directory for generated files (default: language-specific)")
 	generateCmd.Flags().StringVar(&langFilter, "lang", "", "filter to specific language if multiple detected")
 	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show verbose output")
 	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
@@ -76,12 +76,6 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Make output directory absolute relative to project root
-	outDir := outputDir
-	if !filepath.IsAbs(outDir) {
-		outDir = filepath.Join(root, outDir)
-	}
-
 	// Step 1: Parse config files
 	ui.Step(1, 5, "Scanning for xschema config files")
 	result, err := parser.Parse(ctx, root, langFilter)
@@ -91,6 +85,20 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 	ui.Detail(fmt.Sprintf("Found %d config files, %d schemas (%s)",
 		len(result.Configs), len(result.Declarations), result.Language.Name))
+
+	// Determine output directory: use --output flag if specified, otherwise use language default
+	outDir := outputDir
+	if outDir == "" {
+		outDir = result.Language.OutputDir
+		if outDir == "" {
+			outDir = ".xschema" // fallback if language doesn't specify
+		}
+	}
+
+	// Make output directory absolute relative to project root
+	if !filepath.IsAbs(outDir) {
+		outDir = filepath.Join(root, outDir)
+	}
 
 	if len(result.Declarations) == 0 {
 		ui.WarnMsg("No schema declarations found")
