@@ -26,33 +26,10 @@
     },
     {
       "keyword": "allOf",
-      "passed": 27,
-      "failed": 3,
+      "passed": 30,
+      "failed": 0,
       "skipped": 0,
-      "total": 30,
-      "failures": [
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: false, oneOf: true",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "allOf combined with anyOf, oneOf",
-          "test": "allOf: true, anyOf: true, oneOf: false",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 30
     },
     {
       "keyword": "anchor",
@@ -454,11 +431,11 @@
     }
   ],
   "summary": {
-    "passed": 919,
-    "failed": 17,
+    "passed": 922,
+    "failed": 14,
     "skipped": 0,
     "total": 936,
-    "percentage": 98.18376068376068,
+    "percentage": 98.50427350427351,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

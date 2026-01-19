@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 919 | 17 | 0 | 178 | 98.2% |
-| draft2020-12 | 933 | 17 | 0 | 201 | 98.2% |
+| draft2019-09 | 922 | 14 | 0 | 178 | 98.5% |
+| draft2020-12 | 936 | 14 | 0 | 201 | 98.5% |
 | draft3 | 406 | 1 | 0 | 0 | 99.8% |
-| draft4 | 542 | 24 | 0 | 0 | 95.8% |
-| draft6 | 728 | 32 | 0 | 0 | 95.8% |
-| draft7 | 804 | 32 | 0 | 0 | 96.2% |
+| draft4 | 545 | 21 | 0 | 0 | 96.3% |
+| draft6 | 731 | 29 | 0 | 0 | 96.2% |
+| draft7 | 807 | 29 | 0 | 0 | 96.5% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.2%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.2%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.5%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.5%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-95.8%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-95.8%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-96.2%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-96.3%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-96.2%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-96.5%25-brightgreen)
 
 ## draft2019-09
 
@@ -26,7 +26,7 @@
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 20/21 |
-| allOf | ⚠️ | 27/30 |
+| allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -349,21 +349,6 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>allOf - 3 failures</summary>
-
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: false
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: true
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>items - 5 failures</summary>
 
 - **an array of schemas for items**
@@ -425,7 +410,7 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalProperties | ⚠️ | 20/21 |
-| allOf | ⚠️ | 27/30 |
+| allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -820,21 +805,6 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>allOf - 3 failures</summary>
-
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: false
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: true
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>prefixItems - 5 failures</summary>
 
 - **a schema given for prefixItems**
@@ -938,7 +908,7 @@ These tests are intentionally excluded due to documented limitations.
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 17/17 |
 | additionalProperties | ⚠️ | 15/16 |
-| allOf | ⚠️ | 24/27 |
+| allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
 | definitions | ✅ | 0/0 |
@@ -974,21 +944,6 @@ These tests are intentionally excluded due to documented limitations.
 
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>allOf - 3 failures</summary>
-
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: false
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: true
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: true, oneOf: false
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1683,7 +1638,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 15/16 |
-| allOf | ⚠️ | 27/30 |
+| allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -1725,21 +1680,6 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>allOf - 3 failures</summary>
-
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: false
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: true
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: true, oneOf: false
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -2674,7 +2614,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
 | additionalProperties | ⚠️ | 15/16 |
-| allOf | ⚠️ | 27/30 |
+| allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -2717,21 +2657,6 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>allOf - 3 failures</summary>
-
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: false
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: false, oneOf: true
-  - Expected: `invalid`, Got: `true`
-- **allOf combined with anyOf, oneOf**
-  - Test: allOf: true, anyOf: true, oneOf: false
   - Expected: `invalid`, Got: `true`
 
 </details>

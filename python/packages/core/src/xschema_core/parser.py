@@ -204,13 +204,11 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     has_composition = bool(composition_keys & set(schema.keys()))
     has_sibling_validation = bool(set(schema.keys()) - composition_only_keys)
+    composition_count = len(composition_keys & set(schema.keys()))
 
-    if has_composition and has_sibling_validation:
-        # Schema has both composition and other validation keywords
-        # Extract sibling keywords into a separate schema and combine with intersection
-        sibling_schema = {k: v for k, v in schema.items() if k not in composition_keys}
-        sibling_node = _parse_with_ctx(sibling_schema, ctx)
-
+    # Multiple composition keywords (allOf + anyOf, etc.) or composition + sibling validation
+    # All must be combined with intersection
+    if composition_count > 1 or (has_composition and has_sibling_validation):
         composition_nodes: list[SchemaNode] = []
         if "allOf" in schema:
             composition_nodes.extend(_parse_with_ctx(s, ctx) for s in schema["allOf"])
@@ -221,10 +219,19 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
             schemas_tuple = tuple(_parse_with_ctx(s, ctx) for s in schema["oneOf"])
             composition_nodes.append(OneOfNode(schemas=schemas_tuple))
 
-        # Combine: all composition schemas + sibling validation schema
-        all_schemas = tuple(composition_nodes) + (sibling_node,)
+        # Add sibling validation schema if present
+        if has_sibling_validation:
+            sibling_schema = {
+                k: v for k, v in schema.items() if k not in composition_keys
+            }
+            sibling_node = _parse_with_ctx(sibling_schema, ctx)
+            all_schemas = tuple(composition_nodes) + (sibling_node,)
+        else:
+            all_schemas = tuple(composition_nodes)
+
         return IntersectionNode(schemas=all_schemas)
 
+    # Single composition keyword without sibling validation
     if "allOf" in schema:
         schemas = tuple(_parse_with_ctx(s, ctx) for s in schema["allOf"])
         return IntersectionNode(schemas=schemas)

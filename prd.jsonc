@@ -122,8 +122,8 @@
         "run compliance tests",
         "verify allOf tests pass"
       ],
-      "passes": false,
-      "notes": "3 failing allOf tests per REPORT.md"
+      "passes": true,
+      "notes": "Fixed in parser.py: multiple composition keywords now combined in intersection. allOf: 30/30 tests pass."
     },
     {
       "id": "pydantic-compliance-items-tuple",

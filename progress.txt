@@ -876,3 +876,68 @@ cli/
 
 **Result**: additionalProperties compliance significantly improved. 5 of 6 tests fixed. Remaining failure is annotation tracking issue (allOf applicators), separate from patternProperties interaction.
 
+## 2026-01-19: pydantic-compliance-allof-anyof (COMPLETE)
+
+**Task**: Fix allOf combined with anyOf/oneOf validation
+
+**Root Cause**: Parser bug - when schema had multiple composition keywords (e.g. `{allOf: [true], anyOf: [false], oneOf: [false]}`), only allOf was being processed. anyOf and oneOf were silently ignored.
+
+**Implementation**:
+1. Analyzed failing tests via compliance report
+   - "allOf combined with anyOf, oneOf" group had 3 failures
+   - Test schema: `{allOf: [true], anyOf: [false], oneOf: [false]}`
+   - Expected: invalid (anyOf and oneOf should fail)
+   - Got: valid (only allOf was checked)
+
+2. Reproduced issue by testing parser directly
+   - Created test schema with allOf + anyOf + oneOf
+   - Parser output showed IntersectionNode with only 1 schema (from allOf)
+   - anyOf and oneOf were completely missing from parsed IR
+
+3. Identified parser bug in python/packages/core/src/xschema_core/parser.py
+   - Lines 208-226: Logic only handled multiple composition keywords when sibling validation existed
+   - Lines 228-238: Fall-through handled single composition keywords
+   - Missing: Case where multiple composition keywords exist WITHOUT sibling validation
+   - Result: Only first composition keyword (allOf) was processed
+
+4. Fixed parser logic (lines 205-245)
+   - Added composition_count to count how many composition keywords present
+   - Changed condition from `has_composition and has_sibling_validation` to `composition_count > 1 or (has_composition and has_sibling_validation)`
+   - Now all composition keywords are combined in IntersectionNode when count > 1
+   - Sibling validation conditionally added to intersection if present
+   - Single composition keyword without siblings uses original fast path
+
+5. Verified fix with test schemas
+   - `{allOf: [true], anyOf: [false], oneOf: [false]}` now creates IntersectionNode with 3 schemas:
+     - Schema 0: AnyNode (from allOf: [true])
+     - Schema 1: UnionNode(variants=(NeverNode,)) (from anyOf: [false])
+     - Schema 2: OneOfNode(schemas=(NeverNode,)) (from oneOf: [false])
+   - Intersection validator validates ALL 3, fails at schema 1 (Never), correctly rejecting values
+
+6. Ran quality checks
+   - uv run pytest: 173/173 tests pass ✓
+   - go build: compiles ✓
+   - go vet: no warnings ✓
+   - go test ./...: all tests pass ✓
+
+7. Ran compliance tests
+   - allOf keyword: 27/30 → 30/30 (draft2019-09, draft2020-12)
+   - Overall draft2019-09: 919 passed (98.2%) → 922 passed (98.5%)
+   - Overall draft2020-12: 933 passed (98.2%) → 936 passed (98.5%)
+   - 3 failures fixed across modern drafts
+
+**Decisions**:
+- Fixed at parser level (core package) not renderer level (adapter)
+  - Bug was in IR generation, not code generation
+  - Affects all adapters, not just Pydantic
+  - Cleaner fix: parser should produce correct IR for all consumers
+- Preserved fast path for single composition keyword
+  - Most schemas use only one of allOf/anyOf/oneOf
+  - No need to wrap in intersection when only one present
+  - Maintains performance for common case
+- JSON Schema spec requires ALL applicators at same level to pass
+  - allOf, anyOf, oneOf are sibling keywords, not nested
+  - Schema validates only if all applicators pass
+  - Parser now correctly models this as intersection
+
+**Result**: allOf combined with anyOf/oneOf now validates correctly. All 30 allOf tests pass. Parser correctly handles multiple composition keywords.
