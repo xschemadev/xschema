@@ -145,42 +145,14 @@
     },
     {
       "keyword": "items",
-      "passed": 23,
-      "failed": 5,
+      "passed": 27,
+      "failed": 1,
       "skipped": 0,
       "total": 28,
       "failures": [
         {
           "group": "an array of schemas for items",
           "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "an array of schemas for items",
-          "test": "incomplete array of items",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items with boolean schemas",
-          "test": "array with one item is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "items with boolean schemas",
-          "test": "empty array is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -431,11 +403,11 @@
     }
   ],
   "summary": {
-    "passed": 922,
-    "failed": 14,
+    "passed": 926,
+    "failed": 10,
     "skipped": 0,
     "total": 936,
-    "percentage": 98.50427350427351,
+    "percentage": 98.93162393162393,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

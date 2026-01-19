@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 922 | 14 | 0 | 178 | 98.5% |
-| draft2020-12 | 936 | 14 | 0 | 201 | 98.5% |
+| draft2019-09 | 926 | 10 | 0 | 178 | 98.9% |
+| draft2020-12 | 940 | 10 | 0 | 201 | 98.9% |
 | draft3 | 406 | 1 | 0 | 0 | 99.8% |
-| draft4 | 545 | 21 | 0 | 0 | 96.3% |
-| draft6 | 731 | 29 | 0 | 0 | 96.2% |
-| draft7 | 807 | 29 | 0 | 0 | 96.5% |
+| draft4 | 547 | 19 | 0 | 0 | 96.6% |
+| draft6 | 735 | 25 | 0 | 0 | 96.7% |
+| draft7 | 811 | 25 | 0 | 0 | 97.0% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.5%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.5%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.9%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.9%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-96.3%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-96.2%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-96.5%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-96.6%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-96.7%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.0%25-brightgreen)
 
 ## draft2019-09
 
@@ -43,7 +43,7 @@
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 23/28 |
+| items | ⚠️ | 27/28 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -349,22 +349,10 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>items - 5 failures</summary>
+<summary>items - 1 failure</summary>
 
 - **an array of schemas for items**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -444,7 +432,7 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 6/11 |
+| prefixItems | ⚠️ | 10/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
@@ -805,22 +793,10 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>prefixItems - 5 failures</summary>
+<summary>prefixItems - 1 failure</summary>
 
 - **a schema given for prefixItems**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: empty array is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -916,7 +892,7 @@ These tests are intentionally excluded due to documented limitations.
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 18/21 |
+| items | ⚠️ | 20/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -949,16 +925,10 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>items - 3 failures</summary>
+<summary>items - 1 failure</summary>
 
 - **an array of schemas for items**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -1651,7 +1621,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 23/28 |
+| items | ⚠️ | 27/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -1685,22 +1655,10 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 </details>
 
 <details>
-<summary>items - 5 failures</summary>
+<summary>items - 1 failure</summary>
 
 - **an array of schemas for items**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -2628,7 +2586,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 23/28 |
+| items | ⚠️ | 27/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -2662,22 +2620,10 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 </details>
 
 <details>
-<summary>items - 5 failures</summary>
+<summary>items - 1 failure</summary>
 
 - **an array of schemas for items**
   - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
   - Expected: `valid`, Got: `false`
 
 </details>

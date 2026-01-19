@@ -996,39 +996,39 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
             type_expr = "tuple[()]"  # Empty tuple (no items allowed)
     else:
         # rest_items is None - JSON Schema default: additional items ARE allowed
-        # When prefixItems is present without items=false, any additional items are valid
-        # We need a variable-length tuple that validates prefix items
+        # When prefixItems is present without items/additionalItems keyword, items can be:
+        # - empty array (valid)
+        # - partial array (valid, validates items that exist)
+        # - full array (valid, validates all prefix items)
+        # - extra items (valid, no validation on extras)
         if item_types:
             imports.add("from typing import Annotated, Any")
             imports.add("from pydantic import BeforeValidator, TypeAdapter")
 
             validator_name = f"_tuple_{name.lower()}"
 
-            # Build validator that checks prefix items but allows any rest
+            # Build validator that validates items that exist, allows shorter/longer arrays
             validator_lines = [f"def {validator_name}(v) -> tuple:"]
             validator_lines.append("    if not isinstance(v, tuple):")
             validator_lines.append(
                 "        v = tuple(v) if hasattr(v, '__iter__') else (v,)"
             )
-            validator_lines.append(f"    if len(v) < {len(node.prefix_items)}:")
-            validator_lines.append(
-                f"        raise ValueError(f'Tuple must have at least {len(node.prefix_items)} items, got {{len(v)}}')"
-            )
             validator_lines.append("    validated = list(v)")  # Start with all items
 
-            # Validate prefix items
+            # Validate prefix items that exist (allow shorter arrays)
             for i, item_type in enumerate(item_types):
-                validator_lines.append(f"    # Validate item {i}")
+                validator_lines.append(f"    # Validate item {i} if present")
+                validator_lines.append(f"    if len(v) > {i}:")
                 validator_lines.append(
-                    f"    prefix_{i}_validator = TypeAdapter({item_type})"
+                    f"        prefix_{i}_validator = TypeAdapter({item_type})"
                 )
-                validator_lines.append(f"    try:")
+                validator_lines.append(f"        try:")
                 validator_lines.append(
-                    f"        validated[{i}] = prefix_{i}_validator.validate_python(v[{i}])"
+                    f"            validated[{i}] = prefix_{i}_validator.validate_python(v[{i}])"
                 )
-                validator_lines.append(f"    except Exception as e:")
+                validator_lines.append(f"        except Exception as e:")
                 validator_lines.append(
-                    f"        raise ValueError(f'Item at index {i} invalid: {{e}}')"
+                    f"            raise ValueError(f'Item at index {i} invalid: {{e}}')"
                 )
 
             # Rest items are allowed (any type) - no validation needed
@@ -1039,7 +1039,9 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
             # Type as tuple[Any, ...] with validator doing the actual type checking
             type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
         else:
-            type_expr = "tuple[()]"
+            # No prefix items, rest_items is None - empty tuple or any tuple allowed
+            # In JSON Schema, no items constraint means all arrays valid
+            type_expr = "tuple[Any, ...]"
 
     # Handle tuple constraints (min/max items, uniqueItems, contains)
     needs_validators = (
