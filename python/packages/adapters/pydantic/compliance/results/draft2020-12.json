@@ -3,51 +3,16 @@
   "keywords": [
     {
       "keyword": "additionalProperties",
-      "passed": 15,
-      "failed": 6,
+      "passed": 20,
+      "failed": 1,
       "skipped": 0,
       "total": 21,
       "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "patternProperties are not additional properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties can exist by itself",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "additionalProperties does not look in applicators",
           "test": "properties defined in allOf are not examined",
           "expected": false,
           "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with propertyNames",
-          "test": "Valid against propertyNames, but not additionalProperties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "non-ASCII pattern with additionalProperties",
-          "test": "matching the pattern is valid",
-          "expected": true,
-          "actual": "false",
           "passed": false
         }
       ]
@@ -84,10 +49,10 @@
     },
     {
       "keyword": "anchor",
-      "passed": 8,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 8
+      "total": 0
     },
     {
       "keyword": "anyOf",
@@ -133,19 +98,10 @@
     },
     {
       "keyword": "defs",
-      "passed": 1,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "dependentRequired",
@@ -368,19 +324,10 @@
     },
     {
       "keyword": "properties",
-      "passed": 27,
-      "failed": 1,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty invalidates others",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "propertyNames",
@@ -391,68 +338,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 71,
-      "failed": 8,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 79,
-      "failures": [
-        {
-          "group": "Recursive references between schemas",
-          "test": "invalid tree",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "ref applies alongside sibling keywords",
-          "test": "ref valid, maxItems invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "ref creates new scope when adjacent to keywords",
-          "test": "referenced subschema doesn't see annotations from properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "refRemote",
@@ -500,8 +389,8 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 20,
-      "failed": 7,
+      "passed": 21,
+      "failed": 6,
       "skipped": 0,
       "total": 27,
       "failures": [
@@ -529,13 +418,6 @@
         {
           "group": "unevaluatedProperties schema",
           "test": "with invalid unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent non-bool additionalProperties",
-          "test": "with invalid additional properties",
           "expected": false,
           "actual": "true",
           "passed": false
@@ -572,11 +454,11 @@
     }
   ],
   "summary": {
-    "passed": 1006,
-    "failed": 33,
+    "passed": 933,
+    "failed": 17,
     "skipped": 0,
-    "total": 1039,
-    "percentage": 96.82386910490857,
+    "total": 950,
+    "percentage": 98.21052631578947,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

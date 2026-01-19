@@ -4,37 +4,37 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 993 | 32 | 0 | 178 | 96.9% |
-| draft2020-12 | 1006 | 33 | 0 | 201 | 96.8% |
-| draft3 | 415 | 11 | 0 | 0 | 97.4% |
-| draft4 | 577 | 19 | 0 | 0 | 96.8% |
-| draft6 | 786 | 23 | 0 | 0 | 97.2% |
-| draft7 | 870 | 23 | 0 | 0 | 97.4% |
+| draft2019-09 | 919 | 17 | 0 | 178 | 98.2% |
+| draft2020-12 | 933 | 17 | 0 | 201 | 98.2% |
+| draft3 | 406 | 1 | 0 | 0 | 99.8% |
+| draft4 | 542 | 24 | 0 | 0 | 95.8% |
+| draft6 | 728 | 32 | 0 | 0 | 95.8% |
+| draft7 | 804 | 32 | 0 | 0 | 96.2% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-96.9%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-96.8%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-97.4%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-96.8%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-97.2%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-97.4%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.2%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.2%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-95.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-95.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-96.2%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 15/21 |
+| additionalProperties | ⚠️ | 20/21 |
 | allOf | ⚠️ | 27/30 |
-| anchor | ✅ | 8/8 |
+| anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ⚠️ | 1/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -59,10 +59,10 @@
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 27/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 71/79 |
+| ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -340,26 +340,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 6 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-- **additionalProperties with propertyNames**
-  - Test: Valid against propertyNames, but not additionalProperties
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -374,15 +359,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **allOf combined with anyOf, oneOf**
   - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>defs - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -405,45 +381,6 @@ These tests are intentionally excluded due to documented limitations.
 - **items with boolean schemas**
   - Test: empty array is valid
   - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 1 failure</summary>
-
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 8 failures</summary>
-
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `true`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
-- **ref applies alongside sibling keywords**
-  - Test: ref valid, maxItems invalid
-  - Expected: `invalid`, Got: `true`
-- **ref creates new scope when adjacent to keywords**
-  - Test: referenced subschema doesn't see annotations from properties
-  - Expected: `invalid`, Got: `true`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `true`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `true`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -487,16 +424,16 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 15/21 |
+| additionalProperties | ⚠️ | 20/21 |
 | allOf | ⚠️ | 27/30 |
-| anchor | ✅ | 8/8 |
+| anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ⚠️ | 1/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -523,14 +460,14 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | prefixItems | ⚠️ | 6/11 |
-| properties | ⚠️ | 27/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 71/79 |
+| ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ⚠️ | 12/14 |
-| unevaluatedProperties | ⚠️ | 20/27 |
+| unevaluatedProperties | ⚠️ | 21/27 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -874,26 +811,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 6 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-- **additionalProperties with propertyNames**
-  - Test: Valid against propertyNames, but not additionalProperties
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -908,15 +830,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **allOf combined with anyOf, oneOf**
   - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>defs - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -943,45 +856,6 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 1 failure</summary>
-
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 8 failures</summary>
-
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `true`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
-- **ref applies alongside sibling keywords**
-  - Test: ref valid, maxItems invalid
-  - Expected: `invalid`, Got: `true`
-- **ref creates new scope when adjacent to keywords**
-  - Test: referenced subschema doesn't see annotations from properties
-  - Expected: `invalid`, Got: `true`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `true`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `true`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>unevaluatedItems - 2 failures</summary>
 
 - **unevaluatedItems as schema**
@@ -994,7 +868,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>unevaluatedProperties - 7 failures</summary>
+<summary>unevaluatedProperties - 6 failures</summary>
 
 - **Evaluated properties collection needs to consider instance location**
   - Test: with an unevaluated property that exists at another location
@@ -1007,9 +881,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties schema**
   - Test: with invalid unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent non-bool additionalProperties**
-  - Test: with invalid additional properties
   - Expected: `invalid`, Got: `true`
 - **unevaluatedProperties with adjacent patternProperties**
   - Test: with unevaluated properties
@@ -1025,7 +896,7 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 14/14 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalProperties | ⚠️ | 15/16 |
 | default | ✅ | 7/7 |
 | dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
@@ -1043,9 +914,9 @@ These tests are intentionally excluded due to documented limitations.
 | minimum | ✅ | 13/13 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
-| properties | ⚠️ | 14/15 |
-| ref | ⚠️ | 22/27 |
-| refRemote | ✅ | 0/0 |
+| properties | ✅ | 15/15 |
+| ref | ✅ | 0/0 |
+| refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
@@ -1053,52 +924,10 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 1 failure</summary>
-
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 5 failures</summary>
-
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1108,11 +937,11 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 17/17 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalProperties | ⚠️ | 15/16 |
 | allOf | ⚠️ | 24/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -1131,9 +960,9 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ⚠️ | 23/24 |
-| ref | ⚠️ | 39/45 |
-| refRemote | ✅ | 0/0 |
+| properties | ✅ | 24/24 |
+| ref | ✅ | 0/0 |
+| refRemote | ❌ | 0/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
@@ -1141,23 +970,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1172,15 +989,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **allOf combined with anyOf, oneOf**
   - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1201,35 +1009,671 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 1 failure</summary>
+<summary>refRemote - 17 failures</summary>
 
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 6 failures</summary>
-
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `true`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
-- **remote ref, containing refs itself**
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: null is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: object is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
 
 </details>
 
@@ -1238,14 +1682,14 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalProperties | ⚠️ | 15/16 |
 | allOf | ⚠️ | 27/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1266,10 +1710,10 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 27/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 62/70 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 0/0 |
+| refRemote | ❌ | 0/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
@@ -1277,23 +1721,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1308,15 +1740,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **allOf combined with anyOf, oneOf**
   - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1343,41 +1766,905 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 1 failure</summary>
+<summary>refRemote - 23 failures</summary>
 
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 8 failures</summary>
-
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `true`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `false`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `false`
-- **remote ref, containing refs itself**
+- **$ref to $ref finds location-independent $id**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **$ref to $ref finds location-independent $id**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref with ref to definitions**
+  - Test: invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref with ref to definitions**
+  - Test: valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: null is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: object is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
 
 </details>
 
@@ -1386,14 +2673,14 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalProperties | ⚠️ | 15/16 |
 | allOf | ⚠️ | 27/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1415,10 +2702,10 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 27/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 70/78 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 0/0 |
+| refRemote | ❌ | 0/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
@@ -1426,23 +2713,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>additionalProperties - 1 failure</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties can exist by itself**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
 - **additionalProperties does not look in applicators**
   - Test: properties defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-- **additionalProperties with schema**
-  - Test: an additional invalid property is invalid
-  - Expected: `invalid`, Got: `true`
-- **non-ASCII pattern with additionalProperties**
-  - Test: matching the pattern is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1457,15 +2732,6 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `invalid`, Got: `true`
 - **allOf combined with anyOf, oneOf**
   - Test: allOf: true, anyOf: true, oneOf: false
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
   - Expected: `invalid`, Got: `true`
 
 </details>
@@ -1492,41 +2758,905 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 1 failure</summary>
+<summary>refRemote - 23 failures</summary>
 
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: additionalProperty invalidates others
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 8 failures</summary>
-
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `true`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `false`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `false`
-- **remote ref, containing refs itself**
+- **$ref to $ref finds location-independent $id**
+  - Test: non-number is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **$ref to $ref finds location-independent $id**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **Location-independent identifier in remote ref**
+  - Test: integer is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **Location-independent identifier in remote ref**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change**
+  - Test: base URI change ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: number is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **base URI change - change folder in subschema**
+  - Test: string is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **ref within remote ref**
+  - Test: ref within ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `true`
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref with ref to definitions**
+  - Test: invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **remote ref with ref to definitions**
+  - Test: valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: number is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **retrieved nested refs resolve relative to their URI not $id**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: null is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: object is invalid
+  - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
+- **root ref in remote ref**
+  - Test: string is valid
+  - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
+stderr: Traceback (most recent call last):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+    class Group4(BaseModel):
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+    set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+    fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+    hints[name] = try_eval_type(value, globalns, localns)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+    return typing._eval_type(  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+    return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <module>
+TypeError: 'NoneType' object is not subscriptable
+Unable to evaluate type annotation 'list[StrictInt] | None'.
+`
 
 </details>
 

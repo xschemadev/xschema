@@ -1199,8 +1199,14 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     # Handle additionalProperties
     config_line = None
     if node.additional_properties is False:
-        imports.add("from pydantic import ConfigDict")
-        config_line = "    model_config = ConfigDict(extra='forbid')"
+        # When patternProperties exist, we need to allow extra fields and validate manually
+        # because Pydantic's extra='forbid' would reject pattern-matching properties
+        if node.pattern_properties:
+            imports.add("from pydantic import ConfigDict")
+            config_line = "    model_config = ConfigDict(extra='allow')"
+        else:
+            imports.add("from pydantic import ConfigDict")
+            config_line = "    model_config = ConfigDict(extra='forbid')"
     elif node.additional_properties is True:
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
@@ -1235,6 +1241,13 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
         or node.dependencies
         or node.unevaluated_properties is not None
         or uncovered_required  # Need validator for required fields without properties
+        or (
+            node.additional_properties is not None
+            and not isinstance(node.additional_properties, bool)
+        )  # Need validator for additionalProperties schema
+        or (
+            node.additional_properties is False and node.pattern_properties
+        )  # Need validator when additionalProperties=false with patternProperties
     )
 
     if needs_validator:
@@ -1284,6 +1297,120 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 validator_lines.append(
                     f"                    raise ValueError(f'Property {{key}} must match pattern {escaped_pattern}: {{e}}')"
                 )
+
+        # additionalProperties with schema: validate extra properties that don't match properties or patternProperties
+        if node.additional_properties is not None and not isinstance(
+            node.additional_properties, bool
+        ):
+            imports.add("from pydantic import TypeAdapter")
+
+            # Render the additionalProperties schema
+            additional_result = render(node.additional_properties, f"{name}Additional")
+            imports.update(additional_result.imports)
+            if additional_result.code:
+                nested_classes.append(additional_result.code)
+
+            # Build set of declared property names
+            declared_props = {prop_name for prop_name, _ in node.properties}
+
+            validator_lines.append("        # Validate additionalProperties")
+            validator_lines.append(
+                f"        declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+            )
+
+            # Compile patternProperties patterns if they exist
+            if node.pattern_properties:
+                imports.add("import re")
+                validator_lines.append("        # Compile patternProperties patterns")
+                validator_lines.append("        pattern_regexes = [")
+                for pattern_def in node.pattern_properties:
+                    escaped_pattern = pattern_def.pattern.replace("\\", "\\\\").replace(
+                        "'", "\\'"
+                    )
+                    validator_lines.append(
+                        f"            re.compile(r'{escaped_pattern}'),"
+                    )
+                validator_lines.append("        ]")
+
+            validator_lines.append(
+                f"        additional_validator = TypeAdapter({additional_result.type_expr})"
+            )
+            validator_lines.append(
+                "        for key, value in self.model_dump(exclude_unset=True).items():"
+            )
+            validator_lines.append(
+                "            # Skip properties defined in 'properties'"
+            )
+            validator_lines.append("            if key in declared_props:")
+            validator_lines.append("                continue")
+
+            # Skip properties matching patternProperties
+            if node.pattern_properties:
+                validator_lines.append(
+                    "            # Skip properties matching patternProperties"
+                )
+                validator_lines.append(
+                    "            if any(pattern.search(key) for pattern in pattern_regexes):"
+                )
+                validator_lines.append("                continue")
+
+            validator_lines.append(
+                "            # Validate additional property against schema"
+            )
+            validator_lines.append("            try:")
+            validator_lines.append(
+                "                additional_validator.validate_python(value)"
+            )
+            validator_lines.append("            except Exception as e:")
+            validator_lines.append(
+                "                raise ValueError(f'Additional property {key} invalid: {e}')"
+            )
+
+        # additionalProperties=false with patternProperties: forbid properties not matching patterns or properties
+        if node.additional_properties is False and node.pattern_properties:
+            imports.add("import re")
+
+            # Build set of declared property names
+            declared_props = {prop_name for prop_name, _ in node.properties}
+
+            validator_lines.append(
+                "        # Validate additionalProperties=false with patternProperties"
+            )
+            validator_lines.append(
+                f"        declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+            )
+
+            # Compile patternProperties patterns
+            validator_lines.append("        # Compile patternProperties patterns")
+            validator_lines.append("        pattern_regexes = [")
+            for pattern_def in node.pattern_properties:
+                escaped_pattern = pattern_def.pattern.replace("\\", "\\\\").replace(
+                    "'", "\\'"
+                )
+                validator_lines.append(f"            re.compile(r'{escaped_pattern}'),")
+            validator_lines.append("        ]")
+
+            validator_lines.append(
+                "        for key in self.model_dump(exclude_unset=True).keys():"
+            )
+            validator_lines.append(
+                "            # Skip properties defined in 'properties'"
+            )
+            validator_lines.append("            if key in declared_props:")
+            validator_lines.append("                continue")
+            validator_lines.append(
+                "            # Skip properties matching patternProperties"
+            )
+            validator_lines.append(
+                "            if any(pattern.search(key) for pattern in pattern_regexes):"
+            )
+            validator_lines.append("                continue")
+            validator_lines.append(
+                "            # Reject all other properties (additionalProperties=false)"
+            )
+            validator_lines.append(
+                "            raise ValueError(f'Additional property {key} not allowed')"
+            )
 
         # propertyNames: validate all property keys against schema
         if node.property_names is not None:

@@ -10,44 +10,16 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 11,
-      "failed": 5,
+      "passed": 15,
+      "failed": 1,
       "skipped": 0,
       "total": 16,
       "failures": [
-        {
-          "group": "additionalProperties being false does not allow other properties",
-          "test": "patternProperties are not additional properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties can exist by itself",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "additionalProperties does not look in applicators",
           "test": "properties defined in extends are not examined",
           "expected": false,
           "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "additionalProperties with schema",
-          "test": "an additional invalid property is invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "non-ASCII pattern with additionalProperties",
-          "test": "matching the pattern is valid",
-          "expected": true,
-          "actual": "false",
           "passed": false
         }
       ]
@@ -173,70 +145,24 @@
     },
     {
       "keyword": "properties",
-      "passed": 14,
-      "failed": 1,
+      "passed": 15,
+      "failed": 0,
       "skipped": 0,
-      "total": 15,
-      "failures": [
-        {
-          "group": "properties, patternProperties, additionalProperties interaction",
-          "test": "additionalProperty invalidates others",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 15
     },
     {
       "keyword": "ref",
-      "passed": 22,
-      "failed": 5,
-      "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data does not validate",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "match the enum exactly",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
-    },
-    {
-      "keyword": "refRemote",
       "passed": 0,
       "failed": 0,
       "skipped": 0,
       "total": 0
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
     },
     {
       "keyword": "required",
@@ -261,11 +187,11 @@
     }
   ],
   "summary": {
-    "passed": 415,
-    "failed": 11,
+    "passed": 406,
+    "failed": 1,
     "skipped": 0,
-    "total": 426,
-    "percentage": 97.41784037558685,
+    "total": 407,
+    "percentage": 99.75429975429975,
     "unsupportedFeatures": {
       "count": 0,
       "items": null
