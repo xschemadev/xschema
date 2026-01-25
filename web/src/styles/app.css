@@ -66,4 +66,49 @@
   --color-fd-accent: hsl(40, 4%, 16%);
   --color-fd-accent-foreground: hsl(40, 5%, 95%);
   --color-fd-ring: hsl(77, 32%, 45%);
+  --framework-color: hsl(250 100% 80%);
+  --runtime-color: hsl(250 100% 80%);
+  --cli-color: #a9ceff;
+  --adapters-color: #fff383;
+  --compliance-color: #a9ceff;
+}
+
+.framework {
+  --color-fd-primary: var(--framework-color);
+}
+
+.runtime {
+  --color-fd-primary: var(--runtime-color);
+}
+
+.cli {
+  --color-fd-primary: var(--cli-color);
+}
+
+.adapters {
+  --color-fd-primary: var(--adapters-color);
+}
+
+.compliance {
+  --color-fd-primary: var(--compliance-color);
+}
+
+:root {
+  --framework-color: hsl(250, 80%, 54%);
+  --runtime-color: hsl(250, 80%, 54%);
+  --cli-color: hsl(217, 100%, 58%);
+  --adapters-color: hsl(41, 100%, 40%);
+  --compliance-color: hsl(217, 100%, 58%);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html:has(body[data-scroll-locked]) {
+  scrollbar-gutter: auto;
+}
+
+body {
+  background-color: var(--color-fd-background);
 }
