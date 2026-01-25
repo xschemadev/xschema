@@ -11,3 +11,11 @@ export const sectionTabsList = [
   "compliance",
 ] as const;
 export type SectionTab = (typeof sectionTabsList)[number];
+
+export const SECTION_TAB_TITLE_MAP: Record<SectionTab, string> = {
+  framework: `${XSCHEMA_NAME} (Framework Mode)`,
+  runtime: `${XSCHEMA_NAME} Runtime (Programmatic API)`,
+  cli: `${XSCHEMA_NAME} CLI (Command-line interface)`,
+  adapters: `${XSCHEMA_NAME} Adapters (Language-specific code generation)`,
+  compliance: `${XSCHEMA_NAME} Compliance (Compliance testing)`,
+};
