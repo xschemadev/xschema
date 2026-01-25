@@ -15,7 +15,12 @@ import { dirname, join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 const CONTENT_DIR = join(import.meta.dirname, "..", "content", "docs");
-const UNSUPPORTED_FEATURES_PATH = join(REPO_ROOT, "cli", "unsupported", "unsupported-features.json");
+const UNSUPPORTED_FEATURES_PATH = join(
+  REPO_ROOT,
+  "cli",
+  "unsupported",
+  "unsupported-features.json",
+);
 
 interface UnsupportedFeatureGroup {
   name: string;
@@ -43,7 +48,9 @@ function escapeMdx(str: string): string {
   return str.replace(/\{/g, "\\{").replace(/\}/g, "\\}");
 }
 
-function generateUnsupportedFeaturesMdx(groups: UnsupportedFeatureGroup[]): string {
+function generateUnsupportedFeaturesMdx(
+  groups: UnsupportedFeatureGroup[],
+): string {
   const lines: string[] = [];
 
   // Frontmatter
@@ -143,7 +150,11 @@ function main(): void {
 
   console.log("\nGenerating unsupported-features MDX...");
   const mdxContent = generateUnsupportedFeaturesMdx(groups);
-  const outputPath = join(CONTENT_DIR, "compliance", "unsupported-features.mdx");
+  const outputPath = join(
+    CONTENT_DIR,
+    "compliance",
+    "unsupported-features.mdx",
+  );
   writeMdx(outputPath, mdxContent);
   console.log(`  Created: ${outputPath}`);
 

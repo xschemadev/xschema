@@ -3,10 +3,5 @@
   "title": "CLI",
   "description": "Command-line interface reference",
   "icon": "Terminal",
-  "pages": [
-    "index",
-    "---Commands---",
-    "generate",
-    "compliance"
-  ]
+  "pages": ["index", "---Commands---", "generate", "compliance"]
 }

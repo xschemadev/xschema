@@ -1,13 +1,13 @@
-@import 'tailwindcss';
-@import 'fumadocs-ui/css/preset.css';
-@import 'fumadocs-twoslash/twoslash.css';
+@import "tailwindcss";
+@import "fumadocs-ui/css/preset.css";
+@import "fumadocs-twoslash/twoslash.css";
 
 /*
  * xschema docs theme - earthy palette
  * https://coolors.co/palette/606c38-283618-fefae0-dda15e-bc6c25
  *
  * #606c38 - olive green
- * #283618 - dark green  
+ * #283618 - dark green
  * #fefae0 - cream
  * #dda15e - amber
  * #bc6c25 - copper

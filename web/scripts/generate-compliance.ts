@@ -42,7 +42,6 @@ interface KeywordResult {
   }[];
 }
 
-
 interface DraftResult {
   draft: string;
   keywords: KeywordResult[];
@@ -280,7 +279,6 @@ function groupIssuesByKeyword(drafts: DraftResult[]): KeywordIssue[] {
   );
 }
 
-
 /**
  * Check if adapter is type-only (no runtime validation).
  * Type-only adapters have no passed tests and at least some skipped tests.
@@ -344,7 +342,8 @@ function generateComplianceMdx(info: AdapterInfo): string {
 
   // Check if any draft has unsupported features to decide on table format
   const hasUnsupportedFeatures = info.drafts.some(
-    (d) => d.summary.unsupportedFeatures && d.summary.unsupportedFeatures.count > 0,
+    (d) =>
+      d.summary.unsupportedFeatures && d.summary.unsupportedFeatures.count > 0,
   );
 
   if (hasUnsupportedFeatures) {
