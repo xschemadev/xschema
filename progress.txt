@@ -190,3 +190,58 @@ Compliance Impact:
 - draft2020-12 overall: 941→942 passed (99.1% → 99.2%)
 
 Status: passes=true
+## parser-split-primitives (2026-01-27)
+
+Extracted primitive type parsing to separate parser/primitives.py module - first step in restructuring parser to match TypeScript.
+
+Problem:
+- Python parser was monolithic parser.py file (~770 lines)
+- TypeScript parser is modular: primitives.ts, collections.ts, composition.ts, values.ts, context.ts
+- Goal: match TS structure for consistency, make code easier to navigate
+
+Solution:
+- Created python/packages/core/src/xschema_core/parser/ package
+- Extracted parse_string and parse_number to parser/primitives.py
+- Added comprehensive docstrings explaining JSON Schema semantics
+- Added detailed comments on draft4 vs draft6+ exclusiveMin/Max handling
+- Exported from parser/__init__.py
+
+Implementation Details:
+1. Created parser/ directory and __init__.py with package docstring
+2. Created primitives.py with parse_string and parse_number (public API, no underscores)
+3. Added docstrings explaining:
+   - String constraints: minLength, maxLength, pattern, format
+   - Number constraints: minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf
+   - Draft compatibility: boolean (draft4) vs number (draft6+) exclusiveMin/Max
+4. Moved old parser.py to parser_old.py (temporary - will become parser/core.py in later task)
+5. Updated parser_old.py to import parse_string/parse_number from primitives module
+6. Updated all call sites: _parse_string → parse_string, _parse_number → parse_number
+7. Removed old _parse_string and _parse_number function definitions
+8. Exported parse, parse_string, parse_number from parser/__init__.py
+
+Actions:
+1. Analyzed TypeScript parser/primitives.ts structure
+2. Created parser/ package with comprehensive docstrings
+3. Wrote primitives.py with detailed comments on JSON Schema semantics
+4. Renamed parser.py → parser_old.py to avoid conflict with parser/ package
+5. Updated imports in parser_old.py and _detect_type_guards function
+6. Removed old private functions (_parse_string, _parse_number)
+7. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+
+Decisions:
+- Made functions public (parse_string not _parse_string) - these are part of parser's public API
+- Added comprehensive docstrings with examples showing both draft4 and draft6+ styles
+- Explained WHY draft compatibility matters (same schema works across drafts)
+- Kept parser_old.py temporarily - will split into parser/core.py + other modules in future tasks
+- Exported primitives from __init__.py for testing and potential adapter use
+- Followed TypeScript naming: parseString → parse_string (Python convention)
+
+Next Steps (future tasks):
+- parser-split-collections: extract collections.py (parse_object, parse_array, parse_tuple)
+- parser-split-composition: extract composition.py (parse_all_of, parse_any_of, parse_one_of, parse_not)
+- parser-split-values: extract values.py (parse_literal, parse_enum)
+- parser-split-context: extract context.py (ParseContext, create_context)
+- parser-create-package: move parser_old.py → parser/core.py, clean up __init__.py
+
+Status: passes=true
+

@@ -17,7 +17,6 @@ from xschema_core.ir import (
     NotNode,
     NullNode,
     NullableNode,
-    NumberConstraints,
     NumberNode,
     ObjectNode,
     OneOfNode,
@@ -27,13 +26,13 @@ from xschema_core.ir import (
     RefNode,
     SchemaNode,
     SchemaDependency,
-    StringConstraints,
     StringNode,
     TupleNode,
     TypeGuard,
     TypeGuardedNode,
     UnionNode,
 )
+from xschema_core.parser.primitives import parse_number, parse_string
 
 
 class _ParseContext:
@@ -277,13 +276,13 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     # Parse based on type
     if schema_type == "string":
-        return _parse_string(schema)
+        return parse_string(schema)
 
     if schema_type == "number":
-        return _parse_number(schema, integer=False)
+        return parse_number(schema, integer=False)
 
     if schema_type == "integer":
-        return _parse_number(schema, integer=True)
+        return parse_number(schema, integer=True)
 
     if schema_type == "boolean":
         return BooleanNode()
@@ -299,60 +298,6 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     # Unknown type - return AnyNode
     return AnyNode()
-
-
-def _parse_string(schema: dict[str, Any]) -> StringNode:
-    """Parse a string schema."""
-    constraints = StringConstraints(
-        min_length=schema.get("minLength"),
-        max_length=schema.get("maxLength"),
-        pattern=schema.get("pattern"),
-    )
-    return StringNode(
-        constraints=constraints,
-        format=schema.get("format"),
-    )
-
-
-def _parse_number(schema: dict[str, Any], integer: bool) -> NumberNode:
-    """Parse a number/integer schema."""
-    # Handle exclusiveMinimum/exclusiveMaximum which can be boolean (draft-4) or number (draft-6+)
-    exclusive_min = schema.get("exclusiveMinimum")
-    exclusive_max = schema.get("exclusiveMaximum")
-
-    # Draft-4 style: exclusiveMinimum is boolean, actual value is in minimum
-    if exclusive_min is True:
-        exclusive_min = schema.get("minimum")
-    elif exclusive_min is False:
-        exclusive_min = None
-
-    if exclusive_max is True:
-        exclusive_max = schema.get("maximum")
-    elif exclusive_max is False:
-        exclusive_max = None
-
-    constraints = NumberConstraints(
-        minimum=schema.get("minimum")
-        if not isinstance(schema.get("exclusiveMinimum"), bool)
-        or not schema.get("exclusiveMinimum")
-        else None,
-        maximum=schema.get("maximum")
-        if not isinstance(schema.get("exclusiveMaximum"), bool)
-        or not schema.get("exclusiveMaximum")
-        else None,
-        exclusive_minimum=exclusive_min
-        if not isinstance(exclusive_min, bool)
-        else None,
-        exclusive_maximum=exclusive_max
-        if not isinstance(exclusive_max, bool)
-        else None,
-        multiple_of=schema.get("multipleOf"),
-    )
-
-    return NumberNode(
-        constraints=constraints,
-        integer=integer,
-    )
 
 
 def _parse_object(schema: dict[str, Any], ctx: _ParseContext) -> ObjectNode:
@@ -704,7 +649,7 @@ def _detect_type_guards(schema: dict[str, Any], ctx: _ParseContext) -> list[Type
 
     # Check for string-specific keywords
     if any(k in schema for k in ("minLength", "maxLength", "pattern", "format")):
-        string_schema = _parse_string(schema)
+        string_schema = parse_string(schema)
         guards.append(TypeGuard(check="string", schema=string_schema))
 
     # Check for number-specific keywords
@@ -718,7 +663,7 @@ def _detect_type_guards(schema: dict[str, Any], ctx: _ParseContext) -> list[Type
             "multipleOf",
         )
     ):
-        number_schema = _parse_number(schema, integer=False)
+        number_schema = parse_number(schema, integer=False)
         guards.append(TypeGuard(check="number", schema=number_schema))
 
     # Check for object-specific keywords
