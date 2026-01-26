@@ -149,8 +149,8 @@
         "run compliance tests",
         "verify ref tests pass"
       ],
-      "passes": false,
-      "notes": "8 failing ref tests - some may be CLI bundler issues"
+      "passes": true,
+      "notes": "All ref tests passing (0 failures). Previous bundler/parser work resolved all ref issues."
     }
   ]
 }
