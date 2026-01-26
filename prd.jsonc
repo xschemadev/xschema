@@ -48,7 +48,7 @@
         "remove tests for shorthand lookups (test_shorthand_with_default_namespace, etc.)",
         "run 'uv run pytest packages/client' - must pass"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "TypeScript has declaration merging for type safety. Python doesn't, so shorthand adds complexity without benefit."
     },
     {

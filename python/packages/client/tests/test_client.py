@@ -27,54 +27,16 @@ def test_full_key_lookup():
     assert xschema("another:TSConfig").name == "TSConfig"
 
 
-def test_shorthand_with_default_namespace():
-    """Test shorthand lookup when default_namespace is set."""
-    schemas = {
-        "user:Profile": MockValidator("Profile"),
-        "user:Calendar": MockValidator("Calendar"),
-        "another:TSConfig": MockValidator("TSConfig"),
-    }
-    xschema = create_xschema_client(schemas, default_namespace="user")
-
-    # Shorthand should prepend default namespace
-    assert xschema("Profile").name == "Profile"
-    assert xschema("Calendar").name == "Calendar"
-
-    # Full keys should still work
-    assert xschema("user:Profile").name == "Profile"
-    assert xschema("another:TSConfig").name == "TSConfig"
-
-
-def test_shorthand_without_default_namespace():
-    """Test that shorthand fails without default_namespace."""
-    schemas = {
-        "user:Profile": MockValidator("Profile"),
-    }
-    xschema = create_xschema_client(schemas)
-
-    # Shorthand without default namespace should fail
-    with pytest.raises(XSchemaError) as exc_info:
-        xschema("Profile")
-
-    assert "Unknown schema: Profile" in str(exc_info.value)
-    assert "xschema generate" in str(exc_info.value)
-
-
 def test_schema_not_found():
     """Test error when schema doesn't exist."""
     schemas = {
         "user:Profile": MockValidator("Profile"),
     }
-    xschema = create_xschema_client(schemas, default_namespace="user")
+    xschema = create_xschema_client(schemas)
 
-    # Non-existent full key
+    # Non-existent key
     with pytest.raises(XSchemaError) as exc_info:
         xschema("user:NonExistent")
-    assert "Unknown schema: user:NonExistent" in str(exc_info.value)
-
-    # Non-existent shorthand
-    with pytest.raises(XSchemaError) as exc_info:
-        xschema("NonExistent")
     assert "Unknown schema: user:NonExistent" in str(exc_info.value)
 
 
@@ -99,18 +61,15 @@ def test_type_inference():
     assert validator.name == "Profile"
 
 
-def test_colon_in_key_always_uses_full_key():
-    """Test that any key with ':' is treated as full key, even with default_namespace."""
+def test_nonexistent_namespace():
+    """Test error when namespace doesn't exist."""
     schemas = {
         "user:Profile": MockValidator("Profile"),
         "another:Config": MockValidator("Config"),
     }
-    xschema = create_xschema_client(schemas, default_namespace="user")
+    xschema = create_xschema_client(schemas)
 
-    # Key with ':' should never prepend default namespace
-    assert xschema("another:Config").name == "Config"
-
-    # Even if the namespace doesn't exist
+    # Non-existent namespace should fail
     with pytest.raises(XSchemaError) as exc_info:
         xschema("nonexistent:Schema")
     assert "Unknown schema: nonexistent:Schema" in str(exc_info.value)

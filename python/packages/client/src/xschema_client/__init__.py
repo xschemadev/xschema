@@ -16,25 +16,21 @@ class XSchemaError(Exception):
 class XSchemaClient(Generic[T]):
     """Type-safe client for looking up schemas by namespace:id."""
 
-    def __init__(
-        self, schemas: Dict[str, T], default_namespace: Optional[str] = None
-    ) -> None:
+    def __init__(self, schemas: Dict[str, T]) -> None:
         """
         Initialize the xschema client.
 
         Args:
             schemas: Dictionary of schemas keyed by "namespace:id"
-            default_namespace: Optional default namespace for shorthand lookups
         """
         self._schemas = schemas
-        self._default_namespace = default_namespace
 
     def __call__(self, key: str) -> T:
         """
         Look up a schema by key.
 
         Args:
-            key: Schema key in "namespace:id" format, or just "id" if default_namespace is set
+            key: Schema key in "namespace:id" format
 
         Returns:
             The schema validator (e.g., Pydantic model)
@@ -42,32 +38,21 @@ class XSchemaClient(Generic[T]):
         Raises:
             XSchemaError: If schema not found
         """
-        # If key includes ":", use as-is; otherwise prepend default_namespace
-        if ":" in key:
-            resolved_key = key
-        elif self._default_namespace:
-            resolved_key = f"{self._default_namespace}:{key}"
-        else:
-            resolved_key = key
-
-        if resolved_key not in self._schemas:
-            msg = f"Unknown schema: {resolved_key}. Run `xschema generate`."
+        if key not in self._schemas:
+            msg = f"Unknown schema: {key}. Run `xschema generate`."
             raise XSchemaError(msg)
 
-        return self._schemas[resolved_key]
+        return self._schemas[key]
 
 
-def create_xschema_client(
-    schemas: Dict[str, T], default_namespace: Optional[str] = None
-) -> Callable[[str], T]:
+def create_xschema_client(schemas: Dict[str, T]) -> Callable[[str], T]:
     """
     Create an xschema client for looking up schemas by namespace:id.
 
-    Provides runtime schema lookup with optional shorthand notation.
+    Provides runtime schema lookup with type safety.
 
     Args:
         schemas: Dictionary of schemas keyed by "namespace:id"
-        default_namespace: Optional default namespace for shorthand lookups
 
     Returns:
         A callable that looks up schemas by key
@@ -75,16 +60,13 @@ def create_xschema_client(
     Example:
         >>> from xschema_client import create_xschema_client
         >>> schemas = {"user:Profile": ProfileModel, "another:TSConfig": TSConfigModel}
-        >>> xschema = create_xschema_client(schemas, default_namespace="user")
+        >>> xschema = create_xschema_client(schemas)
         >>>
-        >>> # Full key lookup
+        >>> # Look up by full key
         >>> profile = xschema("user:Profile")
-        >>>
-        >>> # Shorthand with default namespace
-        >>> profile2 = xschema("Profile")  # Resolves to "user:Profile"
         >>>
         >>> # Validate data
         >>> profile.model_validate({"name": "Alice"})
     """
-    client = XSchemaClient(schemas, default_namespace)
+    client = XSchemaClient(schemas)
     return client

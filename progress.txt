@@ -31,3 +31,27 @@ Decisions:
 - Patterns cover all Python cache types: compiled bytecode, pytest, mypy, uv venv
 
 Status: passes=true
+
+## client-remove-default-namespace (2026-01-27)
+
+Removed default_namespace parameter from xschema-client - simplifies API without sacrificing Python type safety.
+
+Actions:
+1. Edited python/packages/client/src/xschema_client/__init__.py
+   - Removed default_namespace param from XSchemaClient.__init__
+   - Removed default_namespace param from create_xschema_client
+   - Simplified __call__ to only accept "namespace:id" format (removed shorthand logic)
+   - Updated docstrings and examples
+2. Edited python/packages/client/tests/test_client.py
+   - Removed test_shorthand_with_default_namespace
+   - Removed test_shorthand_without_default_namespace
+   - Updated test_schema_not_found to remove shorthand test case
+   - Renamed test_colon_in_key_always_uses_full_key to test_nonexistent_namespace
+3. Ran 'uv run pytest packages/client -v' - all 7 tests passed
+
+Decisions:
+- Python lacks TypeScript's declaration merging, so default_namespace doesn't provide type safety benefit
+- Shorthand notation adds API complexity without value in Python
+- Full "namespace:id" format is clear, explicit, and consistent with Go CLI output
+
+Status: passes=true
