@@ -13,19 +13,15 @@ Run `uv run generate` to regenerate schemas, then `uv run python main.py` to run
 from _xschema import create_typed_client
 
 # Create the typed xschema client with full autocomplete support
-# defaultNamespace allows shorthand lookups: xschema("Calendar") instead of xschema("user:Calendar")
-xschema = create_typed_client(default_namespace="user")
+xschema = create_typed_client()
 
 # ============================================
 # Type extraction using type annotations
 # ============================================
 
-# Use full "namespace:id" to get schemas from any namespace
+# Use "namespace:id" format to get schemas
 tsconfig_schema = xschema("another:TSConfig")
-calendar_schema = xschema("user:Calendar")
-
-# When defaultNamespace is set, you can omit it for that namespace
-calendar = xschema("Calendar")  # Same as xschema("user:Calendar")
+calendar = xschema("user:Calendar")
 
 # Validate with Pydantic TypeAdapter
 valid_calendar = calendar.validate_python(
@@ -47,7 +43,7 @@ except Exception as e:
 # User schema
 # ============================================
 
-user = xschema("User")
+user = xschema("user:User")
 valid_user = user.validate_python(
     {
         "id": "123",

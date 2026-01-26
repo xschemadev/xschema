@@ -65,22 +65,19 @@ if TYPE_CHECKING:
         @overload
         def __call__(self, key: str) -> TypeAdapter[Any]: ...
 
-def create_typed_client(default_namespace: str | None = None) -> "XSchemaClient":
+def create_typed_client() -> "XSchemaClient":
     """Create type-safe xschema client with autocomplete for schema keys.
-    
-    Args:
-        default_namespace: Optional default namespace for shorthand lookups
     
     Returns:
         Typed client with overloads for each schema key
     
     Example:
-        >>> xschema = create_typed_client(default_namespace="user")
-        >>> validator = xschema("Calendar")  # IDE autocompletes available keys
+        >>> xschema = create_typed_client()
+        >>> validator = xschema("user:Calendar")  # IDE autocompletes available keys
         >>> result = validator.validate_python({"summary": "Meeting"})
     """
     from xschema_client import create_xschema_client
-    return create_xschema_client(schemas, default_namespace)  # type: ignore
+    return create_xschema_client(schemas)  # type: ignore
 {{- if .Footer}}
 {{.Footer}}
 {{- end}}

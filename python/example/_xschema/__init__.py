@@ -108,8 +108,33 @@ def _intersection_anothertsconfigpart0compileroptionsvariant0newline(v) -> Any:
     return v
 
 
+def _unique_anothertsconfigpart0compileroptionsvariant0pathsvariant0additionalvariant0(v: list) -> list:
+    for i in range(len(v)):
+        for j in range(i + 1, len(v)):
+            if _json_equals(v[i], v[j]):
+                raise ValueError("Items must be unique")
+    return v
+
+
 class AnotherTsConfigPart0CompileroptionsVariant0PathsVariant0(BaseModel):
     model_config = ConfigDict(extra='allow')
+
+    @model_validator(mode='after')
+    def _validate_advanced(self):
+        # Advanced object validations
+        # Validate additionalProperties
+        declared_props = {}
+        additional_validator = TypeAdapter(Annotated[list[StrictStr], AfterValidator(_unique_anothertsconfigpart0compileroptionsvariant0pathsvariant0additionalvariant0)] | None)
+        for key, value in self.model_dump(exclude_unset=True).items():
+            # Skip properties defined in 'properties'
+            if key in declared_props:
+                continue
+            # Validate additional property against schema
+            try:
+                additional_validator.validate_python(value)
+            except Exception as e:
+                raise ValueError(f'Additional property {key} invalid: {e}')
+        return self
 
 
 class AnotherTsConfigPart0CompileroptionsVariant0PluginsVariant0Item(BaseModel):
@@ -446,8 +471,33 @@ def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0
     return v
 
 
+def _unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0pathsvariant0additionalvariant0(v: list) -> list:
+    for i in range(len(v)):
+        for j in range(i + 1, len(v)):
+            if _json_equals(v[i], v[j]):
+                raise ValueError("Items must be unique")
+    return v
+
+
 class AnotherTsConfigPart6TsNodeVariant0CompileroptionsPart0Variant0PathsVariant0(BaseModel):
     model_config = ConfigDict(extra='allow')
+
+    @model_validator(mode='after')
+    def _validate_advanced(self):
+        # Advanced object validations
+        # Validate additionalProperties
+        declared_props = {}
+        additional_validator = TypeAdapter(Annotated[list[StrictStr], AfterValidator(_unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0pathsvariant0additionalvariant0)] | None)
+        for key, value in self.model_dump(exclude_unset=True).items():
+            # Skip properties defined in 'properties'
+            if key in declared_props:
+                continue
+            # Validate additional property against schema
+            try:
+                additional_validator.validate_python(value)
+            except Exception as e:
+                raise ValueError(f'Additional property {key} invalid: {e}')
+        return self
 
 
 class AnotherTsConfigPart6TsNodeVariant0CompileroptionsPart0Variant0PluginsVariant0Item(BaseModel):
@@ -645,21 +695,21 @@ class AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant0Item1Variant0(
 def _tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant0(v) -> tuple:
     if not isinstance(v, tuple):
         v = tuple(v) if hasattr(v, '__iter__') else (v,)
-    if len(v) < 2:
-        raise ValueError(f'Tuple must have at least 2 items, got {len(v)}')
     validated = list(v)
-    # Validate item 0
-    prefix_0_validator = TypeAdapter(StrictStr | None)
-    try:
-        validated[0] = prefix_0_validator.validate_python(v[0])
-    except Exception as e:
-        raise ValueError(f'Item at index 0 invalid: {e}')
-    # Validate item 1
-    prefix_1_validator = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant0Item1Variant0 | None)
-    try:
-        validated[1] = prefix_1_validator.validate_python(v[1])
-    except Exception as e:
-        raise ValueError(f'Item at index 1 invalid: {e}')
+    # Validate item 0 if present
+    if len(v) > 0:
+        prefix_0_validator = TypeAdapter(StrictStr | None)
+        try:
+            validated[0] = prefix_0_validator.validate_python(v[0])
+        except Exception as e:
+            raise ValueError(f'Item at index 0 invalid: {e}')
+    # Validate item 1 if present
+    if len(v) > 1:
+        prefix_1_validator = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant0Item1Variant0 | None)
+        try:
+            validated[1] = prefix_1_validator.validate_python(v[1])
+        except Exception as e:
+            raise ValueError(f'Item at index 1 invalid: {e}')
     return tuple(validated)
 
 
@@ -678,21 +728,21 @@ class AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant1Item1Variant0(
 def _tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant1(v) -> tuple:
     if not isinstance(v, tuple):
         v = tuple(v) if hasattr(v, '__iter__') else (v,)
-    if len(v) < 2:
-        raise ValueError(f'Tuple must have at least 2 items, got {len(v)}')
     validated = list(v)
-    # Validate item 0
-    prefix_0_validator = TypeAdapter(StrictStr | None)
-    try:
-        validated[0] = prefix_0_validator.validate_python(v[0])
-    except Exception as e:
-        raise ValueError(f'Item at index 0 invalid: {e}')
-    # Validate item 1
-    prefix_1_validator = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant1Item1Variant0 | None)
-    try:
-        validated[1] = prefix_1_validator.validate_python(v[1])
-    except Exception as e:
-        raise ValueError(f'Item at index 1 invalid: {e}')
+    # Validate item 0 if present
+    if len(v) > 0:
+        prefix_0_validator = TypeAdapter(StrictStr | None)
+        try:
+            validated[0] = prefix_0_validator.validate_python(v[0])
+        except Exception as e:
+            raise ValueError(f'Item at index 0 invalid: {e}')
+    # Validate item 1 if present
+    if len(v) > 1:
+        prefix_1_validator = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant1Item1Variant0 | None)
+        try:
+            validated[1] = prefix_1_validator.validate_python(v[1])
+        except Exception as e:
+            raise ValueError(f'Item at index 1 invalid: {e}')
     return tuple(validated)
 
 
@@ -932,19 +982,16 @@ if TYPE_CHECKING:
         @overload
         def __call__(self, key: str) -> TypeAdapter[Any]: ...
 
-def create_typed_client(default_namespace: str | None = None) -> "XSchemaClient":
+def create_typed_client() -> "XSchemaClient":
     """Create type-safe xschema client with autocomplete for schema keys.
-    
-    Args:
-        default_namespace: Optional default namespace for shorthand lookups
     
     Returns:
         Typed client with overloads for each schema key
     
     Example:
-        >>> xschema = create_typed_client(default_namespace="user")
-        >>> validator = xschema("Calendar")  # IDE autocompletes available keys
+        >>> xschema = create_typed_client()
+        >>> validator = xschema("user:Calendar")  # IDE autocompletes available keys
         >>> result = validator.validate_python({"summary": "Meeting"})
     """
     from xschema_client import create_xschema_client
-    return create_xschema_client(schemas, default_namespace)  # type: ignore
+    return create_xschema_client(schemas)  # type: ignore

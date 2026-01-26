@@ -64,7 +64,7 @@
         "update python/example/main.py to not use default_namespace",
         "run 'uv run python main.py' from python/example - must work"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Keep template in sync with client library"
     },
 

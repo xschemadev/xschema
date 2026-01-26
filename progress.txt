@@ -55,3 +55,28 @@ Decisions:
 - Full "namespace:id" format is clear, explicit, and consistent with Go CLI output
 
 Status: passes=true
+## client-update-template (2026-01-27)
+
+Updated Python template to remove default_namespace from generated create_typed_client - keeps template in sync with client library.
+
+Actions:
+1. Edited cli/language/langs/python/templates.go
+   - Removed default_namespace parameter from create_typed_client function
+   - Updated docstring to remove Args section
+   - Updated example to use full "namespace:id" format
+   - Updated function call to create_xschema_client to not pass default_namespace
+2. Regenerated python/example: ran 'go run . generate --project ../python/example' from cli/
+3. Verified python/example/_xschema/__init__.py has updated create_typed_client (no default_namespace param)
+4. Updated python/example/main.py
+   - Removed default_namespace argument from create_typed_client() call
+   - Changed all schema lookups to use full "namespace:id" format
+   - Updated comments to remove references to shorthand/defaultNamespace
+5. Ran 'uv run python main.py' from python/example - successful output
+
+Decisions:
+- Template must match client library API to avoid runtime errors
+- Example code demonstrates correct usage pattern for users
+- Full "namespace:id" format is clearer and more explicit
+
+Status: passes=true
+
