@@ -135,3 +135,58 @@ Compliance Impact:
 - draft3: additionalProperties 15→16 passed (100%)
 
 Status: passes=true
+## compliance-prefixitems-pseudo-array (2026-01-27)
+
+Fixed JavaScript pseudo-array edge case - prefixItems now only applies to arrays, not objects with numeric keys.
+
+Problem:
+- Test "JavaScript pseudo-array is valid" was failing
+- Schema: `{"prefixItems": [{"type": "integer"}, {"type": "string"}]}`
+- Data: `{"0": "invalid", "1": "valid", "length": 2}` (object with numeric keys)
+- Expected: VALID (prefixItems doesn't apply to non-arrays)
+- Actual: validation attempted to convert dict to tuple using `tuple(dict)` which iterates keys
+
+Root Cause:
+- Parser immediately converted `prefixItems` to TupleNode without considering typeless schemas
+- Renderer generated tuple validator that converted ANY iterable (including dicts) to tuples
+- JSON Schema semantics: prefixItems only applies to arrays, not array-like objects
+
+Solution:
+- Modified parser.py (_parse_with_ctx) to wrap typeless prefixItems schemas in TypeGuardedNode
+- TypeGuardedNode checks `isinstance(v, list)` before applying tuple validation
+- Non-arrays pass through unchanged (valid per JSON Schema spec)
+- Parser change: prefixItems only parsed as TupleNode when type explicitly "array"
+- For typeless schemas, _detect_type_guards creates TypeGuardedNode with array guard wrapping TupleNode
+- Renderer's existing TypeGuardedNode support already handles this correctly
+
+Implementation Details:
+1. Changed parser line 258-260: only parse prefixItems as bare TupleNode when type="array"
+2. Added special case at line 271-273: single array guard with prefixItems wraps in TypeGuardedNode
+3. Modified _detect_type_guards line 757: use _parse_tuple for prefixItems, _parse_array for other array keywords
+4. TypeGuardedNode renderer generates validator that checks isinstance(v, list) first
+5. If not list, returns value unchanged; if list, applies tuple validation
+
+Actions:
+1. Analyzed failing test from JSON Schema Test Suite draft2020-12/prefixItems.json
+2. Identified root cause in parser's eager conversion to TupleNode
+3. Modified python/packages/core/src/xschema_core/parser.py
+4. Added type="array" check for prefixItems parsing (line 261)
+5. Added special case for single array guard with prefixItems (line 271-273)
+6. Modified _detect_type_guards to use _parse_tuple for prefixItems (line 757-760)
+7. Ran uv run pytest packages/core - all 79 tests pass
+8. Ran uv run pytest packages/adapters/pydantic - all 85 tests pass
+9. Ran uv run pytest packages/client - all 7 tests pass
+10. Ran compliance on pydantic adapter - draft2020-12 prefixItems: 11/11 passed (100%)
+11. Ran full compliance - draft2020-12: 942 passed (up from 941), 8 failed, 201 unsupported (99.2%)
+
+Decisions:
+- Chose parser-level fix over renderer-level: matches JSON Schema semantics better
+- TypeGuardedNode approach allows clean separation: type guard for arrays, passthrough for non-arrays
+- Targeted fix only affects prefixItems without explicit type, preserves type inference for other keywords
+- Avoided breaking changes to existing type inference logic (minLength still infers string, etc.)
+
+Compliance Impact:
+- draft2020-12: prefixItems 10→11 passed (90.9% → 100%)
+- draft2020-12 overall: 941→942 passed (99.1% → 99.2%)
+
+Status: passes=true

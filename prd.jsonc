@@ -199,7 +199,7 @@
         "run compliance on pydantic adapter",
         "verify items test passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Edge case where object with '0', '1' keys shouldn't be validated as array"
     },
     {

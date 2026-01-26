@@ -255,8 +255,10 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
             variant_list.append(_parse_with_ctx(variant_schema, ctx))
         return UnionNode(variants=tuple(variant_list))
 
-    # Handle prefixItems (tuple)
-    if "prefixItems" in schema:
+    # Handle prefixItems (tuple) only if type is explicitly "array"
+    # If no type is specified, prefixItems should be wrapped in a type guard
+    # so it only applies to arrays (not objects that look like arrays)
+    if "prefixItems" in schema and schema_type == "array":
         return _parse_tuple(schema, ctx)
 
     # Infer type from keywords if not specified
@@ -264,6 +266,11 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
         # Check if this is a type-guarded schema (multiple type-specific keywords without type)
         guards = _detect_type_guards(schema, ctx)
         if len(guards) > 1:
+            return TypeGuardedNode(guards=tuple(guards))
+
+        # Special case: single array guard with prefixItems needs TypeGuardedNode
+        # to allow non-arrays through (JSON Schema semantics: prefixItems only applies to arrays)
+        if len(guards) == 1 and guards[0].check == "array" and "prefixItems" in schema:
             return TypeGuardedNode(guards=tuple(guards))
 
         schema_type = _infer_type(schema)
@@ -748,7 +755,11 @@ def _detect_type_guards(schema: dict[str, Any], ctx: _ParseContext) -> list[Type
             "unevaluatedItems",
         )
     ):
-        array_schema = _parse_array(schema, ctx)
+        # Use _parse_tuple for prefixItems, _parse_array for other array keywords
+        if "prefixItems" in schema:
+            array_schema = _parse_tuple(schema, ctx)
+        else:
+            array_schema = _parse_array(schema, ctx)
         guards.append(TypeGuard(check="array", schema=array_schema))
 
     return guards
