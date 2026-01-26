@@ -184,7 +184,7 @@
         "run compliance on pydantic adapter",
         "verify 'additionalProperties does not look in applicators' test passes"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This is annotation tracking - need to know what properties were 'evaluated' by applicators"
     },
     {

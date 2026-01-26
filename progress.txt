@@ -80,3 +80,58 @@ Decisions:
 
 Status: passes=true
 
+## compliance-additionalprops-allof (2026-01-27)
+
+Fixed additionalProperties validation with allOf applicators - now correctly applies independent validation per JSON Schema spec.
+
+Problem:
+- Test "additionalProperties does not look in applicators" was failing
+- Schema: `{allOf: [{properties: {foo: {}}}], additionalProperties: {type: "boolean"}}`
+- Data: `{foo: 1, bar: true}` - expected INVALID, was VALID
+- Issue: when merging allOf objects, properties from allOf were exempt from additionalProperties validation
+- JSON Schema spec: "Subschemas of applicator keywords evaluate completely independently"
+
+Root Cause:
+- _merge_object_schemas was collecting properties from all allOf branches
+- Merged properties were treated as "defined properties" 
+- additionalProperties only validated properties NOT in the merged properties list
+- Result: allOf properties incorrectly exempt from additionalProperties schema validation
+
+Solution:
+- Modified _merge_object_schemas in renderer.py
+- Detect when merging includes additionalProperties as a schema (not just true/false)
+- Generate model_validator that validates ALL properties against additionalProperties schema
+- Validator runs independently from allOf property validation
+- Both validations must pass per JSON Schema independent evaluation semantics
+
+Implementation Details:
+1. Added check for `additional_properties_schemas` - schemas from merged objects with additionalProperties
+2. For each additionalProperties schema, render it and create a TypeAdapter
+3. Generate @model_validator that iterates all properties and validates each against the schema
+4. Validator raises ValueError if any property fails additionalProperties validation
+5. This ensures both allOf validation AND additionalProperties validation run independently
+
+Actions:
+1. Analyzed failing test from JSON Schema Test Suite draft2020-12
+2. Understood spec quote about independent applicator evaluation
+3. Modified _merge_object_schemas function (lines 1872-1935 in renderer.py)
+4. Added validator generation for additionalProperties schemas in allOf merges
+5. Ran compliance: all 6 drafts now pass 100% for additionalProperties (was 95.2%-93.8%)
+6. Ran pytest: all 171 tests pass with no regressions
+
+Decisions:
+- Chose model_validator approach over trying to prevent property merging
+- Validator validates ALL properties, not just "additional" ones
+- This correctly implements JSON Schema's independent validation semantics
+- TypeAdapter approach allows validating against complex schemas (not just true/false)
+- Same pattern can be extended to anyOf/oneOf if needed in future
+
+Compliance Impact:
+- draft2020-12: additionalProperties 20→21 passed (100%)
+- draft2019-09: additionalProperties 20→21 passed (100%)
+- draft7: additionalProperties 15→16 passed (100%)
+- draft6: additionalProperties 15→16 passed (100%)
+- draft4: additionalProperties 15→16 passed (100%)
+- draft3: additionalProperties 15→16 passed (100%)
+
+Status: passes=true

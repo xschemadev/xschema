@@ -1872,6 +1872,50 @@ def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
     # Check additionalProperties - use most restrictive
     forbid_extra = any(s.additional_properties is False for s in schemas)
 
+    # Check if any schema has additionalProperties as a schema (not just true/false)
+    # When merging with allOf, additionalProperties schema must validate ALL properties
+    additional_props_schemas = [
+        s.additional_properties
+        for s in schemas
+        if s.additional_properties is not None
+        and not isinstance(s.additional_properties, bool)
+    ]
+
+    validators: list[str] = []
+
+    # If we have additionalProperties schemas, create validator to apply to all properties
+    # This handles the case where allOf + sibling additionalProperties need independent validation
+    if additional_props_schemas:
+        imports.add("from pydantic import model_validator, TypeAdapter")
+
+        # Render each additionalProperties schema
+        for i, add_prop_schema in enumerate(additional_props_schemas):
+            add_prop_result = render(add_prop_schema, f"{name}AdditionalProps{i}")
+            imports.update(add_prop_result.imports)
+            if add_prop_result.code:
+                nested_classes.append(add_prop_result.code)
+
+            # Create validator that validates ALL properties against additionalProperties schema
+            validator_lines = ["    @model_validator(mode='after')"]
+            validator_lines.append(f"    def _validate_additional_props_{i}(self):")
+            validator_lines.append(
+                f"        # Validate all properties against additionalProperties schema from allOf merge"
+            )
+            validator_lines.append(
+                f"        validator = TypeAdapter({add_prop_result.type_expr})"
+            )
+            validator_lines.append(
+                "        for key, value in self.model_dump(exclude_unset=True).items():"
+            )
+            validator_lines.append("            try:")
+            validator_lines.append("                validator.validate_python(value)")
+            validator_lines.append("            except Exception as e:")
+            validator_lines.append(
+                f"                raise ValueError(f'Property {{key}} must match additionalProperties schema: {{e}}')"
+            )
+            validator_lines.append("        return self")
+            validators.append("\n".join(validator_lines))
+
     class_lines: list[str] = [f"class {name}(BaseModel):"]
 
     if forbid_extra:
@@ -1880,8 +1924,14 @@ def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
 
     if field_lines:
         class_lines.extend(field_lines)
-    elif not forbid_extra:
+    elif not forbid_extra and not validators:
         class_lines.append("    pass")
+
+    # Add validators
+    if validators:
+        class_lines.append("")  # Blank line before validators
+        for validator in validators:
+            class_lines.append(validator)
 
     class_code = "\n".join(class_lines)
     if nested_classes:
