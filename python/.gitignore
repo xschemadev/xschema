@@ -1,0 +1,25 @@
+# Temporary compliance test harness files
+xschema-harness-*.py
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Pytest cache
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# uv
+.venv/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
