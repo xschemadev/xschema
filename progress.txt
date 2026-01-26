@@ -13,3 +13,21 @@ Decisions:
 - Used standard Python gitignore patterns for consistency
 
 Status: passes=true
+
+## cleanup-pycache (2026-01-27)
+
+Verified Python cache directories properly gitignored.
+
+Actions:
+1. Confirmed python/.gitignore exists with all required patterns
+2. Verified __pycache__/, .pytest_cache/, *.pyc patterns present
+3. Checked git ls-files - no cache files tracked
+4. Checked git status - no cache files staged or untracked
+5. Confirmed .mypy_cache, .venv, build artifacts also covered
+
+Decisions:
+- No changes needed - previous task (cleanup-harness-files) already created comprehensive .gitignore
+- All cache directories exist only in filesystem, properly ignored by git
+- Patterns cover all Python cache types: compiled bytecode, pytest, mypy, uv venv
+
+Status: passes=true

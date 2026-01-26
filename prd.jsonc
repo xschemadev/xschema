@@ -27,7 +27,7 @@
         "if missing, add standard Python gitignore patterns",
         "remove any committed __pycache__ directories from git tracking"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Standard Python hygiene"
     },
 
