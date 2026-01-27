@@ -2508,7 +2508,7 @@ def _type_guard_check_to_python(check: str) -> str:
     elif check == "null":
         return "v is None"
     elif check == "array":
-        return "isinstance(v, list)"
+        return "isinstance(v, (list, tuple))"
     elif check == "object":
         return "isinstance(v, dict)"
     else:

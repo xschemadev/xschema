@@ -31,3 +31,18 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 - refRemote: 17/17 passed (was 0/17)
 - draft3: 100%, draft4: 99.8%, draft6: 99.9%, draft7: 99.9%
 - draft2019-09: 99.8%, draft2020-12: 99.9%
+
+---
+
+## Task 2: Fix additionalItems applicator scoping - COMPLETED
+
+**Problem**: When using allOf with tuple schemas, the type guard check was `isinstance(v, list)` which failed to recognize tuples. After the first schema converts list→tuple, subsequent schemas in the intersection wouldn't validate.
+
+**Root cause**: In `_type_guard_check_to_python`, the array check was `isinstance(v, list)` but tuple validators convert lists to tuples. When the intersection runs the second validator, it receives a tuple which doesn't match `isinstance(v, list)`.
+
+**Solution**: Changed `_type_guard_check_to_python` for array check from `isinstance(v, list)` to `isinstance(v, (list, tuple))`.
+
+**Location**: `renderer.py:2511`
+
+**Compliance results**:
+- additionalItems: 17/17 (draft4), 19/19 (draft6), 19/19 (draft7) - all 100%

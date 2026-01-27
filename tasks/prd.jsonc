@@ -35,7 +35,7 @@
 				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft6 --keyword additionalItems",
 				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft7 --keyword additionalItems"
 			],
-			"passes": false,
+			"passes": true,
 			"id": "2"
 		},
 		{
