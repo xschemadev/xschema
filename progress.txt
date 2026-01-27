@@ -14,7 +14,36 @@ Decisions:
 
 Status: passes=true
 
-## pyproject-client (2026-01-27)
+## comments-converter (2026-01-27)
+
+Added detailed comments to converter.py explaining the parse->render pipeline and type guard generation.
+
+Actions:
+1. Added comprehensive module docstring explaining:
+   - Two-phase pipeline (parse→render)
+   - Type guard generation for typeless schemas
+   - Helper function registry pattern
+   - Import collection
+   - CLI protocol (stdin/stdout JSON arrays)
+2. Added detailed docstrings to _is_object_only_schema explaining JSON Schema type inference problem
+3. Added concise docstrings to _is_number_only_schema, _is_string_only_schema, _is_array_only_schema
+4. Added comprehensive docstring to convert() explaining:
+   - Full pipeline steps
+   - Input/output format
+   - TypeAdapter usage rationale
+
+Decisions:
+- Used examples in docstrings showing exact JSON Schema behavior (VALIDATES x -> true/false)
+- Documented Python-specific gotcha (bool is subclass of int)
+- Explained why TypeAdapter is used for all schemas (consistent API)
+
+Verification:
+- uv run pytest packages/adapters/pydantic - 85 tests pass
+- uv run pytest - all 171 tests pass
+- uv run mypy packages/ - no issues
+
+Status: passes=true
+
 
 Added complete production metadata to xschema-client pyproject.toml for PyPI readiness.
 

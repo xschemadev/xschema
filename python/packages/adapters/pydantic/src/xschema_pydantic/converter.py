@@ -1,4 +1,36 @@
-"""Converter module - orchestrates parse -> render pipeline."""
+"""Converter module - orchestrates the JSON Schema parse -> render pipeline.
+
+This module is the entry point for converting JSON Schema to Pydantic code.
+It coordinates two phases:
+
+1. **Parse Phase** (via xschema_core.parse):
+   - Input: JSON Schema (dict or bool)
+   - Output: IR (Intermediate Representation) node tree
+   - IR nodes like ObjectNode, ArrayNode, UnionNode represent schema semantics
+   - Parsing is adapter-agnostic - same IR feeds Zod, Pydantic, etc.
+
+2. **Render Phase** (via .renderer.render):
+   - Input: IR node tree
+   - Output: Pydantic code as string + type expression + imports
+   - Converts IR to actual Pydantic constructs (BaseModel, TypeAdapter, validators)
+
+The converter also handles:
+- **Type guard generation**: JSON Schema keywords are type-specific. A schema like
+  `{"minLength": 5}` should pass non-strings (no type constraint = no rejection).
+  We detect these "type-only" schemas and wrap validation in isinstance() checks.
+
+- **Helper function registry**: Some Pydantic patterns need shared helpers (e.g.
+  _json_equals for deep equality, _try_validate for exception wrapping). The
+  renderer tracks which helpers are needed, and we prepend them to the output.
+
+- **Import collection**: Pydantic code needs imports (BaseModel, Field, etc.).
+  ImportCollector deduplicates and sorts imports for clean output.
+
+Protocol with CLI:
+- CLI sends JSON via stdin: [{namespace, id, varName, schema}, ...]
+- Adapter returns JSON via stdout: [{namespace, id, varName, imports, schema, type, validate}, ...]
+- cli.py handles batching; this module converts one schema at a time
+"""
 
 from typing import Any
 
@@ -12,18 +44,33 @@ from .renderer import render, _reset_helper_registry, get_needed_helpers
 def _is_object_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
     """Check if schema only has object-specific keywords without explicit type.
 
-    JSON Schema object keywords (properties, additionalProperties, etc.) should
-    ignore non-object inputs - they pass validation automatically. This function
-    detects schemas that need this "ignore non-objects" behavior.
+    JSON Schema type inference problem:
+    ------------------------------------
+    JSON Schema keywords are type-specific. A schema like:
+        {"properties": {"name": {"type": "string"}}}
+
+    Has NO type constraint! Per JSON Schema spec, this schema:
+    - VALIDATES "hello" (string) -> true (no type constraint, properties ignored)
+    - VALIDATES 42 (number) -> true (no type constraint, properties ignored)
+    - VALIDATES {"name": 123} -> false (IS object, so properties applies, wrong type)
+
+    But if we parse this as ObjectNode and render to Pydantic BaseModel,
+    Pydantic will reject ALL non-dict inputs. That's wrong!
+
+    Solution:
+    ---------
+    We detect "typeless object schemas" - schemas where:
+    1. Parser inferred ObjectNode (has object-specific keywords)
+    2. Original schema lacks explicit "type": "object"
+
+    These get wrapped in isinstance(v, dict) guards at validation time,
+    allowing non-objects to pass through unchanged.
 
     Args:
         ir_node: The parsed IR node
         original_schema: The original JSON Schema
 
-    Returns True if:
-    - The node is an ObjectNode (has object-specific constraints)
-    - AND the schema doesn't have an explicit 'type' keyword
-      (if it has type: object, Pydantic's rejection of non-objects is correct)
+    Returns True if schema needs object-only guard wrapper.
     """
     if not hasattr(ir_node, "kind"):
         return False
@@ -42,16 +89,14 @@ def _is_object_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
 def _is_number_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
     """Check if schema has number-specific keywords without explicit type.
 
-    JSON Schema number keywords (multipleOf, minimum, maximum, etc.) should
-    ignore non-number inputs when there's no explicit type constraint.
+    Same principle as _is_object_only_schema but for number keywords.
 
-    Args:
-        ir_node: The parsed IR node
-        original_schema: The original JSON Schema
+    Example: {"minimum": 0} should:
+    - VALIDATE "hello" -> true (not a number, minimum doesn't apply)
+    - VALIDATE -5 -> false (IS a number, violates minimum)
 
-    Returns True if:
-    - The node is a NumberNode
-    - AND the original schema doesn't have explicit 'type' keyword
+    Python gotcha: bool is subclass of int! We must exclude bools from
+    "number" check, otherwise True/False get number validation applied.
     """
     if not hasattr(ir_node, "kind"):
         return False
@@ -70,16 +115,11 @@ def _is_number_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
 def _is_string_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
     """Check if schema has string-specific keywords without explicit type.
 
-    JSON Schema string keywords (minLength, maxLength, pattern, format) should
-    ignore non-string inputs when there's no explicit type constraint.
+    Same principle as _is_object_only_schema but for string keywords.
 
-    Args:
-        ir_node: The parsed IR node
-        original_schema: The original JSON Schema
-
-    Returns True if:
-    - The node is a StringNode
-    - AND the original schema doesn't have explicit 'type' keyword
+    Example: {"minLength": 3} should:
+    - VALIDATE 12345 -> true (not a string, minLength doesn't apply)
+    - VALIDATE "ab" -> false (IS a string, violates minLength)
     """
     if not hasattr(ir_node, "kind"):
         return False
@@ -98,16 +138,11 @@ def _is_string_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
 def _is_array_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
     """Check if schema has array-specific keywords without explicit type.
 
-    JSON Schema array keywords (items, minItems, maxItems, etc.) should
-    ignore non-array inputs when there's no explicit type constraint.
+    Same principle as _is_object_only_schema but for array keywords.
 
-    Args:
-        ir_node: The parsed IR node
-        original_schema: The original JSON Schema
-
-    Returns True if:
-    - The node is an ArrayNode
-    - AND the original schema doesn't have explicit 'type' keyword
+    Example: {"minItems": 1} should:
+    - VALIDATE "hello" -> true (not an array, minItems doesn't apply)
+    - VALIDATE [] -> false (IS an array, violates minItems)
     """
     if not hasattr(ir_node, "kind"):
         return False
@@ -132,17 +167,46 @@ def to_pascal_case(name: str) -> str:
 
 
 def convert(input_data: dict[str, Any]) -> dict[str, Any]:
-    """Convert a schema input to Pydantic code output.
+    """Convert a JSON Schema to Pydantic code - main entry point.
 
-    Args:
-        input_data: Dict with namespace, id, varName, schema keys
+    Pipeline:
+    ---------
+    1. Validate input (required fields, schema type)
+    2. Parse schema to IR via xschema_core.parse()
+    3. Render IR to Pydantic code via renderer.render()
+    4. Wrap in TypeAdapter for runtime validation
+    5. Generate type guard wrapper if needed (typeless schemas)
+    6. Collect imports and helpers
 
-    Returns:
-        Dict with namespace, id, varName, imports, schema, type keys
+    Input format (from CLI):
+        {
+            "namespace": "users",      # optional, for grouping
+            "id": "User",              # schema identifier
+            "varName": "user_schema",  # Python variable name
+            "schema": {...}            # JSON Schema dict or bool
+        }
+
+    Output format (to CLI):
+        {
+            "namespace": "users",
+            "id": "User",
+            "varName": "user_schema",
+            "imports": ["from pydantic import ..."],
+            "schema": "class User(BaseModel): ...",  # executable Python code
+            "type": "User",                          # type expression for annotations
+            "validate": "_try_validate(...)"         # validation expression
+        }
+
+    TypeAdapter usage:
+    ------------------
+    All schemas get wrapped in TypeAdapter, even simple classes. This ensures:
+    - Consistent validation API (validate_python method)
+    - Proper error handling via _try_validate wrapper
+    - Works for both BaseModel classes and type expressions (Union, Annotated, etc.)
 
     Raises:
-        InvalidSchemaError: When required fields are missing or schema is malformed
-        ConversionError: When schema cannot be converted to Pydantic code
+        InvalidSchemaError: Missing required fields or malformed schema
+        ConversionError: Schema parsed but failed to render to Pydantic
     """
     # Validate required fields
     namespace = input_data.get("namespace", "")
