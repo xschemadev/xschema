@@ -5,9 +5,7 @@ from typing import Any, Literal
 from xschema_core.ir import (
     AnyNode,
     BooleanNode,
-    EnumNode,
     IntersectionNode,
-    LiteralNode,
     NeverNode,
     NullNode,
     NullableNode,
@@ -30,6 +28,7 @@ from xschema_core.parser.composition import (
     parse_not,
     parse_one_of,
 )
+from xschema_core.parser.values import parse_enum, parse_literal
 
 
 class _ParseContext:
@@ -149,11 +148,11 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     # Handle const (literal value)
     if "const" in schema:
-        return LiteralNode(value=schema["const"])
+        return parse_literal(schema)
 
     # Handle enum
     if "enum" in schema:
-        return EnumNode(values=tuple(schema["enum"]))
+        return parse_enum(schema)
 
     # Handle not keyword
     if "not" in schema:

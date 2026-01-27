@@ -9,12 +9,13 @@ Public API:
 - parse_string, parse_number: Primitive parsers (exported for testing/internal use)
 - parse_object, parse_array, parse_tuple, parse_legacy_tuple: Collection parsers
 - parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional: Composition parsers
+- parse_literal, parse_enum: Value parsers
 
 Internal structure:
 - primitives: String, number, boolean, null type parsing
 - collections: Object, array, tuple type parsing
 - composition: allOf, anyOf, oneOf, not, if/then/else parsing
-- values: const, enum parsing (TODO)
+- values: const, enum parsing
 - context: Parse context for cycle detection and ref resolution (TODO)
 """
 
@@ -34,6 +35,7 @@ from xschema_core.parser.composition import (
     parse_not,
     parse_one_of,
 )
+from xschema_core.parser.values import parse_enum, parse_literal
 
 __all__ = [
     "parse",
@@ -51,4 +53,7 @@ __all__ = [
     "parse_one_of",
     "parse_not",
     "parse_conditional",
+    # Value parsers
+    "parse_literal",
+    "parse_enum",
 ]

@@ -349,3 +349,54 @@ Next Steps (future tasks):
 
 Status: passes=true
 
+## parser-split-values (2026-01-27)
+
+Extracted value parsing to parser/values.py - fourth step in restructuring parser to match TypeScript.
+
+Actions:
+1. Created python/packages/core/src/xschema_core/parser/values.py
+   - Implemented parse_literal and parse_enum functions
+   - Made functions public (no underscore prefix) as part of parser's public API
+   - Added comprehensive module docstring explaining JSON Schema value keywords
+2. Added detailed comments explaining:
+   - const: exact value matching using JSON equality
+   - enum: value must be one of allowed values using JSON equality
+   - JSON Schema equality semantics (TYPE MATTERS): false != 0, true != 1, null != 0
+   - Deep equality for arrays/objects (structural comparison)
+   - Number equality: 1 == 1.0 (JSON doesn't distinguish int/float)
+   - Why this matters for code generation (Python False == 0 is True, but JSON Schema false != 0)
+3. Updated parser_old.py:
+   - Imported parse_literal, parse_enum from values module
+   - Replaced LiteralNode(value=schema["const"]) with parse_literal(schema)
+   - Replaced EnumNode(values=tuple(schema["enum"])) with parse_enum(schema)
+   - Removed LiteralNode and EnumNode from ir imports (no longer needed directly)
+4. Updated parser/__init__.py:
+   - Added exports for parse_literal and parse_enum
+   - Updated module docstring to include value parsers
+   - Updated __all__ list with "Value parsers" section
+5. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+6. Ran 'uv run pytest' - all 171 tests pass (no regressions)
+
+Decisions:
+- Made functions public API (parse_literal not _parse_literal) - consistent with other parser modules
+- Added extensive docstrings explaining JSON equality vs Python equality pitfall
+- Documented the _json_equals helper in renderer as the solution to equality issues
+- Kept implementation minimal (like TypeScript values.ts) - complexity is in rendering, not parsing
+
+Code Structure After Change:
+```
+parser/
+  __init__.py      # exports: parse, primitives, collections, composition, values functions
+  primitives.py    # parse_string, parse_number
+  collections.py   # parse_object, parse_array, parse_tuple, parse_legacy_tuple
+  composition.py   # parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional
+  values.py        # parse_literal, parse_enum
+parser_old.py      # main parse function + context + ref resolution (to be split in future tasks)
+```
+
+Next Steps (future tasks):
+- parser-split-context: extract context.py (ParseContext, create_context)
+- parser-create-package: move parser_old.py → parser/core.py, clean up __init__.py
+
+Status: passes=true
+
