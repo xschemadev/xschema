@@ -321,7 +321,7 @@
         "add comments to RefNode explaining why resolved can be None (cycles)",
         "add comments to TypeGuardedNode explaining typeless schemas with type-specific keywords"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "IR types are the bridge between JSON Schema and generated code - need clear docs"
     },
     {
