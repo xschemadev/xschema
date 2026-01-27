@@ -779,3 +779,13 @@ Verification:
 
 Status: passes=true
 
+## verify-tests (2026-01-27)
+
+Final verification that all tests and type checking pass.
+
+Results:
+- uv run pytest: 171 tests passed in 1.91s
+- uv run mypy packages/: no issues in 23 source files
+
+Status: passes=true
+

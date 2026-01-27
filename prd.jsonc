@@ -384,7 +384,7 @@
         "run 'uv run mypy packages/' from python/ directory",
         "no type errors allowed"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Sanity check after all changes"
     },
     {
