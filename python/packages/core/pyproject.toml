@@ -5,6 +5,39 @@ description = "XSchema core IR types and JSON Schema parser"
 requires-python = ">=3.10"
 readme = "README.md"
 license = { text = "MIT" }
+authors = [{ name = "xschemadev" }]
+maintainers = [{ name = "xschemadev" }]
+keywords = [
+    "json-schema",
+    "validation",
+    "pydantic",
+    "code-generation",
+    "typescript",
+    "zod",
+    "schema",
+    "type-safety",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://xschema.dev"
+Documentation = "https://xschema.dev"
+Repository = "https://github.com/xschemadev/xschema"
+Issues = "https://github.com/xschemadev/xschema/issues"
+Changelog = "https://github.com/xschemadev/xschema/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]

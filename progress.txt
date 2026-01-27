@@ -585,3 +585,43 @@ Next Steps (future tasks):
 
 Status: passes=true
 
+## pyproject-core (2026-01-27)
+
+Added complete production metadata to xschema-core pyproject.toml for PyPI readiness.
+
+Actions:
+1. Edited python/packages/core/pyproject.toml
+2. Added authors = [{ name = "xschemadev" }]
+3. Added maintainers = [{ name = "xschemadev" }]
+4. Added comprehensive keywords array:
+   - json-schema, validation, pydantic, code-generation
+   - typescript, zod, schema, type-safety
+5. Added classifiers:
+   - Development Status :: 4 - Beta
+   - Intended Audience :: Developers
+   - License :: OSI Approved :: MIT License
+   - Operating System :: OS Independent
+   - Programming Language :: Python :: 3.10-3.13
+   - Topic :: Software Development :: Code Generators
+   - Topic :: Software Development :: Libraries :: Python Modules
+   - Typing :: Typed
+6. Added [project.urls] section:
+   - Homepage = https://xschema.dev
+   - Documentation = https://xschema.dev
+   - Repository = https://github.com/xschemadev/xschema
+   - Issues = https://github.com/xschemadev/xschema/issues
+   - Changelog = https://github.com/xschemadev/xschema/blob/main/CHANGELOG.md
+
+Verification:
+- Ran `uv build` from packages/core - successfully built sdist and wheel
+- Ran `uv run pytest packages/core` - all 79 tests pass
+
+Decisions:
+- Used "Beta" status (4) - project is functional but still evolving
+- Listed Python 3.10-3.13 to match requires-python = ">=3.10"
+- Added "Typing :: Typed" classifier since package is fully typed
+- Kept keywords focused on JSON Schema ecosystem and code generation use case
+- License field already existed as { text = "MIT" }, left unchanged
+
+Status: passes=true
+

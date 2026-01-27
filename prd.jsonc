@@ -254,7 +254,7 @@
         "add license = {text = 'MIT'}",
         "verify uv can still build: run 'uv build' from packages/core"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Make package look professional on PyPI"
     },
     {
