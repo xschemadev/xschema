@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 from xschema_core.ir import (
     AnyNode,
+    ArrayNode,
     BooleanNode,
     IntersectionNode,
     NeverNode,
@@ -25,6 +26,7 @@ from xschema_core.ir import (
     NullableNode,
     RefNode,
     SchemaNode,
+    TupleNode,
     TypeGuard,
     TypeGuardedNode,
     UnionNode,
@@ -567,6 +569,7 @@ def _detect_type_guards(schema: Dict[str, Any], ctx: ParseContext) -> List[TypeG
         )
     ):
         # Use parse_tuple for prefixItems, parse_array for other array keywords
+        array_schema: Union[ArrayNode, TupleNode]
         if "prefixItems" in schema:
             array_schema = parse_tuple(schema, ctx)
         else:

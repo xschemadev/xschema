@@ -683,3 +683,26 @@ Decisions:
 
 Status: passes=true
 
+## pyproject-workspace (2026-01-27)
+
+Cleaned up workspace pyproject.toml and fixed mypy type error.
+
+Actions:
+1. Verified workspace members are correct (packages/core, client, adapters/*, example)
+2. Confirmed dev-dependencies include mypy>=1.19.1 and pytest>=8.0
+3. Added [tool.pytest.ini_options] with explicit testpaths
+4. Added [tool.mypy] config with python_version="3.10" and ignore_missing_imports=true
+5. Fixed mypy type error in parser/core.py:
+   - Added Union[ArrayNode, TupleNode] type annotation for array_schema variable
+   - Imported ArrayNode and TupleNode from ir module
+6. Verified uv sync works
+7. Verified all 171 tests pass
+8. Verified mypy passes on packages/
+
+Decisions:
+- Did not add ruff - not used elsewhere in codebase, would be scope creep
+- Did not enable strict mypy - test files lack type annotations
+- Added centralized pytest/mypy config for consistency across packages
+
+Status: passes=true
+

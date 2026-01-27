@@ -299,7 +299,7 @@
         "add project-wide dev dependencies if needed (ruff for linting?)",
         "verify uv sync works from python/ directory"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Workspace root config"
     },
 
