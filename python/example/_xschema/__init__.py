@@ -721,39 +721,6 @@ def _tuple_constraints_anothertsconfigpart6tsnodevariant0transpilervariant0varia
     return v
 
 
-class AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant1Item1Variant0(BaseModel):
-    model_config = ConfigDict(extra='allow')
-
-
-def _tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant1(v) -> tuple:
-    if not isinstance(v, tuple):
-        v = tuple(v) if hasattr(v, '__iter__') else (v,)
-    validated = list(v)
-    # Validate item 0 if present
-    if len(v) > 0:
-        prefix_0_validator = TypeAdapter(StrictStr | None)
-        try:
-            validated[0] = prefix_0_validator.validate_python(v[0])
-        except Exception as e:
-            raise ValueError(f'Item at index 0 invalid: {e}')
-    # Validate item 1 if present
-    if len(v) > 1:
-        prefix_1_validator = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0TranspilerVariant0Variant1Item1Variant0 | None)
-        try:
-            validated[1] = prefix_1_validator.validate_python(v[1])
-        except Exception as e:
-            raise ValueError(f'Item at index 1 invalid: {e}')
-    return tuple(validated)
-
-
-def _tuple_constraints_anothertsconfigpart6tsnodevariant0transpilervariant0variant1(v: tuple) -> tuple:
-    if len(v) < 2:
-        raise ValueError(f'Tuple must have at least 2 items, got {len(v)}')
-    if len(v) > 2:
-        raise ValueError(f'Tuple must have at most 2 items, got {len(v)}')
-    return v
-
-
 class AnotherTsConfigPart6TsNodeVariant0(BaseModel):
     compiler: StrictStr | None = None
     compilerHost: StrictBool | None = None
@@ -776,7 +743,7 @@ class AnotherTsConfigPart6TsNodeVariant0(BaseModel):
     skipIgnore: StrictBool | None = None
     swc: StrictBool | None = None
     transpileOnly: StrictBool | None = None
-    transpiler: Annotated[Annotated[tuple[Any, ...], BeforeValidator(_tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant0)], AfterValidator(_tuple_constraints_anothertsconfigpart6tsnodevariant0transpilervariant0variant0)] | Annotated[Annotated[tuple[Any, ...], BeforeValidator(_tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant1)], AfterValidator(_tuple_constraints_anothertsconfigpart6tsnodevariant0transpilervariant0variant1)] | StrictStr | None = None
+    transpiler: Annotated[Annotated[tuple[Any, ...], BeforeValidator(_tuple_anothertsconfigpart6tsnodevariant0transpilervariant0variant0)], AfterValidator(_tuple_constraints_anothertsconfigpart6tsnodevariant0transpilervariant0variant0)] | None | StrictStr | None = None
     typeCheck: StrictBool | None = None
 
 

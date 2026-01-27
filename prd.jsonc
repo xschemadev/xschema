@@ -410,7 +410,7 @@
         "verify output shows successful validation",
         "verify no type: ignore comments needed in main.py"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Example is the user's first impression"
     }
   ]

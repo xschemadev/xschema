@@ -14,7 +14,25 @@ Decisions:
 
 Status: passes=true
 
-## comments-converter (2026-01-27)
+## verify-example (2026-01-27)
+
+Verified python/example works end-to-end.
+
+Actions:
+1. Regenerated example: `go run . generate --project ../python/example` from cli/
+2. Ran `uv run python main.py` from python/example - successful output
+3. Verified no `type: ignore` comments in main.py
+
+Output:
+```
+Valid calendar event: New Year's Day
+Validation failed as expected: ValidationError
+Valid user: Alice (alice@example.com)
+Valid native: ['apple', 'orange']
+```
+
+Status: passes=true
+
 
 Added detailed comments to converter.py explaining the parse->render pipeline and type guard generation.
 
