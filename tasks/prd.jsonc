@@ -91,7 +91,7 @@
 				"draft2020-12: 100% (was 99.9%)",
 				"No failures in any draft"
 			],
-			"passes": false,
+			"passes": true,
 			"id": "5"
 		}
 	]
