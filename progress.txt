@@ -759,3 +759,23 @@ Verification:
 
 Status: passes=true
 
+## comments-client (2026-01-27)
+
+Added documentation to xschema-client explaining design decisions.
+
+Actions:
+1. Enhanced module docstring explaining:
+   - namespace:id format choice and consistency across TS/Python
+   - Why no default_namespace (Python lacks declaration merging for type safety)
+   - Dictionary-based storage with O(1) lookup
+   - Callable interface design for ergonomic usage
+   - User-friendly error messages with regeneration hint
+2. Added docstrings to XSchemaError explaining the hint design
+3. Added docstrings to XSchemaClient explaining generics and callable interface
+4. Added docstrings to create_xschema_client explaining factory function rationale
+
+Verification:
+- uv run pytest packages/client -v - all 7 tests pass
+
+Status: passes=true
+

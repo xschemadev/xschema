@@ -367,7 +367,7 @@
         "add comments explaining why namespace:id format was chosen",
         "add comments explaining XSchemaError for user-friendly messages"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Simple module but design decisions should be documented"
     },
 
