@@ -143,12 +143,16 @@ def _is_array_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
     Example: {"minItems": 1} should:
     - VALIDATE "hello" -> true (not an array, minItems doesn't apply)
     - VALIDATE [] -> false (IS an array, violates minItems)
+
+    Also applies to tuple schemas (items as array) - they should also
+    pass non-array values through unchanged.
     """
     if not hasattr(ir_node, "kind"):
         return False
 
-    # Must be an ArrayNode
-    if ir_node.kind != "array":
+    # Must be an ArrayNode or TupleNode
+    # TupleNode is created when items is an array (positional validation)
+    if ir_node.kind not in ("array", "tuple"):
         return False
 
     # Must not have explicit type in original schema

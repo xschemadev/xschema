@@ -70,7 +70,7 @@
 				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2019-09 --keyword items",
 				"All items tests pass (no failures)"
 			],
-			"passes": false,
+			"passes": true,
 			"id": "4"
 		},
 		{

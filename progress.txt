@@ -46,3 +46,23 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 
 **Compliance results**:
 - additionalItems: 17/17 (draft4), 19/19 (draft6), 19/19 (draft7) - all 100%
+
+---
+
+## Task 4: Fix JavaScript pseudo-array handling - COMPLETED
+
+**Problem**: Schemas with `items` as array (tuple validation) without `type: array` were failing when passed JavaScript pseudo-arrays like `{"0": "invalid", "1": "valid", "length": 2}`. Per JSON Schema, `items` only applies to arrays, not objects.
+
+**Root cause**: In `converter.py`, `_is_array_only_schema` only checked for `kind == "array"`, but tuple schemas have `kind == "tuple"`. This meant no type guard wrapper was applied, so objects were incorrectly validated against tuple schemas.
+
+**Solution**: Updated `_is_array_only_schema` to also check for `kind == "tuple"`:
+```python
+if ir_node.kind not in ("array", "tuple"):
+    return False
+```
+
+**Location**: `converter.py:151`
+
+**Compliance results**:
+- items: 21/21 (draft4), 28/28 (draft6), 28/28 (draft7), 28/28 (draft2019-09), 29/29 (draft2020-12) - all 100%
+- prefixItems: 11/11 (draft2020-12) - 100%
