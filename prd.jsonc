@@ -271,7 +271,7 @@
         "fix hatch build config if missing",
         "verify uv can build: run 'uv build' from packages/client"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Consistent metadata across all packages"
     },
     {

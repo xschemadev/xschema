@@ -14,7 +14,41 @@ Decisions:
 
 Status: passes=true
 
-## compliance-unevaluated-basic (2026-01-27)
+## pyproject-client (2026-01-27)
+
+Added complete production metadata to xschema-client pyproject.toml for PyPI readiness.
+
+Actions:
+1. Edited python/packages/client/pyproject.toml
+2. Added license = { text = "MIT" }
+3. Added authors = [{ name = "xschemadev" }]
+4. Added maintainers = [{ name = "xschemadev" }]
+5. Added keywords array: json-schema, validation, pydantic, code-generation, runtime-client, schema, type-safety
+6. Added classifiers:
+   - Development Status :: 4 - Beta
+   - Intended Audience :: Developers
+   - License :: OSI Approved :: MIT License
+   - Operating System :: OS Independent
+   - Programming Language :: Python :: 3.9-3.13 (client supports 3.9+, unlike core which needs 3.10+)
+   - Topic :: Software Development :: Libraries :: Python Modules
+   - Typing :: Typed
+7. Added [project.urls] section (Homepage, Documentation, Repository, Issues, Changelog)
+8. Added [tool.hatch.build.targets.wheel] with packages = ["src/xschema_client"]
+9. Added [tool.pytest.ini_options] with testpaths = ["tests"]
+
+Verification:
+- Ran `uv build` from packages/client - successfully built sdist and wheel
+- Ran `uv run pytest packages/client -v` - all 7 tests pass
+
+Decisions:
+- Used Python 3.9-3.13 classifiers to match requires-python = ">=3.9" (lower than core's 3.10)
+- Kept "runtime-client" keyword to differentiate from core package
+- Removed "typescript" and "zod" keywords (not relevant to client package)
+- Added hatch build config pointing to src/xschema_client package
+- Added pytest config for consistency with other packages
+
+Status: passes=true
+
 
 Fixed basic unevaluatedItems/unevaluatedProperties without applicators - simple cases without allOf/anyOf/oneOf.
 
