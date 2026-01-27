@@ -3,19 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalProperties",
-      "passed": 20,
-      "failed": 1,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "allOf",
@@ -257,19 +248,10 @@
     },
     {
       "keyword": "prefixItems",
-      "passed": 10,
-      "failed": 1,
+      "passed": 11,
+      "failed": 0,
       "skipped": 0,
-      "total": 11,
-      "failures": [
-        {
-          "group": "a schema given for prefixItems",
-          "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 11
     },
     {
       "keyword": "properties",
@@ -315,74 +297,23 @@
     },
     {
       "keyword": "unevaluatedItems",
-      "passed": 12,
-      "failed": 2,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
-      "total": 14,
-      "failures": [
-        {
-          "group": "unevaluatedItems as schema",
-          "test": "with invalid unevaluated items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedItems false",
-          "test": "with unevaluated items",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 14
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 21,
-      "failed": 6,
+      "passed": 26,
+      "failed": 1,
       "skipped": 0,
       "total": 27,
       "failures": [
-        {
-          "group": "Evaluated properties collection needs to consider instance location",
-          "test": "with an unevaluated property that exists at another location",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
         {
           "group": "property is evaluated in an uncle schema to unevaluatedProperties",
           "test": "no extra properties",
           "expected": true,
           "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties false",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties schema",
-          "test": "with invalid unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent patternProperties",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "unevaluatedProperties with adjacent properties",
-          "test": "with unevaluated properties",
-          "expected": false,
-          "actual": "true",
           "passed": false
         }
       ]
@@ -403,11 +334,11 @@
     }
   ],
   "summary": {
-    "passed": 940,
-    "failed": 10,
+    "passed": 949,
+    "failed": 1,
     "skipped": 0,
     "total": 950,
-    "percentage": 98.94736842105263,
+    "percentage": 99.89473684210526,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

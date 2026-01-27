@@ -3,26 +3,26 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 19,
-      "failed": 0,
-      "skipped": 0,
-      "total": 19
-    },
-    {
-      "keyword": "additionalProperties",
-      "passed": 15,
+      "passed": 18,
       "failed": 1,
       "skipped": 0,
-      "total": 16,
+      "total": 19,
       "failures": [
         {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
+          "group": "additionalItems does not look in applicators, invalid case",
+          "test": "items defined in allOf are not examined",
           "expected": false,
           "actual": "true",
           "passed": false
         }
       ]
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
     },
     {
       "keyword": "allOf",
@@ -124,19 +124,10 @@
     },
     {
       "keyword": "items",
-      "passed": 27,
-      "failed": 1,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "an array of schemas for items",
-          "test": "JavaScript pseudo-array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "maxItems",
@@ -466,11 +457,11 @@
     }
   ],
   "summary": {
-    "passed": 811,
-    "failed": 25,
+    "passed": 812,
+    "failed": 24,
     "skipped": 0,
     "total": 836,
-    "percentage": 97.00956937799043,
+    "percentage": 97.1291866028708,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

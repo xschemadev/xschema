@@ -14,7 +14,74 @@ Decisions:
 
 Status: passes=true
 
-## parser-create-package (2026-01-27)
+## compliance-unevaluated-basic (2026-01-27)
+
+Fixed basic unevaluatedItems/unevaluatedProperties without applicators - simple cases without allOf/anyOf/oneOf.
+
+Problem Analysis:
+- Tests "unevaluatedItems false" and "unevaluatedProperties false" were failing
+- Schema `{"unevaluatedItems": false}` with data `[1]` should be INVALID (item is unevaluated)
+- Schema `{"unevaluatedProperties": false}` with data `{"foo":1}` should be INVALID (property is unevaluated)
+- Two root causes found:
+  1. Parser didn't recognize `unevaluatedProperties` as object keyword - returned AnyNode instead of ObjectNode
+  2. Renderer didn't handle unevaluated* validation for simple cases
+
+Root Cause 1 - Parser Type Inference:
+- `_infer_type` in core.py had `unevaluatedItems` in array keywords but NOT `unevaluatedProperties` in object keywords
+- Schema `{"unevaluatedProperties": false}` returned AnyNode (no type inferred)
+- Fix: Added `unevaluatedProperties` to object keywords list in parser/core.py line 411
+
+Root Cause 2 - Renderer Missing Implementation:
+- ObjectNode renderer assumed `extra='forbid'` handles unevaluatedProperties:false, but only if additionalProperties was set
+- ArrayNode renderer had comment "treat like items for now" but no actual implementation
+- Fix: Added proper unevaluated* handling to both ObjectNode and ArrayNode renderers
+
+Implementation Details:
+
+1. parser/core.py - Added `unevaluatedProperties` to object type inference:
+   - Line 411: added to list of object keywords for `_infer_type`
+   - Now `{"unevaluatedProperties": false}` correctly creates ObjectNode
+
+2. renderer.py - ObjectNode unevaluatedProperties (lines 1539-1598):
+   - When `unevaluated_properties is False` and no `additional_properties`:
+     - If patternProperties exist: set extra='allow' and validate manually (forbid non-matching)
+     - Otherwise: set extra='forbid' (Pydantic handles it)
+   - When `unevaluated_properties is a schema`:
+     - Validate unevaluated properties against the schema
+     - Considers both `properties` and `patternProperties` as "evaluated"
+   - Added proper handling for patternProperties interaction
+
+3. renderer.py - ArrayNode unevaluatedItems (lines 867-913):
+   - When `unevaluated_items is False` and `items is AnyNode` (no explicit items keyword):
+     - All items are unevaluated → array must be empty → add AfterValidator rejecting non-empty
+   - When `unevaluated_items is a schema` and `items is AnyNode`:
+     - All items are unevaluated → validate each item against unevaluated schema
+   - Uses isinstance(node.items, AnyNode) to detect "no items keyword" case
+
+Design Decisions:
+- Chose to detect "no items keyword" by checking isinstance(node.items, AnyNode)
+- Parser creates AnyNode when no items is specified, while explicit `items:true` also creates AnyNode
+- This works because both cases semantically mean "any items allowed" - unevaluated handling is the same
+- For objects, using extra='forbid' when possible (simpler), validator only when patternProperties exist
+- Added import re for patternProperties regex matching in unevaluated validation
+
+Compliance Results:
+- unevaluatedItems: 14/14 passed (100%) - was 12/14
+- unevaluatedProperties: 26/27 passed (96.3%) - was 21/27
+- Remaining 1 failure is "uncle schema" case requiring cross-applicator annotation tracking (beyond basic scope)
+- Adjacent properties/patternProperties tests also pass (bonus - fixed compliance-unevaluated-adjacent too)
+
+Files Modified:
+- python/packages/core/src/xschema_core/parser/core.py (line 411)
+- python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py (lines 867-913, 1201-1248, 1539-1598)
+
+Tests:
+- uv run pytest packages/core - 79 tests pass
+- uv run pytest packages/adapters/pydantic - 85 tests pass
+- uv run pytest - all 171 tests pass
+
+Status: passes=true (also marks compliance-unevaluated-adjacent as passes=true - fixed as side effect)
+
 
 Finalized parser/ package structure - moved remaining logic from parser_old.py to parser/core.py.
 

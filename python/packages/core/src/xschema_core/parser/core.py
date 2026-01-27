@@ -408,6 +408,7 @@ def _infer_type(schema: Dict[str, Any]) -> Optional[str]:
             "maxProperties",
             "dependentRequired",
             "dependentSchemas",
+            "unevaluatedProperties",
         )
     ):
         return "object"

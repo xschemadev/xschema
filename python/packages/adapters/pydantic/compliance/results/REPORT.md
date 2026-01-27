@@ -4,28 +4,28 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 926 | 10 | 0 | 178 | 98.9% |
-| draft2020-12 | 940 | 10 | 0 | 201 | 98.9% |
-| draft3 | 406 | 1 | 0 | 0 | 99.8% |
-| draft4 | 547 | 19 | 0 | 0 | 96.6% |
-| draft6 | 735 | 25 | 0 | 0 | 96.7% |
-| draft7 | 811 | 25 | 0 | 0 | 97.0% |
+| draft2019-09 | 934 | 2 | 0 | 178 | 99.8% |
+| draft2020-12 | 949 | 1 | 0 | 201 | 99.9% |
+| draft3 | 407 | 0 | 0 | 0 | 100.0% |
+| draft4 | 548 | 18 | 0 | 0 | 96.8% |
+| draft6 | 736 | 24 | 0 | 0 | 96.8% |
+| draft7 | 812 | 24 | 0 | 0 | 97.1% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.9%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.9%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-96.6%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-96.7%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-97.0%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.8%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.9%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-96.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-96.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.1%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 20/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -66,8 +66,8 @@
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ⚠️ | 12/14 |
-| unevaluatedProperties | ⚠️ | 19/25 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ⚠️ | 24/25 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -340,15 +340,6 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
 <summary>items - 1 failure</summary>
 
 - **an array of schemas for items**
@@ -358,38 +349,11 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>unevaluatedItems - 2 failures</summary>
+<summary>unevaluatedProperties - 1 failure</summary>
 
-- **unevaluatedItems as schema**
-  - Test: with invalid unevaluated items
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedItems false**
-  - Test: with unevaluated items
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>unevaluatedProperties - 6 failures</summary>
-
-- **Evaluated properties collection needs to consider instance location**
-  - Test: with an unevaluated property that exists at another location
-  - Expected: `invalid`, Got: `true`
 - **property is evaluated in an uncle schema to unevaluatedProperties**
   - Test: no extra properties
   - Expected: `valid`, Got: `false`
-- **unevaluatedProperties false**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties schema**
-  - Test: with invalid unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent patternProperties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent properties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -397,7 +361,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 20/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
@@ -432,15 +396,15 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| prefixItems | ⚠️ | 10/11 |
+| prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
-| unevaluatedItems | ⚠️ | 12/14 |
-| unevaluatedProperties | ⚠️ | 21/27 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ⚠️ | 26/27 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -784,56 +748,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
+<summary>unevaluatedProperties - 1 failure</summary>
 
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>prefixItems - 1 failure</summary>
-
-- **a schema given for prefixItems**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>unevaluatedItems - 2 failures</summary>
-
-- **unevaluatedItems as schema**
-  - Test: with invalid unevaluated items
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedItems false**
-  - Test: with unevaluated items
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>unevaluatedProperties - 6 failures</summary>
-
-- **Evaluated properties collection needs to consider instance location**
-  - Test: with an unevaluated property that exists at another location
-  - Expected: `invalid`, Got: `true`
 - **property is evaluated in an uncle schema to unevaluatedProperties**
   - Test: no extra properties
   - Expected: `valid`, Got: `false`
-- **unevaluatedProperties false**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties schema**
-  - Test: with invalid unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent patternProperties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
-- **unevaluatedProperties with adjacent properties**
-  - Test: with unevaluated properties
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -842,7 +761,7 @@ These tests are intentionally excluded due to documented limitations.
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
 | additionalItems | ✅ | 14/14 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
 | dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
@@ -867,23 +786,12 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
 
-### Unexpected Failures
-
-<details>
-<summary>additionalProperties - 1 failure</summary>
-
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
 ## draft4
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ✅ | 17/17 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalItems | ⚠️ | 16/17 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
@@ -892,7 +800,7 @@ These tests are intentionally excluded due to documented limitations.
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 20/21 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -916,20 +824,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
+<summary>additionalItems - 1 failure</summary>
 
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
+- **additionalItems does not look in applicators, invalid case**
+  - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -1606,8 +1505,8 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalItems | ⚠️ | 18/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -1621,7 +1520,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -1646,20 +1545,11 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
+<summary>additionalItems - 1 failure</summary>
 
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
+- **additionalItems does not look in applicators, invalid case**
+  - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -2570,8 +2460,8 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ✅ | 19/19 |
-| additionalProperties | ⚠️ | 15/16 |
+| additionalItems | ⚠️ | 18/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
@@ -2586,7 +2476,7 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -2611,20 +2501,11 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
 ### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 1 failure</summary>
+<summary>additionalItems - 1 failure</summary>
 
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
+- **additionalItems does not look in applicators, invalid case**
+  - Test: items defined in allOf are not examined
   - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
 
 </details>
 

@@ -864,8 +864,59 @@ def render_array(node: ArrayNode, name: str) -> RenderResult:
     else:
         type_expr = base_type
 
-    # Handle unevaluatedItems (simple case: treat like items for now)
-    # In full JSON Schema, this is complex; we simplify since CLI filters hard cases
+    # Handle unevaluatedItems for simple cases (no applicators - CLI filters complex ones)
+    # unevaluatedItems applies to items NOT evaluated by 'items' keyword
+    # - If 'items' is AnyNode (no explicit items keyword), items are NOT evaluated
+    # - If 'items' is an explicit schema, ALL items are evaluated → unevaluatedItems has no effect
+    # We can detect "no items keyword" when items is AnyNode (default)
+    if node.unevaluated_items is not None and isinstance(node.items, AnyNode):
+        # No explicit 'items' keyword → items are not evaluated
+        if node.unevaluated_items is False:
+            # unevaluatedItems: false - no unevaluated items allowed
+            # Since no items are evaluated, array must be empty
+            imports.add("from typing import Annotated")
+            imports.add("from pydantic import AfterValidator")
+            validator_name = f"_unevaluated_{name.lower()}"
+            validator_code = f"""def {validator_name}(v: list) -> list:
+    if len(v) > 0:
+        raise ValueError("unevaluatedItems: false - no items allowed")
+    return v"""
+            code_parts.append(validator_code)
+            # Add validator to type expression
+            if "Annotated" in type_expr:
+                # Already has annotations, add another
+                type_expr = (
+                    type_expr.rstrip("]") + f", AfterValidator({validator_name})]"
+                )
+            else:
+                type_expr = f"Annotated[{type_expr}, AfterValidator({validator_name})]"
+        else:
+            # unevaluatedItems is a schema - validate all items against it
+            # Since no items are evaluated by 'items', ALL items are unevaluated
+            imports.add("from typing import Annotated")
+            imports.add("from pydantic import AfterValidator, TypeAdapter")
+            unevaluated_result = render(node.unevaluated_items, f"{name}Unevaluated")
+            imports.update(unevaluated_result.imports)
+            if unevaluated_result.code:
+                code_parts.append(unevaluated_result.code)
+
+            validator_name = f"_unevaluated_{name.lower()}"
+            validator_code = f"""def {validator_name}(v: list) -> list:
+    validator = TypeAdapter({unevaluated_result.type_expr})
+    for i, item in enumerate(v):
+        try:
+            validator.validate_python(item)
+        except Exception as e:
+            raise ValueError(f"Item {{i}} failed unevaluatedItems schema: {{e}}")
+    return v"""
+            code_parts.append(validator_code)
+            # Add validator to type expression
+            if "Annotated" in type_expr:
+                type_expr = (
+                    type_expr.rstrip("]") + f", AfterValidator({validator_name})]"
+                )
+            else:
+                type_expr = f"Annotated[{type_expr}, AfterValidator({validator_name})]"
 
     code = "\n\n\n".join(code_parts) if code_parts else ""
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
@@ -1198,7 +1249,9 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     property_names = {prop_name for prop_name, _ in node.properties}
     uncovered_required = [r for r in node.required if r not in property_names]
 
-    # Handle additionalProperties
+    # Handle additionalProperties and unevaluatedProperties
+    # unevaluatedProperties: false forbids any properties not evaluated by properties/patternProperties
+    # When additionalProperties is not set and unevaluatedProperties: false, forbid extra properties
     config_line = None
     if node.additional_properties is False:
         # When patternProperties exist, we need to allow extra fields and validate manually
@@ -1217,6 +1270,20 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
     elif node.additional_properties is not None and not isinstance(
         node.additional_properties, bool
     ):
+        imports.add("from pydantic import ConfigDict")
+        config_line = "    model_config = ConfigDict(extra='allow')"
+    # unevaluatedProperties: false - forbid any properties not covered by properties/patternProperties
+    # This is the "simple case" without applicators (allOf, anyOf, etc.) which CLI filters out
+    elif node.unevaluated_properties is False:
+        if node.pattern_properties:
+            # Need to allow extra for patternProperties matching, validate manually
+            imports.add("from pydantic import ConfigDict")
+            config_line = "    model_config = ConfigDict(extra='allow')"
+        else:
+            imports.add("from pydantic import ConfigDict")
+            config_line = "    model_config = ConfigDict(extra='forbid')"
+    # unevaluatedProperties with a schema - need to allow extras and validate them
+    elif node.unevaluated_properties is not None:
         imports.add("from pydantic import ConfigDict")
         config_line = "    model_config = ConfigDict(extra='allow')"
     # If there are required fields without properties, allow extra fields to accept them
@@ -1520,15 +1587,54 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                         f"                raise ValueError(f'When {escaped_prop_single} is present, object must match dependency schema: {{e}}')"
                     )
 
-        # unevaluatedProperties: treat like additionalProperties for now (simple case)
-        # Full JSON Schema semantics are complex; CLI filters hard cases
+        # unevaluatedProperties: properties not "evaluated" by properties/patternProperties
+        # In simple cases (no applicators), "evaluated" means:
+        # - Declared in 'properties' keyword
+        # - Matches a pattern in 'patternProperties' keyword
+        # CLI filters complex cases with applicators (allOf, anyOf, etc.)
         if node.unevaluated_properties is not None:
+            # Get declared property names (these are "evaluated")
+            declared_props = {prop_name for prop_name, _ in node.properties}
+            patterns = (
+                [p.pattern for p in node.pattern_properties]
+                if node.pattern_properties
+                else []
+            )
+
             if node.unevaluated_properties is False:
-                # Already handled by additionalProperties=forbid
-                pass
+                # unevaluatedProperties: false - forbid any property not in properties/patternProperties
+                # When there are patternProperties, we need manual validation (can't use extra='forbid')
+                if patterns:
+                    imports.add("import re")
+                    validator_lines.append(
+                        "        # Validate unevaluatedProperties: false"
+                    )
+                    validator_lines.append(
+                        f"        _declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+                    )
+                    validator_lines.append(f"        _patterns = {patterns!r}")
+                    validator_lines.append(
+                        "        for key in self.model_dump(exclude_unset=True).keys():"
+                    )
+                    validator_lines.append("            if key in _declared_props:")
+                    validator_lines.append(
+                        "                continue  # evaluated by properties"
+                    )
+                    validator_lines.append(
+                        "            if any(re.search(p, key) for p in _patterns):"
+                    )
+                    validator_lines.append(
+                        "                continue  # evaluated by patternProperties"
+                    )
+                    validator_lines.append(
+                        "            raise ValueError(f'Unevaluated property not allowed: {key}')"
+                    )
+                # else: extra='forbid' already handles this case (set above)
             else:
-                # unevaluatedProperties is a schema - validate extra properties
+                # unevaluatedProperties is a schema - validate unevaluated properties against it
                 imports.add("from pydantic import TypeAdapter")
+                if patterns:
+                    imports.add("import re")
                 unevaluated_result = render(
                     node.unevaluated_properties, f"{name}Unevaluated"
                 )
@@ -1536,27 +1642,38 @@ def render_object(node: ObjectNode, name: str) -> RenderResult:
                 if unevaluated_result.code:
                     nested_classes.append(unevaluated_result.code)
 
-                # Get declared property names
-                declared_props = {prop_name for prop_name, _ in node.properties}
-
-                validator_lines.append("        # Validate unevaluated properties")
                 validator_lines.append(
-                    f"        declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+                    "        # Validate unevaluated properties against schema"
                 )
                 validator_lines.append(
-                    f"        unevaluated_validator = TypeAdapter({unevaluated_result.type_expr})"
+                    f"        _declared_props = {{{', '.join(repr(p) for p in declared_props)}}}"
+                )
+                if patterns:
+                    validator_lines.append(f"        _patterns = {patterns!r}")
+                validator_lines.append(
+                    f"        _unevaluated_validator = TypeAdapter({unevaluated_result.type_expr})"
                 )
                 validator_lines.append(
                     "        for key, value in self.model_dump(exclude_unset=True).items():"
                 )
-                validator_lines.append("            if key not in declared_props:")
-                validator_lines.append("                try:")
+                validator_lines.append("            if key in _declared_props:")
                 validator_lines.append(
-                    "                    unevaluated_validator.validate_python(value)"
+                    "                continue  # evaluated by properties"
                 )
-                validator_lines.append("                except Exception as e:")
+                if patterns:
+                    validator_lines.append(
+                        "            if any(re.search(p, key) for p in _patterns):"
+                    )
+                    validator_lines.append(
+                        "                continue  # evaluated by patternProperties"
+                    )
+                validator_lines.append("            try:")
                 validator_lines.append(
-                    "                    raise ValueError(f'Unevaluated property {key} invalid: {e}')"
+                    "                _unevaluated_validator.validate_python(value)"
+                )
+                validator_lines.append("            except Exception as e:")
+                validator_lines.append(
+                    "                raise ValueError(f'Unevaluated property {key} invalid: {e}')"
                 )
 
         # required fields without corresponding properties

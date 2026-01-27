@@ -207,7 +207,7 @@
       "category": "functional",
       "description": "Fix basic unevaluatedItems/unevaluatedProperties without applicators",
       "steps": [
-        "analyze failing tests: 'unevaluatedItems false', 'unevaluatedProperties false'",
+        "analyze failing test: 'unevaluatedItems false', 'unevaluatedProperties false'",
         "these are simple cases without allOf/anyOf/oneOf - just items + unevaluatedItems",
         "unevaluatedItems should reject items beyond what items/prefixItems cover",
         "unevaluatedProperties should reject properties beyond what properties/patternProperties cover",
@@ -215,7 +215,7 @@
         "run compliance on pydantic adapter",
         "verify basic unevaluated tests pass"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Start with simple cases - no cross-applicator annotation tracking needed"
     },
     {
@@ -231,7 +231,7 @@
         "run compliance on pydantic adapter",
         "verify adjacent unevaluated tests pass"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Same-level annotation tracking is simpler than cross-applicator"
     },
 
