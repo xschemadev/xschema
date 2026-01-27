@@ -340,7 +340,7 @@
         "add comments to render_oneof explaining exactly-one validation approach",
         "add comments explaining helper function registry pattern"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Renderer has many non-obvious decisions - document the why"
     },
     {

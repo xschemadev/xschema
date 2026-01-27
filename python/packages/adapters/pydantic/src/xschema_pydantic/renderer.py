@@ -1,4 +1,51 @@
-"""Pydantic Renderer - Converts SchemaNode IR to Pydantic code strings."""
+"""Pydantic Renderer - Converts SchemaNode IR to Pydantic code strings.
+
+Design Philosophy
+-----------------
+This renderer generates Python code that validates data at runtime using Pydantic.
+Key design decisions:
+
+1. STRICT TYPES: We use StrictInt, StrictFloat, StrictBool to prevent Python's
+   loose type coercion. Python treats 1 == True and 0 == False, but JSON Schema
+   does not - integers and booleans are distinct types. Without strict types,
+   Pydantic would accept True for {"type": "integer"} schemas.
+
+2. HELPER FUNCTION REGISTRY: Complex validations (const, enum with deep equality)
+   need helper functions. Rather than emit helpers inline everywhere, we register
+   which helpers are needed during rendering and emit them once at module top.
+   This keeps generated code clean and avoids duplication.
+
+3. VALIDATOR STRATEGIES: We use different Pydantic features based on the schema:
+   - Annotated[T, Field(...)] for simple constraints (minLength, maximum)
+   - AfterValidator for checks that need the validated value (uniqueItems)
+   - BeforeValidator for checks that might transform/reject early (oneOf)
+   - model_validator for object-level checks (dependencies, minProperties)
+
+4. TYPE EXPRESSIONS vs CODE: Each render function returns both a type_expr
+   (e.g., "list[int]") and code (class definitions, validators). Type expressions
+   are used inline; code is emitted at module level.
+
+5. JSON SCHEMA SEMANTICS: Many edge cases stem from JSON Schema's quirks:
+   - Format is annotation-only by default (no validation)
+   - additionalProperties applies to properties NOT in 'properties' keyword
+   - unevaluatedProperties requires tracking what was "evaluated"
+   - oneOf requires EXACTLY one match (not just first match like Union)
+
+Generated Code Structure
+------------------------
+For a complex schema, the generated module looks like:
+
+    # Helper functions (if needed)
+    def _json_equals(a, b): ...
+
+    # Nested classes (bottom-up order - dependencies first)
+    class AddressStreet(BaseModel): ...
+    class Address(BaseModel): ...
+
+    # Main schema
+    class Person(BaseModel): ...
+    Person_Validator = TypeAdapter(Person)
+"""
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -166,7 +213,15 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
     return sanitized
 
 
-# Helper function registry - tracks which helpers are needed for the generated code
+# HELPER FUNCTION REGISTRY
+# ========================
+# Instead of emitting helper code every time it's needed, we register helpers
+# during rendering and emit them once at the end. This avoids code duplication
+# and keeps the generated output clean.
+#
+# Pattern: Call _register_helper("_json_equals") when generating code that needs it.
+# Then get_needed_helpers() returns all helper code to emit at module top.
+
 _helper_registry: set[str] = set()
 
 
@@ -181,7 +236,21 @@ def _register_helper(helper_name: str) -> None:
     _helper_registry.add(helper_name)
 
 
-# Helper function definitions - emitted once at module top if used
+# HELPER FUNCTION DEFINITIONS
+# ===========================
+# These are emitted once at module top if registered during rendering.
+#
+# _json_equals: Critical for const/enum validation. Python's == operator has
+# surprising behavior: False == 0 is True, True == 1 is True. JSON Schema
+# requires false != 0 and true != 1. This helper implements correct semantics.
+#
+# _validates_against: Used for contains/oneOf/not validation where we need to
+# check if a value matches a schema without raising an exception.
+#
+# _make_const_validator / _make_enum_validator: Factory functions that create
+# validators using _json_equals. Using factories avoids closure variable issues
+# and makes generated code more readable.
+
 _HELPER_FUNCTIONS = {
     "_json_equals": """def _json_equals(a, b):
     \"\"\"Check JSON Schema equality semantics: false != 0, true != 1, deep equality.\"\"\"
@@ -508,14 +577,22 @@ def _is_integer_value(val: float | int) -> bool:
 def render_number(node: NumberNode) -> RenderResult:
     """Render NumberNode to Pydantic type.
 
-    Uses strict types to ensure JSON Schema semantics:
-    - StrictInt for integer type (rejects bools and string coercion)
-    - StrictFloat for number type (accepts both int and float inputs)
+    WHY StrictInt / StrictFloat:
+    Python's bool is a subclass of int (True == 1, False == 0). Without strict
+    types, Pydantic accepts True for {"type": "integer"} which violates JSON
+    Schema semantics. StrictInt/StrictFloat explicitly reject bools.
 
-    Note: StrictFloat accepts integer inputs (e.g., 42 -> 42.0) which is fine
-    for JSON Schema validation since integers are a subset of numbers.
-    Using a union StrictInt | StrictFloat causes issues with Pydantic's
-    MultipleOf validator due to floating point precision bugs in union handling.
+    WHY NOT StrictInt | StrictFloat for 'number':
+    JSON Schema 'number' accepts both ints and floats. You might think we'd use
+    StrictInt | StrictFloat, but Pydantic's MultipleOf validator has precision
+    bugs when applied to unions. StrictFloat alone works because it accepts
+    integer inputs (42 → 42.0) - mathematically equivalent for validation.
+
+    INTEGER + FLOAT multipleOf EDGE CASE:
+    Schema {"type": "integer", "multipleOf": 0.123456789} is legal but weird.
+    Pydantic's MultipleOf doesn't support non-integer multipleOf for int types.
+    We handle this with a custom BeforeValidator that checks both int-ness
+    and multipleOf constraint manually.
     """
     imports: set[str] = set()
 
@@ -670,11 +747,21 @@ def _format_json_value(value: Any) -> str:
 
 
 def render_literal(node: LiteralNode) -> RenderResult:
-    """Render LiteralNode to Pydantic type.
+    """Render LiteralNode (JSON Schema 'const') to Pydantic type.
 
-    For primitives: uses Literal[value] for simple cases
-    For booleans/integers: uses strict type checking to prevent 0/False coercion
-    For complex values (list, dict): uses custom validator with deep equality
+    WHY NOT ALWAYS USE Literal[value]:
+    Python's typing.Literal has a flaw: Literal[False] accepts 0, and Literal[0]
+    accepts False, because bool is a subclass of int. JSON Schema requires
+    {"const": false} to reject 0 and {"const": 0} to reject false.
+
+    Solution: For booleans and 0/1 integers, we use a custom validator that
+    checks both value AND type equality using _json_equals helper.
+
+    WHY _make_const_validator:
+    For complex values (lists, dicts), Literal[] doesn't work at all.
+    We use a factory function that creates a validator with the expected value
+    baked in. This avoids closure issues and generates readable code like:
+    `BeforeValidator(_make_const_validator([1, 2, 3]))`
     """
     value = node.value
 
@@ -710,11 +797,18 @@ def render_literal(node: LiteralNode) -> RenderResult:
 
 
 def render_enum(node: EnumNode) -> RenderResult:
-    """Render EnumNode to Pydantic type.
+    """Render EnumNode (JSON Schema 'enum') to Pydantic type.
 
-    For simple primitive values: uses Literal[val1, val2, ...]
-    For values with booleans or 0/1: uses custom validator (Python coercion issue)
-    For complex values (list/dict): uses custom validator with deep equality
+    Same issues as render_literal - Python's Literal[] treats False==0, True==1.
+    Additionally, enum can contain complex values like [1,2,3] or {"a": 1}.
+
+    Strategy:
+    - Simple primitives without 0/1/bools: Literal[val1, val2, ...]
+    - Has bools or 0/1: _make_enum_validator with _json_equals
+    - Has complex values: _make_enum_validator with _json_equals
+
+    The _json_equals helper handles deep structural comparison with proper
+    bool/int distinction at every level of nesting.
     """
     # check if all values are primitives and don't need strict type checking
     all_primitive = all(_is_primitive(v) for v in node.values)
@@ -1173,7 +1267,29 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
 
 
 def render_object(node: ObjectNode, name: str) -> RenderResult:
-    """Render ObjectNode to Pydantic BaseModel class."""
+    """Render ObjectNode to Pydantic BaseModel class.
+
+    CONFIGDICT extra='forbid' vs 'allow':
+    - additionalProperties: false → extra='forbid' (Pydantic handles it)
+    - additionalProperties: schema → extra='allow' + model_validator
+    - patternProperties + additionalProperties: false → extra='allow' + manual check
+      (can't use forbid because pattern-matching props would be rejected)
+    - unevaluatedProperties: similar logic to additionalProperties
+
+    WHY model_validator FOR ADVANCED FEATURES:
+    Pydantic's field-level validation can't express constraints like:
+    - "if property X exists, property Y must also exist" (dependencies)
+    - "property names must match this pattern" (propertyNames)
+    - "extra properties must match this schema" (additionalProperties: schema)
+
+    We use @model_validator(mode='after') which runs after all fields are set,
+    giving access to self.model_dump() for cross-field validation.
+
+    PROPERTY NAME ALIASING:
+    JSON Schema allows property names like "foo-bar" or "123" which aren't
+    valid Python identifiers. We sanitize these to field names (foo_bar, _123)
+    and use Field(alias="original-name") to preserve the JSON key.
+    """
     imports: set[str] = {"from pydantic import BaseModel"}
     nested_classes: list[str] = []
     field_lines: list[str] = []
@@ -1747,14 +1863,27 @@ def _is_nullable_type(node: SchemaNode) -> bool:
 
 
 def render_union(node: UnionNode, name: str) -> RenderResult:
-    """Render UnionNode (anyOf) to Pydantic union type.
+    """Render UnionNode (JSON Schema 'anyOf') to Pydantic union type.
 
-    Renders as A | B | C. Pydantic validates by attempting each variant
-    until one succeeds (anyOf semantics).
+    ANYOF vs ONEOF:
+    - anyOf: at least one schema must match (this function)
+    - oneOf: exactly one schema must match (render_oneof)
 
-    Note: Discriminated unions are detected by structure (all variants are objects
-    with a common property having different literal values). This is adapter-specific
-    optimization and not part of the IR.
+    Pydantic's Union type naturally implements anyOf - it tries each variant
+    in order until one validates. No special handling needed.
+
+    DISCRIMINATED UNION OPTIMIZATION:
+    When all variants are objects with a common property that has different
+    literal values in each variant (like {"type": "cat"} vs {"type": "dog"}),
+    Pydantic can use that property to directly select the right variant
+    instead of trying each one. This is both faster and gives better errors.
+
+    We detect this pattern automatically by scanning all variant schemas
+    for a common property with Literal values. If found, we emit:
+    `Annotated[Union[Cat, Dog], Field(discriminator='type')]`
+
+    This is an adapter-level optimization - JSON Schema doesn't have explicit
+    discriminators, we just recognize the pattern.
     """
     imports: set[str] = set()
     code_parts: list[str] = []
@@ -1862,10 +1991,29 @@ def _detect_discriminator(variants: tuple[SchemaNode, ...]) -> str | None:
 
 
 def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
-    """Render IntersectionNode (allOf) to Pydantic type.
+    """Render IntersectionNode (JSON Schema 'allOf') to Pydantic type.
 
-    For object intersections, merge all properties into a single class.
-    For primitive intersections, use the most restrictive type (or Any if incompatible).
+    ALLOF SEMANTICS:
+    A value must validate against ALL schemas in the allOf array.
+    Each schema validates independently - they don't "see" each other.
+
+    OBJECT MERGING STRATEGY:
+    When all allOf schemas are objects, we merge their properties into one class.
+    This is a static optimization that produces cleaner code than runtime checks.
+    Property conflicts (same name in multiple schemas) are handled by creating
+    an intersection of those property schemas.
+
+    ADDITIONALPROPERTIES + ALLOF GOTCHA:
+    JSON Schema says additionalProperties validates independently per schema.
+    If schema A has {additionalProperties: {type: "boolean"}} and schema B
+    defines property "foo", then "foo" is still an "additional property" to A
+    and must be boolean. We handle this with a model_validator that applies
+    each additionalProperties schema to ALL properties.
+
+    MIXED TYPES:
+    If allOf contains both objects and primitives (unusual but legal), we
+    can't merge statically. Instead, we generate a validator that runs each
+    schema's validation in sequence, failing if any rejects the value.
     """
     imports: set[str] = set()
     code_parts: list[str] = []
@@ -2060,11 +2208,26 @@ def _merge_object_schemas(schemas: list[ObjectNode], name: str) -> RenderResult:
 
 
 def render_oneof(node: OneOfNode, name: str) -> RenderResult:
-    """Render OneOfNode (oneOf) to Pydantic type with exactly-one validation.
+    """Render OneOfNode (JSON Schema 'oneOf') to Pydantic type.
 
-    JSON Schema oneOf requires exactly one schema to match.
-    Pydantic's union tries schemas in order and accepts the first match.
-    We need a custom validator to ensure only one schema matches.
+    ONEOF vs ANYOF - THE CRITICAL DIFFERENCE:
+    - anyOf: value is valid if AT LEAST ONE schema matches
+    - oneOf: value is valid if EXACTLY ONE schema matches
+
+    Pydantic's Union can't express oneOf because it stops at first match.
+    Consider oneOf: [{type: number}, {type: integer}]. The value 5 matches
+    BOTH schemas (integers are numbers), so it should FAIL oneOf validation.
+    But Union would happily accept it on first match.
+
+    SOLUTION:
+    Generate a BeforeValidator that:
+    1. Tries each schema, counting matches
+    2. If matches == 0: reject (no schema matched)
+    3. If matches > 1: reject (ambiguous)
+    4. If matches == 1: accept
+
+    This requires trying ALL schemas even after finding a match, which is
+    less efficient than Union but semantically correct.
     """
     imports: set[str] = {
         "from typing import Annotated, Any",

@@ -706,3 +706,27 @@ Decisions:
 
 Status: passes=true
 
+## comments-renderer (2026-01-27)
+
+Added detailed comments to renderer.py explaining Pydantic code generation strategies.
+
+Actions:
+1. Added comprehensive module docstring explaining:
+   - Design philosophy (strict types, helper registry, validator strategies)
+   - Generated code structure
+2. Added comments to helper function registry explaining the pattern
+3. Added docstring to render_number explaining StrictInt vs StrictFloat choice
+4. Added docstring to render_literal explaining boolean/0-1 handling with _json_equals
+5. Added docstring to render_enum explaining the same Python coercion issues
+6. Added docstring to render_object explaining ConfigDict extra settings and model_validator
+7. Added docstring to render_union explaining anyOf vs oneOf and discriminated union detection
+8. Added docstring to render_intersection explaining allOf object merging and additionalProperties
+9. Added docstring to render_oneof explaining exactly-one validation requirement
+
+Verification:
+- uv run pytest packages/adapters/pydantic - 85 tests pass
+- uv run pytest - all 171 tests pass
+- uv run mypy packages/ - no issues
+
+Status: passes=true
+
