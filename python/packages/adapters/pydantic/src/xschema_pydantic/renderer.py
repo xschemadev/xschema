@@ -2071,6 +2071,9 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
         validator_name = f"_intersection_{name.lower()}"
         validator_lines = [f"def {validator_name}(v) -> Any:"]
         validator_lines.append(f"    # Validate against all schemas in intersection")
+        validator_lines.append(
+            f"    # Keep original value - each validator checks independently"
+        )
 
         for i, schema in enumerate(node.schemas):
             schema_result = render(schema, f"{name}Part{i}")
@@ -2078,7 +2081,7 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
                 f"    validator_{i} = TypeAdapter({schema_result.type_expr})"
             )
             validator_lines.append(f"    try:")
-            validator_lines.append(f"        v = validator_{i}.validate_python(v)")
+            validator_lines.append(f"        validator_{i}.validate_python(v)")
             validator_lines.append(f"    except Exception as e:")
             validator_lines.append(
                 f"        raise ValueError(f'Failed intersection schema {i}: {{e}}')"

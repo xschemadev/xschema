@@ -66,3 +66,30 @@ if ir_node.kind not in ("array", "tuple"):
 **Compliance results**:
 - items: 21/21 (draft4), 28/28 (draft6), 28/28 (draft7), 28/28 (draft2019-09), 29/29 (draft2020-12) - all 100%
 - prefixItems: 11/11 (draft2020-12) - 100%
+
+---
+
+## Task 3: Fix unevaluatedProperties uncle schema - COMPLETED
+
+**Problem**: The intersection validator was mutating the value `v` by assigning the result of each validation. When Pydantic validates a dict, it returns a model instance. The next validator would then receive that model instance instead of the original dict, causing type mismatches.
+
+**Failing test**: "property is evaluated in an uncle schema to unevaluatedProperties"
+- Schema: nested `unevaluatedProperties: false` inside `foo.properties`, with `anyOf` at root defining `foo.faz`
+- Test 1: `{foo: {bar: "test"}}` should be VALID - was failing because intersection chain broke
+- Test 2: `{foo: {bar: "test", faz: "test"}}` should be INVALID - was passing for wrong reason
+
+**Root cause**: In `render_intersection`, the line `v = validator_{i}.validate_python(v)` replaced the original dict with a Pydantic model. Subsequent validators couldn't validate the model instance from a different schema.
+
+**Solution**: Changed intersection validator to NOT mutate `v`:
+```python
+# Before
+v = validator_{i}.validate_python(v)
+
+# After
+validator_{i}.validate_python(v)  # Just validate, don't reassign
+```
+
+**Location**: `renderer.py:2081`
+
+**Compliance results**:
+- unevaluatedProperties: 25/25 (draft2019-09), 27/27 (draft2020-12) - all 100%

@@ -53,7 +53,7 @@
 				"All unevaluatedProperties tests pass (no failures)",
 				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2020-12 --keyword unevaluatedProperties"
 			],
-			"passes": false,
+			"passes": true,
 			"id": "3"
 		},
 		{
