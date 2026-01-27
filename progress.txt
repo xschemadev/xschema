@@ -14,7 +14,73 @@ Decisions:
 
 Status: passes=true
 
-## cleanup-pycache (2026-01-27)
+## parser-create-package (2026-01-27)
+
+Finalized parser/ package structure - moved remaining logic from parser_old.py to parser/core.py.
+
+Problem:
+- Parser was in half-migrated state: parser_old.py coexisted with parser/ package
+- parser/__init__.py imported from parser_old.py
+- collections.py also imported _parse_with_ctx from parser_old.py
+- Tech debt from incremental refactor of primitives, collections, composition, values, context
+
+Solution:
+- Created parser/core.py with all remaining logic from parser_old.py
+- Added comprehensive docstrings to all functions explaining JSON Schema semantics
+- Updated parser/__init__.py to import from parser.core instead of parser_old
+- Updated collections.py imports (4 occurrences of _parse_with_ctx import)
+- Deleted parser_old.py
+
+Actions:
+1. Created python/packages/core/src/xschema_core/parser/core.py
+   - Moved: parse(), _resolve_json_pointer(), _resolve_ref(), _parse_with_ctx()
+   - Moved: _infer_type(), _detect_discriminator(), _detect_type_guards()
+   - Added module docstring explaining role and exported functions
+   - Added detailed docstrings for each function explaining:
+     - JSON pointer syntax (RFC 6901) and escaping
+     - Cycle detection mechanism for recursive schemas
+     - Parsing order and keyword precedence
+     - Type inference from keywords
+     - Discriminated union detection
+     - Type guard creation for typeless schemas
+2. Updated parser/__init__.py
+   - Changed import from `xschema_core.parser_old import parse` to `xschema_core.parser.core import parse`
+   - Updated module docstring to reflect new structure (added 'core' module)
+3. Updated parser/collections.py
+   - Changed all 4 imports of _parse_with_ctx from parser_old to parser.core
+   - Used replaceAll to ensure all occurrences updated
+4. Deleted parser_old.py
+5. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+6. Ran 'uv run pytest' - all 171 tests pass
+
+Final Parser Package Structure:
+```
+parser/
+  __init__.py      # Public API: parse, ParseContext, create_context, all sub-parsers
+  core.py          # Main parse() function, ref resolution, recursive parsing
+  context.py       # ParseContext class, create_context factory
+  primitives.py    # parse_string, parse_number
+  collections.py   # parse_object, parse_array, parse_tuple, parse_legacy_tuple
+  composition.py   # parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional
+  values.py        # parse_literal, parse_enum
+```
+
+Design Decisions:
+- Named the file `core.py` not `index.py` - clearer intent, matches Python conventions
+- Kept private helper functions (_resolve_json_pointer, etc.) in core.py - they're implementation details
+- collections.py imports _parse_with_ctx via local import inside functions - avoids circular import
+- All sub-modules follow same pattern: public parse_* functions, comprehensive docstrings
+- Structure mirrors TypeScript parser: core.ts, context.ts, primitives.ts, collections.ts, etc.
+
+Benefits:
+- Clean package structure matching TypeScript
+- No more half-migrated state
+- Each module ~100-400 lines (manageable file sizes)
+- Clear separation of concerns
+- All tests pass, no regressions
+
+Status: passes=true
+
 
 Verified Python cache directories properly gitignored.
 

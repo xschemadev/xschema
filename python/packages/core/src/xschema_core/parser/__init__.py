@@ -13,6 +13,7 @@ Public API:
 - parse_literal, parse_enum: Value parsers
 
 Internal structure:
+- core: Main parse() function and recursive parsing logic
 - primitives: String, number, boolean, null type parsing
 - collections: Object, array, tuple type parsing
 - composition: allOf, anyOf, oneOf, not, if/then/else parsing
@@ -20,8 +21,7 @@ Internal structure:
 - context: Parse context for cycle detection and ref resolution
 """
 
-# Import from temporary location - will be moved to parser/core.py in future task
-from xschema_core.parser_old import parse  # noqa: F401
+from xschema_core.parser.core import parse
 from xschema_core.parser.context import ParseContext, create_context
 from xschema_core.parser.primitives import parse_number, parse_string
 from xschema_core.parser.collections import (

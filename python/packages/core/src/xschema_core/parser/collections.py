@@ -55,7 +55,7 @@ def parse_object(schema: dict[str, Any], ctx: Any) -> ObjectNode:
     - String-keyed dict: {"type": "object", "additionalProperties": {"type": "number"}}
     - Pattern properties: {"patternProperties": {"^[Ss]": {"type": "string"}}}
     """
-    from xschema_core.parser_old import _parse_with_ctx
+    from xschema_core.parser.core import _parse_with_ctx
 
     properties: list[tuple[str, PropertyDef]] = []
     required_set = frozenset(schema.get("required", []))
@@ -199,7 +199,7 @@ def parse_array(schema: dict[str, Any], ctx: Any) -> Union[ArrayNode, TupleNode]
     - Legacy tuple: {"items": [{"type": "number"}, {"type": "string"}], "additionalItems": false}
     - Contains: {"contains": {"type": "number"}, "minContains": 2}
     """
-    from xschema_core.parser_old import _parse_with_ctx
+    from xschema_core.parser.core import _parse_with_ctx
 
     # Check for tuple syntax (prefixItems or legacy items as array)
     if "prefixItems" in schema:
@@ -274,7 +274,7 @@ def parse_tuple(schema: dict[str, Any], ctx: Any) -> TupleNode:
     - Open tuple: {"prefixItems": [{"type": "number"}], "items": {"type": "string"}}
     - Pair with no extra: {"prefixItems": [{}, {}], "items": false}
     """
-    from xschema_core.parser_old import _parse_with_ctx
+    from xschema_core.parser.core import _parse_with_ctx
 
     prefix_items = tuple(
         _parse_with_ctx(item, ctx) for item in schema.get("prefixItems", [])
@@ -336,7 +336,7 @@ def parse_legacy_tuple(schema: dict[str, Any], ctx: Any) -> TupleNode:
     - Legacy tuple: {"items": [{"type": "number"}, {"type": "string"}], "additionalItems": false}
     - Modern equivalent: {"prefixItems": [{"type": "number"}, {"type": "string"}], "items": false}
     """
-    from xschema_core.parser_old import _parse_with_ctx
+    from xschema_core.parser.core import _parse_with_ctx
 
     items_list = schema.get("items", [])
     prefix_items = tuple(

@@ -165,7 +165,7 @@
         "run 'uv run pytest packages/core' - must pass",
         "run 'uv run pytest' - all 173 tests must pass"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Final step of parser refactor - clean up module structure"
     },
 

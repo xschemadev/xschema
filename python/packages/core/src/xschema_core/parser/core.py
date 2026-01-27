@@ -1,4 +1,18 @@
-"""JSON Schema to IR parser."""
+"""Core JSON Schema to IR parsing logic.
+
+This module contains:
+- parse(): Main entry point that converts JSON Schema to IR
+- _resolve_json_pointer(): JSON pointer resolution (#/$defs/Name)
+- _resolve_ref(): $ref resolution with cycle detection
+- _parse_with_ctx(): Main recursive parsing function
+- _infer_type(): Type inference from keywords
+- _detect_type_guards(): Type guard detection for typeless schemas
+- _detect_discriminator(): Discriminated union detection for oneOf
+
+The parse function expects schemas to be pre-bundled by the CLI.
+All external $refs should be resolved before reaching this parser.
+Internal JSON pointer refs (#/$defs/Name) are resolved during parsing.
+"""
 
 from typing import Any, Dict, List, Optional, Set, Union
 
@@ -35,8 +49,24 @@ from xschema_core.parser.context import ParseContext, create_context
 def parse(schema: Union[Dict[str, Any], bool]) -> SchemaNode:
     """Parse a JSON Schema dict into an IR SchemaNode.
 
-    Expects schemas to be pre-bundled by the CLI - all external $refs
-    should be resolved. Internal JSON pointer refs (#/$defs/Name) are supported.
+    This is the main entry point for converting JSON Schema to IR.
+
+    Args:
+        schema: A JSON Schema as a dict, or a boolean schema (true/false).
+                Schemas should be pre-bundled by the CLI - all external $refs
+                should already be resolved. Internal JSON pointer refs
+                (#/$defs/Name) are supported.
+
+    Returns:
+        A SchemaNode representing the schema in IR form.
+
+    Example:
+        >>> from xschema_core.parser import parse
+        >>> node = parse({"type": "string", "minLength": 1})
+        >>> type(node).__name__
+        'StringNode'
+        >>> node.constraints.min_length
+        1
     """
     # Create context with root schema for internal $ref resolution
     ctx = create_context(schema)
@@ -44,7 +74,24 @@ def parse(schema: Union[Dict[str, Any], bool]) -> SchemaNode:
 
 
 def _resolve_json_pointer(ref: str, root: dict[str, Any]) -> Any:
-    """Resolve a JSON pointer (fragment starting with #/) to a schema node."""
+    """Resolve a JSON pointer (fragment starting with #/) to a schema node.
+
+    JSON Pointer is defined in RFC 6901. The pointer starts with # and uses
+    / to separate path segments. Special characters are escaped:
+    - ~0 represents ~
+    - ~1 represents /
+    - URI percent-encoding (e.g., %25 for %) is decoded first
+
+    Args:
+        ref: JSON pointer string like "#/$defs/Name" or "#/properties/foo%2Fbar"
+        root: The root schema to resolve against
+
+    Returns:
+        The schema node at the pointer location
+
+    Raises:
+        ValueError: If the pointer path doesn't exist
+    """
     from urllib.parse import unquote
 
     path_parts = ref[2:].split("/")  # Remove "#/" prefix
@@ -79,6 +126,21 @@ def _resolve_ref(ref: str, ctx: ParseContext) -> SchemaNode:
 
     Only handles internal JSON pointer refs (e.g., #/$defs/Name, #/properties/foo).
     External refs should be bundled by the CLI before reaching the adapter.
+
+    Cycle Detection:
+        Uses ctx.resolving set to track refs being resolved. When a cycle is
+        detected (ref already in resolving set), returns RefNode(resolved=None).
+        This allows adapters to handle recursive types appropriately.
+
+    Args:
+        ref: The $ref string value
+        ctx: Parse context with root schema and cycle tracking
+
+    Returns:
+        RefNode with the ref path and resolved schema (or None for cycles)
+
+    Raises:
+        ValueError: If ref is external (not starting with #) or unresolvable
     """
     if ctx.root is None:
         raise ValueError(
@@ -93,9 +155,8 @@ def _resolve_ref(ref: str, ctx: ParseContext) -> SchemaNode:
             "Run the schema through xschema generate to bundle all references."
         )
 
-    # Check for cycles
+    # Check for cycles - return RefNode with resolved=None to break infinite recursion
     if ref in ctx.resolving:
-        # Return a RefNode for cyclic references
         return RefNode(path=ref, resolved=None)
 
     # Root ref - recursive to root schema
@@ -124,7 +185,23 @@ def _resolve_ref(ref: str, ctx: ParseContext) -> SchemaNode:
 def _parse_with_ctx(
     schema: Union[Dict[str, Any], bool], ctx: ParseContext
 ) -> SchemaNode:
-    """Parse a JSON Schema dict into an IR SchemaNode with context."""
+    """Parse a JSON Schema dict into an IR SchemaNode with context.
+
+    This is the main recursive parsing function. It handles all JSON Schema
+    keywords and dispatches to specialized parsers for different types.
+
+    Parsing order matters - keywords are checked in this order:
+    1. Boolean schemas (true/false)
+    2. Empty schema
+    3. $ref (terminates - no sibling keywords processed)
+    4. const (literal value)
+    5. enum (value set)
+    6. not (negation)
+    7. if/then/else (conditional)
+    8. nullable (OpenAPI extension)
+    9. Composition keywords (allOf, anyOf, oneOf)
+    10. Type-based parsing
+    """
     # Handle boolean schemas
     if schema is True:
         return AnyNode()
@@ -292,7 +369,15 @@ def _parse_with_ctx(
 
 
 def _infer_type(schema: Dict[str, Any]) -> Optional[str]:
-    """Infer the type from other keywords in the schema."""
+    """Infer the type from other keywords in the schema.
+
+    JSON Schema allows omitting "type" when other keywords unambiguously
+    indicate the type. This function checks for type-specific keywords
+    and returns the implied type.
+
+    Returns:
+        Inferred type string or None if type cannot be determined
+    """
     # String keywords
     if any(k in schema for k in ("minLength", "maxLength", "pattern", "format")):
         return "string"
@@ -352,7 +437,22 @@ def _detect_discriminator(variants: List[Any]) -> Optional[str]:
     """Detect if oneOf variants form a discriminated union.
 
     A discriminated union has all variants as objects with a common property
-    that has a literal (const) value unique to each variant.
+    that has a literal (const) value unique to each variant. This is useful
+    for generating more efficient union types in target languages.
+
+    Args:
+        variants: List of oneOf variant schemas
+
+    Returns:
+        Property name that discriminates the union, or None if not discriminated
+
+    Example:
+        >>> variants = [
+        ...     {"type": "object", "properties": {"kind": {"const": "a"}}},
+        ...     {"type": "object", "properties": {"kind": {"const": "b"}}}
+        ... ]
+        >>> _detect_discriminator(variants)
+        'kind'
     """
     if not variants:
         return None
@@ -394,6 +494,21 @@ def _detect_type_guards(schema: Dict[str, Any], ctx: ParseContext) -> List[TypeG
 
     For schemas without an explicit type that have type-specific keywords,
     create guards that apply those constraints only to matching runtime types.
+
+    This handles schemas like:
+        {"minLength": 5, "minimum": 0}
+
+    Which should validate:
+        - Strings must have minLength >= 5
+        - Numbers must be >= 0
+        - Other types pass through (JSON Schema allows this)
+
+    Args:
+        schema: Schema dict to analyze
+        ctx: Parse context for recursive parsing
+
+    Returns:
+        List of TypeGuard objects, one per detected type
     """
     guards = []
 
