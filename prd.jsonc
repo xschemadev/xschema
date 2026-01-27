@@ -148,7 +148,7 @@
         "export from parser/__init__.py",
         "run 'uv run pytest packages/core' - must pass"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Follow TS structure: typescript/packages/core/src/parser/context.ts"
     },
     {

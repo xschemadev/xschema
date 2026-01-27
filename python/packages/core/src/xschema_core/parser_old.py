@@ -1,6 +1,6 @@
 """JSON Schema to IR parser."""
 
-from typing import Any, Literal
+from typing import Any, Dict, List, Optional, Set, Union
 
 from xschema_core.ir import (
     AnyNode,
@@ -29,25 +29,17 @@ from xschema_core.parser.composition import (
     parse_one_of,
 )
 from xschema_core.parser.values import parse_enum, parse_literal
+from xschema_core.parser.context import ParseContext, create_context
 
 
-class _ParseContext:
-    """Context for parsing, holds root schema for internal $ref resolution."""
-
-    def __init__(self, root: dict[str, Any] | None = None):
-        self.root = root
-        # Track refs being resolved to detect cycles
-        self.resolving: set[str] = set()
-
-
-def parse(schema: dict[str, Any] | bool) -> SchemaNode:
+def parse(schema: Union[Dict[str, Any], bool]) -> SchemaNode:
     """Parse a JSON Schema dict into an IR SchemaNode.
 
     Expects schemas to be pre-bundled by the CLI - all external $refs
     should be resolved. Internal JSON pointer refs (#/$defs/Name) are supported.
     """
     # Create context with root schema for internal $ref resolution
-    ctx = _ParseContext(root=schema if isinstance(schema, dict) else None)
+    ctx = create_context(schema)
     return _parse_with_ctx(schema, ctx)
 
 
@@ -82,7 +74,7 @@ def _resolve_json_pointer(ref: str, root: dict[str, Any]) -> Any:
     return current
 
 
-def _resolve_ref(ref: str, ctx: _ParseContext) -> SchemaNode:
+def _resolve_ref(ref: str, ctx: ParseContext) -> SchemaNode:
     """Resolve a $ref to a SchemaNode.
 
     Only handles internal JSON pointer refs (e.g., #/$defs/Name, #/properties/foo).
@@ -129,7 +121,9 @@ def _resolve_ref(ref: str, ctx: _ParseContext) -> SchemaNode:
     return RefNode(path=ref, resolved=resolved)
 
 
-def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> SchemaNode:
+def _parse_with_ctx(
+    schema: Union[Dict[str, Any], bool], ctx: ParseContext
+) -> SchemaNode:
     """Parse a JSON Schema dict into an IR SchemaNode with context."""
     # Handle boolean schemas
     if schema is True:
@@ -297,7 +291,7 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
     return AnyNode()
 
 
-def _infer_type(schema: dict[str, Any]) -> str | None:
+def _infer_type(schema: Dict[str, Any]) -> Optional[str]:
     """Infer the type from other keywords in the schema."""
     # String keywords
     if any(k in schema for k in ("minLength", "maxLength", "pattern", "format")):
@@ -354,7 +348,7 @@ def _infer_type(schema: dict[str, Any]) -> str | None:
     return None
 
 
-def _detect_discriminator(variants: list[Any]) -> str | None:
+def _detect_discriminator(variants: List[Any]) -> Optional[str]:
     """Detect if oneOf variants form a discriminated union.
 
     A discriminated union has all variants as objects with a common property
@@ -364,7 +358,7 @@ def _detect_discriminator(variants: list[Any]) -> str | None:
         return None
 
     # Find common properties with const values across all variants
-    common_discriminators: set[str] | None = None
+    common_discriminators: Optional[Set[str]] = None
 
     for variant in variants:
         if not isinstance(variant, dict):
@@ -395,7 +389,7 @@ def _detect_discriminator(variants: list[Any]) -> str | None:
     return None
 
 
-def _detect_type_guards(schema: dict[str, Any], ctx: _ParseContext) -> list[TypeGuard]:
+def _detect_type_guards(schema: Dict[str, Any], ctx: ParseContext) -> List[TypeGuard]:
     """Detect type-specific constraints and create type guards.
 
     For schemas without an explicit type that have type-specific keywords,

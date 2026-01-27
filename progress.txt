@@ -400,3 +400,55 @@ Next Steps (future tasks):
 
 Status: passes=true
 
+## parser-split-context (2026-01-27)
+
+Extracted ParseContext to parser/context.py - fifth step in restructuring parser to match TypeScript.
+
+Actions:
+1. Created python/packages/core/src/xschema_core/parser/context.py
+   - Implemented ParseContext dataclass with root and resolving fields
+   - Added create_context factory function
+   - Made class public (no underscore prefix) as part of parser's public API
+   - Added comprehensive module docstring explaining purpose
+2. Added detailed comments explaining:
+   - Why cycle detection matters for recursive schemas
+   - How the resolving set breaks cycles by returning RefNode(resolved=None)
+   - Root schema role: resolving JSON pointers like #/$defs/Name
+   - Pre-bundling expectation: external refs should be resolved by CLI
+3. Updated parser_old.py:
+   - Imported ParseContext, create_context from context module
+   - Removed _ParseContext class definition
+   - Replaced _ParseContext usage with ParseContext throughout
+   - Updated parse() to use create_context() factory
+   - Fixed Python 3.9 compatibility: dict[str, Any] | bool → Union[Dict[str, Any], bool]
+4. Updated parser/__init__.py:
+   - Added exports for ParseContext and create_context
+   - Updated module docstring to reflect context module completion
+   - Added "Context" section to __all__ list
+5. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+6. Ran 'uv run pytest' - all 171 tests pass (no regressions)
+
+Decisions:
+- Used dataclass with field(default_factory=set) for resolving - cleaner than __init__
+- Made ParseContext a public class (not _ParseContext) - adapters may need access
+- Added create_context factory for cleaner instantiation - handles bool schema case
+- Used Union[] syntax for Python 3.9 compatibility - maintains backward compat
+- Kept docstrings detailed explaining JSON Schema cycle semantics
+
+Code Structure After Change:
+```
+parser/
+  __init__.py      # exports: parse, ParseContext, create_context, all parsers
+  primitives.py    # parse_string, parse_number
+  collections.py   # parse_object, parse_array, parse_tuple, parse_legacy_tuple
+  composition.py   # parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional
+  values.py        # parse_literal, parse_enum
+  context.py       # ParseContext, create_context
+parser_old.py      # main parse function + ref resolution (to be renamed in final task)
+```
+
+Next Steps (future tasks):
+- parser-create-package: move parser_old.py → parser/core.py, delete parser_old.py, clean up __init__.py
+
+Status: passes=true
+
