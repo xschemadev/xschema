@@ -1,0 +1,33 @@
+# Ralph Progress Log
+Started: Tue Jan 27 03:22:42 PM CET 2026
+---
+
+## Codebase Patterns
+
+### Property name sanitization in pydantic adapter
+- `_PYTHON_TYPE_BUILTINS` contains generic types that would break type annotations if used as field names
+- Only includes types actually used in generic annotations: list, dict, set, tuple, type, frozenset
+- Regular builtins like id, str, int are NOT included - they don't break annotations
+- `_is_valid_python_identifier` rejects names in `_PYTHON_TYPE_BUILTINS`
+- `_sanitize_property_name` renames them with underscore suffix (e.g., list -> list_)
+
+---
+
+## Task 1: Fix field name shadowing Python builtins - COMPLETED
+
+**Problem**: Properties named "list", "dict", "set", "tuple", "type", or "frozenset" shadow Python's builtin types, causing type annotation errors like `'NoneType' object is not subscriptable` when evaluating `list[int]`.
+
+**Solution**:
+- Added `_PYTHON_TYPE_BUILTINS` frozenset in renderer.py with generic types used in annotations
+- Updated `_is_valid_python_identifier` to reject these names
+- Updated `_sanitize_property_name` to append underscore suffix
+- Fields use `Field(alias="list")` to preserve JSON serialization
+
+**Tests added**:
+- `test_render_object_with_builtin_property_name`
+- `test_render_object_with_list_property_uses_list_type`
+
+**Compliance results**:
+- refRemote: 17/17 passed (was 0/17)
+- draft3: 100%, draft4: 99.8%, draft6: 99.9%, draft7: 99.9%
+- draft2019-09: 99.8%, draft2020-12: 99.9%

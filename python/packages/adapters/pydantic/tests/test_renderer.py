@@ -671,3 +671,72 @@ def test_render_nullable_already_nullable():
     result = render(node, "Test")
     # Should not add duplicate | None
     assert result.type_expr.count(" | None") == 1
+
+
+# =============================================================================
+# Property Name Sanitization
+# =============================================================================
+
+
+def test_render_object_with_builtin_property_name():
+    """Test that property names shadowing Python generic types are aliased.
+
+    When a property is named 'list', it would shadow Python's builtin list type,
+    causing 'list[int]' in type annotations to fail. The renderer must rename
+    such fields and use Field(alias=...) to preserve JSON serialization.
+
+    Only generic types used in annotations are affected (list, dict, set, tuple, type, frozenset).
+    """
+    node = ObjectNode(
+        properties=(
+            (
+                "list",
+                PropertyDef(
+                    schema=ArrayNode(
+                        items=NumberNode(integer=True), constraints=ArrayConstraints()
+                    ),
+                    required=False,
+                ),
+            ),
+            ("dict", PropertyDef(schema=StringNode(), required=False)),
+            ("set", PropertyDef(schema=StringNode(), required=False)),
+        ),
+    )
+    result = render(node, "Test")
+    # Field names should be sanitized (list_ instead of list)
+    assert "list_:" in result.code or "list_ :" in result.code
+    assert "dict_:" in result.code or "dict_ :" in result.code
+    assert "set_:" in result.code or "set_ :" in result.code
+    # Aliases should preserve original JSON property names
+    assert 'alias="list"' in result.code
+    assert 'alias="dict"' in result.code
+    assert 'alias="set"' in result.code
+    assert "from pydantic import Field" in result.imports
+
+
+def test_render_object_with_list_property_uses_list_type():
+    """Test that 'list' type annotation works when 'list' property is aliased.
+
+    This test ensures the generated code is syntactically valid and doesn't
+    shadow the list builtin, allowing list[T] type annotations to work.
+    """
+    # Create an object with a 'list' property whose type uses list[T]
+    node = ObjectNode(
+        properties=(
+            (
+                "list",
+                PropertyDef(
+                    schema=ArrayNode(
+                        items=NumberNode(integer=True), constraints=ArrayConstraints()
+                    ),
+                    required=True,
+                ),
+            ),
+        ),
+    )
+    result = render(node, "Test")
+    # The type annotation should use list[...] (the builtin, not the field)
+    assert "list[StrictInt]" in result.code
+    # The field name should be sanitized
+    assert "list_:" in result.code or "list_ :" in result.code
+    assert 'alias="list"' in result.code

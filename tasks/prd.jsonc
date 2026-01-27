@@ -16,7 +16,7 @@
 				"All refRemote tests pass (no failures)",
 				"Run: cd python/packages/adapters/pydantic && bunx tsc --noEmit (if applicable) or python type checks pass"
 			],
-			"passes": false,
+			"passes": true,
 			"id": "1"
 		},
 		{

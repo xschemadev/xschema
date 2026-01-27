@@ -135,6 +135,22 @@ def _make_nullable(type_expr: str) -> str:
     return f"{type_expr} | None"
 
 
+# Python builtins that shadow types used in type annotations
+# When a field is named "list", it shadows Python's builtin list type,
+# causing "list[int]" in type annotations to fail with "'NoneType' is not subscriptable"
+# Only includes types that are actually used in generic type annotations (list[T], dict[K,V], etc.)
+_PYTHON_TYPE_BUILTINS = frozenset(
+    {
+        "list",
+        "dict",
+        "set",
+        "tuple",
+        "type",
+        "frozenset",
+    }
+)
+
+
 def _is_valid_python_identifier(name: str) -> bool:
     """Check if a string is a valid Python identifier for Pydantic fields.
 
@@ -143,6 +159,7 @@ def _is_valid_python_identifier(name: str) -> bool:
     - Contains only letters, digits, or underscores
     - Is not a Python keyword
     - Does NOT start with double underscore (Pydantic treats dunder names specially)
+    - Does NOT shadow Python builtins used in type annotations
     """
     import keyword
 
@@ -154,6 +171,9 @@ def _is_valid_python_identifier(name: str) -> bool:
         return False
     # Pydantic treats dunder names specially, so they need aliases
     if name.startswith("__"):
+        return False
+    # Builtins used in type annotations would be shadowed by field names
+    if name in _PYTHON_TYPE_BUILTINS:
         return False
     return True
 
@@ -191,6 +211,10 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
 
         # If it's a Python keyword, append underscore
         if keyword.iskeyword(base):
+            base = base + "_"
+
+        # If it's a Python builtin that shadows types, append underscore
+        if base in _PYTHON_TYPE_BUILTINS:
             base = base + "_"
 
         # Pydantic doesn't allow field names starting with underscore
