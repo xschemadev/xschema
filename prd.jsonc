@@ -286,7 +286,7 @@
         "add classifiers specific to this adapter",
         "verify uv can build: run 'uv build' from packages/adapters/pydantic"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Adapter-specific metadata"
     },
     {

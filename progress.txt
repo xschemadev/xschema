@@ -659,3 +659,27 @@ Decisions:
 
 Status: passes=true
 
+## pyproject-pydantic (2026-01-27)
+
+Added complete production metadata to xschema-pydantic pyproject.toml for PyPI readiness.
+
+Actions:
+1. Edited python/packages/adapters/pydantic/pyproject.toml
+2. Added authors = [{ name = "xschemadev" }]
+3. Added maintainers = [{ name = "xschemadev" }]
+4. Added keywords: json-schema, validation, pydantic, code-generation, schema, type-safety, adapter
+5. Added classifiers (same as core): Beta, Developers, MIT, OS Independent, Python 3.10-3.13, Code Generators, Typed
+6. Added [project.urls] section (Homepage, Documentation, Repository, Issues, Changelog)
+
+Verification:
+- Ran `uv build` from packages/adapters/pydantic - successfully built sdist and wheel
+- Ran `uv run pytest packages/adapters/pydantic -v` - all 85 tests pass
+
+Decisions:
+- Added "adapter" keyword to differentiate from core package
+- pydantic>=2.0 constraint already explicit - no changes needed
+- annotated-types not directly used (Pydantic handles it internally) - no need to add
+- Consistent metadata structure across all three Python packages now complete
+
+Status: passes=true
+
