@@ -245,3 +245,53 @@ Next Steps (future tasks):
 
 Status: passes=true
 
+## parser-split-collections (2026-01-27)
+
+Extracted collection type parsing to parser/collections.py - second step in restructuring parser to match TypeScript.
+
+Actions:
+1. Created python/packages/core/src/xschema_core/parser/collections.py
+   - Moved parse_object, parse_array, parse_tuple, parse_legacy_tuple functions
+   - Made functions public (no underscore prefix) as part of parser's public API
+   - Added comprehensive docstrings explaining JSON Schema semantics
+2. Added detailed comments explaining:
+   - prefixItems vs items semantics across drafts (draft4-7 vs draft2019-09+)
+   - additionalItems vs items in legacy drafts
+   - patternProperties interaction with additionalProperties
+   - dependencies keyword split into dependentRequired + dependentSchemas
+   - unevaluatedProperties/unevaluatedItems annotation tracking
+3. Updated parser_old.py:
+   - Imported parse_object, parse_array, parse_tuple from collections module
+   - Replaced all _parse_object, _parse_array, _parse_tuple, _parse_legacy_tuple calls
+   - Removed old function definitions (~240 lines moved to collections.py)
+   - Cleaned up unused imports (ArrayConstraints, ArrayNode, ObjectNode, etc.)
+4. Updated parser/__init__.py:
+   - Added exports for parse_object, parse_array, parse_tuple, parse_legacy_tuple
+   - Updated module docstring to reflect collections module status
+5. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+6. Ran 'uv run pytest' - all 171 tests pass
+
+Decisions:
+- Made functions public API (parse_object not _parse_object) - adapters may need access for custom parsing
+- Used Union[] instead of | for type annotations - maintains Python 3.9 compatibility
+- collections.py imports _parse_with_ctx from parser_old.py - temporary circular dependency resolved via local import
+- Documented JSON Schema draft differences extensively - helps future maintainers understand cross-draft compatibility
+- Followed TypeScript structure: collections.ts exports parseObject, parseArray, parseTuple
+
+Code Structure After Change:
+```
+parser/
+  __init__.py      # exports: parse, parse_string, parse_number, parse_object, parse_array, parse_tuple, parse_legacy_tuple
+  primitives.py    # parse_string, parse_number
+  collections.py   # parse_object, parse_array, parse_tuple, parse_legacy_tuple
+parser_old.py      # main parse function + composition logic (to be split in future tasks)
+```
+
+Next Steps (future tasks):
+- parser-split-composition: extract composition.py (parse_all_of, parse_any_of, parse_one_of, parse_not)
+- parser-split-values: extract values.py (parse_literal, parse_enum)
+- parser-split-context: extract context.py (ParseContext, create_context)
+- parser-create-package: move parser_old.py → parser/core.py, clean up __init__.py
+
+Status: passes=true
+

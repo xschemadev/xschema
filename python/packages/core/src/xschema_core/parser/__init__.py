@@ -7,10 +7,11 @@ The IR is designed to be adapter-agnostic, capturing JSON Schema semantics in a 
 Public API:
 - parse: Main entry point - converts JSON Schema dict to SchemaNode
 - parse_string, parse_number: Primitive parsers (exported for testing/internal use)
+- parse_object, parse_array, parse_tuple, parse_legacy_tuple: Collection parsers
 
 Internal structure:
 - primitives: String, number, boolean, null type parsing
-- collections: Object, array, tuple type parsing (TODO)
+- collections: Object, array, tuple type parsing
 - composition: allOf, anyOf, oneOf, not parsing (TODO)
 - values: const, enum parsing (TODO)
 - context: Parse context for cycle detection and ref resolution (TODO)
@@ -19,5 +20,19 @@ Internal structure:
 # Import from temporary location - will be moved to parser/core.py in future task
 from xschema_core.parser_old import parse  # noqa: F401
 from xschema_core.parser.primitives import parse_number, parse_string
+from xschema_core.parser.collections import (
+    parse_array,
+    parse_legacy_tuple,
+    parse_object,
+    parse_tuple,
+)
 
-__all__ = ["parse", "parse_string", "parse_number"]
+__all__ = [
+    "parse",
+    "parse_string",
+    "parse_number",
+    "parse_object",
+    "parse_array",
+    "parse_tuple",
+    "parse_legacy_tuple",
+]
