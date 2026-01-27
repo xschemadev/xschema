@@ -397,7 +397,7 @@
         "update compliance/results/REPORT.md with final numbers",
         "ensure no regressions from starting point"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Compliance is the ultimate test of correctness"
     },
     {

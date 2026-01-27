@@ -839,35 +839,35 @@ These tests are intentionally excluded due to documented limitations.
   - Test: integer is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -878,35 +878,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -917,35 +917,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -956,35 +956,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -995,35 +995,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1034,35 +1034,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1073,35 +1073,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1112,35 +1112,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1151,35 +1151,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1190,35 +1190,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1229,35 +1229,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1268,35 +1268,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1307,35 +1307,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1346,35 +1346,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1385,35 +1385,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: null is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1424,35 +1424,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: object is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1463,35 +1463,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 119, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1560,35 +1560,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: non-number is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1599,35 +1599,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1638,35 +1638,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: integer is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1677,35 +1677,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1716,35 +1716,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1755,35 +1755,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1794,35 +1794,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1833,35 +1833,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1872,35 +1872,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1911,35 +1911,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1950,35 +1950,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -1989,35 +1989,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2028,35 +2028,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2067,35 +2067,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2106,35 +2106,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2145,35 +2145,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2184,35 +2184,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2223,35 +2223,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2262,35 +2262,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2301,35 +2301,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2340,35 +2340,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: null is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2379,35 +2379,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: object is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2418,35 +2418,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2516,35 +2516,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: non-number is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2555,35 +2555,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2594,35 +2594,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: integer is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2633,35 +2633,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2672,35 +2672,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2711,35 +2711,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: base URI change ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2750,35 +2750,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2789,35 +2789,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2828,35 +2828,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2867,35 +2867,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2906,35 +2906,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2945,35 +2945,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote fragment valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -2984,35 +2984,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3023,35 +3023,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: ref within ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3062,35 +3062,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3101,35 +3101,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: remote ref valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3140,35 +3140,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3179,35 +3179,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3218,35 +3218,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: number is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3257,35 +3257,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3296,35 +3296,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: null is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3335,35 +3335,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: object is invalid
   - Expected: `invalid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>
@@ -3374,35 +3374,35 @@ Unable to evaluate type annotation 'list[StrictInt] | None'.
   - Test: string is valid
   - Expected: `valid`, Got: `error: harness execution error: harness execution failed: exit status 1
 stderr: Traceback (most recent call last):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
+  File "/home/trapani/dev/xschema/python/packages/adapters/pydantic/xschema-harness.py", line 121, in <module>
     class Group4(BaseModel):
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 242, in __new__
     set_model_fields(cls, config_wrapper=config_wrapper, ns_resolver=ns_resolver)
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 566, in set_model_fields
     fields, class_vars = collect_model_fields(cls, config_wrapper, ns_resolver, typevars_map=typevars_map)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py", line 256, in collect_model_fields
     type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 350, in get_model_type_hints
     hints[name] = try_eval_type(value, globalns, localns)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 404, in try_eval_type
     return eval_type_backport(value, globalns, localns), True
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 455, in eval_type_backport
     return _eval_type_backport(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 492, in _eval_type_backport
     return _eval_type(value, globalns, localns, type_params)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/rmdevv/tech/proj/xschemadev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
+  File "/home/trapani/dev/xschema/python/.venv/lib/python3.12/site-packages/pydantic/_internal/_typing_extra.py", line 545, in _eval_type
     return typing._eval_type(  # type: ignore
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 415, in _eval_type
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 415, in _eval_type
     return t._evaluate(globalns, localns, type_params, recursive_guard=recursive_guard)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.12/3.12.11_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/typing.py", line 947, in _evaluate
+  File "/home/trapani/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/typing.py", line 947, in _evaluate
     eval(self.__forward_code__, globalns, localns),
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<string>", line 1, in <module>

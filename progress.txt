@@ -789,3 +789,26 @@ Results:
 
 Status: passes=true
 
+## verify-compliance (2026-01-27)
+
+Ran final compliance check and documented results in REPORT.md.
+
+Final Compliance Results:
+| Draft | Passed | Failed | Unsupported | Coverage |
+|-------|--------|--------|-------------|----------|
+| draft2020-12 | 949 | 1 | 201 | 99.9% |
+| draft2019-09 | 934 | 2 | 178 | 99.8% |
+| draft7 | 812 | 24 | 0 | 97.1% |
+| draft6 | 736 | 24 | 0 | 96.8% |
+| draft4 | 548 | 18 | 0 | 96.8% |
+| draft3 | 407 | 0 | 0 | 100.0% |
+
+No regressions - results improved from 942→949 for draft2020-12.
+
+Remaining failures are edge cases:
+- unevaluatedProperties "uncle schema" (requires cross-applicator annotation tracking)
+- draft4 refRemote harness errors (not adapter bugs)
+- draft4 additionalItems applicator case
+
+Status: passes=true
+
