@@ -8,11 +8,12 @@ Public API:
 - parse: Main entry point - converts JSON Schema dict to SchemaNode
 - parse_string, parse_number: Primitive parsers (exported for testing/internal use)
 - parse_object, parse_array, parse_tuple, parse_legacy_tuple: Collection parsers
+- parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional: Composition parsers
 
 Internal structure:
 - primitives: String, number, boolean, null type parsing
 - collections: Object, array, tuple type parsing
-- composition: allOf, anyOf, oneOf, not parsing (TODO)
+- composition: allOf, anyOf, oneOf, not, if/then/else parsing
 - values: const, enum parsing (TODO)
 - context: Parse context for cycle detection and ref resolution (TODO)
 """
@@ -26,13 +27,28 @@ from xschema_core.parser.collections import (
     parse_object,
     parse_tuple,
 )
+from xschema_core.parser.composition import (
+    parse_all_of,
+    parse_any_of,
+    parse_conditional,
+    parse_not,
+    parse_one_of,
+)
 
 __all__ = [
     "parse",
+    # Primitive parsers
     "parse_string",
     "parse_number",
+    # Collection parsers
     "parse_object",
     "parse_array",
     "parse_tuple",
     "parse_legacy_tuple",
+    # Composition parsers
+    "parse_all_of",
+    "parse_any_of",
+    "parse_one_of",
+    "parse_not",
+    "parse_conditional",
 ]

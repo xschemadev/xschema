@@ -5,15 +5,12 @@ from typing import Any, Literal
 from xschema_core.ir import (
     AnyNode,
     BooleanNode,
-    ConditionalNode,
     EnumNode,
     IntersectionNode,
     LiteralNode,
     NeverNode,
-    NotNode,
     NullNode,
     NullableNode,
-    OneOfNode,
     RefNode,
     SchemaNode,
     TypeGuard,
@@ -25,6 +22,13 @@ from xschema_core.parser.collections import (
     parse_array,
     parse_object,
     parse_tuple,
+)
+from xschema_core.parser.composition import (
+    parse_all_of,
+    parse_any_of,
+    parse_conditional,
+    parse_not,
+    parse_one_of,
 )
 
 
@@ -153,16 +157,16 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     # Handle not keyword
     if "not" in schema:
-        inner = _parse_with_ctx(schema["not"], ctx)
-        return NotNode(schema=inner)
+        return parse_not(schema["not"], ctx, _parse_with_ctx)
 
     # Handle conditional (if/then/else)
     if "if" in schema:
-        if_schema = _parse_with_ctx(schema["if"], ctx)
-        then_schema = _parse_with_ctx(schema["then"], ctx) if "then" in schema else None
-        else_schema = _parse_with_ctx(schema["else"], ctx) if "else" in schema else None
-        return ConditionalNode(
-            if_schema=if_schema, then_schema=then_schema, else_schema=else_schema
+        return parse_conditional(
+            schema["if"],
+            schema.get("then"),
+            schema.get("else"),
+            ctx,
+            _parse_with_ctx,
         )
 
     # Handle nullable (OpenAPI 3.0 style)
@@ -203,13 +207,17 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
     if composition_count > 1 or (has_composition and has_sibling_validation):
         composition_nodes: list[SchemaNode] = []
         if "allOf" in schema:
-            composition_nodes.extend(_parse_with_ctx(s, ctx) for s in schema["allOf"])
+            # Flatten allOf into intersection members
+            all_of_node = parse_all_of(schema["allOf"], ctx, _parse_with_ctx)
+            composition_nodes.extend(all_of_node.schemas)
         if "anyOf" in schema:
-            variants = tuple(_parse_with_ctx(s, ctx) for s in schema["anyOf"])
-            composition_nodes.append(UnionNode(variants=variants))
+            composition_nodes.append(
+                parse_any_of(schema["anyOf"], ctx, _parse_with_ctx)
+            )
         if "oneOf" in schema:
-            schemas_tuple = tuple(_parse_with_ctx(s, ctx) for s in schema["oneOf"])
-            composition_nodes.append(OneOfNode(schemas=schemas_tuple))
+            composition_nodes.append(
+                parse_one_of(schema["oneOf"], ctx, _parse_with_ctx)
+            )
 
         # Add sibling validation schema if present
         if has_sibling_validation:
@@ -225,16 +233,13 @@ def _parse_with_ctx(schema: dict[str, Any] | bool, ctx: _ParseContext) -> Schema
 
     # Single composition keyword without sibling validation
     if "allOf" in schema:
-        schemas = tuple(_parse_with_ctx(s, ctx) for s in schema["allOf"])
-        return IntersectionNode(schemas=schemas)
+        return parse_all_of(schema["allOf"], ctx, _parse_with_ctx)
 
     if "anyOf" in schema:
-        variants = tuple(_parse_with_ctx(s, ctx) for s in schema["anyOf"])
-        return UnionNode(variants=variants)
+        return parse_any_of(schema["anyOf"], ctx, _parse_with_ctx)
 
     if "oneOf" in schema:
-        schemas_tuple = tuple(_parse_with_ctx(s, ctx) for s in schema["oneOf"])
-        return OneOfNode(schemas=schemas_tuple)
+        return parse_one_of(schema["oneOf"], ctx, _parse_with_ctx)
 
     # Get type - can be string or array
     schema_type = schema.get("type")

@@ -295,3 +295,57 @@ Next Steps (future tasks):
 
 Status: passes=true
 
+## parser-split-composition (2026-01-27)
+
+Extracted composition keyword parsing to parser/composition.py - third step in restructuring parser to match TypeScript.
+
+Actions:
+1. Created python/packages/core/src/xschema_core/parser/composition.py
+   - Implemented parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional functions
+   - Made functions public (no underscore prefix) as part of parser's public API
+   - Added comprehensive module docstring explaining all 4 composition keywords
+   - Added detailed docstrings for each function explaining semantics
+2. Added comments explaining:
+   - allOf (intersection): ALL schemas must validate, used for static merging in renderers
+   - anyOf (union): AT LEAST ONE schema must validate, permissive
+   - oneOf (exclusive): EXACTLY ONE must validate, requires runtime check
+   - not (negation): schema must NOT validate, challenging for static types
+   - if/then/else: conditional schema branching
+   - Independent evaluation semantics (each sub-schema sees full instance)
+   - Cross-keyword composition (allOf + anyOf + sibling = implicit intersection)
+3. Updated parser_old.py:
+   - Imported parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional
+   - Replaced inline not handling with parse_not() call
+   - Replaced inline if/then/else handling with parse_conditional() call
+   - Replaced inline allOf/anyOf/oneOf handling with function calls
+   - Removed unused imports (ConditionalNode, NotNode, OneOfNode)
+4. Updated parser/__init__.py:
+   - Added exports for all 5 composition functions
+   - Updated module docstring to reflect composition module status
+5. Ran 'uv run pytest packages/core -v' - all 79 tests pass
+6. Ran 'uv run pytest' - all 171 tests pass
+
+Decisions:
+- Used Protocol class for ParseContext instead of direct import - avoids circular dependency
+- Used Callable[..., SchemaNode] for ParseFn type - simpler than full signature, avoids import issues
+- Kept parse functions receiving the recursive parse_fn as parameter - matches TypeScript pattern
+- Used Union[] syntax for type annotations - consistent with rest of codebase
+- Added detailed docstrings with examples for each function - composition keywords have subtle semantics
+
+Code Structure After Change:
+```
+parser/
+  __init__.py      # exports: parse, primitives, collections, composition functions
+  primitives.py    # parse_string, parse_number
+  collections.py   # parse_object, parse_array, parse_tuple, parse_legacy_tuple
+  composition.py   # parse_all_of, parse_any_of, parse_one_of, parse_not, parse_conditional
+parser_old.py      # main parse function + context + ref resolution (to be split in future tasks)
+```
+
+Next Steps (future tasks):
+- parser-split-values: extract values.py (parse_literal, parse_enum)
+- parser-split-context: extract context.py (ParseContext, create_context)
+- parser-create-package: move parser_old.py → parser/core.py, clean up __init__.py
+
+Status: passes=true
+
