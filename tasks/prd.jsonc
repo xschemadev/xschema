@@ -1,0 +1,98 @@
+{
+	"project": "Pydantic Adapter 100% Compliance",
+	"description": "Fix all failing compliance tests in the pydantic adapter to achieve 100% coverage across all JSON Schema drafts",
+	"tasks": [
+		{
+			"title": "Fix field name shadowing Python builtins (63 failures)",
+			"steps": [
+				"Read renderer.py and find _sanitize_property_name function",
+				"Add a set of Python builtin names that shadow types: list, dict, str, int, float, bool, type, set, tuple, object, bytes, complex, frozenset, range, slice, property, classmethod, staticmethod",
+				"Update _sanitize_property_name to rename fields that match these builtins (e.g., list -> list_, or list_field)",
+				"Ensure the field uses Field(alias='list') to preserve JSON serialization",
+				"Write unit test for the new sanitization logic"
+			],
+			"verify": [
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft4 --keyword refRemote",
+				"All refRemote tests pass (no failures)",
+				"Run: cd python/packages/adapters/pydantic && bunx tsc --noEmit (if applicable) or python type checks pass"
+			],
+			"passes": false,
+			"id": "1"
+		},
+		{
+			"title": "Fix additionalItems applicator scoping (3 failures)",
+			"steps": [
+				"Read renderer.py array/tuple handling code",
+				"Find where additionalItems validation is implemented",
+				"The bug: additionalItems should NOT look inside allOf/anyOf/oneOf for items keyword",
+				"Per JSON Schema spec, additionalItems only interacts with items at the same schema level",
+				"Fix the logic to check for items only at the current level, not in nested applicators",
+				"The test schema has items inside allOf, additionalItems at root - root additionalItems should apply to ALL items"
+			],
+			"verify": [
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft4 --keyword additionalItems",
+				"All additionalItems tests pass (no failures)",
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft6 --keyword additionalItems",
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft7 --keyword additionalItems"
+			],
+			"passes": false,
+			"id": "2"
+		},
+		{
+			"title": "Fix unevaluatedProperties uncle schema (2 failures)",
+			"steps": [
+				"Study the failing test case: nested unevaluatedProperties inside foo.properties with anyOf at root defining foo.faz",
+				"The test {foo: {bar: 'test'}} should be VALID - only bar is present, bar is evaluated by foo.properties",
+				"Check how Zod adapter handles this case (it passes) - compare zod/src/renderer.ts with pydantic renderer.py",
+				"The issue: when generating code for nested objects, the adapter must not incorrectly flag properties as unevaluated",
+				"Properties defined in ancestor applicators (anyOf at root) do NOT count as evaluated for nested unevaluatedProperties",
+				"But the simple case (only bar present, bar in properties) should pass"
+			],
+			"verify": [
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2019-09 --keyword unevaluatedProperties",
+				"All unevaluatedProperties tests pass (no failures)",
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2020-12 --keyword unevaluatedProperties"
+			],
+			"passes": false,
+			"id": "3"
+		},
+		{
+			"title": "Fix JavaScript pseudo-array handling (1 failure)",
+			"steps": [
+				"Read renderer.py tuple/items handling code",
+				"The failing test: objects with numeric string keys like {'0': 'foo', '1': 'bar', 'length': 2}",
+				"Per JSON Schema, 'items' keyword applies to arrays, not objects - the pseudo-array is an object",
+				"Check if the adapter incorrectly validates objects against items schema",
+				"The fix: ensure tuple/items validation only applies to actual lists, not dict objects",
+				"Objects should pass through tuple schemas unchanged (no type constraint = pass non-arrays)"
+			],
+			"verify": [
+				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2019-09 --keyword items",
+				"All items tests pass (no failures)"
+			],
+			"passes": false,
+			"id": "4"
+		},
+		{
+			"title": "Run full compliance and verify 100% coverage",
+			"steps": [
+				"Run full compliance suite for all drafts",
+				"Verify all drafts show 100% pass rate (excluding unsupported features)",
+				"Update compliance results in compliance/results/ directory",
+				"Ensure REPORT.md shows all green badges"
+			],
+			"verify": [
+				"Run: cd python/packages/adapters/pydantic && bun run compliance",
+				"draft3: 100% (should already be 100%)",
+				"draft4: 100% (was 96.8%)",
+				"draft6: 100% (was 96.8%)",
+				"draft7: 100% (was 97.1%)",
+				"draft2019-09: 100% (was 99.8%)",
+				"draft2020-12: 100% (was 99.9%)",
+				"No failures in any draft"
+			],
+			"passes": false,
+			"id": "5"
+		}
+	]
+}
