@@ -176,7 +176,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This should feel like an important callout — not just another paragraph. Use a branded background, border-left accent, or similar visual emphasis."
     },
     {

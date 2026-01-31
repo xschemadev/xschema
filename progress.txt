@@ -240,3 +240,40 @@ Implemented Section 2b ("The xschema approach") as a new landing page component 
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## section-2c-compliance-callout — DONE
+
+### What was done
+Implemented Section 2c ("Built for transparency") as a visually distinct callout/banner component about compliance testing, and integrated it into the page layout after Section 2b.
+
+### New file: web/src/components/landing/compliance-callout.tsx
+- Created `ComplianceCallout` named export component
+- Renders the title "Built for transparency." using `headingVariants({ variant: 'h3' })` with `text-brand`
+- Renders the body text about the compliance report verbatim from LANDING_CONTENT.md Section 2c
+- "Compliance report" is bolded with `font-semibold` as in the source content
+- Uses an em dash (`&mdash;`) matching the source punctuation
+
+### Visual treatment (callout-style, distinct from regular sections)
+- Uses `border border-brand/30` for a branded border that distinguishes it from regular `fd-card` sections
+- Uses `bg-brand/5` for a subtle branded background tint
+- Has a solid `bg-brand` left accent bar (`w-1`) via an absolutely positioned div — gives it a "callout" feel
+- Content is indented with `pl-4` to sit to the right of the accent bar
+- Retains `rounded-2xl shadow-lg` matching the overall landing page card aesthetic
+- Uses `col-span-full` to span the full grid width
+- Does NOT use `cardVariants()` — intentionally uses custom styling to create the distinct callout visual that the PRD requires
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `ComplianceCallout` from `@/components/landing/compliance-callout`
+- Added `<ComplianceCallout />` inside the grid layout, after `<XschemaApproach />`
+
+### Decisions
+- Created a separate component file rather than inlining in xschema-approach.tsx, since the PRD lists it as its own section (2c) with distinct visual requirements
+- Chose a left border accent bar (`w-1 bg-brand`) as the primary callout indicator — this is a well-established pattern for important callouts/blockquotes
+- Used `bg-brand/5` (5% opacity) for the background tint — subtle enough to not clash with the earthy palette but distinct enough to separate it from the default `bg-fd-card` used by other sections
+- Used `border-brand/30` for the border instead of `border-fd-border` to reinforce the branded callout feel
+- Did not use `cardVariants()` because the PRD explicitly requires "a distinct visual treatment" — using the same card style as other sections would defeat that purpose
+- Kept the component minimal — one heading, one paragraph, no interactive elements
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)

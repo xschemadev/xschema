@@ -10,6 +10,7 @@ import {
 import { buttonVariants } from '@/components/landing/variants';
 import { JungleProblem } from '@/components/landing/jungle-problem';
 import { XschemaApproach } from '@/components/landing/xschema-approach';
+import { ComplianceCallout } from '@/components/landing/compliance-callout';
 import { MOTTO } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
@@ -94,6 +95,7 @@ function Page() {
         </div>
         <JungleProblem />
         <XschemaApproach />
+        <ComplianceCallout />
       </div>
     </main>
   );
