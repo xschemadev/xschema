@@ -14,6 +14,7 @@ import { ComplianceCallout } from '@/components/landing/compliance-callout';
 import { BuiltFor } from '@/components/landing/built-for';
 import { OpenSourceFooter } from '@/components/landing/open-source-footer';
 import { ComponentCards } from '@/components/landing/component-cards';
+import { PipelineAnimation } from '@/components/landing/pipeline-animation';
 import { TryIt } from '@/components/landing/try-it';
 import { MOTTO, XSCHEMA_GITHUB_URL } from "@/lib/constants";
 
@@ -95,12 +96,14 @@ function Page() {
           <h2 className="text-xl text-center text-brand font-mono font-bold uppercase mb-2">
             One pipeline to rule them all.
           </h2>
-          <CliAnimation />
         </div>
         <JungleProblem />
         <XschemaApproach />
         <ComplianceCallout />
         <BuiltFor />
+        <PipelineAnimation>
+          <CliAnimation />
+        </PipelineAnimation>
         <ComponentCards />
         <TryIt />
         <OpenSourceFooter />

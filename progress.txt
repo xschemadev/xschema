@@ -542,3 +542,73 @@ Implemented Section 5 ("Try it") as a placeholder section for the future StackBl
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## section-4a-pipeline-animation — DONE
+
+### What was done
+Implemented Section 4a ("Under the hood") as an interactive pipeline animation visualization showing the 5 CLI stages (Parse → Retrieve → Process → Generate → Inject) with animated SVG paths and light effects, hover/click interactivity for stage descriptions, and the CliAnimation terminal moved from the "One pipeline to rule them all" section into this new section.
+
+### New file: web/src/components/landing/pipeline-animation.tsx
+- Created `PipelineAnimation` named export component
+- Renders the section heading "Under the hood." using `headingVariants({ variant: 'h2' })` with `text-brand text-center font-mono font-bold uppercase` — matching the established heading pattern
+- Renders an interactive SVG pipeline with 5 stage nodes connected by dashed connector lines
+- Each connector has an animated light traveling along the path using `<animateMotion>` with radial gradient fill, masked to follow the connector path — inspired by the animated-flow component's light-traveling-along-paths pattern
+- Stages are interactive: `onMouseEnter` and `onClick` on SVG groups update the active stage
+- Active stage node fills with brand color (`var(--color-brand)`) with text in `var(--color-brand-foreground)`, plus a pulsing glow rect around the active node
+- Inactive stage nodes use `var(--color-fd-card)` fill with `var(--color-fd-border)` stroke
+- Step numbers rendered above each node in muted monospace text
+- All theme colors use CSS variables (`var(--color-brand)`, `var(--color-fd-card)`, etc.) for light/dark mode compatibility
+
+### Interactive description panel
+- On desktop: pipeline SVG on left (`flex-1`), description panel on right (`lg:w-[280px]`)
+- On mobile: stacked vertically (`flex-col` default, `lg:flex-row` on desktop)
+- Description panel shows the active stage's numbered badge, label, and description text
+- Below the main description, a list of all 5 stages acts as both navigation and context — each item is a button with hover/click interactivity
+- Active stage in the list is highlighted with `bg-brand/10 text-brand`
+- Inactive stages use `text-fd-muted-foreground` with hover effects
+
+### Pipeline stage descriptions (verbatim from LANDING_CONTENT.md Section 4a)
+- Parse: "Discovers config files and extracts schema declarations."
+- Retrieve: "Fetches schemas from files, URLs, or inline definitions."
+- Process: "Normalizes, validates, resolves references, bundles."
+- Generate: "Delegates code generation to the target adapter."
+- Inject: "Writes generated validators and types to your project."
+
+### Caption
+- Renders below the pipeline: "The CLI does the heavy lifting. Adapters receive clean, self-contained schemas and only handle code generation."
+
+### CliAnimation integration
+- The component accepts `children` prop (ReactNode) for the CliAnimation slot
+- CliAnimation is rendered below the caption, within the Section 4a component
+- Removed CliAnimation from the "One pipeline to rule them all" heading section in index.tsx — that heading now stands alone without the terminal animation
+
+### SVG animation details
+- Pipeline SVG uses computed layout: 760px viewBox width, 5 nodes at 110px each with even spacing
+- Connector lines are dashed (`strokeDasharray="6 4"`) using `var(--color-fd-border)`
+- Light effects use `<animateMotion>` with spline easing (`calcMode="spline"`, `keySplines="0.42 0 0.58 1"`) for smooth motion
+- Each connector's light has a slightly different duration (1.8s to 3.0s with 0.3s increments) to create a staggered, organic feel
+- Lights are masked to the connector path using SVG `<mask>` elements, with a 14px stroke width on the mask to give the light a wider glow area
+- Radial gradient for lights uses brand color at 90% opacity fading to transparent
+- Pipeline container has `overflow-x-auto` with `min-w-[600px]` inner div for horizontal scrolling on narrow viewports
+- Container styled with `rounded-2xl border border-fd-border bg-fd-card/50` for subtle card appearance
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `PipelineAnimation` from `@/components/landing/pipeline-animation`
+- Replaced `<CliAnimation />` under the "One pipeline to rule them all" heading with just the heading (no animation)
+- Added `<PipelineAnimation><CliAnimation /></PipelineAnimation>` after `<BuiltFor />` and before `<ComponentCards />`
+- Section order is now: Hero → Description → "One pipeline to rule them all" heading → JungleProblem → XschemaApproach → ComplianceCallout → BuiltFor → PipelineAnimation (with CliAnimation) → ComponentCards → TryIt → OpenSourceFooter
+
+### Decisions
+- Used a pure SVG approach for the pipeline visualization rather than an HTML+CSS approach, since SVG provides precise control over path animations, masks, and gradients — matching the style of the existing animated-flow/animated-circuit components
+- Used `<animateMotion>` for light animation instead of CSS animations or Framer Motion, because it allows the light to follow an arbitrary SVG path definition directly, which is simpler and more performant for this use case
+- Did not use Framer Motion despite it being available in the project — the pipeline animation doesn't need spring physics or gesture handling, and native SVG animation is sufficient and keeps the component lightweight
+- Used computed layout constants (SVG_WIDTH, NODE_WIDTH, NODE_SPACING) rather than hardcoded coordinates, making the layout maintainable if stages are added/removed
+- The description panel includes both a detailed "active stage description" and a compact "stage list" below it — the list provides at-a-glance navigation and shows all stages even when one is selected, so users always have context of the full pipeline
+- Used `"use client"` directive since the component uses `useState` for interactivity
+- Accepted `children` as a prop for the CliAnimation slot rather than importing CliAnimation directly — this keeps PipelineAnimation decoupled from the specific terminal animation component and allows the parent to control what's rendered below the pipeline
+- Kept the animated lights staggered in duration (1.8s, 2.1s, 2.4s, 2.7s) rather than synchronized — this creates a more organic "data flowing through the pipeline" visual where different stages process at different rates
+- The pipeline container uses `bg-fd-card/50` (50% opacity) for a subtle background that doesn't compete with the animation visuals
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
