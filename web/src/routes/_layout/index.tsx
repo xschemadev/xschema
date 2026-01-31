@@ -13,6 +13,7 @@ import { XschemaApproach } from '@/components/landing/xschema-approach';
 import { ComplianceCallout } from '@/components/landing/compliance-callout';
 import { BuiltFor } from '@/components/landing/built-for';
 import { OpenSourceFooter } from '@/components/landing/open-source-footer';
+import { ComponentCards } from '@/components/landing/component-cards';
 import { MOTTO } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
@@ -99,6 +100,7 @@ function Page() {
         <XschemaApproach />
         <ComplianceCallout />
         <BuiltFor />
+        <ComponentCards />
         <OpenSourceFooter />
       </div>
     </main>

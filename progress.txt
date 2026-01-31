@@ -470,3 +470,34 @@ Consolidated `features-8.tsx`, `feature-cards.tsx`, and `grid-feature-cards.tsx`
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
 - Grep for old filenames (`features-8`, `feature-cards`, `grid-feature-cards`) in `web/src/`: zero matches
+
+## section-4b-component-cards — DONE
+
+### What was done
+Implemented Section 4b (component cards grid) using the refactored `FeatureGrid` component with 4 data-driven cards (CLI, Adapters, Client, Config), and integrated it into the page layout.
+
+### New file: web/src/components/landing/component-cards.tsx
+- Created `ComponentCards` named export component
+- Defines a `componentCards` data array of `FeatureGridItem[]` with 4 entries:
+  - **CLI**: Terminal icon, body about orchestrating the pipeline, detail `npx xschema generate`
+  - **Adapters**: Blocks icon, body about targeting validation libraries, detail `Zod · ArkType · Effect Schema · Valibot · Pydantic · and more`
+  - **Client**: Package icon, body about language-specific packages with type inference, detail `@xschemadev/client`
+  - **Config**: FileJson icon, body about declarative config files, detail `*.xschema.jsonc`
+- Passes the data array to `FeatureGrid` with `columns={2}` for a 2x2 desktop / single-column mobile layout
+- Wraps in `col-span-full` div to span the full grid width in the parent layout
+- All text content matches LANDING_CONTENT.md Section 4b verbatim
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `ComponentCards` from `@/components/landing/component-cards`
+- Added `<ComponentCards />` inside the grid layout, after `<BuiltFor />` and before `<OpenSourceFooter />`
+
+### Decisions
+- Used `lucide-react` icons (`Terminal`, `Blocks`, `Package`, `FileJson`) since lucide is already a project dependency — chose icons that semantically match each card's concept
+- Used Unicode middle dot (`\u00b7`) for the Adapters detail string separators, matching the LANDING_CONTENT.md format
+- Kept the component thin — it's a data wrapper around `FeatureGrid` with no additional styling or logic, since `FeatureGrid` already handles the hover effects, responsive grid, monospace detail badges, and card layout
+- Did not add a section heading above the cards — the PRD shows Section 4b as a sub-section of "Under the hood" (Section 4a), and the heading will be part of the Section 4a pipeline animation component. The cards sit directly below as a complementary grid.
+- Used `columns={2}` which gives `md:grid-cols-2` — 4 cards render in a 2x2 grid on desktop and stack to single column on mobile, matching the PRD requirement
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
