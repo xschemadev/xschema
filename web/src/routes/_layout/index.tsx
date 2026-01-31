@@ -12,6 +12,7 @@ import { JungleProblem } from '@/components/landing/jungle-problem';
 import { XschemaApproach } from '@/components/landing/xschema-approach';
 import { ComplianceCallout } from '@/components/landing/compliance-callout';
 import { BuiltFor } from '@/components/landing/built-for';
+import { OpenSourceFooter } from '@/components/landing/open-source-footer';
 import { MOTTO } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
@@ -98,6 +99,7 @@ function Page() {
         <XschemaApproach />
         <ComplianceCallout />
         <BuiltFor />
+        <OpenSourceFooter />
       </div>
     </main>
   );

@@ -329,3 +329,38 @@ Implemented Section 3 ("Built for") as two side-by-side audience cards (Applicat
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## section-6-open-source-footer — DONE
+
+### What was done
+Implemented Section 6 ("Open source. Open process.") as a minimal footer section with heading, body text, and two CTA buttons, and integrated it into the page layout.
+
+### New file: web/src/components/landing/open-source-footer.tsx
+- Created `OpenSourceFooter` named export component
+- Renders the heading "Open source. Open process." using `headingVariants({ variant: 'h2' })` with `text-brand font-mono font-bold uppercase` — matching the established heading pattern from "One pipeline to rule them all" and "Built for" headings
+- Renders the body text verbatim from LANDING_CONTENT.md Section 6: "xschema is open source. Contributions, adapter proposals, and bug reports are greatly appreciated."
+- Renders two CTA buttons:
+  - "Read the docs" — primary variant, links to `/docs` via `<Link>` (TanStack Router)
+  - "GitHub" — secondary variant, links to `XSCHEMA_GITHUB_URL` from `@/lib/constants` via `<a>` with `target="_blank"`
+- Uses `col-span-full` to span the full grid width
+- Uses `mt-16` for top margin separation from the previous section
+- Centered layout with `flex flex-col items-center text-center`
+- Body text constrained to `max-w-xl` for readability
+- Imports `buttonVariants` and `headingVariants` from the shared `@/components/landing/variants`
+- Imports `XSCHEMA_GITHUB_URL` from `@/lib/constants`
+- Imports `cn` from `@/lib/cn`
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `OpenSourceFooter` from `@/components/landing/open-source-footer`
+- Added `<OpenSourceFooter />` inside the grid layout, after `<BuiltFor />`
+
+### Decisions
+- Used `<Link>` (TanStack Router) for the internal "/docs" link and `<a>` for the external GitHub link, matching the pattern used in the Hero CTA buttons
+- Applied `mt-16` (within the PRD's specified mt-16 to mt-24 range) — chose the lower end since the grid already has `gap-10` providing some spacing
+- Used `text-fd-muted-foreground` for the body text to match the muted paragraph style used in other sections (compliance-callout, jungle-problem)
+- Kept the section extremely minimal as directed by the PRD — no decorative elements, no card wrapper, no borders. Just centered heading, paragraph, and buttons.
+- Used the same `max-sm:text-sm` responsive text size on buttons as the Hero CTAs for consistency
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
