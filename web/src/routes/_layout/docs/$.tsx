@@ -19,7 +19,7 @@ import { useFumadocsLoader } from "fumadocs-core/source/client";
 import { LLMCopyButton, ViewOptions } from "@/components/page-actions";
 import { XSCHEMA_GITHUB_URL } from "@/lib/constants";
 
-export const Route = createFileRoute("/docs/$")({
+export const Route = createFileRoute("/_layout/docs/$")({
   component: Page,
   loader: async ({ params }) => {
     const slugs = params._splat?.split("/") ?? [];
