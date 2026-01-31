@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from 'fumadocs-mdx/vite';
+import { nitro } from 'nitro/vite';
 
 export default defineConfig({
   server: {
@@ -20,10 +21,12 @@ export default defineConfig({
     }),
     tanstackStart({
       srcDirectory: 'src',
+      // TODO: re-enable once fixed https://github.com/TanStack/router/issues/6562
       prerender: {
-        enabled: true,
+        enabled: false,
       },
     }),
+    nitro({ preset: 'vercel' }),
     react(),
   ],
 });
