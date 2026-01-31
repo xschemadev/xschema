@@ -106,7 +106,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This component will be used in Section 4b (component cards: CLI, Adapters, Client, Config). The features-8.tsx has a nice hover effect (gradient overlay + expanding left border + text slide) worth preserving. The feature-cards.tsx is a simpler Aceternity variant. Pick the better base and make it data-driven. grid-feature-cards.tsx is the only truly dead component — it has no mapping to any landing section and uses hardcoded SVG charts."
     },
     {

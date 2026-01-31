@@ -430,3 +430,43 @@ Refactored three animated SVG component files: renamed, cleaned up hardcoded val
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
 - Grep for old filenames (`cpu-architecture`, `database-with-rest-api`, `google-gemini-effect`) and old component names (`CpuArchitecture`, `DatabaseWithRestApi`, `GoogleGeminiEffect`): zero matches in `web/src/`
+
+## refactor-feature-card-components — DONE
+
+### What was done
+Consolidated `features-8.tsx`, `feature-cards.tsx`, and `grid-feature-cards.tsx` from `web/src/components/blocks/` into a single reusable data-driven `feature-grid.tsx` component, then deleted the three original files.
+
+### New file: web/src/components/blocks/feature-grid.tsx
+- Named export `FeatureGrid` component
+- Exported `FeatureGridItem` interface: `{ title: string, description: string, icon: ReactNode, detail?: string }`
+- Exported `FeatureGridProps` interface: `{ items: FeatureGridItem[], columns?: 2 | 3 | 4, className?: string }`
+- Renders a responsive CSS grid with configurable columns (2, 3, or 4) — defaults to 2
+- Column responsiveness: single column on mobile, `md:grid-cols-2` at medium, and `lg:grid-cols-3` or `lg:grid-cols-4` for 3/4 columns
+- Hover effect preserved from `feature-cards.tsx`: gradient overlay (top-to-bottom for top row, bottom-to-top for bottom row) + expanding left border bar + text horizontal slide on hover
+- Hover colors adapted to xschema earthy palette: uses `bg-fd-card` for gradient target (not `neutral-100`/`neutral-800`), `bg-brand` for the expanding left border (not `blue-500`), `border-fd-border` for card borders
+- Optional `detail` field per item renders a monospace-styled badge at the card bottom (`font-mono text-xs` with `border-fd-border bg-fd-background` styling), anchored to the bottom via `mt-auto`
+- Icon area uses `text-fd-muted-foreground`
+- Title uses `text-fd-foreground`
+- Description uses `text-fd-muted-foreground`
+- Internal `FeatureGridCard` function handles per-card rendering logic (not exported — specific to this grid layout)
+- Imports `cn` from `@/lib/cn`
+- Uses only `ReactNode` from react (type import)
+
+### Deleted files
+- `web/src/components/blocks/features-8.tsx` — 6-column grid with large hardcoded SVG charts (fingerprint, area chart, avatar grid), Shield/Users icons, hardcoded placeholder text ("Customizable", "Secure by default", "Faster than light", "Keep your loved ones safe")
+- `web/src/components/blocks/feature-cards.tsx` — 4-column grid with Aceternity-style hover effect, used `@tabler/icons-react` with 8 hardcoded placeholder features ("Built for developers", "Pricing like no other", etc.), `neutral-*` color scheme
+- `web/src/components/blocks/grid-feature-cards.tsx` — Individual card with SVG grid pattern background, `@tabler/icons-react`, `genRandomPattern()` random grid effect, no grid layout (just a single card component)
+
+### Decisions
+- **Chose `feature-cards.tsx` as the base** for the hover effect pattern (gradient overlay + expanding left border + text translate). The `features-8.tsx` was a static layout with large inline SVGs and no hover interactivity. The `grid-feature-cards.tsx` had a subtle grid pattern but was an individual card, not a grid.
+- **Replaced all neutral-* hardcoded colors** with fumadocs theme tokens: `bg-fd-card` for gradient, `border-fd-border` for borders, `bg-brand` for the hover accent bar (was `bg-blue-500`), `text-fd-foreground`/`text-fd-muted-foreground` for text (were `text-neutral-800`/`text-neutral-600` etc.)
+- **Added `detail` field** to the data shape as required by the PRD for Section 4b — each component card needs a monospace detail line at the bottom (e.g., `npx xschema generate`). The detail renders as a pill/badge with `font-mono text-xs` styling, visually anchored to the card bottom.
+- **Used `mt-auto` on the detail area** so it sticks to the bottom of the card regardless of content height, ensuring alignment across cards with different description lengths.
+- **Deleted all three original files** rather than keeping any. The PRD specified deleting `grid-feature-cards.tsx` explicitly and consolidating the other two. Since `feature-cards.tsx` was fully absorbed into `feature-grid.tsx`, there was no reason to keep it.
+- **No external icon library dependency**: Changed from `@tabler/icons-react` to `ReactNode` for the icon prop, allowing consumers to pass any icon component (lucide-react, custom SVGs, etc.).
+- **PRD filename confusion note**: The PRD describes `features-8.tsx` as having "a nice hover effect (gradient overlay + expanding left border + text slide)" but that hover effect was actually in `feature-cards.tsx`. The `features-8.tsx` was the static 6-col SVG grid. This didn't affect the outcome — the hover effect was preserved from `feature-cards.tsx` as intended.
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+- Grep for old filenames (`features-8`, `feature-cards`, `grid-feature-cards`) in `web/src/`: zero matches
