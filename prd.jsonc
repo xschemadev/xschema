@@ -1,0 +1,312 @@
+{
+  "description": "Implement the xschema landing page per LANDING_CONTENT.md. Replace all Fumadocs placeholder sections with xschema-specific content. The hero and CliAnimation are already done. All text content comes from web/LANDING_CONTENT.md — do not invent copy. The visual style should match the existing earthy/warm theme (brand amber/yellow, olive accents, cream/dark backgrounds). Use existing cva variants (cardVariants, headingVariants, buttonVariants) defined in the landing page and extend them as needed. All new section components should be extracted into separate files under src/components/landing/. Reuse and adapt existing block/ui components (comparison-table, cpu-architecture, database-with-rest-api, google-gemini-effect, features-8, feature-cards) by renaming, restructuring, and repurposing them for their target landing sections — do not delete them. Make them data-driven so content (text, icons, items) can be easily swapped via props or arrays. The final page must pass `bun run build` and `bun run types:check` from the web/ directory.",
+  "items": [
+    {
+      "id": "cleanup-fumadocs-sections",
+      "category": "cleanup",
+      "description": "Remove all Fumadocs placeholder sections and unused components from the landing page index.tsx",
+      "steps": [
+        "Open the landing page at web/src/routes/_layout/index.tsx",
+        "Verify the Feedback function (testimonial marquee with shadcn/Anthony Shew/Aiden Bai/David Blass) is removed",
+        "Verify the Aesthetics function (PreviewImages + Fumadocs customization text) is removed",
+        "Verify the ForEngineers function (Framework Agnostic, composable framework, content adoption, search, shadcn/ui cards) is removed",
+        "Verify the OpenSource function (Fumadocs-branded 'A Framework of Dream' section) is removed",
+        "Verify the Search function is removed",
+        "Verify the feedback array is removed",
+        "Verify the searchItemVariants cva is removed",
+        "Verify the commented-out AnybodyCanWrite section and CodeBlock references are removed",
+        "Verify the Page component no longer renders <Feedback />, <Aesthetics />, <ForEngineers />, or <OpenSource />",
+        "Verify unused imports are removed from index.tsx (Heart, SearchIcon, FileIcon, FileTextIcon, BatteryChargingIcon, TimerIcon, Marquee, PreviewImages, Writing, AgnosticBackground, ContentAdoptionBackground, ShadcnImage)",
+        "Run bun run build from web/ directory and verify it succeeds",
+        "Run bun run types:check from web/ directory and verify it succeeds"
+      ],
+      "passes": true,
+      "notes": "This is the first step — create a clean slate. After this, the landing page should only have: Hero, description paragraph, 'One pipeline to rule them all' heading, and CliAnimation. Only index.tsx is modified here — do not touch other component files yet."
+    },
+    {
+      "id": "cleanup-landing-client-and-images",
+      "category": "cleanup",
+      "description": "Clean up page.client.tsx by removing Fumadocs-specific functions and delete unused Fumadocs image assets",
+      "steps": [
+        "Verify web/src/components/landing/page.client.tsx has PreviewImages function removed",
+        "Verify web/src/components/landing/page.client.tsx has Writing function removed",
+        "Verify related imports are removed: MainImg, OpenAPIImg, NotebookImg, HeroImage, previewButtonVariants, WritingTabs, ArrowRight, Fragment (if no longer used), cva (if no longer used)",
+        "Verify Hero, CliAnimation, AgnosticBackground, ContentAdoptionBackground, useIsVisible, NotificationWindow are kept",
+        "Verify web/src/components/landing/main.png is deleted",
+        "Verify web/src/components/landing/notebook.png is deleted",
+        "Verify web/src/components/landing/openapi.png is deleted",
+        "Verify web/src/components/landing/shadcn.png is deleted",
+        "Verify web/src/components/landing/hero-preview.jpeg is deleted",
+        "Verify web/src/components/landing/icons.tsx is cleaned: remove NextSVG, VercelLogo, NetlifyLogo. Keep OpenAPIIcon only if referenced elsewhere in the codebase, otherwise delete the entire file",
+        "Verify no broken imports exist after cleanup",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "Only cleaning dead code and unused assets. The marquee.tsx component should be kept. AgnosticBackground and ContentAdoptionBackground use WebGL shaders and should be kept for potential future use."
+    },
+    {
+      "id": "refactor-comparison-table",
+      "category": "refactor",
+      "description": "Refactor comparison-table.tsx from a generic pricing table into a reusable 2-column comparison grid component, renamed and data-driven",
+      "steps": [
+        "Verify web/src/components/ui/comparison-table.tsx is renamed to web/src/components/ui/comparison-grid.tsx (or similar)",
+        "Verify the component is rewritten from the 3-tier pricing layout into a 2-column comparison grid",
+        "Verify the component accepts props or a data array defining: rows (label + value per column), column headers, and optional icons per row/cell (check/cross)",
+        "Verify the component uses named exports (not the current 'Pricing' alias)",
+        "Verify the component imports cn from @/lib/cn instead of @/lib/utils",
+        "Verify the component uses the xschema theme (cardVariants or fd-card/fd-border colors) instead of generic Tailwind classes",
+        "Verify the first column (xschema) is visually highlighted with branded color/background",
+        "Verify the second column (one-off converters) is visually muted",
+        "Verify no hardcoded content remains — all text is passed via props or data arrays",
+        "Verify the grid is responsive: readable on mobile (stacked or horizontally scrollable)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This component will be used in Section 2b. The current comparison-table.tsx is a 3-column pricing table with SSO/AI/Members rows — completely rewrite the structure but keep it in the same location (ui/ directory). Make the data shape something like: { label: string, values: [string, string], icons?: [ReactNode, ReactNode] }[]."
+    },
+    {
+      "id": "refactor-animated-svg-components",
+      "category": "refactor",
+      "description": "Refactor cpu-architecture.tsx, database-with-rest-api.tsx, and google-gemini-effect.tsx: rename, clean up hardcoded values, use theme colors, make configurable",
+      "steps": [
+        "Verify web/src/components/ui/cpu-architecture.tsx is renamed to a descriptive name (e.g., animated-circuit.tsx or similar)",
+        "Verify web/src/components/ui/database-with-rest-api.tsx is renamed to a descriptive name (e.g., animated-flow.tsx or similar)",
+        "Verify web/src/components/ui/google-gemini-effect.tsx is renamed to a descriptive name (e.g., animated-paths.tsx or similar)",
+        "Verify all three components import cn from @/lib/cn instead of @/lib/utils",
+        "Verify database-with-rest-api's hardcoded dark colors (#18181B, #101112, #141516) are replaced with theme-aware CSS variables or Tailwind classes where feasible",
+        "Verify cpu-architecture's hardcoded #181818 fill uses theme-aware values",
+        "Verify google-gemini-effect's hardcoded Aceternity branding (button text 'ui.aceternity.com', default title 'Build with Aceternity UI') is removed, replaced with configurable props",
+        "Verify all three use named exports (no default exports), matching the codebase convention",
+        "Verify SVG id attributes use unique prefixes or accept a prefix prop to avoid DOM collisions when multiple instances render",
+        "Verify the database-with-rest-api component's badge/button/circle texts and light colors remain configurable via props (already partially done — ensure consistency)",
+        "Verify all imports referencing old filenames are updated throughout the codebase",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "These three components are references/building blocks for the pipeline animation (Section 4a). The database-with-rest-api is the primary style reference — its SVG path animation with light-traveling-along-paths effect should be preserved and made more configurable. The cpu-architecture and google-gemini-effect may be used as-is, combined, or adapted — the implementer can choose the best approach in the pipeline animation item."
+    },
+    {
+      "id": "refactor-feature-card-components",
+      "category": "refactor",
+      "description": "Refactor features-8.tsx and feature-cards.tsx into a single reusable data-driven card grid component for Section 4b",
+      "steps": [
+        "Verify the blocks/ directory components are consolidated: either merge features-8.tsx and feature-cards.tsx into one component, or keep the better-structured one and delete the other",
+        "Verify the surviving component is renamed to something descriptive (e.g., feature-grid.tsx or icon-card-grid.tsx)",
+        "Verify the component accepts a data array prop defining: title, description, icon (ReactNode), and optional detail (string) per card",
+        "Verify the component supports configurable grid columns (e.g., 2x2 or 4-col via prop or responsive defaults)",
+        "Verify all hardcoded placeholder content is removed — no 'Built for developers', 'Pricing like no other', etc.",
+        "Verify the component uses the xschema theme: cardVariants or fd-card styling, brand colors for hover effects (not neutral-100/neutral-800)",
+        "Verify the hover effect is adapted to the earthy palette (brand accent instead of blue-500)",
+        "Verify the component imports cn from @/lib/cn",
+        "Verify the component uses named exports",
+        "Verify web/src/components/blocks/grid-feature-cards.tsx is deleted (6-col SVG grid — not mapped to any section, purely generic demo content)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This component will be used in Section 4b (component cards: CLI, Adapters, Client, Config). The features-8.tsx has a nice hover effect (gradient overlay + expanding left border + text slide) worth preserving. The feature-cards.tsx is a simpler Aceternity variant. Pick the better base and make it data-driven. grid-feature-cards.tsx is the only truly dead component — it has no mapping to any landing section and uses hardcoded SVG charts."
+    },
+    {
+      "id": "extract-landing-variants",
+      "category": "refactor",
+      "description": "Extract the inline cva variants (cardVariants, headingVariants, buttonVariants) from index.tsx into a shared landing utilities file",
+      "steps": [
+        "Verify a new file exists at web/src/components/landing/variants.ts (or similar)",
+        "Verify cardVariants, headingVariants, and the landing-specific buttonVariants are exported from this file",
+        "Verify web/src/routes/_layout/index.tsx imports these variants from the new file instead of defining them inline",
+        "Verify the variants behave identically (same classes, same defaults)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "The landing-specific buttonVariants (rounded-full with primary/secondary) is different from the ui/button.tsx buttonVariants. Keep both — the landing one is only for the landing page sections. This extraction allows all new landing section components to share the same variant definitions."
+    },
+    {
+      "id": "section-2a-jungle-problem",
+      "category": "functional",
+      "description": "Implement Section 2a: 'The jungle problem' — problem statement explaining the current fragmented converter landscape",
+      "steps": [
+        "Verify a new component file exists at web/src/components/landing/jungle-problem.tsx (or similar)",
+        "Verify the section renders the title 'The jungle problem.' using the headingVariants h3 style",
+        "Verify the subheading 'Today, every library has its own converter.' is rendered",
+        "Verify the body paragraph about Zod/Pydantic/ArkType converters is rendered",
+        "Verify the four bullet points are rendered: 'No shared pipeline', 'No correctness guarantees', 'No transparency', 'No portability' — each with bold label and description, matching the text from LANDING_CONTENT.md Section 2a exactly",
+        "Verify the section is rendered in the Page component after the 'One pipeline to rule them all' heading",
+        "Verify the section uses cardVariants for its container styling",
+        "Verify the section is visible and readable on both desktop and mobile viewports",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "All text content must come verbatim from web/LANDING_CONTENT.md Section 2a. The section sits within the same grid layout as other landing sections."
+    },
+    {
+      "id": "section-2b-comparison-grid",
+      "category": "functional",
+      "description": "Implement Section 2b: 'The xschema approach' — use the refactored comparison-grid component with xschema vs one-off converters data",
+      "steps": [
+        "Verify a new component file exists at web/src/components/landing/xschema-approach.tsx (or similar) that wraps the refactored comparison-grid",
+        "Verify the section renders the title 'The xschema approach.' and subheading 'One pipeline. Any adapter. Verified.'",
+        "Verify the body paragraph about xschema's unified pipeline is rendered",
+        "Verify the refactored comparison-grid component is used with the 6 rows from LANDING_CONTENT.md: Shared pipeline, Compliance testing, Supported features, Unsupported features, Validators, Languages",
+        "Verify each row shows the xschema value (highlighted) and the one-off converters value (muted)",
+        "Verify check/cross icons or similar visual indicators convey the difference per row",
+        "Verify the grid is inside a card (using cardVariants)",
+        "Verify the section is rendered in the Page component after Section 2a",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "All text content from LANDING_CONTENT.md Section 2b. This section uses the comparison-grid component refactored in the earlier item."
+    },
+    {
+      "id": "section-2c-compliance-callout",
+      "category": "functional",
+      "description": "Implement Section 2c: 'Built for transparency' — a visually distinct callout/banner about compliance testing",
+      "steps": [
+        "Verify a compliance callout is rendered (can be inline in the xschema-approach component or a separate component)",
+        "Verify the title 'Built for transparency.' is rendered",
+        "Verify the body text about the compliance report is rendered, matching LANDING_CONTENT.md Section 2c exactly",
+        "Verify the callout has a distinct visual treatment: different background, border, or banner-style layout that separates it from regular content",
+        "Verify it sits after the comparison grid (Section 2b) and before the 'Built for' section",
+        "Verify it spans the full width of the content grid (col-span-full)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This should feel like an important callout — not just another paragraph. Use a branded background, border-left accent, or similar visual emphasis."
+    },
+    {
+      "id": "section-3-built-for",
+      "category": "functional",
+      "description": "Implement Section 3: 'Built for' — two audience cards (Application Developers + Library Maintainers) with Framework Mode and Runtime Mode details",
+      "steps": [
+        "Verify a new component file exists at web/src/components/landing/built-for.tsx (or similar)",
+        "Verify the section heading 'Built for.' is rendered using the headingVariants h2 style with text-brand",
+        "Verify Card 1 'Developers shipping real projects.' renders: title, body paragraphs about JSON Schema sources, key point 'No manual translation. No drift between schema and validator.', and Framework Mode details (heading, 'Build-time' badge, body, 4 bullet points)",
+        "Verify Card 2 'Library maintainers who need codegen.' renders: title, body paragraphs about maintaining libraries, key point 'Offload the conversion. Focus on your domain.', and Runtime Mode details (heading, 'Programmatic' badge, body, 3 bullet points)",
+        "Verify the key point at the bottom of each card is visually separated (border-top, different background shade, or bolder text)",
+        "Verify Framework Mode and Runtime Mode subsections have their respective badges ('Build-time' and 'Programmatic')",
+        "Verify on desktop the two cards are rendered side-by-side in the grid",
+        "Verify on mobile the layout is clean and usable (either stacked cards or a tabbed interface to switch between the two audiences)",
+        "Verify all text content matches LANDING_CONTENT.md Section 3 exactly",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "The LANDING_CONTENT.md suggests selectable tabs on mobile. The implementer should choose whichever approach (stacked or tabbed) is cleaner and more understandable. Both cards are equal-width on desktop."
+    },
+    {
+      "id": "section-4a-pipeline-animation",
+      "category": "functional",
+      "description": "Implement Section 4a: 'Under the hood' — animated pipeline visualization (Parse → Retrieve → Process → Generate → Inject) with interactive stage descriptions, built using the refactored animated SVG components as style reference",
+      "steps": [
+        "Verify the section heading 'Under the hood.' is rendered using headingVariants h2 with text-brand",
+        "Verify a new component file exists for the pipeline animation (e.g., web/src/components/landing/pipeline-animation.tsx)",
+        "Verify the pipeline shows 5 connected stages: Parse, Retrieve, Process, Generate, Inject",
+        "Verify the stages are connected with animated SVG paths in the style of the refactored animated-flow component (database-with-rest-api pattern: SVG paths with light-traveling-along-paths using mask + radialGradient + CSS animation)",
+        "Verify each stage is a labeled node/box in the SVG",
+        "Verify the pipeline is interactive: hovering or clicking a stage shows its description on the right side (or below on mobile)",
+        "Verify all 5 stage descriptions match LANDING_CONTENT.md Section 4a table exactly: Parse='Discovers config files and extracts schema declarations.', Retrieve='Fetches schemas from files, URLs, or inline definitions.', Process='Normalizes, validates, resolves references, bundles.', Generate='Delegates code generation to the target adapter.', Inject='Writes generated validators and types to your project.'",
+        "Verify the caption 'The CLI does the heavy lifting. Adapters receive clean, self-contained schemas and only handle code generation.' is rendered below the animation",
+        "Verify on desktop the layout is: animation on left, description on right",
+        "Verify on mobile the layout stacks vertically (animation on top, description below)",
+        "Verify the CliAnimation component is moved from its current position (under the 'One pipeline to rule them all' heading) to this section, rendered alongside or below the pipeline visual",
+        "Verify the animation uses brand-compatible colors from the theme (not hardcoded colors that clash with the earthy palette)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This is the most visually complex section. Use the refactored animated-flow (database-with-rest-api), animated-circuit (cpu-architecture), and/or animated-paths (google-gemini-effect) as building blocks or style references. The pipeline can be built by adapting one of these or combining patterns. The pipeline flows left-to-right on desktop. Keep the visual clean — don't overanimate. The CliAnimation terminal should be below the pipeline visual as a concrete demonstration of the pipeline running."
+    },
+    {
+      "id": "section-4b-component-cards",
+      "category": "functional",
+      "description": "Implement Section 4b: component cards grid (CLI, Adapters, Client, Config) using the refactored feature-grid component",
+      "steps": [
+        "Verify the refactored feature-grid component (from the refactor-feature-card-components item) is used",
+        "Verify the grid renders 4 cards in a 2x2 (desktop) or single-column (mobile) layout",
+        "Verify Card 1 (CLI) has: title 'CLI', body about orchestrating the pipeline, monospace detail 'npx xschema generate'",
+        "Verify Card 2 (Adapters) has: title 'Adapters', body about targeting validation libraries, monospace detail 'Zod · ArkType · Effect Schema · Valibot · Pydantic · and more'",
+        "Verify Card 3 (Client) has: title 'Client', body about language-specific packages with type inference, monospace detail '@xschemadev/client'",
+        "Verify Card 4 (Config) has: title 'Config', body about declarative config files, monospace detail '*.xschema.jsonc'",
+        "Verify the monospace detail line at the bottom of each card is visually anchored (font-mono, smaller size, muted or bordered, at the card bottom)",
+        "Verify all text matches LANDING_CONTENT.md Section 4b exactly",
+        "Verify the cards have a subtle hover effect for interactivity feedback",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This uses the feature-grid component refactored from features-8.tsx / feature-cards.tsx. Pass the 4 component cards as data. The monospace detail line is a new addition to the card template — ensure the refactored component supports a 'detail' field."
+    },
+    {
+      "id": "section-5-try-it-placeholder",
+      "category": "functional",
+      "description": "Implement Section 5: 'Try it' — placeholder section for future StackBlitz embed",
+      "steps": [
+        "Verify a placeholder section is rendered with heading 'Try it.' using headingVariants h2 with text-brand",
+        "Verify the subheading 'Write a schema. Pick an adapter. See the output.' is rendered",
+        "Verify a placeholder visual is shown (e.g., a card with a muted message like 'StackBlitz embed coming soon' or a static preview of the JSON schema from LANDING_CONTENT.md Section 5)",
+        "Verify the CTAs are rendered: 'Read the docs' linking to /docs, 'View on GitHub' linking to the repo URL from constants.ts",
+        "Verify the Hero secondary CTA still says 'Open in StackBlitz' but links to a placeholder or the xschema GitHub repo for now",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This section is intentionally minimal — just the heading, subheading, a placeholder area, and CTAs. The StackBlitz embed will be implemented in a future sprint. Use the pre-filled JSON schema example from LANDING_CONTENT.md as a static code block if a visual is needed."
+    },
+    {
+      "id": "section-6-open-source-footer",
+      "category": "functional",
+      "description": "Implement Section 6: 'Open source. Open process.' — minimal footer section with one line of text and two CTA buttons",
+      "steps": [
+        "Verify a section is rendered with heading 'Open source. Open process.'",
+        "Verify the body text 'xschema is open source. Contributions, adapter proposals, and bug reports are greatly appreciated.' is rendered",
+        "Verify two CTA buttons are rendered: 'Read the docs' linking to /docs, 'GitHub' linking to the repo URL (XSCHEMA_GITHUB_URL from constants.ts)",
+        "Verify the section is minimal — no contributor grids, star counters, or excessive decoration",
+        "Verify one button uses the primary variant and the other uses secondary variant",
+        "Verify the section has appropriate top margin (mt-16 to mt-24) separating it from the previous section",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This is the last section before the default fumadocs footer. Keep it extremely minimal. One heading, one line, two buttons."
+    },
+    {
+      "id": "page-assembly-and-layout",
+      "category": "integration",
+      "description": "Assemble all sections into the final Page component with correct ordering, spacing, and responsive layout",
+      "steps": [
+        "Verify the Page component in index.tsx renders sections in this exact order: Hero → Description paragraph → 'One pipeline to rule them all' heading (without CliAnimation) → Section 2a (Jungle Problem) → Section 2b (Comparison Grid) → Section 2c (Compliance Callout) → Section 3 (Built For) → Section 4 heading ('Under the hood') + Section 4a (Pipeline Animation with CliAnimation) → Section 4b (Component Cards) → Section 5 (Try It placeholder) → Section 6 (Open Source footer)",
+        "Verify all section headings follow the same visual pattern: text-brand, font-mono, font-bold, uppercase, centered, small-ish size — matching the existing 'One pipeline to rule them all.' style",
+        "Verify generous vertical spacing exists between major sections (mt-16 to mt-24)",
+        "Verify the content stays within the max-w-[1400px] container with consistent horizontal padding",
+        "Verify the page renders correctly on desktop (1440px+), tablet (768px), and mobile (375px) viewports",
+        "Verify there are no layout jumps, overflow issues, or broken responsive behaviors",
+        "Verify no unused imports remain in any file",
+        "Verify the 'One pipeline to rule them all' heading remains but CliAnimation is no longer directly under it (it's moved to Section 4a)",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "This is the final integration step. All individual sections should already be implemented and passing. This item verifies they compose correctly in the right order with proper spacing and responsiveness. The grid should use the existing pattern: grid grid-cols-1 lg:grid-cols-2 with sections spanning col-span-full as needed."
+    },
+    {
+      "id": "cn-import-consistency",
+      "category": "cleanup",
+      "description": "Ensure all component files import cn from @/lib/cn consistently, not from @/lib/utils",
+      "steps": [
+        "Search all files in web/src/ that import cn from @/lib/utils",
+        "Update them to import from @/lib/cn instead",
+        "Verify web/src/lib/utils.ts can be deleted if nothing else imports from it, or kept if other exports are used",
+        "Run bun run build from web/ and verify success",
+        "Run bun run types:check from web/ and verify success"
+      ],
+      "passes": false,
+      "notes": "The codebase has two cn implementations: lib/cn.ts (re-export of twMerge) and lib/utils.ts (clsx + twMerge). Standardize on @/lib/cn. If components need clsx behavior, update lib/cn.ts to use the clsx+twMerge pattern from utils.ts."
+    }
+  ]
+}
