@@ -63,7 +63,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This component will be used in Section 2b. The current comparison-table.tsx is a 3-column pricing table with SSO/AI/Members rows — completely rewrite the structure but keep it in the same location (ui/ directory). Make the data shape something like: { label: string, values: [string, string], icons?: [ReactNode, ReactNode] }[]."
     },
     {

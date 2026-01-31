@@ -164,3 +164,39 @@ Implemented Section 2a ("The jungle problem") as a new landing page component an
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## refactor-comparison-table — DONE
+
+### What was done
+Refactored `web/src/components/ui/comparison-table.tsx` (a 3-tier pricing table) into `web/src/components/ui/comparison-grid.tsx` — a reusable, data-driven 2-column comparison grid component.
+
+### Deleted file: web/src/components/ui/comparison-table.tsx
+- Contained `ComparisonTable` function exported as `Pricing`
+- Was a hardcoded 3-column pricing layout (Startup/Growth/Enterprise) with SSO/AI/Members rows
+- Had no imports from any other file in the codebase (confirmed via grep)
+
+### New file: web/src/components/ui/comparison-grid.tsx
+- Named export `ComparisonGrid` component (no default export, no alias)
+- Exported `ComparisonRow` interface: `{ label: string, values: [string, string], icons?: [ReactNode, ReactNode] }`
+- Exported `ComparisonGridProps` interface: `{ columnHeaders: [string, string], rows: ComparisonRow[], className?: string }`
+- Renders an HTML `<table>` with 3 columns: row label, first value (highlighted), second value (muted)
+- First column header uses `text-brand` + `font-semibold` for branded visual emphasis
+- Second column header uses `text-fd-muted-foreground` + `font-medium` for muted treatment
+- Row values in the first column use `text-fd-foreground` (highlighted); second column uses `text-fd-muted-foreground` (muted)
+- Borders use `border-fd-border` and `border-fd-border/50` for theme consistency
+- Optional `icons` prop per row allows ReactNode icons (check/cross) per cell
+- `className` prop allows consumers to add wrapper classes
+- Responsive: `overflow-x-auto` wrapper enables horizontal scrolling on narrow viewports
+- Imports `cn` from `@/lib/cn`
+
+### Decisions
+- Used an HTML `<table>` instead of CSS grid for semantic correctness — this is tabular comparison data
+- Chose `overflow-x-auto` for mobile responsiveness over stacking, since side-by-side comparison loses meaning when stacked
+- Made the label column `w-[30%]` to give more space to the value columns
+- Used a tuple `[string, string]` for `values` and `icons` rather than an object with named keys, since the component is specifically a 2-column comparison (the PRD explicitly specifies 2-column)
+- Did not use `cardVariants` inside the component itself — the consumer (Section 2b wrapper) will handle card styling, keeping the grid component focused on its table responsibility
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+- No remaining references to the old `comparison-table.tsx` in the codebase
