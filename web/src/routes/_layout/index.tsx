@@ -8,6 +8,7 @@ import {
   CliAnimation,
 } from '@/components/landing/page.client';
 import { buttonVariants } from '@/components/landing/variants';
+import { JungleProblem } from '@/components/landing/jungle-problem';
 import { MOTTO } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
@@ -90,6 +91,7 @@ function Page() {
           </h2>
           <CliAnimation />
         </div>
+        <JungleProblem />
       </div>
     </main>
   );

@@ -131,3 +131,36 @@ Standardized all `cn` utility imports across the web codebase to use `@/lib/cn` 
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
 - Grep for `@/lib/utils` in `web/src/`: zero matches
+
+## section-2a-jungle-problem — DONE
+
+### What was done
+Implemented Section 2a ("The jungle problem") as a new landing page component and integrated it into the page layout.
+
+### New file: web/src/components/landing/jungle-problem.tsx
+- Created `JungleProblem` named export component
+- Renders the title "The jungle problem." using `headingVariants({ variant: 'h3' })` with `text-brand`
+- Renders the subheading "Today, every library has its own converter." as muted text
+- Renders two body paragraphs about Zod/Pydantic/ArkType converters (verbatim from LANDING_CONTENT.md Section 2a)
+- Renders 4 bullet points as a data-driven list from a `problems` array: "No shared pipeline", "No correctness guarantees", "No transparency", "No portability" — each with bold label, em dash, and description
+- Each bullet uses a small brand-colored circle indicator instead of default list markers
+- Uses `cardVariants()` (default variant) for the section container styling
+- Uses `col-span-full` to span the full grid width
+- Imports `headingVariants` and `cardVariants` from the shared `@/components/landing/variants`
+- Imports `cn` from `@/lib/cn`
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `JungleProblem` from `@/components/landing/jungle-problem`
+- Added `<JungleProblem />` inside the grid layout, after the "One pipeline to rule them all" heading and CliAnimation
+
+### Decisions
+- Used `headingVariants({ variant: 'h3' })` as specified in the PRD acceptance criteria for the title
+- Made the bullet points data-driven via a `problems` array for maintainability
+- Used `&apos;` HTML entities for apostrophes in JSX text to avoid linting issues
+- Used `text-fd-muted-foreground` for the subheading to match the fumadocs theme system
+- Kept the component simple with no interactive elements — it's a static content section
+- Used `col-span-full` so the section spans both columns in the lg:grid-cols-2 layout
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
