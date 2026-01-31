@@ -30,3 +30,43 @@ Removed all Fumadocs placeholder sections and unused components from `web/src/ro
 ### Verification
 - `vite build` (the actual compilation step): PASSES
 - `bun run types:check`: PASSES
+
+## cleanup-landing-client-and-images — DONE
+
+### What was done
+Cleaned up `web/src/components/landing/page.client.tsx` by removing Fumadocs-specific dead code, deleted all unused Fumadocs image assets, and deleted the entirely unused `icons.tsx` file.
+
+### Changes to page.client.tsx
+- Removed `PreviewImages` export function (Fumadocs docs/notebook/openapi image carousel)
+- Removed `previewButtonVariants` cva definition (used only by PreviewImages)
+- Removed `Writing` export function (Fumadocs "Anybody can write" tabbed section)
+- Removed `WritingTabs` constant array (used only by Writing)
+- Removed unused imports: `ArrowRight` (lucide), `MainImg`, `OpenAPIImg`, `NotebookImg`, `HeroImage` (image assets), `cva` (class-variance-authority), `ReactNode` (react type)
+- Kept `Fragment` import (still used by CliAnimation)
+- Kept `ComponentProps` import (still used by ContentAdoptionBackground)
+
+### Retained components in page.client.tsx
+- `Hero` — shader-based hero background with gorilla SVG
+- `CliAnimation` — terminal animation showing `bun xschema generate`
+- `NotificationWindow` — internal helper for CliAnimation
+- `AgnosticBackground` — WebGL shader background (for future use)
+- `ContentAdoptionBackground` — WebGL grain gradient (for future use)
+- `useIsVisible` — IntersectionObserver hook (used by Hero and AgnosticBackground)
+
+### Deleted files
+- `web/src/components/landing/main.png` — Fumadocs docs preview image
+- `web/src/components/landing/notebook.png` — Fumadocs notebook preview image
+- `web/src/components/landing/openapi.png` — Fumadocs OpenAPI preview image
+- `web/src/components/landing/shadcn.png` — Fumadocs shadcn preview image (was already unreferenced)
+- `web/src/components/landing/hero-preview.jpeg` — Fumadocs hero preview (was imported but unused in render)
+- `web/src/components/landing/icons.tsx` — Entire file deleted. Contained `NextSVG`, `VercelLogo`, `NetlifyLogo`, `OpenAPIIcon` — none were imported by any other file in the codebase.
+
+### Decisions
+- Deleted `icons.tsx` entirely rather than selectively removing components, since grep confirmed zero imports from any file outside of icons.tsx itself.
+- Kept `visible`, `ref`, and `useIsVisible` in Hero even though `visible` is only used by commented-out GrainGradient code — these support the shader infrastructure that the PRD notes should be kept for future use.
+- Did not remove `imageReady` state in Hero (also unused) since it wasn't in the PRD's explicit scope and is minor.
+
+### Verification
+- Grep for all deleted symbol names: zero references remain
+- `bun run types:check`: PASSES
+- `bun test`: 1 pre-existing failure in `generate-schemas.test.ts` (unrelated to landing page changes, confirmed by running tests against pre-change state)

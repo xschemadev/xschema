@@ -42,7 +42,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "Only cleaning dead code and unused assets. The marquee.tsx component should be kept. AgnosticBackground and ContentAdoptionBackground use WebGL shaders and should be kept for potential future use."
     },
     {

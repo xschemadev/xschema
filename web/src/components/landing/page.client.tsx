@@ -5,19 +5,13 @@ import {
   Fragment,
   type HTMLAttributes,
   type ReactElement,
-  type ReactNode,
   type RefObject,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { ArrowRight, TerminalIcon } from 'lucide-react';
+import { TerminalIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import MainImg from './main.png';
-import OpenAPIImg from './openapi.png';
-import NotebookImg from './notebook.png';
-import { cva } from 'class-variance-authority';
-import HeroImage from './hero-preview.jpeg';
 import GorillaImage from '@/assets/gorilla.svg';
 import { useTheme } from 'next-themes';
 import { GrainGradient, Dithering, ImageDithering } from '@paper-design/shaders-react';
@@ -240,127 +234,6 @@ function NotificationWindow(props: HTMLAttributes<HTMLDivElement>) {
         <p className="absolute inset-x-0 text-center">xschema</p>
       </div>
       <div className="p-4 text-sm">Generation completed!</div>
-    </div>
-  );
-}
-
-const previewButtonVariants = cva('w-20 h-8 text-sm font-medium transition-colors rounded-full', {
-  variants: {
-    active: {
-      true: 'text-fd-primary-foreground',
-      false: 'text-fd-muted-foreground',
-    },
-  },
-});
-
-export function PreviewImages(props: ComponentProps<'div'>) {
-  const [active, setActive] = useState(0);
-  const previews = [
-    {
-      image: MainImg,
-      name: 'Docs',
-    },
-    {
-      image: NotebookImg,
-      name: 'Notebook',
-    },
-    {
-      image: OpenAPIImg,
-      name: 'OpenAPI',
-    },
-  ];
-
-  return (
-    <div {...props} className={cn('relative grid', props.className)}>
-      <div className="absolute flex flex-row left-1/2 -translate-1/2 bottom-0 z-2 p-0.5 rounded-full bg-fd-card border shadow-xl">
-        <div
-          role="none"
-          className="absolute bg-fd-primary rounded-full w-20 h-8 transition-transform z-[-1]"
-          style={{
-            transform: `translateX(calc(var(--spacing) * 20 * ${active}))`,
-          }}
-        />
-        {previews.map((item, i) => (
-          <button
-            key={i}
-            className={cn(previewButtonVariants({ active: active === i }))}
-            onClick={() => setActive(i)}
-          >
-            {item.name}
-          </button>
-        ))}
-      </div>
-      {previews.map((item, i) => (
-        <img
-          key={i}
-          src={item.image}
-          alt="preview"
-          className={cn(
-            'col-start-1 row-start-1 select-none',
-            active === i ? 'animate-in fade-in slide-in-from-bottom-12 duration-800' : 'invisible',
-          )}
-        />
-      ))}
-    </div>
-  );
-}
-
-const WritingTabs = [
-  {
-    name: 'Writer',
-    value: 'writer',
-  },
-  {
-    name: 'Developer',
-    value: 'developer',
-  },
-  {
-    name: 'Automation',
-    value: 'automation',
-  },
-] as const;
-
-export function Writing({
-  tabs: tabContents,
-}: {
-  tabs: Record<(typeof WritingTabs)[number]['value'], ReactNode>;
-}) {
-  const [tab, setTab] = useState<(typeof WritingTabs)[number]['value']>('writer');
-
-  return (
-    <div className="col-span-full my-20">
-      <h2 className="text-4xl text-brand mb-8 text-center font-medium tracking-tight">
-        Anybody can write.
-      </h2>
-      <p className="text-center mb-8 mx-auto w-full max-w-[800px]">
-        Native support for Markdown & MDX, offering intuitive, convenient and extensive syntax for
-        non-dev writers, developers, and AI agents.
-      </p>
-      <div className="flex justify-center items-center gap-4 text-fd-muted-foreground mb-6">
-        {WritingTabs.map((item) => (
-          <Fragment key={item.value}>
-            <ArrowRight className="size-4 first:hidden" />
-            <button
-              className={cn(
-                'text-lg font-medium transition-colors',
-                item.value === tab && 'text-brand',
-              )}
-              onClick={() => setTab(item.value)}
-            >
-              {item.name}
-            </button>
-          </Fragment>
-        ))}
-      </div>
-      {Object.entries(tabContents).map(([key, value]) => (
-        <div
-          key={key}
-          aria-hidden={key !== tab}
-          className={cn('animate-fd-fade-in', key !== tab && 'hidden')}
-        >
-          {value}
-        </div>
-      ))}
     </div>
   );
 }
