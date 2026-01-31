@@ -9,6 +9,7 @@ import {
 } from '@/components/landing/page.client';
 import { buttonVariants } from '@/components/landing/variants';
 import { JungleProblem } from '@/components/landing/jungle-problem';
+import { XschemaApproach } from '@/components/landing/xschema-approach';
 import { MOTTO } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
@@ -92,6 +93,7 @@ function Page() {
           <CliAnimation />
         </div>
         <JungleProblem />
+        <XschemaApproach />
       </div>
     </main>
   );

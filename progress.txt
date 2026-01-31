@@ -200,3 +200,43 @@ Refactored `web/src/components/ui/comparison-table.tsx` (a 3-tier pricing table)
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
 - No remaining references to the old `comparison-table.tsx` in the codebase
+
+## section-2b-comparison-grid — DONE
+
+### What was done
+Implemented Section 2b ("The xschema approach") as a new landing page component that wraps the refactored `ComparisonGrid` component, and integrated it into the page layout.
+
+### New file: web/src/components/landing/xschema-approach.tsx
+- Created `XschemaApproach` named export component
+- Renders the title "The xschema approach." using `headingVariants({ variant: 'h3' })` with `text-brand`
+- Renders the subheading "One pipeline. Any adapter. Verified." as muted text
+- Renders two body paragraphs about xschema's unified pipeline and JSON Schema Test Suite testing (verbatim from LANDING_CONTENT.md Section 2b)
+- Renders a `ComparisonGrid` with 6 data-driven rows from a `comparisonRows` array:
+  - Shared pipeline: "One CLI for all adapters" vs "Each tool builds its own"
+  - Compliance testing: "Official JSON Schema Test Suite" vs "Often absent or incomplete"
+  - Supported features: "Documented per adapter with exact coverage" vs "Undocumented or incomplete"
+  - Unsupported features: "Explicitly listed with rationale" vs "Silent failures"
+  - Validators: "Zod, ArkType, Effect, Valibot, Pydantic, more" vs "One converter per library"
+  - Languages: "TypeScript, Python, Go, Rust" vs "One tool per language"
+- Each row has a green `Check` icon for xschema and a muted `X` icon for one-off converters (from lucide-react)
+- Uses `cardVariants()` (default variant) for the section container styling
+- Uses `col-span-full` to span the full grid width
+- Imports `headingVariants` and `cardVariants` from the shared `@/components/landing/variants`
+- Imports `ComparisonGrid` and `ComparisonRow` type from `@/components/ui/comparison-grid`
+- Imports `cn` from `@/lib/cn`
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `XschemaApproach` from `@/components/landing/xschema-approach`
+- Added `<XschemaApproach />` inside the grid layout, after `<JungleProblem />`
+
+### Decisions
+- Used `headingVariants({ variant: 'h3' })` matching the pattern established by JungleProblem (Section 2a)
+- Used lucide `Check` and `X` icons for visual comparison indicators rather than emoji or custom SVGs, since lucide-react is already a project dependency
+- Made the check icon `text-brand` for branded emphasis on xschema values, and the cross icon `text-fd-muted-foreground/60` for muted de-emphasis on one-off converter values
+- Kept body text and comparison data verbatim from LANDING_CONTENT.md Section 2b
+- Used a const array `comparisonRows` for data-driven rendering, matching the pattern in JungleProblem's `problems` array
+- Reused shared `checkIcon` and `crossIcon` ReactNode constants to avoid creating new icon instances per row
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
