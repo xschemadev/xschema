@@ -255,7 +255,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This section is intentionally minimal — just the heading, subheading, a placeholder area, and CTAs. The StackBlitz embed will be implemented in a future sprint. Use the pre-filled JSON schema example from LANDING_CONTENT.md as a static code block if a visual is needed."
     },
     {

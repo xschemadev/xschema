@@ -14,7 +14,8 @@ import { ComplianceCallout } from '@/components/landing/compliance-callout';
 import { BuiltFor } from '@/components/landing/built-for';
 import { OpenSourceFooter } from '@/components/landing/open-source-footer';
 import { ComponentCards } from '@/components/landing/component-cards';
-import { MOTTO } from "@/lib/constants";
+import { TryIt } from '@/components/landing/try-it';
+import { MOTTO, XSCHEMA_GITHUB_URL } from "@/lib/constants";
 
 export const Route = createFileRoute("/_layout/")({
   component: Home,
@@ -75,12 +76,12 @@ function Page() {
               Getting Started
             </Link>
             <a
-              href="https://codesandbox.io/p/sandbox/github/fuma-nama/fumadocs-ui-template"
+              href={XSCHEMA_GITHUB_URL}
               target="_blank"
               rel="noreferrer noopener"
               className={cn(buttonVariants({ variant: 'secondary' }), 'max-sm:text-sm')}
             >
-              Open CodeSandbox
+              Open in StackBlitz
             </a>
           </div>
         </div>
@@ -101,6 +102,7 @@ function Page() {
         <ComplianceCallout />
         <BuiltFor />
         <ComponentCards />
+        <TryIt />
         <OpenSourceFooter />
       </div>
     </main>

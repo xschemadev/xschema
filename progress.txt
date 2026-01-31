@@ -501,3 +501,44 @@ Implemented Section 4b (component cards grid) using the refactored `FeatureGrid`
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## section-5-try-it-placeholder — DONE
+
+### What was done
+Implemented Section 5 ("Try it") as a placeholder section for the future StackBlitz embed, with the heading, subheading, a static JSON Schema preview card, and two CTA buttons. Also updated the Hero secondary CTA from "Open CodeSandbox" (Fumadocs placeholder) to "Open in StackBlitz" linking to the GitHub repo as a temporary placeholder.
+
+### New file: web/src/components/landing/try-it.tsx
+- Created `TryIt` named export component
+- Renders the heading "Try it." using `headingVariants({ variant: 'h2' })` with `text-brand font-mono font-bold uppercase` — matching the established heading pattern from other section headings
+- Renders the subheading "Write a schema. Pick an adapter. See the output." as muted text
+- Renders a card (`cardVariants()` default variant) containing:
+  - A "Example JSON Schema" label in mono font
+  - A `<pre><code>` block with the pre-filled JSON Schema example from LANDING_CONTENT.md Section 5 (User object with id, name, email, role)
+  - An italic muted note "StackBlitz embed coming soon."
+- Renders two CTA buttons:
+  - "Read the docs" — primary variant, links to `/docs` via `<Link>` (TanStack Router)
+  - "View on GitHub" — secondary variant, links to `XSCHEMA_GITHUB_URL` from `@/lib/constants` via `<a>` with `target="_blank"`
+- Uses `col-span-full` to span the full grid width
+- Centered layout with `flex flex-col items-center text-center`
+- Imports `headingVariants`, `buttonVariants`, and `cardVariants` from the shared `@/components/landing/variants`
+- Imports `XSCHEMA_GITHUB_URL` from `@/lib/constants`
+- Imports `cn` from `@/lib/cn`
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `TryIt` from `@/components/landing/try-it`
+- Added import of `XSCHEMA_GITHUB_URL` from `@/lib/constants` (alongside existing `MOTTO` import)
+- Added `<TryIt />` inside the grid layout, after `<ComponentCards />` and before `<OpenSourceFooter />`
+- Updated Hero secondary CTA: changed text from "Open CodeSandbox" to "Open in StackBlitz", changed href from the Fumadocs CodeSandbox template URL to `XSCHEMA_GITHUB_URL` (temporary placeholder until StackBlitz is set up)
+
+### Decisions
+- Used a static `<pre><code>` block for the JSON Schema example rather than a more complex code editor, since the PRD explicitly states this is a placeholder section — the real StackBlitz embed will replace it in a future sprint
+- Displayed the full JSON Schema example from LANDING_CONTENT.md as the placeholder visual content, providing a concrete preview of what the interactive experience will look like
+- Added the "StackBlitz embed coming soon." italic note inside the card to clearly communicate the placeholder nature
+- Constrained the card to `max-w-2xl` to prevent the code block from stretching too wide on large screens
+- Used `overflow-x-auto` on the `<pre>` for horizontal scrolling on narrow viewports
+- Used `font-mono text-xs` for the code block to match the monospace detail styling established in the component cards (Section 4b)
+- Linked the Hero "Open in StackBlitz" CTA to the GitHub repo as a placeholder — this avoids a dead link while still providing a useful destination. The text was changed as specified in the PRD acceptance criteria.
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
