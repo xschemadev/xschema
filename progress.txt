@@ -96,3 +96,38 @@ Extracted the three inline cva variant definitions (`headingVariants`, `buttonVa
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (prerender SSR error with Hero's `window is not defined` is pre-existing and unrelated)
+
+## cn-import-consistency — DONE
+
+### What was done
+Standardized all `cn` utility imports across the web codebase to use `@/lib/cn` instead of `@/lib/utils`, then deleted the now-unused `utils.ts` file.
+
+### Changes to web/src/lib/cn.ts
+- Upgraded from a simple re-export of `twMerge` to the full `clsx + twMerge` pattern (matching what `utils.ts` had)
+- Now imports `clsx` and `type ClassValue` from `clsx`, and `twMerge` from `tailwind-merge`
+- This ensures any code that relied on `clsx` behavior (conditional classes, arrays, objects) continues to work after migration
+
+### Updated imports (7 files)
+- `web/src/components/ui/cpu-architecture.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/ui/badge.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/ui/card.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/ui/google-gemini-effect.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/ui/database-with-rest-api.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/blocks/feature-cards.tsx` — `@/lib/utils` → `@/lib/cn`
+- `web/src/components/blocks/grid-feature-cards.tsx` — `@/lib/utils` → `@/lib/cn`
+
+### Updated configuration
+- `web/components.json` — Updated shadcn/ui `aliases.utils` from `@/lib/utils` to `@/lib/cn`, so future shadcn component additions will use the correct import path
+
+### Deleted files
+- `web/src/lib/utils.ts` — No longer imported by any file in the codebase. The `cn` function it exported is now in `@/lib/cn` with identical behavior.
+
+### Decisions
+- Upgraded `cn.ts` to use `clsx + twMerge` (the more robust pattern from `utils.ts`) rather than keeping the simpler `twMerge`-only re-export. This is forward-compatible: all existing callers that only pass strings continue to work, and any callers using conditional class syntax (objects/arrays) will also work.
+- Updated `components.json` aliases so that `shadcn add` commands in the future will generate imports pointing to `@/lib/cn` instead of the deleted `@/lib/utils`.
+- Confirmed zero remaining references to `@/lib/utils` in any source file under `web/src/`.
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+- Grep for `@/lib/utils` in `web/src/`: zero matches

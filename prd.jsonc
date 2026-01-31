@@ -305,7 +305,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "The codebase has two cn implementations: lib/cn.ts (re-export of twMerge) and lib/utils.ts (clsx + twMerge). Standardize on @/lib/cn. If components need clsx behavior, update lib/cn.ts to use the clsx+twMerge pattern from utils.ts."
     }
   ]
