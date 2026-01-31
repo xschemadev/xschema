@@ -277,3 +277,55 @@ Implemented Section 2c ("Built for transparency") as a visually distinct callout
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## section-3-built-for — DONE
+
+### What was done
+Implemented Section 3 ("Built for") as two side-by-side audience cards (Application Developers + Library Maintainers) with Framework Mode and Runtime Mode subsections, and integrated it into the page layout.
+
+### New file: web/src/components/landing/built-for.tsx
+- Created `BuiltFor` named export component
+- Renders the section heading "Built for." using `headingVariants({ variant: 'h2' })` with `text-brand text-center font-mono font-bold uppercase` — matching the established heading pattern from the "One pipeline to rule them all" heading
+- Renders two `AudienceCard` sub-components in a `grid grid-cols-1 lg:grid-cols-2` layout (side-by-side on desktop, stacked on mobile)
+- Created internal `AudienceCard` component accepting: title, bodyParagraphs, keyPoint, mode (heading/badge/body/bullets)
+- Created internal `ModeSection` component for the Framework Mode / Runtime Mode subsections
+
+### Card 1 — Application Developers
+- Title: "Developers shipping real projects."
+- Two body paragraphs about JSON Schema sources and xschema's unified workflow (verbatim from LANDING_CONTENT.md)
+- Framework Mode subsection with "Build-time" badge, body text, and 4 bullet points
+- Key point at bottom: "No manual translation. No drift between schema and validator." — visually separated with `border-t border-fd-border/50` and `text-brand font-medium`
+
+### Card 2 — Library & Framework Maintainers
+- Title: "Library maintainers who need codegen."
+- Two body paragraphs about maintaining libraries and xschema adapters (verbatim from LANDING_CONTENT.md)
+- Runtime Mode subsection with "Programmatic" badge, body text, and 3 bullet points
+- Key point at bottom: "Offload the conversion. Focus on your domain." — same visual treatment as Card 1
+
+### Visual design decisions
+- Mode subsections (Framework Mode, Runtime Mode) are rendered in a nested card with `rounded-xl border border-fd-border/50 bg-fd-background/50 p-4` — visually distinct from the parent card
+- Badges use `rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand` — pill-shaped with brand accent
+- Key point area uses `mt-auto` to anchor to the card bottom regardless of content height, plus `border-t` separator and `text-brand` for visual emphasis
+- Bullet points use the same brand-colored dot pattern (`size-1.5 rounded-full bg-brand`) established in jungle-problem.tsx
+- Section heading uses the same uppercase mono pattern as "One pipeline to rule them all" for consistency
+- Both cards use `cardVariants()` (default variant) and `flex flex-col` for equal-height stretching in the grid
+
+### Mobile behavior
+- Cards stack vertically (single column) on mobile via `grid-cols-1`
+- Side-by-side on desktop via `lg:grid-cols-2`
+- Chose stacking over tabs because: (1) both cards are important enough to show simultaneously, (2) simpler implementation with no JS interactivity needed, (3) the content length is manageable without tabs
+
+### Changes to web/src/routes/_layout/index.tsx
+- Added import of `BuiltFor` from `@/components/landing/built-for`
+- Added `<BuiltFor />` inside the grid layout, after `<ComplianceCallout />`
+
+### Decisions
+- Used Unicode escape sequences (\u2014 for em dash, \u2019 for right single quote) in string props instead of HTML entities, since the text is passed as JS string props rather than inline JSX
+- Made `AudienceCard` and `ModeSection` internal (not exported) since they are specific to this section's layout and unlikely to be reused
+- Used data arrays (`frameworkBullets`, `runtimeBullets`) at module level for clean separation of content from markup
+- The `mt-auto` on the key point div ensures both cards' key points align at the bottom when cards have different content heights
+- The section uses `col-span-full` to span the entire grid, with its own internal 2-column grid for the cards
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)

@@ -196,7 +196,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "The LANDING_CONTENT.md suggests selectable tabs on mobile. The implementer should choose whichever approach (stacked or tabbed) is cleaner and more understandable. Both cards are equal-width on desktop."
     },
     {
