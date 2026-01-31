@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { Folder, HeartHandshakeIcon, SparklesIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-interface DatabaseWithRestApiProps {
+export interface AnimatedFlowProps {
   className?: string;
   circleText?: string;
   badgeTexts?: {
@@ -20,16 +20,18 @@ interface DatabaseWithRestApiProps {
   };
   title?: string;
   lightColor?: string;
+  idPrefix?: string;
 }
 
-const DatabaseWithRestApi = ({
+const AnimatedFlow = ({
   className,
   circleText,
   badgeTexts,
   buttonTexts,
   title,
   lightColor,
-}: DatabaseWithRestApiProps) => {
+  idPrefix = "flow",
+}: AnimatedFlowProps) => {
   return (
     <div
       className={cn(
@@ -67,41 +69,41 @@ const DatabaseWithRestApi = ({
             keyTimes="0; 1"
           />
         </g>
-        {/* Blue Lights */}
-        <g mask="url(#db-mask-1)">
+        {/* Lights */}
+        <g mask={`url(#${idPrefix}-mask-1)`}>
           <circle
-            className="database db-light-1"
+            className={`${idPrefix}-light ${idPrefix}-light-1`}
             cx="0"
             cy="0"
             r="12"
-            fill="url(#db-blue-grad)"
+            fill={`url(#${idPrefix}-grad)`}
           />
         </g>
-        <g mask="url(#db-mask-2)">
+        <g mask={`url(#${idPrefix}-mask-2)`}>
           <circle
-            className="database db-light-2"
+            className={`${idPrefix}-light ${idPrefix}-light-2`}
             cx="0"
             cy="0"
             r="12"
-            fill="url(#db-blue-grad)"
+            fill={`url(#${idPrefix}-grad)`}
           />
         </g>
-        <g mask="url(#db-mask-3)">
+        <g mask={`url(#${idPrefix}-mask-3)`}>
           <circle
-            className="database db-light-3"
+            className={`${idPrefix}-light ${idPrefix}-light-3`}
             cx="0"
             cy="0"
             r="12"
-            fill="url(#db-blue-grad)"
+            fill={`url(#${idPrefix}-grad)`}
           />
         </g>
-        <g mask="url(#db-mask-4)">
+        <g mask={`url(#${idPrefix}-mask-4)`}>
           <circle
-            className="database db-light-4"
+            className={`${idPrefix}-light ${idPrefix}-light-4`}
             cx="0"
             cy="0"
             r="12"
-            fill="url(#db-blue-grad)"
+            fill={`url(#${idPrefix}-grad)`}
           />
         </g>
         {/* Buttons */}
@@ -109,18 +111,18 @@ const DatabaseWithRestApi = ({
           {/* First Button */}
           <g>
             <rect
-              fill="#18181B"
+              fill="var(--color-fd-card)"
               x="14"
               y="5"
               width="34"
               height="10"
               rx="5"
             ></rect>
-            <DatabaseIcon x="18" y="7.5"></DatabaseIcon>
+            <FlowIcon x="18" y="7.5" />
             <text
               x="28"
               y="12"
-              fill="white"
+              fill="var(--color-fd-card-foreground)"
               stroke="none"
               fontSize="5"
               fontWeight="500"
@@ -131,18 +133,18 @@ const DatabaseWithRestApi = ({
           {/* Second Button */}
           <g>
             <rect
-              fill="#18181B"
+              fill="var(--color-fd-card)"
               x="60"
               y="5"
               width="34"
               height="10"
               rx="5"
             ></rect>
-            <DatabaseIcon x="64" y="7.5"></DatabaseIcon>
+            <FlowIcon x="64" y="7.5" />
             <text
               x="74"
               y="12"
-              fill="white"
+              fill="var(--color-fd-card-foreground)"
               stroke="none"
               fontSize="5"
               fontWeight="500"
@@ -153,18 +155,18 @@ const DatabaseWithRestApi = ({
           {/* Third Button */}
           <g>
             <rect
-              fill="#18181B"
+              fill="var(--color-fd-card)"
               x="108"
               y="5"
               width="34"
               height="10"
               rx="5"
             ></rect>
-            <DatabaseIcon x="112" y="7.5"></DatabaseIcon>
+            <FlowIcon x="112" y="7.5" />
             <text
               x="122"
               y="12"
-              fill="white"
+              fill="var(--color-fd-card-foreground)"
               stroke="none"
               fontSize="5"
               fontWeight="500"
@@ -175,18 +177,18 @@ const DatabaseWithRestApi = ({
           {/* Fourth Button */}
           <g>
             <rect
-              fill="#18181B"
+              fill="var(--color-fd-card)"
               x="150"
               y="5"
               width="40"
               height="10"
               rx="5"
             ></rect>
-            <DatabaseIcon x="154" y="7.5"></DatabaseIcon>
+            <FlowIcon x="154" y="7.5" />
             <text
               x="165"
               y="12"
-              fill="white"
+              fill="var(--color-fd-card-foreground)"
               stroke="none"
               fontSize="5"
               fontWeight="500"
@@ -196,40 +198,35 @@ const DatabaseWithRestApi = ({
           </g>
         </g>
         <defs>
-          {/* 1 -  user list */}
-          <mask id="db-mask-1">
+          <mask id={`${idPrefix}-mask-1`}>
             <path
               d="M 31 10 v 15 q 0 5 5 5 h 59 q 5 0 5 5 v 10"
               strokeWidth="0.5"
               stroke="white"
             />
           </mask>
-          {/* 2 - task list */}
-          <mask id="db-mask-2">
+          <mask id={`${idPrefix}-mask-2`}>
             <path
               d="M 77 10 v 10 q 0 5 5 5 h 13 q 5 0 5 5 v 10"
               strokeWidth="0.5"
               stroke="white"
             />
           </mask>
-          {/* 3 - backlogs */}
-          <mask id="db-mask-3">
+          <mask id={`${idPrefix}-mask-3`}>
             <path
               d="M 124 10 v 10 q 0 5 -5 5 h -14 q -5 0 -5 5 v 10"
               strokeWidth="0.5"
               stroke="white"
             />
           </mask>
-          {/* 4 - misc */}
-          <mask id="db-mask-4">
+          <mask id={`${idPrefix}-mask-4`}>
             <path
               d="M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10"
               strokeWidth="0.5"
               stroke="white"
             />
           </mask>
-          {/* Blue Grad */}
-          <radialGradient id="db-blue-grad" fx="1">
+          <radialGradient id={`${idPrefix}-grad`} fx="1">
             <stop offset="0%" stopColor={lightColor || "#00A6F5"} />
             <stop offset="100%" stopColor="transparent" />
           </radialGradient>
@@ -240,24 +237,24 @@ const DatabaseWithRestApi = ({
         {/* bottom shadow */}
         <div className="absolute -bottom-4 h-[100px] w-[62%] rounded-lg bg-accent/30" />
         {/* box title */}
-        <div className="absolute -top-3 z-20 flex items-center justify-center rounded-lg border bg-[#101112] px-2 py-1 sm:-top-4 sm:py-1.5">
+        <div className="absolute -top-3 z-20 flex items-center justify-center rounded-lg border bg-fd-background px-2 py-1 sm:-top-4 sm:py-1.5">
           <SparklesIcon className="size-3" />
           <span className="ml-2 text-[10px]">
             {title ? title : "Data exchange using a customized REST API"}
           </span>
         </div>
-        {/* box outter circle */}
-        <div className="absolute -bottom-8 z-30 grid h-[60px] w-[60px] place-items-center rounded-full border-t bg-[#141516] font-semibold text-xs">
+        {/* box outer circle */}
+        <div className="absolute -bottom-8 z-30 grid h-[60px] w-[60px] place-items-center rounded-full border-t bg-fd-card font-semibold text-xs">
           {circleText ? circleText : "SVG"}
         </div>
         {/* box content */}
         <div className="relative z-10 flex h-[150px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background shadow-md">
           {/* Badges */}
-          <div className="absolute bottom-8 left-12 z-10 h-7 rounded-full bg-[#101112] px-3 text-xs border flex items-center gap-2 ">
+          <div className="absolute bottom-8 left-12 z-10 h-7 rounded-full bg-fd-background px-3 text-xs border flex items-center gap-2 ">
             <HeartHandshakeIcon className="size-4" />
             <span>{buttonTexts?.first || "LegionDev"}</span>
           </div>
-          <div className="absolute right-16 z-10 hidden h-7 rounded-full bg-[#101112] px-3 text-xs sm:flex border items-center gap-2">
+          <div className="absolute right-16 z-10 hidden h-7 rounded-full bg-fd-background px-3 text-xs sm:flex border items-center gap-2">
             <Folder className="size-4" />
             <span>{buttonTexts?.second || "v2_updates"}</span>
           </div>
@@ -296,9 +293,9 @@ const DatabaseWithRestApi = ({
   );
 };
 
-export default DatabaseWithRestApi;
+export { AnimatedFlow };
 
-const DatabaseIcon = ({ x = "0", y = "0" }: { x: string; y: string }) => {
+const FlowIcon = ({ x = "0", y = "0" }: { x: string; y: string }) => {
   return (
     <svg
       x={x}
@@ -308,7 +305,7 @@ const DatabaseIcon = ({ x = "0", y = "0" }: { x: string; y: string }) => {
       height="5"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="white"
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

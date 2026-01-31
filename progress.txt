@@ -364,3 +364,69 @@ Implemented Section 6 ("Open source. Open process.") as a minimal footer section
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## refactor-animated-svg-components — DONE
+
+### What was done
+Refactored three animated SVG component files: renamed, cleaned up hardcoded values, replaced hardcoded colors with theme-aware CSS variables, added `idPrefix` prop for DOM collision avoidance, standardized exports.
+
+### Renamed files
+- `web/src/components/ui/cpu-architecture.tsx` → `web/src/components/ui/animated-circuit.tsx`
+- `web/src/components/ui/database-with-rest-api.tsx` → `web/src/components/ui/animated-flow.tsx`
+- `web/src/components/ui/google-gemini-effect.tsx` → `web/src/components/ui/animated-paths.tsx`
+
+### Changes to animated-circuit.tsx (was cpu-architecture.tsx)
+- Renamed component: `CpuArchitecture` → `AnimatedCircuit`
+- Renamed interface: `CpuArchitectureSvgProps` → `AnimatedCircuitProps`
+- Renamed prop: `showCpuConnections` → `showConnections`
+- Added `idPrefix` prop (default: `"circuit"`) — all SVG `id` attributes now use `${idPrefix}-*` template literals instead of hardcoded `cpu-*` prefixes
+- CSS class names on light circles now use `${idPrefix}-light` and `${idPrefix}-line-N` instead of hardcoded `cpu-architecture` and `cpu-line-N`
+- Replaced `fill="#181818"` on main rectangle → `fill="var(--color-fd-card)"` (theme-aware)
+- Replaced `fill="black"` on marker circle → `fill="var(--color-fd-background)"` (theme-aware)
+- Replaced `stroke="#232323"` on marker circle → `stroke="var(--color-fd-border)"` (theme-aware)
+- Replaced `stopColor="#4F4F4F"` in connection gradient → `stopColor="var(--color-fd-muted-foreground)"` (theme-aware)
+- Replaced `stopColor="#121214"` in connection gradient → `stopColor="var(--color-fd-background)"` (theme-aware)
+- Non-animated text fill fallback changed from `"white"` → `"var(--color-fd-card-foreground)"`
+- Removed `id="innerMarkerCircle"` from marker circle (potential DOM collision, unnecessary)
+- Already used named export and `cn` from `@/lib/cn` (done in prior tasks)
+
+### Changes to animated-flow.tsx (was database-with-rest-api.tsx)
+- Renamed component: `DatabaseWithRestApi` → `AnimatedFlow`
+- Renamed interface: `DatabaseWithRestApiProps` → `AnimatedFlowProps`
+- Changed `export default DatabaseWithRestApi` → `export { AnimatedFlow }` (named export convention)
+- Added `idPrefix` prop (default: `"flow"`) — all SVG `id` attributes now use `${idPrefix}-*` template literals instead of hardcoded `db-*` prefixes
+- CSS class names on light circles now use `${idPrefix}-light` and `${idPrefix}-light-N` instead of hardcoded `database` and `db-light-N`
+- Replaced `fill="#18181B"` on SVG badge rects → `fill="var(--color-fd-card)"` (theme-aware)
+- Replaced `fill="white"` on SVG badge text → `fill="var(--color-fd-card-foreground)"` (theme-aware)
+- Replaced `stroke="white"` on inner `DatabaseIcon` SVG → `stroke="currentColor"` (inherits from context)
+- Replaced `bg-[#101112]` on HTML divs (box title, badges) → `bg-fd-background` (Tailwind theme class)
+- Replaced `bg-[#141516]` on HTML div (outer circle) → `bg-fd-card` (Tailwind theme class)
+- Renamed internal `DatabaseIcon` helper → `FlowIcon`
+- Already used `cn` from `@/lib/cn` and `motion/react` (done in prior tasks)
+
+### Changes to animated-paths.tsx (was google-gemini-effect.tsx)
+- Renamed component: `GoogleGeminiEffect` → `AnimatedPaths`
+- Renamed/exported interface: `AnimatedPathsProps` (was inline type)
+- Changed `import { motion, MotionValue } from "framer-motion"` → `import { motion, MotionValue } from "motion/react"` (modern import path, consistent with animated-flow)
+- Removed Aceternity branding: default title changed from `"Build with Aceternity UI"` → `"Animated Paths"`, default description changed from Aceternity-specific text → generic `"Scroll this component and see the SVG paths come to life."`
+- Removed always-visible button with hardcoded `"ui.aceternity.com"` text — replaced with optional `buttonText` prop (button only renders when prop is provided)
+- Button styling changed from `bg-white text-black` → `bg-fd-primary text-fd-primary-foreground` (theme-aware)
+- Removed `bg-red-transparent` class from button container div (was a debug leftover)
+- Added `idPrefix` prop (default: `"paths"`) — SVG filter `id` changed from hardcoded `"blurMe"` → `${idPrefix}-blur`
+- Already used named export and `cn` from `@/lib/cn` (done in prior tasks)
+
+### No import updates needed
+- Grep confirmed zero imports of any of the three old filenames across the entire `web/src/` codebase — these components were not yet consumed by any other file
+
+### Decisions
+- Used CSS variable syntax (`var(--color-fd-card)`, etc.) for SVG `fill`/`stroke` attributes rather than Tailwind utility classes, because SVG inline attributes don't support Tailwind classes — CSS custom properties work directly in SVG attribute values
+- Used Tailwind theme classes (`bg-fd-background`, `bg-fd-card`) for HTML `div` elements where Tailwind is applicable
+- Kept radial gradient light colors (e.g., `#00E8ED`, `#FFD800`, `#f43f5e`) as hardcoded hex values — these are decorative animation accent colors that don't need to follow the theme system (they're the "glow" effects on animated paths)
+- Kept SVG text gradient shimmer animation stop colors (`#666666`, `white`) as-is — these create a visual shimmer effect that works across themes
+- Standardized `motion/react` import across all files (animated-paths was the only one using the legacy `framer-motion` import)
+- Default `idPrefix` values chosen to be short and descriptive: `"circuit"`, `"flow"`, `"paths"` — avoids collisions when multiple instances render on the same page
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+- Grep for old filenames (`cpu-architecture`, `database-with-rest-api`, `google-gemini-effect`) and old component names (`CpuArchitecture`, `DatabaseWithRestApi`, `GoogleGeminiEffect`): zero matches in `web/src/`

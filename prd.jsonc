@@ -85,7 +85,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "These three components are references/building blocks for the pipeline animation (Section 4a). The database-with-rest-api is the primary style reference — its SVG path animation with light-traveling-along-paths effect should be preserved and made more configurable. The cpu-architecture and google-gemini-effect may be used as-is, combined, or adapted — the implementer can choose the best approach in the pipeline animation item."
     },
     {
