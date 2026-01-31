@@ -121,7 +121,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "The landing-specific buttonVariants (rounded-full with primary/secondary) is different from the ui/button.tsx buttonVariants. Keep both — the landing one is only for the landing page sections. This extraction allows all new landing section components to share the same variant definitions."
     },
     {

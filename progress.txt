@@ -70,3 +70,29 @@ Cleaned up `web/src/components/landing/page.client.tsx` by removing Fumadocs-spe
 - Grep for all deleted symbol names: zero references remain
 - `bun run types:check`: PASSES
 - `bun test`: 1 pre-existing failure in `generate-schemas.test.ts` (unrelated to landing page changes, confirmed by running tests against pre-change state)
+
+## extract-landing-variants — DONE
+
+### What was done
+Extracted the three inline cva variant definitions (`headingVariants`, `buttonVariants`, `cardVariants`) from `web/src/routes/_layout/index.tsx` into a new shared file at `web/src/components/landing/variants.ts`.
+
+### New file: web/src/components/landing/variants.ts
+- Exports `headingVariants` (h2/h3 size variants)
+- Exports `buttonVariants` (landing-specific primary/secondary with rounded-full styling)
+- Exports `cardVariants` (secondary/default card styling)
+- All definitions are byte-for-byte identical to the originals from index.tsx
+
+### Changes to web/src/routes/_layout/index.tsx
+- Removed the three inline `const headingVariants = cva(...)`, `const buttonVariants = cva(...)`, and `const cardVariants = cva(...)` definitions
+- Removed the `cva` import from `class-variance-authority` (no longer needed in this file)
+- Added import of `buttonVariants` from `@/components/landing/variants` (the only variant currently used in index.tsx — on lines 68 and 75 for the hero CTA buttons)
+- `headingVariants` and `cardVariants` are not imported in index.tsx since they are not currently used there (they will be imported by future section components)
+
+### Decisions
+- Placed the file at `web/src/components/landing/variants.ts` (not `.tsx`) since it contains no JSX — just cva definitions and exports.
+- Only imported `buttonVariants` in index.tsx rather than all three, to avoid unused import warnings. Future section components (jungle-problem, built-for, etc.) will import `headingVariants` and `cardVariants` directly from the shared file.
+- The landing-specific `buttonVariants` is intentionally separate from `web/src/components/ui/button.tsx`'s `buttonVariants` — different styling (rounded-full vs the UI button variants).
+
+### Verification
+- `bun run types:check`: PASSES
+- `vite build`: PASSES (prerender SSR error with Hero's `window is not defined` is pre-existing and unrelated)
