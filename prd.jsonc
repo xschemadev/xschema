@@ -291,7 +291,7 @@
         "Run bun run build from web/ and verify success",
         "Run bun run types:check from web/ and verify success"
       ],
-      "passes": false,
+      "passes": true,
       "notes": "This is the final integration step. All individual sections should already be implemented and passing. This item verifies they compose correctly in the right order with proper spacing and responsiveness. The grid should use the existing pattern: grid grid-cols-1 lg:grid-cols-2 with sections spanning col-span-full as needed."
     },
     {

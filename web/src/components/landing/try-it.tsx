@@ -15,9 +15,9 @@ const exampleSchema = `{
   "required": ["id", "name", "email"]
 }`;
 
-export function TryIt() {
+export function TryIt({ className }: { className?: string }) {
   return (
-    <div className="col-span-full flex flex-col items-center text-center gap-6">
+    <div className={cn('col-span-full flex flex-col items-center text-center gap-6', className)}>
       <h2
         className={cn(
           headingVariants({ variant: 'h2' }),

@@ -612,3 +612,48 @@ Implemented Section 4a ("Under the hood") as an interactive pipeline animation v
 ### Verification
 - `bun run types:check`: PASSES
 - `vite build`: PASSES (pre-existing prerender SSR error unrelated to this change)
+
+## page-assembly-and-layout — DONE
+
+### What was done
+Final integration pass over the landing page: verified section ordering, heading consistency, and added generous vertical spacing between major sections as required by the PRD.
+
+### Section order verification (confirmed correct)
+Hero → Description paragraph → "One pipeline to rule them all" heading (without CliAnimation) → Section 2a (JungleProblem) → Section 2b (XschemaApproach) → Section 2c (ComplianceCallout) → Section 3 (BuiltFor) → Section 4a (PipelineAnimation with CliAnimation) → Section 4b (ComponentCards) → Section 5 (TryIt) → Section 6 (OpenSourceFooter)
+
+### Heading consistency verification
+All section-level h2 headings (Built for, Under the hood, Try it, Open source. Open process.) follow the same visual pattern: `headingVariants({ variant: 'h2' })` + `text-brand font-mono font-bold uppercase`. The Built for and Under the hood headings include `text-center` explicitly; Try it and Open source inherit centering from their parent flex containers (`items-center text-center`). The "One pipeline to rule them all" heading in index.tsx uses `text-xl text-center text-brand font-mono font-bold uppercase` directly (without headingVariants) as the reference style.
+
+Sub-section h3 headings (JungleProblem, XschemaApproach, ComplianceCallout) use `headingVariants({ variant: 'h3' })` + `text-brand` consistently — these are within-card titles, not section-level headings, so they intentionally have a different (smaller, non-uppercase, non-centered) visual treatment.
+
+### Spacing changes
+The grid layout had uniform `gap-10` (40px) between all items. The PRD requires "generous vertical spacing between major sections (mt-16 to mt-24)". Added extra `mt-6` (24px) to section components at major section boundaries:
+
+- **BuiltFor**: Added `className` prop support; `<BuiltFor className="mt-6" />` — total spacing from ComplianceCallout = gap-10 (40px) + mt-6 (24px) = 64px ≈ mt-16
+- **PipelineAnimation**: Added `className` prop support; `<PipelineAnimation className="mt-6">` — total spacing from BuiltFor = gap-10 + mt-6 = 64px ≈ mt-16
+- **TryIt**: Added `className` prop support; `<TryIt className="mt-6" />` — total spacing from ComponentCards = gap-10 + mt-6 = 64px ≈ mt-16
+- **OpenSourceFooter**: Already had `mt-16` on its own section element (pre-existing)
+
+### Files modified
+- `web/src/routes/_layout/index.tsx` — Added `className` props to BuiltFor, PipelineAnimation, TryIt
+- `web/src/components/landing/built-for.tsx` — Added `className?: string` prop, wrapped section with `cn('col-span-full', className)`
+- `web/src/components/landing/pipeline-animation.tsx` — Added `className?: string` prop, wrapped div with `cn("col-span-full flex flex-col gap-8", className)`
+- `web/src/components/landing/try-it.tsx` — Added `className?: string` prop, wrapped div with `cn('col-span-full flex flex-col items-center text-center gap-6', className)`
+
+### Other verifications
+- Content max-width: `max-w-[1400px]` with `px-6 md:px-12` horizontal padding ✓
+- Grid layout: `grid grid-cols-1 lg:grid-cols-2` with sections using `col-span-full` as needed ✓
+- No unused imports in any modified file ✓
+- "One pipeline to rule them all" heading remains, CliAnimation is in Section 4a (PipelineAnimation) ✓
+- No layout jumps or overflow issues ✓
+
+### Decisions
+- Added spacing via `className` prop on section components rather than using empty spacer divs — cleaner and keeps the grid semantically meaningful
+- The `cn()` utility properly handles Tailwind class merging so the additional `mt-6` composes cleanly with existing classes
+- Did not change the sub-section h3 headings to match the uppercase/centered pattern — they serve a different role (card-level titles) and would look wrong if forced into the section heading style
+- All three components already imported `cn` from `@/lib/cn`, so no new imports were needed — only the function signatures and JSX wrappers were updated
+
+### Verification
+- `pnpm --filter web types:check`: PASSES
+- `bun test`: 1 pre-existing failure in `generate-schemas.test.ts` (unrelated to landing page)
+- `biome check` on modified files: only pre-existing formatting issues (quote style, import ordering) — no new errors introduced

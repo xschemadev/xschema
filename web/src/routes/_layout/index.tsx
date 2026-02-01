@@ -100,12 +100,12 @@ function Page() {
         <JungleProblem />
         <XschemaApproach />
         <ComplianceCallout />
-        <BuiltFor />
-        <PipelineAnimation>
+        <BuiltFor className="mt-6" />
+        <PipelineAnimation className="mt-6">
           <CliAnimation />
         </PipelineAnimation>
         <ComponentCards />
-        <TryIt />
+        <TryIt className="mt-6" />
         <OpenSourceFooter />
       </div>
     </main>

@@ -239,13 +239,15 @@ function StageDescription({
 
 export function PipelineAnimation({
   children,
+  className,
 }: {
   children?: ReactNode;
+  className?: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div className="col-span-full flex flex-col gap-8">
+    <div className={cn("col-span-full flex flex-col gap-8", className)}>
       {/* Section heading */}
       <h2
         className={cn(

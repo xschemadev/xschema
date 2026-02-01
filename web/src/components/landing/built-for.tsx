@@ -85,9 +85,9 @@ function AudienceCard({
   );
 }
 
-export function BuiltFor() {
+export function BuiltFor({ className }: { className?: string }) {
   return (
-    <section className="col-span-full">
+    <section className={cn('col-span-full', className)}>
       <h2
         className={cn(
           headingVariants({ variant: 'h2' }),
