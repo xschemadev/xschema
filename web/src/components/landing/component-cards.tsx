@@ -1,6 +1,6 @@
 import { Terminal, Blocks, Package, FileJson } from 'lucide-react';
-import { FeatureGrid } from '@/components/blocks/feature-grid';
-import type { FeatureGridItem } from '@/components/blocks/feature-grid';
+import { FeatureGrid } from '@/components/feature-grid';
+import type { FeatureGridItem } from '@/components/feature-grid';
 
 const componentCards: FeatureGridItem[] = [
   {
