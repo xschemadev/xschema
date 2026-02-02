@@ -17,7 +17,7 @@ export function Body({ children }: { children: ReactNode }): React.ReactElement 
 export function useMode(): string | undefined {
     const { pathname } = useLocation();
     const slug = pathname.split("/").slice(1);
-    if (Array.isArray(slug)) return getSection(slug[0]);
+    if (Array.isArray(slug)) return getSection(slug[1]);
     return undefined;
 }
 
