@@ -5,7 +5,7 @@ import { XSCHEMA_GITHUB_URL } from '@/lib/constants';
 
 export function OpenSourceFooter() {
   return (
-    <section className="col-span-full mt-16 flex flex-col items-center text-center">
+    <section className="col-span-full flex flex-col items-center text-center">
       <h2
         className={cn(
           headingVariants({ variant: 'h2' }),
