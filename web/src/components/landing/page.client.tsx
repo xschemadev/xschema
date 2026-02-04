@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  type ComponentProps,
   Fragment,
   type HTMLAttributes,
   type ReactElement,
@@ -12,7 +11,7 @@ import { TerminalIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import GorillaImage from '@/assets/gorilla.svg';
 import { useTheme } from 'next-themes';
-import { GrainGradient, Dithering, ImageDithering } from '@paper-design/shaders-react';
+import { Dithering, ImageDithering } from '@paper-design/shaders-react';
 import { useIsMobile } from '@/hooks/useMobile';
 
 export function Hero() {
@@ -95,7 +94,7 @@ export function Hero() {
   );
 }
 
-export function CliAnimation() {
+export function CliAnimation({ className }: { className?: string }) {
   const installCmd = '➜ bun xschema generate';
   const tickTime = 100;
   const timeCommandEnter = installCmd.length;
@@ -146,9 +145,9 @@ export function CliAnimation() {
         )}
         {tick > timeCommandRun + 3 && (
           <>
-            <span>{"  → notes:Note from @xschemadev/zod"}</span>
-            <span>{"  → notes:Tag from @xschemadev/arktype"}</span>
-            <span>{"  → users:Profile from @xschemadev/effect"}</span>
+            <span className="text-brand">{"  → users:Profile from @xschemadev/effect"}</span>
+            <span className="text-brand-secondary">{"  → notes:Note from @xschemadev/zod"}</span>
+            <span className="text-brand-secondary">{"  → notes:Tag from @xschemadev/arktype"}</span>
             <span>{"✓ Fetched 3 schemas"}</span>
           </>
         )}
@@ -180,11 +179,11 @@ export function CliAnimation() {
         {tick > timeCommandRun + 8 && (
           <>
             <span className="font-bold">{"  Schemas generated:"}</span>
-            <span>{"    notes"}</span>
-            <span>{"      • Note"}</span>
-            <span>{"      • Tag"}</span>
-            <span>{"    users"}</span>
-            <span>{"      • Profile"}</span>
+            <span className="text-brand">{"    users"}</span>
+            <span className="text-brand">{"      • Profile"}</span>
+            <span className="text-brand-secondary">{"    notes"}</span>
+            <span className="text-brand-secondary">{"      • Note"}</span>
+            <span className="text-brand-secondary">{"      • Tag"}</span>
           </>
         )}
       </Fragment>,
@@ -192,7 +191,7 @@ export function CliAnimation() {
 
   return (
     <div
-      className="relative mt-4 w-full mx-auto max-w-[800px]"
+      className={cn("relative", className)}
       onMouseEnter={() => {
         if (tick >= timeEnd) {
           setTick(0);
@@ -230,41 +229,5 @@ function NotificationWindow(props: HTMLAttributes<HTMLDivElement>) {
       </div>
       <div className="p-4 text-sm">Generation completed!</div>
     </div>
-  );
-}
-
-export function AgnosticBackground() {
-  const { resolvedTheme } = useTheme();
-
-  return (
-    <div className="absolute inset-0 -z-1 mask-[linear-gradient(to_top,white_30%,transparent_calc(100%-120px))]">
-      <Dithering
-        colorBack="#00000000"
-        colorFront={resolvedTheme === 'dark' ? '#fc7744' : '#c6bb58'}
-        shape="warp"
-        type="4x4"
-        speed={0.4}
-        className="size-full"
-        minPixelRatio={1}
-      />
-    </div>
-  );
-}
-
-export function ContentAdoptionBackground(props: ComponentProps<typeof GrainGradient>) {
-  const { resolvedTheme } = useTheme();
-
-  return (
-    <GrainGradient
-      colors={
-        resolvedTheme === 'dark'
-          ? ['#39BE1C', '#9c2f05', '#7A2A0000']
-          : ['#DF3F00', '#fcfc51', '#ffa057', '#7A2A0020']
-      }
-      speed={0}
-      colorBack="#1D1004"
-      shape="sphere"
-      {...props}
-    />
   );
 }
