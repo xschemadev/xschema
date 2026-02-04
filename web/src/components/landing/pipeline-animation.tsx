@@ -257,6 +257,14 @@ export function PipelineAnimation({
       >
         Under the hood.
       </h2>
+      <h3
+        className={cn(
+          headingVariants({ variant: 'h3' }),
+          'col-span-full text-brand text-center font-mono font-bold uppercase',
+        )}
+      >
+        One pipeline to rule them all.
+      </h3>
 
       {/* Pipeline layout: SVG on top / left, description on right */}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
