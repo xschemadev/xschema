@@ -6,12 +6,12 @@ import {
   type ReactElement,
   useEffect,
   useState,
-} from 'react';
-import { TerminalIcon } from 'lucide-react';
-import { cn } from '@/lib/cn';
+} from "react";
+import { TerminalIcon } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 export function CliAnimation({ className }: { className?: string }) {
-  const installCmd = '➜ bun xschema generate';
+  const installCmd = "➜ bun xschema generate";
   const tickTime = 100;
   const timeCommandEnter = installCmd.length;
   const timeCommandRun = timeCommandEnter + 9;
@@ -35,7 +35,9 @@ export function CliAnimation({ className }: { className?: string }) {
   lines.push(
     <span key="command_type">
       {installCmd.substring(0, tick)}
-      {tick < timeCommandEnter && <div className="inline-block h-3 w-1 animate-pulse bg-white" />}
+      {tick < timeCommandEnter && (
+        <div className="inline-block h-3 w-1 animate-pulse bg-white" />
+      )}
     </span>,
   );
 
@@ -48,7 +50,9 @@ export function CliAnimation({ className }: { className?: string }) {
       <Fragment key="command_response">
         {tick > timeCommandRun + 1 && (
           <>
-            <span className="font-bold">{"[1/5] Scanning for xschema config files"}</span>
+            <span className="font-bold">
+              {"[1/5] Scanning for xschema config files"}
+            </span>
             <span>{"  → Found 2 config files, 3 schemas (typescript)"}</span>
           </>
         )}
@@ -60,9 +64,15 @@ export function CliAnimation({ className }: { className?: string }) {
         )}
         {tick > timeCommandRun + 3 && (
           <>
-            <span className="text-brand">{"  → users:Profile from @xschemadev/effect"}</span>
-            <span className="text-brand-secondary">{"  → notes:Note from @xschemadev/zod"}</span>
-            <span className="text-brand-secondary">{"  → notes:Tag from @xschemadev/arktype"}</span>
+            <span className="text-brand">
+              {"  → users:Profile from @xschemadev/effect"}
+            </span>
+            <span className="text-brand-secondary">
+              {"  → notes:Note from @xschemadev/zod"}
+            </span>
+            <span className="text-brand-secondary">
+              {"  → notes:Tag from @xschemadev/arktype"}
+            </span>
             <span>{"✓ Fetched 3 schemas"}</span>
           </>
         )}
@@ -118,7 +128,8 @@ export function CliAnimation({ className }: { className?: string }) {
       )}
       <pre className="overflow-hidden rounded-xl border text-sm shadow-lg bg-fd-card">
         <div className="flex flex-row items-center gap-2 border-b px-4 py-2">
-          <TerminalIcon className="size-4" /> <span className="font-bold">Terminal</span>
+          <TerminalIcon className="size-4" />{" "}
+          <span className="font-bold">Terminal</span>
           <div className="grow" />
           <div className="size-2 rounded-full bg-red-400" />
         </div>
@@ -135,7 +146,7 @@ function NotificationWindow(props: HTMLAttributes<HTMLDivElement>) {
     <div
       {...props}
       className={cn(
-        'overflow-hidden rounded-md border bg-fd-background shadow-xl',
+        "overflow-hidden rounded-md border bg-fd-background shadow-xl",
         props.className,
       )}
     >

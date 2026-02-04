@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
-import { Dithering, ImageDithering } from '@paper-design/shaders-react';
-import { useIsMobile } from '@/hooks/useMobile';
-import GorillaImage from '@/assets/gorilla.svg';
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { Dithering, ImageDithering } from "@paper-design/shaders-react";
+import { useIsMobile } from "@/hooks/useMobile";
+import GorillaImage from "@/assets/gorilla.svg";
 
 export function Hero() {
   const { resolvedTheme } = useTheme();
@@ -24,7 +24,7 @@ export function Hero() {
       {showShaders && (
         <Dithering
           colorBack="#00000000"
-          colorFront={resolvedTheme === 'dark' ? '#22231e' : '#ffeeb2'}
+          colorFront={resolvedTheme === "dark" ? "#22231e" : "#ffeeb2"}
           shape="simplex"
           type="4x4"
           size={4}
@@ -39,8 +39,8 @@ export function Hero() {
           width={127 * (isMobile ? 2.8 : isMediumScreen ? 3.5 : 4)}
           height={162 * (isMobile ? 2.8 : isMediumScreen ? 3.5 : 4)}
           colorBack="#00000000"
-          colorFront={resolvedTheme === 'dark' ? '#6b4b3e' : '#fa8023'}
-          originalColors={resolvedTheme === 'light'}
+          colorFront={resolvedTheme === "dark" ? "#6b4b3e" : "#fa8023"}
+          originalColors={resolvedTheme === "light"}
           type="8x8"
           scale={1}
           size={4}

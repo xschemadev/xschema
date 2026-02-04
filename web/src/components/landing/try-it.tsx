@@ -1,8 +1,8 @@
-import { cn } from '@/lib/cn';
-import { headingVariants } from '@/components/landing/variants';
-import { BorderBeam } from '../ui/border-beam';
-import { CliAnimation } from './cli-animation';
-import { Arrow } from '../ui/arrow';
+import { cn } from "@/lib/cn";
+import { headingVariants } from "@/components/landing/variants";
+import { BorderBeam } from "../ui/border-beam";
+import { CliAnimation } from "./cli-animation";
+import { Arrow } from "../ui/arrow";
 
 const notesSchemaConfig = `{
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
@@ -43,8 +43,8 @@ export function TryIt({ className }: { className?: string }) {
       <div className="col-span-full">
         <h2
           className={cn(
-            headingVariants({ variant: 'h2' }),
-            'text-brand font-mono font-bold uppercase',
+            headingVariants({ variant: "h2" }),
+            "text-brand font-mono font-bold uppercase",
           )}
         >
           Try it.

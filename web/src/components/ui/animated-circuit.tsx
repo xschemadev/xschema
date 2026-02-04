@@ -286,11 +286,7 @@ const AnimatedCircuit = ({
           />
         </mask>
         <mask id={`${idPrefix}-mask-6`}>
-          <path
-            d="M 94.8 95 v -36"
-            strokeWidth="0.5"
-            stroke="white"
-          />
+          <path d="M 94.8 95 v -36" strokeWidth="0.5" stroke="white" />
         </mask>
         <mask id={`${idPrefix}-mask-7`}>
           <path

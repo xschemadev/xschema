@@ -14,32 +14,27 @@ const stages: PipelineStage[] = [
   {
     id: "parse",
     label: "Parse",
-    description:
-      "Discovers config files and extracts schema declarations.",
+    description: "Discovers config files and extracts schema declarations.",
   },
   {
     id: "retrieve",
     label: "Retrieve",
-    description:
-      "Fetches schemas from files, URLs, or inline definitions.",
+    description: "Fetches schemas from files, URLs, or inline definitions.",
   },
   {
     id: "process",
     label: "Process",
-    description:
-      "Normalizes, validates, resolves references, bundles.",
+    description: "Normalizes, validates, resolves references, bundles.",
   },
   {
     id: "generate",
     label: "Generate",
-    description:
-      "Delegates code generation to the target adapter.",
+    description: "Delegates code generation to the target adapter.",
   },
   {
     id: "inject",
     label: "Inject",
-    description:
-      "Writes generated validators and types to your project.",
+    description: "Writes generated validators and types to your project.",
   },
 ];
 
@@ -52,7 +47,8 @@ const NODE_WIDTH = 110;
 const NODE_HEIGHT = 40;
 const NODE_RX = 8;
 const NODE_Y = (SVG_HEIGHT - NODE_HEIGHT) / 2;
-const NODE_SPACING = (SVG_WIDTH - stages.length * NODE_WIDTH) / (stages.length - 1);
+const NODE_SPACING =
+  (SVG_WIDTH - stages.length * NODE_WIDTH) / (stages.length - 1);
 
 function getNodeX(index: number): number {
   return index * (NODE_WIDTH + NODE_SPACING);
@@ -172,7 +168,9 @@ function PipelineSvg({
               height={NODE_HEIGHT}
               rx={NODE_RX}
               fill={isActive ? "var(--color-brand)" : "var(--color-fd-card)"}
-              stroke={isActive ? "var(--color-brand)" : "var(--color-fd-border)"}
+              stroke={
+                isActive ? "var(--color-brand)" : "var(--color-fd-border)"
+              }
               strokeWidth="1.5"
               className="transition-colors duration-200"
             />
@@ -252,15 +250,15 @@ export function PipelineAnimation({
       <h2
         className={cn(
           headingVariants({ variant: "h2" }),
-          "text-brand text-center font-mono font-bold uppercase"
+          "text-brand text-center font-mono font-bold uppercase",
         )}
       >
         Under the hood.
       </h2>
       <h3
         className={cn(
-          headingVariants({ variant: 'h3' }),
-          'col-span-full text-brand text-center font-mono font-bold uppercase',
+          headingVariants({ variant: "h3" }),
+          "col-span-full text-brand text-center font-mono font-bold uppercase",
         )}
       >
         One pipeline to rule them all.
@@ -283,10 +281,7 @@ export function PipelineAnimation({
 
         {/* Description panel */}
         <div className="flex flex-col gap-4 lg:w-[280px] lg:shrink-0 lg:pt-2">
-          <StageDescription
-            stage={stages[activeIndex]}
-            index={activeIndex}
-          />
+          <StageDescription stage={stages[activeIndex]} index={activeIndex} />
           {/* Stage list for context */}
           <div className="flex flex-col gap-1 mt-2">
             {stages.map((stage, i) => (
@@ -297,7 +292,7 @@ export function PipelineAnimation({
                   "flex items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm transition-colors",
                   i === activeIndex
                     ? "bg-brand/10 text-brand font-medium"
-                    : "text-fd-muted-foreground hover:text-fd-foreground hover:bg-fd-muted/50"
+                    : "text-fd-muted-foreground hover:text-fd-foreground hover:bg-fd-muted/50",
                 )}
                 onMouseEnter={() => setActiveIndex(i)}
                 onClick={() => setActiveIndex(i)}
@@ -307,7 +302,7 @@ export function PipelineAnimation({
                     "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
                     i === activeIndex
                       ? "bg-brand text-brand-foreground"
-                      : "bg-fd-muted text-fd-muted-foreground"
+                      : "bg-fd-muted text-fd-muted-foreground",
                   )}
                 >
                   {i + 1}

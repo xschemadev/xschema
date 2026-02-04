@@ -36,7 +36,7 @@ const AnimatedFlow = ({
     <div
       className={cn(
         "relative flex h-[350px] w-full max-w-[500px] flex-col items-center",
-        className
+        className,
       )}
     >
       {/* SVG Paths  */}

@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/cn';
+import type { ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 export interface ComparisonRow {
   label: string;
@@ -19,7 +19,7 @@ export function ComparisonGrid({
   className,
 }: ComparisonGridProps) {
   return (
-    <div className={cn('w-full overflow-x-auto', className)}>
+    <div className={cn("w-full overflow-x-auto", className)}>
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b-4 border-fd-border">

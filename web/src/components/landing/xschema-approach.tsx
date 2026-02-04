@@ -1,43 +1,40 @@
-import { Check, X } from 'lucide-react';
-import { headingVariants } from '@/components/landing/variants';
-import { cn } from '@/lib/cn';
+import { Check, X } from "lucide-react";
+import { headingVariants } from "@/components/landing/variants";
+import { cn } from "@/lib/cn";
 import {
   ComparisonGrid,
   type ComparisonRow,
-} from '@/components/ui/comparison-grid';
-import { Arrow } from '../ui/arrow';
-import { PlusCard } from '../ui/plus-card';
+} from "@/components/ui/comparison-grid";
+import { Arrow } from "../ui/arrow";
+import { PlusCard } from "../ui/plus-card";
 
 const checkIcon = <Check className="size-4 text-brand" />;
 const crossIcon = <X className="size-4 text-fd-muted-foreground/60" />;
 
 const comparisonRows: ComparisonRow[] = [
   {
-    label: 'Shared pipeline',
-    values: ['One CLI for all adapters', 'Each tool builds its own'],
+    label: "Shared pipeline",
+    values: ["One CLI for all adapters", "Each tool builds its own"],
     icons: [checkIcon, crossIcon],
   },
   {
-    label: 'Compliance testing',
+    label: "Compliance testing",
+    values: ["Official JSON Schema Test Suite", "Often absent or incomplete"],
+    icons: [checkIcon, crossIcon],
+  },
+  {
+    label: "Feature support",
     values: [
-      'Official JSON Schema Test Suite',
-      'Often absent or incomplete',
+      "Documented per adapter with exact coverage",
+      "Missing or incomplete",
     ],
     icons: [checkIcon, crossIcon],
   },
   {
-    label: 'Feature support',
+    label: "Languages",
     values: [
-      'Documented per adapter with exact coverage',
-      'Missing or incomplete',
-    ],
-    icons: [checkIcon, crossIcon],
-  },
-  {
-    label: 'Languages',
-    values: [
-      'Multi-language: TypeScript, Python, Go, Rust',
-      'One tool per language',
+      "Multi-language: TypeScript, Python, Go, Rust",
+      "One tool per language",
     ],
     icons: [checkIcon, crossIcon],
   },
@@ -62,8 +59,13 @@ export function XschemaApproach({ className }: { className?: string }) {
           color="#c6bb58"
         />
       </p>
-      <PlusCard className={cn('py-10 max-w-4xl mx-auto')}>
-        <h2 className={cn(headingVariants({ variant: 'h2' }), 'text-center font-mono font-bold')}>
+      <PlusCard className={cn("py-10 max-w-4xl mx-auto")}>
+        <h2
+          className={cn(
+            headingVariants({ variant: "h2" }),
+            "text-center font-mono font-bold",
+          )}
+        >
           xschema APPROACH.
         </h2>
         <p className="mt-2 text-fd-muted-foreground text-center">
@@ -75,8 +77,8 @@ export function XschemaApproach({ className }: { className?: string }) {
             <li>The CLI does the heavy lifting.</li>
             <li>Adapters receive clean, self-contained schemas and only handle code generation.</li>
           </ul> */}
-          <div className='flex flex-col max-w-md mx-auto'>
-            <div className='font-mono w-fit pr-4'>
+          <div className="flex flex-col max-w-md mx-auto">
+            <div className="font-mono w-fit pr-4">
               <p className="text-base text-brand-secondary">CLI</p>
               <ul className="text-sm border border-brand-secondary border-dashed p-2 [&>li]:ml-3 [&>li]:list-disc">
                 <li>parses your config files</li>
@@ -85,16 +87,18 @@ export function XschemaApproach({ className }: { className?: string }) {
                 <li>resolves all references</li>
                 <li>validates them</li>
               </ul>
-              <span className='text-xs tracking-tight text-brand-secondary'>{"-->"}</span>
+              <span className="text-xs tracking-tight text-brand-secondary">
+                {"-->"}
+              </span>
             </div>
-            <div className='font-mono w-fit self-end text-right pl-4'>
+            <div className="font-mono w-fit self-end text-right pl-4">
               <p className="text-base text-brand">ADAPTER</p>
               <ul className="text-sm border border-brand border-dashed p-2 [&>li]:ml-3 [&>li]:list-disc">
                 <li>handles code generation</li>
               </ul>
-              <span className='text-xs tracking-tight text-brand'>{"<--"}</span>
+              <span className="text-xs tracking-tight text-brand">{"<--"}</span>
             </div>
-            <div className='font-mono w-fit pr-4'>
+            <div className="font-mono w-fit pr-4">
               <p className="text-base text-brand-secondary">CLI</p>
               <ul className="text-sm border border-brand-secondary border-dashed p-2 [&>li]:ml-3 [&>li]:list-disc">
                 <li>injects the schemas in your codebase</li>
@@ -112,7 +116,7 @@ export function XschemaApproach({ className }: { className?: string }) {
       </PlusCard>
       <ComparisonGrid
         className="my-10 max-w-6xl mx-auto"
-        columnHeaders={['xschema', 'One-off converters']}
+        columnHeaders={["xschema", "One-off converters"]}
         rows={comparisonRows}
       />
     </section>

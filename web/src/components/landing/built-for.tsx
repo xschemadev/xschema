@@ -1,17 +1,17 @@
-import { headingVariants, cardVariants } from '@/components/landing/variants';
-import { cn } from '@/lib/cn';
-import { PlusCard } from '../ui/plus-card';
+import { headingVariants, cardVariants } from "@/components/landing/variants";
+import { cn } from "@/lib/cn";
+import { PlusCard } from "../ui/plus-card";
 
 const frameworkBullets = [
-  'Full type inference and autocomplete',
-  'Schemas from files, URLs, or inline definitions',
-  'No runtime conversion cost',
+  "Full type inference and autocomplete",
+  "Schemas from files, URLs, or inline definitions",
+  "No runtime conversion cost",
 ];
 
 const runtimeBullets = [
-  'Programmatic convert() API',
-  'Dynamic schema sources',
-  'Per-schema conversion cost',
+  "Programmatic convert() API",
+  "Dynamic schema sources",
+  "Per-schema conversion cost",
 ];
 
 function AudienceCard({
@@ -29,11 +29,14 @@ function AudienceCard({
   };
 }) {
   return (
-    <div className={cn(cardVariants(), 'flex flex-col p-4 sm:p-6')}>
+    <div className={cn(cardVariants(), "flex flex-col p-4 sm:p-6")}>
       <h3 className="text-2xl text-center font-semibold">{title}</h3>
       <div className="mt-6 space-y-3 text-fd-muted-foreground">
         {bodyParagraphs.map((p, i) => (
-          <p key={i} className="text-balance font-light border-dotted border-l-2 border-brand-200 pl-4 italic">
+          <p
+            key={i}
+            className="text-balance font-light border-dotted border-l-2 border-brand-200 pl-4 italic"
+          >
             {p}
           </p>
         ))}
@@ -66,8 +69,8 @@ export function BuiltFor({ className }: { className?: string }) {
     <section className={cn(className)}>
       <h2
         className={cn(
-          headingVariants({ variant: 'h2' }),
-          'text-brand text-center font-mono font-bold uppercase',
+          headingVariants({ variant: "h2" }),
+          "text-brand text-center font-mono font-bold uppercase",
         )}
       >
         Built for.
@@ -76,24 +79,24 @@ export function BuiltFor({ className }: { className?: string }) {
         <AudienceCard
           title="Developers shipping real projects."
           bodyParagraphs={[
-            'You have JSON Schemas \u2014 from an API contract, an OpenAPI spec, a schema registry, or a local definition \u2014 and you need native validators in your codebase.'
+            "You have JSON Schemas \u2014 from an API contract, an OpenAPI spec, a schema registry, or a local definition \u2014 and you need native validators in your codebase.",
           ]}
           mode={{
-            heading: 'Framework Mode',
-            badge: 'Build-time',
-            body: 'Schemas are declared in config files and converted at build time.',
+            heading: "Framework Mode",
+            badge: "Build-time",
+            body: "Schemas are declared in config files and converted at build time.",
             bullets: frameworkBullets,
           }}
         />
         <AudienceCard
           title="Library maintainers who need codegen."
           bodyParagraphs={[
-            'You maintain a library or framework that needs to generate validators from JSON Schema programmatically, but you don\u2019t want to own the conversion logic.',
+            "You maintain a library or framework that needs to generate validators from JSON Schema programmatically, but you don\u2019t want to own the conversion logic.",
           ]}
           mode={{
-            heading: 'Runtime Mode',
-            badge: 'Programmatic',
-            body: 'Convert schemas programmatically at runtime. When codegen is part of the workflow.',
+            heading: "Runtime Mode",
+            badge: "Programmatic",
+            body: "Convert schemas programmatically at runtime. When codegen is part of the workflow.",
             bullets: runtimeBullets,
           }}
         />

@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { baseOptions, linkItems } from "@/lib/layout.shared";
 import { Book, Puzzle } from "lucide-react";
-import { cn } from '@/lib/cn';
-import { Hero } from '@/components/landing/hero';
-import { buttonVariants } from '@/components/landing/variants';
-import { JungleProblem } from '@/components/landing/jungle-problem';
-import { XschemaApproach } from '@/components/landing/xschema-approach';
-import { BuiltFor } from '@/components/landing/built-for';
-import { OpenSourceFooter } from '@/components/landing/open-source-footer';
-import { TryIt } from '@/components/landing/try-it';
+import { cn } from "@/lib/cn";
+import { Hero } from "@/components/landing/hero";
+import { buttonVariants } from "@/components/landing/variants";
+import { JungleProblem } from "@/components/landing/jungle-problem";
+import { XschemaApproach } from "@/components/landing/xschema-approach";
+import { BuiltFor } from "@/components/landing/built-for";
+import { OpenSourceFooter } from "@/components/landing/open-source-footer";
+import { TryIt } from "@/components/landing/try-it";
 import { MOTTO, STACK_BLITZ_URL } from "@/lib/constants";
 import Container from "@/components/container";
 import { ZigzagSeparator } from "@/components/ui/zig-zag-separator";
@@ -67,18 +67,29 @@ function Page() {
             </p>
             <h1 className="text-4xl my-8 leading-tight font-medium xl:text-5xl xl:mb-12">
               Cross-language type-safety,
-              <br />but it's <span className="underline decoration-wavy decoration-brand decoration-3 underline-offset-4">not</span> a
-              <span className="italic font-thin"> f@&#ing</span> <span className="text-brand">jungle</span>.
+              <br />
+              but it's{" "}
+              <span className="underline decoration-wavy decoration-brand decoration-3 underline-offset-4">
+                not
+              </span>{" "}
+              a<span className="italic font-thin"> f@&#ing</span>{" "}
+              <span className="text-brand">jungle</span>.
             </h1>
             <div className="flex flex-row items-center justify-center gap-4 flex-wrap w-fit">
-              <Link to="/docs/$" className={cn(buttonVariants(), 'max-sm:text-sm')}>
+              <Link
+                to="/docs/$"
+                className={cn(buttonVariants(), "max-sm:text-sm")}
+              >
                 Getting Started
               </Link>
               <a
                 href={STACK_BLITZ_URL}
                 target="_blank"
                 rel="noreferrer noopener"
-                className={cn(buttonVariants({ variant: 'secondary' }), 'max-sm:text-sm')}
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "max-sm:text-sm",
+                )}
               >
                 Open in StackBlitz
               </a>
@@ -87,8 +98,16 @@ function Page() {
         </div>
         <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full md:px-12 lg:grid-cols-2">
           <p className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
-            <span className="underline decoration-wavy decoration-brand decoration-3 underline-offset-4">xschema</span> is an ecosystem of tools to bring <span className="text-brand font-medium">cross-language type-safety validation </span>
-            in your codebases. It leverages the power of <span className="text-brand font-medium">JSON Schema</span> to validate your data across languages.
+            <span className="underline decoration-wavy decoration-brand decoration-3 underline-offset-4">
+              xschema
+            </span>{" "}
+            is an ecosystem of tools to bring{" "}
+            <span className="text-brand font-medium">
+              cross-language type-safety validation{" "}
+            </span>
+            in your codebases. It leverages the power of{" "}
+            <span className="text-brand font-medium">JSON Schema</span> to
+            validate your data across languages.
           </p>
           <ZigzagSeparator className="bg-fd-muted-foreground max-w-xl mx-auto col-span-full" />
           <JungleProblem className="col-span-full" />
