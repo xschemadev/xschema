@@ -20,14 +20,14 @@ export function ComparisonGrid({
 }: ComparisonGridProps) {
   return (
     <div className={cn('w-full overflow-x-auto', className)}>
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full border-collapse">
         <thead>
-          <tr className="border-b border-fd-border">
+          <tr className="border-b-4 border-fd-border">
             <th className="py-3 px-4 text-left font-medium text-fd-muted-foreground w-[30%]" />
-            <th className="py-3 px-4 text-left font-semibold text-brand">
+            <th className="py-3 px-4 text-left text-xl font-medium text-brand">
               {columnHeaders[0]}
             </th>
-            <th className="py-3 px-4 text-left font-medium text-fd-muted-foreground">
+            <th className="py-3 px-4 text-left text-xl font-medium text-fd-muted-foreground">
               {columnHeaders[1]}
             </th>
           </tr>
