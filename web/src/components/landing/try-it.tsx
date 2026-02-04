@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn';
 import { headingVariants } from '@/components/landing/variants';
 import { BorderBeam } from '../ui/border-beam';
-import { CliAnimation } from './page.client';
+import { CliAnimation } from './cli-animation';
 import { Arrow } from '../ui/arrow';
 
 const notesSchemaConfig = `{

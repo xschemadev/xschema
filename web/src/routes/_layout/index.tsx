@@ -3,7 +3,7 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { baseOptions, linkItems } from "@/lib/layout.shared";
 import { Book, Puzzle } from "lucide-react";
 import { cn } from '@/lib/cn';
-import { Hero } from '@/components/landing/page.client';
+import { Hero } from '@/components/landing/hero';
 import { buttonVariants } from '@/components/landing/variants';
 import { JungleProblem } from '@/components/landing/jungle-problem';
 import { XschemaApproach } from '@/components/landing/xschema-approach';

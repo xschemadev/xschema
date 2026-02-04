@@ -1,5 +1,5 @@
 import { Check, X } from 'lucide-react';
-import { headingVariants, cardVariants } from '@/components/landing/variants';
+import { headingVariants } from '@/components/landing/variants';
 import { cn } from '@/lib/cn';
 import {
   ComparisonGrid,
@@ -115,39 +115,6 @@ export function XschemaApproach({ className }: { className?: string }) {
         columnHeaders={['xschema', 'One-off converters']}
         rows={comparisonRows}
       />
-      {/* <ComplianceCallout className="max-w-4xl mx-auto" /> */}
-    </section>
-  );
-}
-
-function ComplianceCallout({ className }: { className?: string }) {
-  return (
-    <section
-      className={cn(
-        cardVariants({ variant: 'secondary' }),
-        className,
-      )}
-    >
-      <h3
-        className={cn(
-          headingVariants({ variant: 'h3' }),
-        )}
-      >
-        Built for compliance.
-      </h3>
-      <ul className="mt-4 text-lg [&>li]:border-b [&>li]:border-brand/30 [&>li]:py-2 [&>li]:last:border-b-0">
-        <li>
-          Tested against the official JSON Schema Test Suite.
-        </li>
-        <li>
-          Every adapter reports its
-          exact coverage. Supported features, unsupported features, and the
-          technical reason behind each gap &mdash; all documented, all tested.
-        </li>
-        <li>
-          Not a footnote, a whole documentation page for each adapter.
-        </li>
-      </ul>
     </section>
   );
 }
