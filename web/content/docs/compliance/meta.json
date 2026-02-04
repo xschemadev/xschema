@@ -3,9 +3,5 @@
   "title": "Compliance",
   "description": "JSON Schema Test Suite compliance testing",
   "icon": "ShieldCheck",
-  "pages": [
-    "index",
-    "how-it-works",
-    "unsupported-features"
-  ]
+  "pages": ["index", "how-it-works", "unsupported-features"]
 }

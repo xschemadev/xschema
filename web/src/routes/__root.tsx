@@ -1,25 +1,60 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
-import * as React from 'react';
-import appCss from '@/styles/app.css?url';
-import { RootProvider } from 'fumadocs-ui/provider/tanstack';
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from "@tanstack/react-router";
+import * as React from "react";
+import appCss from "@/styles/app.css?url";
+import { seo } from "@/lib/seo";
+import { MOTTO, XSCHEMA_NAME } from "@/lib/constants";
+import { NotFound } from "@/components/not-found";
+import { Error } from "@/components/error";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
       {
-        title: 'xschema',
+        title: XSCHEMA_NAME,
       },
+      ...seo({
+        title: `${XSCHEMA_NAME} | ${MOTTO}`,
+        description: `xschema converts JSON Schemas to native validators with full type inference.`,
+      }),
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
+      { rel: "icon", href: "/favicon.ico" },
+    ],
   }),
-  component: RootComponent,
+  errorComponent: () => <Error />,
+  notFoundComponent: () => <NotFound />,
+  shellComponent: RootComponent,
 });
 
 function RootComponent() {
@@ -37,7 +72,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        {children}
         <Scripts />
       </body>
     </html>

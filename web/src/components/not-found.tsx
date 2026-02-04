@@ -1,20 +1,45 @@
-import { Link } from '@tanstack/react-router';
-import { HomeLayout } from 'fumadocs-ui/layouts/home';
+import { baseOptions, linkItems } from "@/lib/layout.shared";
+import { Link } from "@tanstack/react-router";
+import { HomeLayout } from "fumadocs-ui/layouts/home";
+import { Book, Puzzle } from "lucide-react";
 
 export function NotFound() {
   return (
     <HomeLayout
-      nav={{
-        title: 'Tanstack Start',
-      }}
-      className="text-center py-32 justify-center"
+      {...baseOptions()}
+      links={[
+        {
+          type: "menu",
+          on: "menu",
+          text: "Documentation",
+          items: [
+            {
+              text: "Getting Started",
+              url: "/docs",
+              icon: <Book />,
+            },
+            {
+              text: "Adapters",
+              url: "/docs/adapters",
+              icon: <Puzzle />,
+            },
+          ],
+        },
+        {
+          type: "main",
+          on: "nav",
+          text: "Documentation",
+          url: "/dcocs",
+        },
+        ...linkItems,
+      ]}
     >
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 justify-center flex-1">
         <h1 className="text-6xl font-bold text-fd-muted-foreground">404</h1>
         <h2 className="text-2xl font-semibold">Page Not Found</h2>
         <p className="text-fd-muted-foreground max-w-md">
-          The page you are looking for might have been removed, had its name changed, or is
-          temporarily unavailable.
+          The page you are looking for might have been removed, had its name
+          changed, or is temporarily unavailable.
         </p>
         <Link
           to="/"

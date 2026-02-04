@@ -2,7 +2,10 @@ import { createMiddleware, createStart } from "@tanstack/react-start";
 import { rewritePath } from "fumadocs-core/negotiation";
 
 // Rewrites /docs/foo/bar.mdx -> /llms.mdx/docs/foo/bar
-const { rewrite: rewriteLLM } = rewritePath("/docs/{*path}.mdx", "/llms.mdx/docs/{*path}");
+const { rewrite: rewriteLLM } = rewritePath(
+  "/docs/{*path}.mdx",
+  "/llms.mdx/docs/{*path}",
+);
 
 const llmRewriteMiddleware = createMiddleware().server(
   async ({ request, next }) => {
@@ -15,7 +18,7 @@ const llmRewriteMiddleware = createMiddleware().server(
     }
 
     return next();
-  }
+  },
 );
 
 export const startInstance = createStart(() => ({
