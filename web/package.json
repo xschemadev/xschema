@@ -24,7 +24,6 @@
     "@tabler/icons-react": "^3.36.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.29.2",
     "fumadocs-core": "16.4.4",
     "fumadocs-mdx": "14.2.4",
     "fumadocs-twoslash": "^3.1.12",

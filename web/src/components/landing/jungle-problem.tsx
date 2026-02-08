@@ -1,6 +1,12 @@
 import { headingVariants, cardVariants } from "@/components/landing/variants";
 import { cn } from "@/lib/cn";
+import { motion } from "motion/react";
 import { Bug, FlaskConicalOff, Replace, Workflow } from "lucide-react";
+import {
+  staggerContainer,
+  staggerItem,
+  defaultViewport,
+} from "@/components/landing/animation-variants";
 
 const problems = [
   {
@@ -30,32 +36,46 @@ const problems = [
 
 export function JungleProblem({ className }: { className?: string }) {
   return (
-    <section className={cn(className)}>
-      <h2
+    <motion.section
+      className={cn(className)}
+      variants={staggerContainer}
+      initial="hidden"
+      whileInView="visible"
+      viewport={defaultViewport}
+    >
+      <motion.h2
         className={cn(
           headingVariants({ variant: "h2" }),
           "text-brand text-center font-mono font-bold uppercase",
         )}
+        variants={staggerItem}
       >
         The jungle problem.
-      </h2>
-      <p className="mt-2 text-fd-muted-foreground text-center">
+      </motion.h2>
+      <motion.p className="mt-2 text-fd-muted-foreground text-center" variants={staggerItem}>
         Today, every library has its own converter.
-      </p>
-      <div className="mt-4 space-y-6 leading-relaxed max-w-5xl mx-auto">
+      </motion.p>
+      <motion.div className="mt-4 space-y-6 leading-relaxed max-w-5xl mx-auto" variants={staggerItem}>
         <p className="text-balance font-light max-w-md mx-auto border-dotted border-l-2 border-brand-200 pl-4 italic">
           JSON Schema to Zod? There&apos;s a package for that. Pydantic? Another
           one. ArkType? You&apos;re on your own.
         </p>
         <p className="text-center text-lg font-semibold">You end up with</p>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <motion.ul
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+        >
           {problems.map((item) => (
-            <li
+            <motion.li
               key={item.label}
               className={cn(
                 cardVariants({ variant: "default" }),
                 "px-0 relative group/feature bg-transparent border-outset",
               )}
+              variants={staggerItem}
             >
               <div className="pointer-events-none absolute inset-0 z-0 size-full bg-linear-to-t from-fd-card to-transparent rounded-2xl opacity-0 transition duration-200 group-hover/feature:opacity-100" />
               <div className="relative px-6 mb-3 z-10 text-muted-foreground">
@@ -70,10 +90,10 @@ export function JungleProblem({ className }: { className?: string }) {
               <p className="relative text-base z-10 text-balance px-6">
                 {item.description}
               </p>
-            </li>
+            </motion.li>
           ))}
-        </ul>
-      </div>
-    </section>
+        </motion.ul>
+      </motion.div>
+    </motion.section>
   );
 }
