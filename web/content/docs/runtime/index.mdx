@@ -1,41 +1,40 @@
 ---
 title: Runtime Mode
-description: Convert JSON Schema to validators at runtime (coming soon)
+description: Programmatic access to the xschema pipeline — convert JSON Schema to native validators at runtime
 icon: Zap
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
-import { Rocket, Github } from "lucide-react";
+import { BookOpen, FileCode } from "lucide-react";
 
-<Callout type="info">
-Runtime mode is **coming soon**. This section documents the planned API.
-</Callout>
-
-## What is Runtime Mode?
-
-Runtime mode allows you to convert JSON Schema to validators **dynamically** at runtime, rather than at build time.
+Runtime mode gives you programmatic access to the xschema conversion pipeline. Feed it JSON schemas, get back adapter output — code strings, type expressions, and imports — ready to use in codegen, tooling, or dynamic validation scenarios.
 
 ```typescript
-// Planned API
 import { convert } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
 
-const jsonSchema = await fetch("/api/schema/user").then(r => r.json());
-const UserSchema = convert(jsonSchema, { adapter: "zod" });
+const results = await convert(
+  { namespace: "user", id: "User", schema: { type: "object", properties: { name: { type: "string" } } } },
+  { adapter }
+);
 
-// Use like any other Zod schema
-const result = UserSchema.safeParse(data);
+console.log(results[0].schema); // "z.object({ name: z.string().optional() })"
+console.log(results[0].type);   // "z.infer<typeof user_User>"
 ```
+
+Under the hood, `convert` calls the xschema CLI as a subprocess. The same conversion logic, bundling, and compliance guarantees from framework mode apply here — you're just invoking it programmatically instead of through config files.
 
 ## When to Use Runtime Mode
 
 | Use Case | Recommended Mode |
 |----------|------------------|
-| Schemas known at build time | **Framework** (build-time) |
-| Dynamic schemas from API | **Runtime** |
+| Schemas known at build time | [Framework](/docs/getting-started/typescript) (build-time) |
+| Dynamic schemas from an API | **Runtime** |
 | Schema registry integration | **Runtime** |
 | Multi-tenant apps with custom schemas | **Runtime** |
-| Prototyping/REPL usage | **Runtime** |
+| Codegen tools and CLIs | **Runtime** |
+| Prototyping / REPL usage | **Runtime** |
 
 ## Framework vs Runtime
 
@@ -43,76 +42,32 @@ const result = UserSchema.safeParse(data);
 |--------|------------------------|---------|
 | TypeScript types | Full inference | Generic types |
 | Bundle size | Tree-shaken, minimal | Includes converter |
-| Performance | Zero overhead | Conversion cost per schema |
+| Performance | Zero runtime overhead | Conversion cost per schema |
 | Schema discovery | Config files | Programmatic |
-| Compliance tested | Yes | Yes |
+| Output format | Generated source files | Code strings (ConvertResult) |
+| Compliance tested | Yes | Yes (same pipeline) |
 
-## Planned API Preview
+<Callout>
+Framework mode is the right default for most apps. Use runtime mode when schemas aren't known until your code runs, or when building tools on top of xschema.
+</Callout>
 
-### Basic Usage
+## Prerequisites
 
-```typescript
-import { convert } from "@xschemadev/runtime";
-import type { z } from "zod";
-
-// Convert a schema
-const schema = convert<z.ZodType>(jsonSchema, { adapter: "zod" });
-
-// Use the schema
-const result = schema.safeParse(data);
-```
-
-### With Caching
-
-```typescript
-import { createRuntime } from "@xschemadev/runtime";
-
-const runtime = createRuntime({
-  adapter: "zod",
-  cache: true, // Cache converted schemas
-});
-
-// Convert and cache
-const UserSchema = runtime.convert(userJsonSchema);
-const OrderSchema = runtime.convert(orderJsonSchema);
-```
-
-### With Multiple Adapters
-
-```typescript
-import { createRuntime } from "@xschemadev/runtime";
-
-const zodRuntime = createRuntime({ adapter: "zod" });
-const arktypeRuntime = createRuntime({ adapter: "arktype" });
-
-// Same schema, different validators
-const zodSchema = zodRuntime.convert(jsonSchema);
-const arktypeSchema = arktypeRuntime.convert(jsonSchema);
-```
-
-## Planned Features
-
-- **All adapters supported**: Zod, ArkType, Effect, Valibot
-- **Same compliance**: Runtime uses the same conversion logic as build-time
-- **Caching**: Optional caching of converted schemas
-- **Streaming**: Convert schemas as they're received
-- **Bundle options**: Bring your own adapter or use bundled
-
-## Current Status
-
-Runtime mode is in development. For now, use [Framework mode](/docs/getting-started/typescript) which generates validators at build time.
+- **xschema CLI** installed and available in PATH ([installation guide](/docs/cli))
+- **Node.js 18+** (runtime uses `child_process.spawn`)
+- **An adapter package** installed (e.g., `@xschemadev/zod` with `zod`)
 
 <Cards>
   <Card
-    title="Framework Getting Started"
-    description="Generate validators at build time (recommended)"
-    href="/docs/getting-started/typescript"
-    icon={<Rocket />}
+    title="Getting Started"
+    description="Install the runtime package and convert your first schema"
+    href="/docs/runtime/getting-started/typescript"
+    icon={<BookOpen />}
   />
   <Card
-    title="Follow Progress"
-    description="Track runtime mode development on GitHub"
-    href="https://github.com/xschemadev/xschema"
-    icon={<Github />}
+    title="API Reference"
+    description="Full reference for convert(), SchemaInput, ConvertOptions, and ConvertResult"
+    href="/docs/runtime/api-reference"
+    icon={<FileCode />}
   />
 </Cards>

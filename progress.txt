@@ -53,3 +53,9 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Options: adapter (required XSchemaAdapter), cwd, executablePath, allowFetch
 - Build + typecheck pass, all types verified in generated .d.ts
 
+## Task: Write runtime docs - overview page
+- Replaced placeholder "coming soon" content in web/content/docs/runtime/index.mdx
+- Added: quick example with real API (convert + adapter import), "When to Use" table, "Framework vs Runtime" comparison, Prerequisites section, Cards linking to getting-started and api-reference
+- Imports match existing docs patterns (fumadocs-ui Callout/Card/Cards, lucide-react icons)
+- types:check passes (only pre-existing radix-ui error in separator.tsx)
+

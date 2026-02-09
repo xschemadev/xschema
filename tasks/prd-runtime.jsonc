@@ -125,7 +125,7 @@
         "All imports (Callout, Card, Cards, lucide icons) are valid fumadocs-ui imports",
         "Running bun run types:check from web/ succeeds or at least the MDX file has no syntax errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Write runtime docs - TypeScript getting started",
