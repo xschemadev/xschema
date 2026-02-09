@@ -84,7 +84,7 @@
         "Running bun run typecheck from typescript/ succeeds",
         "@xschemadev/runtime is listed in workspace resolution"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Implement @xschemadev/runtime convert function",

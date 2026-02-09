@@ -1,0 +1,22 @@
+{
+	"name": "@xschemadev/runtime",
+	"version": "0.0.1",
+	"type": "module",
+	"description": "XSchema Runtime - programmatic access to the xschema pipeline",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@xschemadev/core": "workspace:*"
+	}
+}

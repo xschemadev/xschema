@@ -37,3 +37,10 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Unit tests: missing --adapter flag, invalid JSON stdin, empty array, external $ref without --allow-fetch
 - All tests pass, go vet clean
 
+## Task: Create @xschemadev/runtime package scaffold
+- Created `typescript/packages/runtime/` with package.json, tsconfig.json, src/index.ts
+- Follows existing patterns: extends tsconfig.base.json, workspace:* dep on core, type module
+- Re-exports ConvertResult and XSchemaAdapter types from @xschemadev/core
+- Workspace auto-discovered via `packages/*` glob in root package.json
+- Build, typecheck, workspace resolution all verified
+
