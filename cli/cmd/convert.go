@@ -68,28 +68,27 @@ func runConvert(cmd *cobra.Command, args []string) error {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			return writeJSONError(fmt.Errorf("failed to get current directory: %w", err))
+			return writeJSONError(cmd, fmt.Errorf("failed to get current directory: %w", err))
 		}
 	}
 
 	// Read stdin
-	stdinData, err := io.ReadAll(os.Stdin)
+	stdinData, err := io.ReadAll(cmd.InOrStdin())
 	if err != nil {
-		return writeJSONError(fmt.Errorf("failed to read stdin: %w", err))
+		return writeJSONError(cmd, fmt.Errorf("failed to read stdin: %w", err))
 	}
 	if len(stdinData) == 0 {
-		return writeJSONError(fmt.Errorf("no input provided on stdin"))
+		return writeJSONError(cmd, fmt.Errorf("no input provided on stdin"))
 	}
 
 	// Parse input
 	var inputs []ConvertSchemaInput
 	if err := json.Unmarshal(stdinData, &inputs); err != nil {
-		return writeJSONError(fmt.Errorf("invalid JSON input: %w", err))
+		return writeJSONError(cmd, fmt.Errorf("invalid JSON input: %w", err))
 	}
 
 	if len(inputs) == 0 {
-		// Empty array -> empty array output
-		fmt.Fprintln(os.Stdout, "[]")
+		fmt.Fprintln(cmd.OutOrStdout(), "[]")
 		return nil
 	}
 
@@ -121,21 +120,21 @@ func runConvert(cmd *cobra.Command, args []string) error {
 		Cache:     sharedCache,
 	})
 	if err != nil {
-		return writeJSONError(fmt.Errorf("processing failed: %w", err))
+		return writeJSONError(cmd, fmt.Errorf("processing failed: %w", err))
 	}
 
 	// Generate via adapter
 	outputs, err := generator.GenerateAll(ctx, processed, convertLang, root)
 	if err != nil {
-		return writeJSONError(fmt.Errorf("generation failed: %w", err))
+		return writeJSONError(cmd, fmt.Errorf("generation failed: %w", err))
 	}
 
 	// Write JSON result to stdout
 	result, err := json.Marshal(outputs)
 	if err != nil {
-		return writeJSONError(fmt.Errorf("failed to marshal output: %w", err))
+		return writeJSONError(cmd, fmt.Errorf("failed to marshal output: %w", err))
 	}
-	fmt.Fprintln(os.Stdout, string(result))
+	fmt.Fprintln(cmd.OutOrStdout(), string(result))
 
 	return nil
 }
@@ -150,10 +149,10 @@ func noFetchFetcher(_ context.Context, uri string) (json.RawMessage, error) {
 }
 
 // writeJSONError writes a JSON error object to stderr and returns the error for cobra exit code handling.
-func writeJSONError(err error) error {
+func writeJSONError(cmd *cobra.Command, err error) error {
 	errObj := map[string]string{"error": err.Error()}
 	data, _ := json.Marshal(errObj)
-	fmt.Fprintln(os.Stderr, string(data))
+	fmt.Fprintln(cmd.ErrOrStderr(), string(data))
 	return err
 }
 

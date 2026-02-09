@@ -23,3 +23,17 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - go build, go vet, go test all pass
 - End-to-end verified: piped JSON schema through zod adapter, got valid ConvertResult output
 
+## Codebase Patterns
+
+### Testing convert command with cobra
+- Refactored convert.go to use `cmd.InOrStdin()` / `cmd.OutOrStdout()` / `cmd.ErrOrStderr()` instead of `os.Stdin`/`os.Stdout`/`os.Stderr` so tests can inject I/O via `rootCmd.SetIn/SetOut/SetErr`
+- For integration tests needing the adapter binary: create temp dir with empty `package.json`, `bun.lock`, and symlink adapter CLI into `node_modules/.bin/xschema-<name>`
+- Use `runtime.Caller(0)` to find adapter CLI path relative to test file
+
+## Task: Add Go CLI convert subcommand tests
+- Created `cli/cmd/convert_test.go` with 6 tests covering all PRD requirements
+- Refactored `convert.go`: writeJSONError now takes `*cobra.Command`, all I/O uses cobra's InOrStdin/OutOrStdout/ErrOrStderr
+- Integration tests (valid single schema, multiple schemas) use symlinked adapter CLI in temp project dir, skip with `testing.Short()`
+- Unit tests: missing --adapter flag, invalid JSON stdin, empty array, external $ref without --allow-fetch
+- All tests pass, go vet clean
+

@@ -69,7 +69,7 @@
         "Running go test ./cmd/ -run TestConvert -v from cli/ passes all tests",
         "Running go vet ./... from cli/ passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Create @xschemadev/runtime package scaffold",
