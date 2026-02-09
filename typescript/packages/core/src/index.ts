@@ -1,5 +1,5 @@
 // Adapter protocol types (existing)
-export type { ConvertInput, ConvertResult } from "./types.js";
+export type { ConvertInput, ConvertResult, XSchemaAdapter } from "./types.js";
 export { createAdapterCLI } from "./cli.js";
 
 // JSON Schema types

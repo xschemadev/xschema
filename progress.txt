@@ -1,0 +1,8 @@
+# Ralph Progress Log
+Started: Mon Feb  9 10:59:29 PM CET 2026
+---
+
+## Task: Add XSchemaAdapter type to @xschemadev/core
+- Added `XSchemaAdapter` interface to `typescript/packages/core/src/types.ts` with `readonly __xschema: true`, `readonly id: string`, `readonly name: string`
+- Re-exported from `index.ts` as type export
+- Build + typecheck pass, type is importable from `@xschemadev/core`

@@ -13,7 +13,7 @@
         "Running bun run build from typescript/ succeeds",
         "Running bun run typecheck from typescript/ succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Add adapter export to all 4 adapter packages",
