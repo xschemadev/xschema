@@ -148,7 +148,7 @@
         "Code examples use real API (convert function, XSchemaAdapter, ConvertResult)",
         "All fumadocs-ui component imports are correct"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Write runtime docs - API reference",

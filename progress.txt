@@ -59,3 +59,10 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Imports match existing docs patterns (fumadocs-ui Callout/Card/Cards, lucide-react icons)
 - types:check passes (only pre-existing radix-ui error in separator.tsx)
 
+## Task: Write runtime docs - TypeScript getting started
+- Replaced placeholder "coming soon" content in web/content/docs/runtime/getting-started/typescript.mdx
+- Sections: Prerequisites, Installation (Tabs for bun/npm/pnpm/yarn), Basic Usage, Multiple Schemas, External $ref Resolution, Custom Binary Path, Error Handling, What You Get Back
+- All examples use real API: convert() with XSchemaAdapter objects, ConvertError, SchemaInput
+- ConvertResult fields documented in table with accurate types from core/src/types.ts
+- types:check passes (only pre-existing radix-ui error)
+
