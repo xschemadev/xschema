@@ -28,7 +28,7 @@
         "Running bun run build from typescript/ succeeds",
         "Running bun run typecheck from typescript/ succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Add Go CLI convert subcommand",

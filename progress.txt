@@ -6,3 +6,8 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Added `XSchemaAdapter` interface to `typescript/packages/core/src/types.ts` with `readonly __xschema: true`, `readonly id: string`, `readonly name: string`
 - Re-exported from `index.ts` as type export
 - Build + typecheck pass, type is importable from `@xschemadev/core`
+
+## Task: Add adapter export to all 4 adapter packages
+- Added `export const adapter = { __xschema: true, id: '...', name: '...' } as const satisfies XSchemaAdapter` to zod, arktype, effect, valibot
+- Pattern: import `XSchemaAdapter` type from `@xschemadev/core`, export const at module level before `convert` function
+- Build + typecheck pass
