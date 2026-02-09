@@ -105,7 +105,7 @@
         "The convert function signature accepts XSchemaAdapter objects (not strings)",
         "ConvertError, SchemaInput, ConvertOptions are all exported"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Write runtime docs - overview page",

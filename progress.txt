@@ -44,3 +44,12 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Workspace auto-discovered via `packages/*` glob in root package.json
 - Build, typecheck, workspace resolution all verified
 
+## Task: Implement @xschemadev/runtime convert function
+- Implemented full convert() function in `typescript/packages/runtime/src/index.ts`
+- Exports: SchemaInput, ConvertOptions, ConvertError, convert, plus re-exports of ConvertResult and XSchemaAdapter
+- convert() spawns xschema CLI as child process, pipes JSON via stdin/stdout
+- ConvertError extends Error with `stderr` property for debugging
+- Supports single schema or array input (normalized internally)
+- Options: adapter (required XSchemaAdapter), cwd, executablePath, allowFetch
+- Build + typecheck pass, all types verified in generated .d.ts
+
