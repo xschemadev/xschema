@@ -9,99 +9,127 @@ import { Card, Cards } from "fumadocs-ui/components/card";
 import { Code, Rocket } from "lucide-react";
 
 <Callout type="info">
-Runtime mode for Python is **coming soon**. This page shows the planned usage.
+Runtime mode for Python is **coming soon**. This page shows the planned API.
 </Callout>
 
 ## Prerequisites
 
 - Python 3.10+
-- Pydantic v2 (planned adapter)
+- xschema CLI installed and in PATH
+- An adapter package installed (e.g., `@xschemadev/zod`)
 
 ## Planned Installation
 
 ```bash
-pip install xschema
+pip install xschema-runtime
 ```
 
-## Planned Usage
+## Planned API
+
+The Python runtime will mirror the TypeScript `@xschemadev/runtime` API — an async `convert()` function that takes schema inputs and adapter options, spawns the xschema CLI under the hood, and returns structured results.
 
 ### Basic Conversion
 
 ```python
-from xschema import convert
+from xschema_runtime import convert, ConvertError
 
-# Your JSON Schema
-user_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "integer"},
-        "name": {"type": "string"},
-        "email": {"type": "string", "format": "email"}
-    },
-    "required": ["id", "name", "email"]
+# Define your schema input
+schema_input = {
+    "namespace": "user",
+    "id": "Profile",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "string"},
+            "name": {"type": "string"},
+            "email": {"type": "string", "format": "email"}
+        },
+        "required": ["id", "email"]
+    }
 }
 
-# Convert to Pydantic model at runtime
-User = convert(user_schema, adapter="pydantic")
+# Convert using an adapter
+results = await convert(
+    schemas=schema_input,
+    adapter="@xschemadev/zod"
+)
 
-# Use it
-user = User(id=1, name="Alice", email="alice@example.com")
-print(user.model_dump())
+# Each result contains generated code
+for result in results:
+    print(result.namespace)  # "user"
+    print(result.id)         # "Profile"
+    print(result.schema)     # generated validator code string
+    print(result.type)       # type expression string
+    print(result.imports)    # list of import statements
 ```
 
-### With Schema Fetching
+### Multiple Schemas
 
 ```python
-import httpx
-from xschema import convert
-
-async def validate_user(data: dict):
-    # Fetch schema from registry
-    async with httpx.AsyncClient() as client:
-        response = await client.get("https://api.example.com/schemas/user")
-        schema = response.json()
-    
-    # Convert and validate
-    User = convert(schema, adapter="pydantic")
-    return User.model_validate(data)
+results = await convert(
+    schemas=[
+        {"namespace": "user", "id": "Profile", "schema": user_schema},
+        {"namespace": "app", "id": "Config", "schema": config_schema},
+    ],
+    adapter="@xschemadev/zod"
+)
 ```
 
-### With Caching
+### External $ref Resolution
 
 ```python
-from xschema import Runtime
-
-runtime = Runtime(adapter="pydantic", cache=True)
-
-# First call converts and caches
-User = runtime.convert(user_schema)
-
-# Second call returns cached version
-User = runtime.convert(user_schema)
+# Enable fetching for schemas with external $refs
+results = await convert(
+    schemas=schema_input,
+    adapter="@xschemadev/zod",
+    allow_fetch=True
+)
 ```
+
+### Error Handling
+
+```python
+from xschema_runtime import convert, ConvertError
+
+try:
+    results = await convert(schemas=schema_input, adapter="@xschemadev/zod")
+except ConvertError as e:
+    print(f"Conversion failed: {e}")
+    print(f"stderr: {e.stderr}")
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `schemas` | `dict \| list[dict]` | required | Schema input(s) with `namespace`, `id`, and `schema` fields |
+| `adapter` | `str` | required | Adapter package ref (e.g., `@xschemadev/zod`) |
+| `cwd` | `str \| None` | `None` | Working directory for the xschema CLI |
+| `executable_path` | `str \| None` | `None` | Custom path to xschema binary |
+| `allow_fetch` | `bool` | `False` | Allow fetching external `$ref` URIs |
 
 ## Planned Features
 
 - **Pydantic v2 adapter**: Generate Pydantic models from JSON Schema
 - **Full type hints**: Generated models include proper type annotations
-- **Validation**: Use Pydantic's validation with JSON Schema rules
-- **Serialization**: JSON serialization via Pydantic
+- **Async-first**: Async `convert()` matching the TypeScript API
+- **Same CLI backend**: Uses the same xschema Go CLI under the hood
 
 ## Current Status
 
-Python support is planned. Development will begin after TypeScript runtime mode is complete.
+Python runtime support is planned. The API will follow the same pattern as the [TypeScript runtime](/docs/runtime/getting-started/typescript), wrapping the xschema CLI to convert JSON Schemas into adapter-specific code.
 
 <Cards>
   <Card
     title="TypeScript Runtime"
-    description="Runtime mode for TypeScript"
+    description="Get started with runtime mode in TypeScript"
     href="/docs/runtime/getting-started/typescript"
     icon={<Code />}
   />
   <Card
-    title="Framework Mode (TypeScript)"
-    description="Build-time generation for TypeScript"
-    href="/docs/getting-started/typescript"
+    title="API Reference"
+    description="Full runtime API documentation"
+    href="/docs/runtime/api-reference"
     icon={<Rocket />}
   />
 </Cards>

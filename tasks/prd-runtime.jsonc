@@ -182,7 +182,7 @@
         "meta.json has correct page ordering",
         "Python getting-started references the real @xschemadev/runtime API, not the old planned API"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

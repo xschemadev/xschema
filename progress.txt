@@ -75,3 +75,12 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Exports Summary table at the end for quick reference
 - types:check passes (only pre-existing radix-ui error)
 
+## Task: Update runtime docs navigation
+- meta.json already had correct page ordering: [index, ---Getting Started---, getting-started, ---Reference---, api-reference]
+- Rewrote python.mdx to reference the real @xschemadev/runtime API shape instead of fictional Python API
+- Old: fictional `from xschema import convert` with direct Pydantic model output, `Runtime` class with caching
+- New: async convert() with SchemaInput dicts (namespace/id/schema), adapter string, allow_fetch, cwd, executable_path options, ConvertError handling — mirrors the real TypeScript API
+- Options table documents all parameters matching ConvertOptions interface
+- Cards now link to TypeScript runtime getting-started and API reference
+- types:check passes (only pre-existing radix-ui error)
+
