@@ -71,7 +71,7 @@ function Page() {
           <Hero />
           <div className="flex flex-col z-2 px-4 size-full md:p-12 max-md:items-center max-md:text-center">
             <motion.p
-              className="mt-12 text-sm font-mono text-brand font-medium rounded-full py-2 px-4 border border-brand/50 w-fit"
+              className="mt-12 text-sm font-mono text-brand backdrop-blur-xs font-medium rounded-full py-2 px-4 border border-brand/50 w-fit"
               variants={heroMotto}
               initial="hidden"
               animate="visible"
@@ -79,7 +79,7 @@ function Page() {
               {MOTTO}.
             </motion.p>
             <motion.h1
-              className="text-4xl my-8 leading-tight font-medium xl:text-5xl xl:mb-12"
+              className="text-4xl my-8 leading-tight font-medium xl:text-5xl xl:mb-12 max-lg:backdrop-blur-3xl max-lg:bg-fd-background/20 py-2 pr-4 w-fit rounded-4xl"
               variants={heroHeadline}
               initial="hidden"
               animate="visible"

@@ -56,6 +56,9 @@ export function Hero() {
             type="8x8"
             scale={1}
             size={4}
+            style={{
+              opacity: isMediumScreen && resolvedTheme === "light" ? 0.3 : 1,
+            }}
             speed={0}
             frame={5000 * 120}
             minPixelRatio={1}
