@@ -1,0 +1,188 @@
+{
+  "project": "xschema-runtime",
+  "description": "TypeScript runtime package (@xschemadev/runtime) and Go CLI convert subcommand - programmatic access to the xschema pipeline",
+  "tasks": [
+    {
+      "title": "Add XSchemaAdapter type to @xschemadev/core",
+      "steps": [
+        "Add XSchemaAdapter interface to typescript/packages/core/src/types.ts with fields: readonly __xschema: true (brand), readonly id: string (package ref like '@xschemadev/zod'), readonly name: string (human-readable like 'zod')",
+        "Re-export XSchemaAdapter from typescript/packages/core/src/index.ts using export type"
+      ],
+      "verify": [
+        "XSchemaAdapter is importable from @xschemadev/core",
+        "Running bun run build from typescript/ succeeds",
+        "Running bun run typecheck from typescript/ succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Add adapter export to all 4 adapter packages",
+      "steps": [
+        "In typescript/packages/adapters/zod/src/index.ts, import XSchemaAdapter from @xschemadev/core, add: export const adapter = { __xschema: true, id: '@xschemadev/zod', name: 'zod' } as const satisfies XSchemaAdapter",
+        "In typescript/packages/adapters/arktype/src/index.ts, same pattern with id: '@xschemadev/arktype', name: 'arktype'",
+        "In typescript/packages/adapters/effect/src/index.ts, same pattern with id: '@xschemadev/effect', name: 'effect'",
+        "In typescript/packages/adapters/valibot/src/index.ts, same pattern with id: '@xschemadev/valibot', name: 'valibot'"
+      ],
+      "verify": [
+        "Each adapter package exports a const named 'adapter' that satisfies XSchemaAdapter",
+        "Running bun run build from typescript/ succeeds",
+        "Running bun run typecheck from typescript/ succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Add Go CLI convert subcommand",
+      "steps": [
+        "Create cli/cmd/convert.go with a new cobra command 'convert' added to rootCmd",
+        "Add flags: --adapter (required string, adapter package ref), --lang (string, default 'typescript'), --project (string, default cwd), --verbose (bool), --allow-fetch (bool, default false)",
+        "Define ConvertSchemaInput struct with Namespace string, ID string, Schema json.RawMessage",
+        "Read stdin and JSON-unmarshal into []ConvertSchemaInput",
+        "Convert inputs to []retriever.RetrievedSchema with SourceType inline",
+        "Run processor.Process() on the schemas. For the fetcher: if --allow-fetch is set, create a retrieverFetcher (same as generate.go) that supports HTTP and file fetching. If not set, use a fetcher that returns an error explaining that external $refs require --allow-fetch",
+        "Run generator.GenerateAll() with the processed schemas, the --adapter value, the --lang value, and --project root",
+        "JSON-marshal the []adapter.ConvertResult output and write to stdout",
+        "All verbose/error output goes to stderr (use ui.SetVerbose, ui package already writes to stderr)",
+        "On error, write JSON error object to stderr and exit 1"
+      ],
+      "verify": [
+        "Running go build -o xschema . from cli/ succeeds",
+        "Running go vet ./... from cli/ passes",
+        "Running go test ./... from cli/ passes",
+        "echo '[{\"namespace\":\"test\",\"id\":\"User\",\"schema\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"}}}}]' | ./xschema convert --adapter @xschemadev/zod outputs valid JSON array of ConvertResult to stdout",
+        "Running without --adapter flag shows error about required flag",
+        "Running with empty stdin shows appropriate error"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Add Go CLI convert subcommand tests",
+      "steps": [
+        "Create cli/cmd/convert_test.go",
+        "Test: valid single schema input produces valid ConvertResult output (parse stdout as JSON, check namespace/id/schema/type fields are populated)",
+        "Test: multiple schemas in array all produce outputs",
+        "Test: missing --adapter flag returns error",
+        "Test: invalid JSON stdin returns error",
+        "Test: empty array stdin returns empty array output",
+        "Test: schema with external $ref without --allow-fetch returns error mentioning --allow-fetch"
+      ],
+      "verify": [
+        "Running go test ./cmd/ -run TestConvert -v from cli/ passes all tests",
+        "Running go vet ./... from cli/ passes"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Create @xschemadev/runtime package scaffold",
+      "steps": [
+        "Create directory typescript/packages/runtime/",
+        "Create typescript/packages/runtime/package.json: name @xschemadev/runtime, version 0.0.1, type module, exports pointing to dist/index.d.ts and dist/index.js, files: ['dist'], scripts: build (tsc), typecheck (tsc --noEmit), dependencies: @xschemadev/core workspace:*",
+        "Create typescript/packages/runtime/tsconfig.json matching the pattern from other packages (extends ../../tsconfig.base.json or similar, outDir dist, rootDir src, composite true)",
+        "Create typescript/packages/runtime/src/index.ts as the main entry point"
+      ],
+      "verify": [
+        "Running bun run build from typescript/ succeeds and includes the runtime package",
+        "Running bun run typecheck from typescript/ succeeds",
+        "@xschemadev/runtime is listed in workspace resolution"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Implement @xschemadev/runtime convert function",
+      "steps": [
+        "In typescript/packages/runtime/src/index.ts, define and export SchemaInput interface: { namespace: string, id: string, schema: object | boolean }",
+        "Define and export ConvertOptions interface: { adapter: XSchemaAdapter, cwd?: string, executablePath?: string, allowFetch?: boolean }",
+        "Define and export ConvertError class extending Error with a stderr: string property",
+        "Implement and export async function convert(schemas: SchemaInput | SchemaInput[], options: ConvertOptions): Promise<ConvertResult[]>",
+        "Implementation: normalize single schema to array, resolve xschema binary path (options.executablePath or 'xschema' from PATH), build args array ['convert', '--adapter', options.adapter.id], conditionally add --allow-fetch and --project flags",
+        "Spawn child process using node:child_process spawn, pipe JSON.stringify(schemas) to stdin, collect stdout and stderr",
+        "On exit code 0: JSON.parse stdout as ConvertResult[], return it",
+        "On non-zero exit: throw new ConvertError with message from stderr",
+        "Re-export ConvertResult and XSchemaAdapter types from @xschemadev/core for convenience"
+      ],
+      "verify": [
+        "Running bun run build from typescript/ succeeds",
+        "Running bun run typecheck from typescript/ succeeds",
+        "The convert function signature accepts XSchemaAdapter objects (not strings)",
+        "ConvertError, SchemaInput, ConvertOptions are all exported"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Write runtime docs - overview page",
+      "steps": [
+        "Replace web/content/docs/runtime/index.mdx content entirely",
+        "Remove 'coming soon' callout",
+        "Add 'What is Runtime Mode?' section explaining: programmatic access to xschema pipeline, takes JSON schemas in and returns adapter output (code strings, types, imports)",
+        "Add quick example showing: import { convert } from '@xschemadev/runtime', import { adapter } from '@xschemadev/zod', calling convert with a schema and getting ConvertResult back",
+        "Add 'When to Use Runtime Mode' table comparing use cases (dynamic schemas from API = runtime, schemas known at build time = framework, schema registry = runtime, etc.)",
+        "Add 'Framework vs Runtime' comparison table (types: full inference vs generic, bundle size, performance, schema discovery, output format)",
+        "Add 'Prerequisites' section: xschema CLI installed, Node.js 18+, an adapter package installed",
+        "Add navigation Cards to getting started and API reference"
+      ],
+      "verify": [
+        "No 'coming soon' text remains",
+        "Page has valid MDX frontmatter with title, description, icon",
+        "All imports (Callout, Card, Cards, lucide icons) are valid fumadocs-ui imports",
+        "Running bun run types:check from web/ succeeds or at least the MDX file has no syntax errors"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Write runtime docs - TypeScript getting started",
+      "steps": [
+        "Replace web/content/docs/runtime/getting-started/typescript.mdx content entirely",
+        "Remove 'coming soon' callout",
+        "Add Prerequisites section: xschema CLI installed and in PATH, Node.js 18+",
+        "Add Installation section with Tabs for bun/npm/pnpm/yarn: install @xschemadev/runtime and an adapter (e.g., @xschemadev/zod + zod)",
+        "Add Basic Usage section: import convert and adapter, define a JSON schema object, call convert, log the result showing schema code string and type expression",
+        "Add Multiple Schemas section: pass an array of SchemaInput objects",
+        "Add External $ref Resolution section: explain allowFetch option, show example with a schema that has $ref, note the security implication",
+        "Add Custom Binary Path section: show executablePath option",
+        "Add Error Handling section: try/catch with ConvertError, show stderr property",
+        "Add 'What You Get Back' section: explain ConvertResult fields (schema = code string, type = type expression, imports = import statements needed)",
+        "Add navigation Cards to API reference and overview"
+      ],
+      "verify": [
+        "No 'coming soon' text remains",
+        "Page has valid MDX frontmatter",
+        "Code examples use real API (convert function, XSchemaAdapter, ConvertResult)",
+        "All fumadocs-ui component imports are correct"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Write runtime docs - API reference",
+      "steps": [
+        "Replace web/content/docs/runtime/api-reference.mdx content entirely",
+        "Remove 'coming soon' callout",
+        "Document convert() function: full signature, parameters table, return type, description",
+        "Document SchemaInput interface: all fields with types and descriptions in a table",
+        "Document ConvertOptions interface: all fields (adapter, cwd, executablePath, allowFetch) with types, defaults, descriptions",
+        "Document ConvertResult type (re-exported from @xschemadev/core): all fields (namespace, id, varName, imports, schema, type) with descriptions",
+        "Document XSchemaAdapter interface: fields (__xschema, id, name), explain it's exported from adapter packages",
+        "Document ConvertError class: properties (message, stderr), when it's thrown",
+        "Add usage examples for each major feature",
+        "Add navigation Cards to getting started and overview"
+      ],
+      "verify": [
+        "No 'coming soon' text remains",
+        "All types and interfaces are accurately documented matching the implementation",
+        "Page has valid MDX frontmatter",
+        "All fumadocs-ui component imports are correct"
+      ],
+      "passes": false
+    },
+    {
+      "title": "Update runtime docs navigation",
+      "steps": [
+        "Check web/content/docs/runtime/meta.json - ensure pages order is correct: [index, ---Getting Started---, getting-started, ---Reference---, api-reference]",
+        "Keep web/content/docs/runtime/getting-started/python.mdx as 'coming soon' but update to reference the real API shape (not the old planned API)"
+      ],
+      "verify": [
+        "meta.json has correct page ordering",
+        "Python getting-started references the real @xschemadev/runtime API, not the old planned API"
+      ],
+      "passes": false
+    }
+  ]
+}
