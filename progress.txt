@@ -11,3 +11,15 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - Added `export const adapter = { __xschema: true, id: '...', name: '...' } as const satisfies XSchemaAdapter` to zod, arktype, effect, valibot
 - Pattern: import `XSchemaAdapter` type from `@xschemadev/core`, export const at module level before `convert` function
 - Build + typecheck pass
+
+## Task: Add Go CLI convert subcommand
+- Created `cli/cmd/convert.go` with cobra command registered on rootCmd
+- Flags: --adapter (required), --lang (default "typescript"), --project (default cwd), --verbose, --allow-fetch
+- Reads stdin as `[]ConvertSchemaInput`, converts to `[]retriever.RetrievedSchema` with inline source
+- Runs processor.Process() then generator.GenerateAll(), outputs JSON to stdout
+- Without --allow-fetch, external $refs return error suggesting the flag
+- JSON error objects written to stderr on failure
+- Empty array input returns empty array output
+- go build, go vet, go test all pass
+- End-to-end verified: piped JSON schema through zod adapter, got valid ConvertResult output
+

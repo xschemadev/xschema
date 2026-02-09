@@ -52,7 +52,7 @@
         "Running without --adapter flag shows error about required flag",
         "Running with empty stdin shows appropriate error"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Add Go CLI convert subcommand tests",
