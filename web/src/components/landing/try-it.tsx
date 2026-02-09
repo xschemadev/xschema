@@ -1,8 +1,15 @@
 import { cn } from "@/lib/cn";
 import { headingVariants } from "@/components/landing/variants";
+import { motion } from "motion/react";
 import { BorderBeam } from "../ui/border-beam";
 import { CliAnimation } from "./cli-animation";
 import { Arrow } from "../ui/arrow";
+import {
+  fadeUp,
+  slideFromLeft,
+  slideFromRight,
+  defaultViewport,
+} from "@/components/landing/animation-variants";
 
 const notesSchemaConfig = `{
   "$schema": "https://xschema.dev/schemas/typescript.jsonc",
@@ -40,7 +47,13 @@ const usersSchemaConfig = `{
 export function TryIt({ className }: { className?: string }) {
   return (
     <>
-      <div className="col-span-full">
+      <motion.div
+        className="col-span-full"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={defaultViewport}
+      >
         <h2
           className={cn(
             headingVariants({ variant: "h2" }),
@@ -52,16 +65,28 @@ export function TryIt({ className }: { className?: string }) {
         <p className="text-lg text-fd-muted-foreground max-w-xl">
           Write a schema. Pick an adapter. See the output.
         </p>
-      </div>
-      <div className="flex flex-col gap-4">
+      </motion.div>
+      <motion.div
+        className="flex flex-col gap-4"
+        variants={slideFromLeft}
+        initial="hidden"
+        whileInView="visible"
+        viewport={defaultViewport}
+      >
         <pre className="overflow-x-auto border border-dashed border-brand max-w-fit p-4 text-xs font-mono text-fd-foreground">
           <code>{usersSchemaConfig}</code>
         </pre>
         <pre className="overflow-x-auto border border-dashed border-brand-secondary max-w-fit p-4 text-xs font-mono text-fd-foreground">
           <code>{notesSchemaConfig}</code>
         </pre>
-      </div>
-      <div className="flex flex-col gap-8 relative max-w-3xl w-full mx-auto h-fit min-h-32 justify-between overflow-visible rounded-3xl border border-dashed p-2">
+      </motion.div>
+      <motion.div
+        className="flex flex-col gap-8 relative max-w-3xl w-full mx-auto h-fit min-h-32 justify-between overflow-visible rounded-3xl border border-dashed p-2"
+        variants={slideFromRight}
+        initial="hidden"
+        whileInView="visible"
+        viewport={defaultViewport}
+      >
         <BorderBeam
           colorFrom="var(--color-brand)"
           colorTo="var(--color-brand-200)"
@@ -86,7 +111,7 @@ export function TryIt({ className }: { className?: string }) {
           />
           <CliAnimation className="w-full" />
         </div>
-      </div>
+      </motion.div>
 
       <p className="text-xs text-fd-muted-foreground italic">
         StackBlitz embed coming soon.

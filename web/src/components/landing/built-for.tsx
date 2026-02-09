@@ -1,6 +1,13 @@
 import { headingVariants, cardVariants } from "@/components/landing/variants";
 import { cn } from "@/lib/cn";
+import { motion } from "motion/react";
 import { PlusCard } from "../ui/plus-card";
+import {
+  fadeUp,
+  slideFromLeft,
+  slideFromRight,
+  defaultViewport,
+} from "@/components/landing/animation-variants";
 
 const frameworkBullets = [
   "Full type inference and autocomplete",
@@ -67,16 +74,27 @@ function AudienceCard({
 export function BuiltFor({ className }: { className?: string }) {
   return (
     <section className={cn(className)}>
-      <h2
+      <motion.h2
         className={cn(
           headingVariants({ variant: "h2" }),
           "text-brand text-center font-mono font-bold uppercase",
         )}
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={defaultViewport}
       >
         Built for.
-      </h2>
+      </motion.h2>
       <PlusCard className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 rounded-5xl p-0 sm:p-6 max-sm:border-none">
-        <AudienceCard
+        <motion.div
+          className="h-full"
+          variants={slideFromLeft}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+        >
+          <AudienceCard
           title="Developers shipping real projects."
           bodyParagraphs={[
             "You have JSON Schemas \u2014 from an API contract, an OpenAPI spec, a schema registry, or a local definition \u2014 and you need native validators in your codebase.",
@@ -88,18 +106,27 @@ export function BuiltFor({ className }: { className?: string }) {
             bullets: frameworkBullets,
           }}
         />
-        <AudienceCard
-          title="Library maintainers who need codegen."
-          bodyParagraphs={[
-            "You maintain a library or framework that needs to generate validators from JSON Schema programmatically, but you don\u2019t want to own the conversion logic.",
-          ]}
-          mode={{
-            heading: "Runtime Mode",
-            badge: "Programmatic",
-            body: "Convert schemas programmatically at runtime. When codegen is part of the workflow.",
-            bullets: runtimeBullets,
-          }}
-        />
+        </motion.div>
+        <motion.div
+          className="h-full"
+          variants={slideFromRight}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+        >
+          <AudienceCard
+            title="Library maintainers who need codegen."
+            bodyParagraphs={[
+              "You maintain a library or framework that needs to generate validators from JSON Schema programmatically, but you don\u2019t want to own the conversion logic.",
+            ]}
+            mode={{
+              heading: "Runtime Mode",
+              badge: "Programmatic",
+              body: "Convert schemas programmatically at runtime. When codegen is part of the workflow.",
+              bullets: runtimeBullets,
+            }}
+          />
+        </motion.div>
       </PlusCard>
     </section>
   );

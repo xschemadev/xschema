@@ -5,9 +5,6 @@
 @import "fumadocs-twoslash/twoslash.css";
 @import "tw-animate-css";
 
-/*
- ---break---
- */
 @custom-variant dark (&:is(.dark *));
 
 /*
@@ -23,14 +20,13 @@
 
 @theme {
   --spacing-page: 1436px;
+
+  --color-landing-foreground: #59592a;
   --color-brand: hsl(26, 73%, 51%);
+  --color-brand-200: hsl(33, 100%, 50%);
   --color-brand-foreground: white;
   --color-brand-secondary: #c6bb58;
   --color-brand-secondary-foreground: #97890c;
-  --color-brand-200: hsl(33, 100%, 50%);
-
-  --color-landing-foreground: #59592a;
-  --color-landing-foreground-200: #a8a866;
 
   /* light mode - warm cream base with forest accents */
   --color-fd-background: hsl(52, 94%, 97%);
@@ -64,71 +60,6 @@
   --color-fd-diff-remove-symbol: rgb(230, 10, 100);
   --color-fd-diff-add: rgba(14, 180, 100, 0.1);
   --color-fd-diff-add-symbol: rgb(10, 200, 100);
-}
-
-.dark {
-  --color-landing-foreground: #e4e2d0;
-  --color-landing-foreground-200: #b7af7e;
-
-  --color-brand: #fff383;
-  --color-brand-secondary: #fc7744;
-  --color-brand-secondary-foreground: #521700;
-  --color-brand-foreground: black;
-  --color-brand-200: #fff7c8;
-
-  /* dark mode - warm neutral with olive accent */
-  --color-fd-background: hsl(40, 5%, 8%);
-  --color-fd-foreground: hsl(40, 5%, 93%);
-  --color-fd-muted: hsl(40, 4%, 12%);
-  --color-fd-muted-foreground: hsl(40, 4%, 55%);
-  --color-fd-popover: hsl(40, 5%, 10%);
-  --color-fd-popover-foreground: hsl(40, 5%, 90%);
-  --color-fd-card: hsl(40, 5%, 11%);
-  --color-fd-card-foreground: hsl(40, 5%, 95%);
-  --color-fd-border: hsl(40, 4%, 20%);
-  --color-fd-primary: hsl(77, 32%, 55%);
-  --color-fd-primary-foreground: hsl(40, 5%, 8%);
-  --color-fd-secondary: hsl(40, 4%, 14%);
-  --color-fd-secondary-foreground: hsl(40, 5%, 90%);
-  --color-fd-accent: hsl(40, 4%, 16%);
-  --color-fd-accent-foreground: hsl(40, 5%, 95%);
-  --color-fd-ring: hsl(77, 32%, 45%);
-  --framework-color: hsl(250 100% 80%);
-  --runtime-color: hsl(250 100% 80%);
-  --cli-color: #a9ceff;
-  --adapters-color: #fff383;
-  --compliance-color: #a9ceff;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @theme inline {
@@ -214,32 +145,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-.framework {
-  --color-fd-primary: var(--framework-color);
-}
-
-.runtime {
-  --color-fd-primary: var(--runtime-color);
-}
-
-.cli {
-  --color-fd-primary: var(--cli-color);
-}
-
-.adapters {
-  --color-fd-primary: var(--adapters-color);
-}
-
-.compliance {
-  --color-fd-primary: var(--compliance-color);
-}
-
 :root {
-  --framework-color: hsl(250, 80%, 54%);
-  --runtime-color: hsl(250, 80%, 54%);
-  --cli-color: hsl(217, 100%, 58%);
-  --adapters-color: hsl(41, 100%, 40%);
-  --compliance-color: hsl(217, 100%, 58%);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -272,6 +178,71 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --framework-color: #E58F65;
+  --runtime-color: #D36060;
+  --cli-color: #2CA58D;
+  --adapters-color: #5C8DFF;
+  --compliance-color: #8963BA;
+}
+
+.dark {
+  --color-landing-foreground: #e4e2d0;
+  --color-brand: #fff383;
+  --color-brand-200: #fff7c8;
+  --color-brand-foreground: black;
+  --color-brand-secondary: #fc7744;
+  --color-brand-secondary-foreground: #521700;
+
+  /* dark mode - warm neutral with olive accent */
+  --color-fd-background: hsl(40, 5%, 8%);
+  --color-fd-foreground: hsl(40, 5%, 93%);
+  --color-fd-muted: hsl(40, 4%, 12%);
+  --color-fd-muted-foreground: hsl(40, 4%, 55%);
+  --color-fd-popover: hsl(40, 5%, 10%);
+  --color-fd-popover-foreground: hsl(40, 5%, 90%);
+  --color-fd-card: hsl(40, 5%, 11%);
+  --color-fd-card-foreground: hsl(40, 5%, 95%);
+  --color-fd-border: hsl(40, 4%, 20%);
+  --color-fd-primary: hsl(77, 32%, 55%);
+  --color-fd-primary-foreground: hsl(40, 5%, 8%);
+  --color-fd-secondary: hsl(40, 4%, 14%);
+  --color-fd-secondary-foreground: hsl(40, 5%, 90%);
+  --color-fd-accent: hsl(40, 4%, 16%);
+  --color-fd-accent-foreground: hsl(40, 5%, 95%);
+  --color-fd-ring: hsl(77, 32%, 45%);
+
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 html {
@@ -284,4 +255,24 @@ html:has(body[data-scroll-locked]) {
 
 body {
   background-color: var(--color-fd-background);
+}
+
+.framework {
+  --color-fd-primary: var(--framework-color);
+}
+
+.runtime {
+  --color-fd-primary: var(--runtime-color);
+}
+
+.cli {
+  --color-fd-primary: var(--cli-color);
+}
+
+.adapters {
+  --color-fd-primary: var(--adapters-color);
+}
+
+.compliance {
+  --color-fd-primary: var(--compliance-color);
 }

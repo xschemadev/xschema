@@ -1,12 +1,18 @@
 import { Check, X } from "lucide-react";
 import { headingVariants } from "@/components/landing/variants";
 import { cn } from "@/lib/cn";
+import { motion } from "motion/react";
 import {
   ComparisonGrid,
   type ComparisonRow,
 } from "@/components/ui/comparison-grid";
 import { Arrow } from "../ui/arrow";
 import { PlusCard } from "../ui/plus-card";
+import {
+  staggerContainer,
+  staggerItem,
+  defaultViewport,
+} from "@/components/landing/animation-variants";
 
 const checkIcon = <Check className="size-4 text-brand" />;
 const crossIcon = <X className="size-4 text-fd-muted-foreground/60" />;
@@ -42,8 +48,14 @@ const comparisonRows: ComparisonRow[] = [
 
 export function XschemaApproach({ className }: { className?: string }) {
   return (
-    <section className={cn(className)}>
-      <p className="text-brand font-mono font-bold mb-10 relative max-w-md mx-auto uppercase">
+    <motion.section
+      className={cn(className)}
+      variants={staggerContainer}
+      initial="hidden"
+      whileInView="visible"
+      viewport={defaultViewport}
+    >
+      <motion.p className="text-brand font-mono font-bold mb-10 relative max-w-md mx-auto uppercase" variants={staggerItem}>
         The solution
         <Arrow
           padding={40}
@@ -58,8 +70,9 @@ export function XschemaApproach({ className }: { className?: string }) {
           tipSize={10}
           color="#c6bb58"
         />
-      </p>
-      <PlusCard className={cn("py-10 max-w-4xl mx-auto")}>
+      </motion.p>
+      <motion.div variants={staggerItem}>
+        <PlusCard className={cn("py-10 max-w-4xl mx-auto")}>
         <h2
           className={cn(
             headingVariants({ variant: "h2" }),
@@ -114,11 +127,14 @@ export function XschemaApproach({ className }: { className?: string }) {
           hands them off to the adapter for code generation */}
         </div>
       </PlusCard>
-      <ComparisonGrid
-        className="my-10 max-w-6xl mx-auto"
-        columnHeaders={["xschema", "One-off converters"]}
-        rows={comparisonRows}
-      />
-    </section>
+      </motion.div>
+      <motion.div variants={staggerItem}>
+        <ComparisonGrid
+          className="my-10 max-w-6xl mx-auto"
+          columnHeaders={["xschema", "One-off converters"]}
+          rows={comparisonRows}
+        />
+      </motion.div>
+    </motion.section>
   );
 }

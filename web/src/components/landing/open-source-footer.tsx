@@ -1,16 +1,22 @@
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/cn";
+import { motion } from "motion/react";
 import { headingVariants, buttonVariants } from "@/components/landing/variants";
 import { XSCHEMA_GITHUB_URL } from "@/lib/constants";
 import GorillaImage from "@/assets/gorilla-square.svg";
+import { fadeUp, defaultViewport } from "@/components/landing/animation-variants";
 
 export function OpenSourceFooter({ className }: { className?: string }) {
   return (
-    <section
+    <motion.section
       className={cn(
         "flex flex-col md:flex-row items-center gap-8 justify-evenly text-center overflow-y-hidden",
         className,
       )}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={defaultViewport}
     >
       <div>
         <h2
@@ -47,6 +53,6 @@ export function OpenSourceFooter({ className }: { className?: string }) {
         alt="Gorilla"
         className="object-cover h-40 md:h-80 rounded-4xl"
       />
-    </section>
+    </motion.section>
   );
 }
