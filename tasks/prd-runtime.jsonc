@@ -170,7 +170,7 @@
         "Page has valid MDX frontmatter",
         "All fumadocs-ui component imports are correct"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "Update runtime docs navigation",

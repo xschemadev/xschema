@@ -66,3 +66,12 @@ Started: Mon Feb  9 10:59:29 PM CET 2026
 - ConvertResult fields documented in table with accurate types from core/src/types.ts
 - types:check passes (only pre-existing radix-ui error)
 
+## Task: Write runtime docs - API reference
+- Replaced outdated placeholder content (had fictional createRuntime API) in web/content/docs/runtime/api-reference.mdx
+- Documented all exports: convert(), SchemaInput, ConvertOptions, ConvertResult, XSchemaAdapter, ConvertError
+- Each type has full interface definition, field table, and usage context
+- ConvertResult includes codegen example showing how fields map to generated file output
+- XSchemaAdapter documents all 4 adapter package imports
+- Exports Summary table at the end for quick reference
+- types:check passes (only pre-existing radix-ui error)
+
