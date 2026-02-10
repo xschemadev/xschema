@@ -6,6 +6,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { Code, Rocket } from "lucide-react";
 
 <Callout type="info">
@@ -15,14 +16,53 @@ Runtime mode for Python is **coming soon**. This page shows the planned API.
 ## Prerequisites
 
 - Python 3.10+
-- xschema CLI installed and in PATH
-- An adapter package installed (e.g., `@xschemadev/zod`)
 
 ## Planned Installation
 
-```bash
-pip install xschema-runtime
-```
+Install the xschema CLI and an adapter via npm:
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/cli @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/cli @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/cli @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/cli @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
+
+Then install the Python runtime package:
+
+<Tabs groupId="pypm" items={["pip", "uv", "poetry"]}>
+  <Tab value="pip">
+    ```bash
+    pip install xschema-runtime
+    ```
+  </Tab>
+  <Tab value="uv">
+    ```bash
+    uv add xschema-runtime
+    ```
+  </Tab>
+  <Tab value="poetry">
+    ```bash
+    poetry add xschema-runtime
+    ```
+  </Tab>
+</Tabs>
 
 ## Planned API
 

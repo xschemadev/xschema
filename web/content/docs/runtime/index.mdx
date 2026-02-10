@@ -50,24 +50,3 @@ Under the hood, `convert` calls the xschema CLI as a subprocess. The same conver
 <Callout>
 Framework mode is the right default for most apps. Use runtime mode when schemas aren't known until your code runs, or when building tools on top of xschema.
 </Callout>
-
-## Prerequisites
-
-- **xschema CLI** installed and available in PATH ([installation guide](/docs/cli))
-- **Node.js 18+** (runtime uses `child_process.spawn`)
-- **An adapter package** installed (e.g., `@xschemadev/zod` with `zod`)
-
-<Cards>
-  <Card
-    title="Getting Started"
-    description="Install the runtime package and convert your first schema"
-    href="/docs/runtime/getting-started/typescript"
-    icon={<BookOpen />}
-  />
-  <Card
-    title="API Reference"
-    description="Full reference for convert(), SchemaInput, ConvertOptions, and ConvertResult"
-    href="/docs/runtime/api-reference"
-    icon={<FileCode />}
-  />
-</Cards>

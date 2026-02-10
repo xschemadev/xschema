@@ -12,31 +12,31 @@ import { BookOpen, Zap } from "lucide-react";
 
 ## Prerequisites
 
-- **xschema CLI** installed and available in your `PATH`
 - **Node.js 18+**
-- An adapter package installed (e.g., `@xschemadev/zod` with `zod`)
 
 ## Installation
+
+Install the CLI, runtime package, and an adapter:
 
 <Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
   <Tab value="bun">
     ```bash
-    bun add @xschemadev/runtime @xschemadev/zod zod
+    bun add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
     ```
   </Tab>
   <Tab value="npm">
     ```bash
-    npm install @xschemadev/runtime @xschemadev/zod zod
+    npm install @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
     ```
   </Tab>
   <Tab value="pnpm">
     ```bash
-    pnpm add @xschemadev/runtime @xschemadev/zod zod
+    pnpm add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
     ```
   </Tab>
   <Tab value="yarn">
     ```bash
-    yarn add @xschemadev/runtime @xschemadev/zod zod
+    yarn add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
     ```
   </Tab>
 </Tabs>
@@ -193,7 +193,7 @@ try {
 ```
 
 Common reasons for errors:
-- xschema CLI not found in `PATH` (set `executablePath`)
+- xschema CLI not installed (install `@xschemadev/cli` or set `executablePath`)
 - Invalid JSON Schema
 - External `$ref` without `allowFetch: true`
 - Adapter package not installed
