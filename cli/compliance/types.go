@@ -70,13 +70,26 @@ type DraftResult struct {
 	Summary  DraftSummary    `json:"summary"`
 }
 
+// UnsupportedFeatureItem represents a single unsupported feature test with its reason
+type UnsupportedFeatureItem struct {
+	Path   string `json:"path"`
+	Reason string `json:"reason"`
+}
+
+// UnsupportedFeaturesSummary contains unsupported features data for JSON output
+type UnsupportedFeaturesSummary struct {
+	Count int                      `json:"count"`
+	Items []UnsupportedFeatureItem `json:"items"`
+}
+
 // DraftSummary contains aggregate statistics for a draft
 type DraftSummary struct {
-	Passed     int     `json:"passed"`
-	Failed     int     `json:"failed"`
-	Skipped    int     `json:"skipped"`
-	Total      int     `json:"total"`
-	Percentage float64 `json:"percentage"`
+	Passed              int                        `json:"passed"`
+	Failed              int                        `json:"failed"`
+	Skipped             int                        `json:"skipped"`
+	Total               int                        `json:"total"`
+	Percentage          float64                    `json:"percentage"`
+	UnsupportedFeatures UnsupportedFeaturesSummary `json:"unsupportedFeatures"`
 }
 
 // ComplianceReport is the complete report for an adapter

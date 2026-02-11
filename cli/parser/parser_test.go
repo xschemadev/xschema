@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/xschemadev/xschema/language"
@@ -634,5 +635,113 @@ func TestParseConfigFileNonExistent(t *testing.T) {
 	_, err := parseConfigFile("/nonexistent/path/config.jsonc")
 	if err == nil {
 		t.Error("expected error for non-existent file")
+	}
+}
+
+func TestParseHeadersOnURLSourceType(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+		"schemas": [
+			{
+				"id": "Auth",
+				"sourceType": "url",
+				"source": "https://example.com/auth.json",
+				"adapter": "zod",
+				"headers": {
+					"Authorization": "Bearer ${TOKEN}"
+				}
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "auth.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	ctx := context.Background()
+	result, err := Parse(ctx, tmpDir, "")
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+
+	if len(result.Declarations) != 1 {
+		t.Fatalf("expected 1 declaration, got %d", len(result.Declarations))
+	}
+
+	decl := result.Declarations[0]
+	if len(decl.Headers) != 1 {
+		t.Errorf("expected 1 header, got %d", len(decl.Headers))
+	}
+	if decl.Headers["Authorization"] != "Bearer ${TOKEN}" {
+		t.Errorf("expected header value 'Bearer ${TOKEN}', got %q", decl.Headers["Authorization"])
+	}
+}
+
+func TestParseHeadersOnFileSourceTypeError(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+		"schemas": [
+			{
+				"id": "Invalid",
+				"sourceType": "file",
+				"source": "./schema.json",
+				"adapter": "zod",
+				"headers": {
+					"X-Custom": "value"
+				}
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "invalid.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	ctx := context.Background()
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected error for headers on file sourceType")
+	}
+	if err != nil && !strings.Contains(err.Error(), "headers are only allowed") {
+		t.Errorf("expected 'headers are only allowed' error, got: %v", err)
+	}
+}
+
+func TestParseHeadersOnJSONSourceTypeError(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	configContent := `{
+		"$schema": "https://xschema.dev/schemas/typescript.jsonc",
+		"schemas": [
+			{
+				"id": "Invalid",
+				"sourceType": "json",
+				"source": {"type": "object"},
+				"adapter": "zod",
+				"headers": {
+					"X-Custom": "value"
+				}
+			}
+		]
+	}`
+
+	configPath := filepath.Join(tmpDir, "invalid.jsonc")
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("failed to write config: %v", err)
+	}
+
+	ctx := context.Background()
+	_, err := Parse(ctx, tmpDir, "")
+	if err == nil {
+		t.Error("expected error for headers on json sourceType")
+	}
+	if err != nil && !strings.Contains(err.Error(), "headers are only allowed") {
+		t.Errorf("expected 'headers are only allowed' error, got: %v", err)
 	}
 }

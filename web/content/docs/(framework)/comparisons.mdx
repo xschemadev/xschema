@@ -1,0 +1,83 @@
+---
+title: Comparisons
+description: How xschema compares to alternatives
+icon: Scale
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+This page compares xschema with alternative approaches for JSON Schema validation.
+
+## vs Ajv
+
+[Ajv](https://ajv.js.org/) is a JSON Schema validator—it evaluates schemas at runtime and returns validation results. xschema is a code generator—it converts schemas to native validation library code.
+
+| Aspect | xschema | Ajv |
+|--------|---------|-----|
+| Output | Native validator code (Zod, etc.) | Validation results |
+| TypeScript types | Full inference from generated code | Requires separate type generation |
+| Runtime | No runtime (build-time generation) | Runtime schema evaluation |
+| JSON Schema features | Most keywords (see compliance) | Full spec compliance |
+| `$dynamicRef` | Not supported | Supported |
+| Use case | Generate type-safe validators | Full JSON Schema evaluation |
+
+**Use Ajv if:** You need complete JSON Schema compliance including dynamic features, or you need to evaluate schemas at runtime without code generation.
+
+**Use xschema if:** You want native validators with TypeScript inference and don't need `$dynamicRef` or runtime schema evaluation.
+
+## vs Writing Validators Directly
+
+If TypeScript is your source of truth, you probably don't need xschema.
+
+| Aspect | xschema | Zod/ArkType/etc. directly |
+|--------|---------|---------------------------|
+| Source of truth | JSON Schema | TypeScript |
+| Workflow | Write schema → generate code | Write code directly |
+| Cross-language | Same schema for TS, Python, etc. | TypeScript only |
+| OpenAPI integration | Natural fit | Requires conversion |
+
+**Use validators directly if:** You're only typing in TypeScript and don't have existing JSON Schemas.
+
+**Use xschema if:** JSON Schema is your source of truth (OpenAPI, API contracts, cross-language).
+
+## vs json-schema-to-zod
+
+[json-schema-to-zod](https://github.com/StefanTerdell/json-schema-to-zod) converts JSON Schema to Zod schemas.
+
+| Feature | xschema | json-schema-to-zod |
+|---------|---------|-------------------|
+| Compliance tested | Yes (100% on Zod) | No |
+| External `$ref` resolution | Yes, recursive | Limited |
+| Draft normalization | All drafts → 2020-12 | Partial |
+| Multiple adapters | Zod, ArkType, Effect, Valibot | Zod only |
+| Runtime mode | Planned | Yes |
+| Config-driven workflow | Yes | No |
+
+**Use json-schema-to-zod if:** You need a quick one-off conversion or runtime conversion today.
+
+**Use xschema if:** You want tested compliance, multiple adapters, or a config-driven build workflow.
+
+## vs TypeBox
+
+[TypeBox](https://github.com/sinclairzx81/typebox) is a TypeScript-first schema builder that can emit JSON Schema.
+
+| Feature | xschema | TypeBox |
+|---------|---------|---------|
+| Direction | JSON Schema → validators | TypeScript → JSON Schema |
+| Source of truth | JSON Schema | TypeScript types |
+| Existing schemas | Works with any JSON Schema | Must rewrite in TypeBox |
+| Validation library | Your choice (Zod, ArkType, etc.) | TypeBox's built-in validator |
+
+**Use TypeBox if:** You're starting fresh and want TypeScript as your schema source with JSON Schema export.
+
+**Use xschema if:** You have existing JSON Schemas or need a specific validation library.
+
+{/* TODO: Add more comparisons
+## vs Zod to JSON Schema
+
+## vs ts-json-schema-generator
+
+## vs Effect Schema
+
+## vs Valibot
+*/}

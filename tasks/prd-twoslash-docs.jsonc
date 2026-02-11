@@ -1,0 +1,320 @@
+{
+  "project": "xschema-docs",
+  "description": "Twoslash Integration - Show autocomplete, type inference, and error prevention in docs using real generated code",
+  "phase2": {
+    "description": "Polish and fix issues from phase 1",
+    "userStories": [
+      {
+        "title": "Reduce hover noise in Quick Start (index.mdx)",
+        "description": "As a reader, I want only meaningful things to be hoverable so I can focus on what matters.",
+        "acceptanceCriteria": [
+          "Only these identifiers should have ^? annotations showing types: profileSchema, result",
+          "Imports (createXSchemaClient, schemas) should not be distracting",
+          "Consider using simpler client helper pattern (like adapter pages) instead of full @xschemadev/client types",
+          "Typecheck passes",
+          "Verify in browser - only key variables show type popups"
+        ],
+        "passes": true,
+        "notes": "Simplified from complex @xschemadev/client types to simple client helper pattern. Now uses `export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key]`. Only profileSchema and result have ^? annotations showing type popups. Virtual Zod types reduced to minimal definitions needed for type inference."
+      },
+      {
+        "title": "Reduce hover noise in typescript.mdx client setup",
+        "description": "As a reader, I want only meaningful things to be hoverable so I can focus on what matters.",
+        "acceptanceCriteria": [
+          "Only these identifiers should have ^? annotations: profileSchema, safeParse result, parsed properties (id, email)",
+          "createXSchemaClient, schemas, xschema should not have prominent type hovers",
+          "Simplify virtual type setup to reduce noise",
+          "Typecheck passes",
+          "Verify in browser"
+        ],
+        "passes": true,
+        "notes": "Simplified from complex @xschemadev/client types to simple client helper pattern (same as index.mdx). Virtual types now use minimal Zod definitions. Code shows profileSchema type, result safeParse type, and data.id property access. Added if block to demonstrate narrowing after safeParse success check."
+      },
+      {
+        "title": "Show actual compile error for type-only example",
+        "description": "As a reader, when the docs say 'this would be a compile error', I want to see the actual error.",
+        "acceptanceCriteria": [
+          "In typescript.mdx 'Type-only' section, use @errors annotation to show the actual compile error",
+          "The error should appear when trying to call xschema() when no runtime validator exists",
+          "Remove the comment '// This would be a compile error - no runtime validator' and replace with actual error display",
+          "Typecheck passes",
+          "Verify in browser - red error text is visible"
+        ],
+        "passes": true,
+        "notes": "Used twoslash with @errors: 2345 annotation. Virtual files simulate type-only adapter output where schemas = {} but SchemaTypes has \"user:Profile\". Error shown: \"Argument of type '\"user:Profile\"' is not assignable to parameter of type 'never'.\""
+      },
+      {
+        "title": "Fix Effect adapter type inference",
+        "description": "As a reader viewing the Effect adapter page, I want to see the actual parsed type, not 'unknown'.",
+        "acceptanceCriteria": [
+          "User variable shows actual object type { id: string; email: string; name?: string | undefined } or similar",
+          "NOT showing 'unknown' which is current behavior",
+          "Virtual type definitions properly model Effect Schema type inference",
+          "Typecheck passes",
+          "Verify in browser at /docs/adapters/effect"
+        ],
+        "passes": true,
+        "notes": "Virtual types use `declare const User: S.Schema<{ id: string; email: string; name?: string }>` which properly models the type parameter. The decodeUnknownSync generic extracts A from Schema<A, I, R> correctly. Type popup shows { id: string; email: string; name?: string }."
+      },
+      {
+        "title": "Fix Valibot adapter type inference",
+        "description": "As a reader viewing the Valibot adapter page, I want to see the actual parsed type, not 'unknown'.",
+        "acceptanceCriteria": [
+          "User variable shows actual object type { id: string; email: string; name?: string | undefined } with index signature",
+          "NOT showing 'unknown'",
+          "Virtual type definitions properly model Valibot's InferOutput pattern",
+          "The v.pipe() call must preserve type through the chain, not lose it to unknown",
+          "Typecheck passes",
+          "Verify in browser at /docs/adapters/valibot"
+        ],
+        "passes": true,
+        "notes": "Fixed by changing pipe() generic from `pipe<T>(...args: unknown[]): BaseSchema<T>` to `pipe<A, B, C extends BaseSchema<unknown>>(a: A, b: B, c: C): C` which extracts the return type from the last argument. Also inlined the InferEntries type alias into looseObject to get cleaner type display."
+      }
+    ]
+  },
+  "userStories": [
+    {
+      "title": "Create shared example schemas",
+      "description": "As a developer, I need source JSON Schemas that all adapter examples will use for both simple and multi-namespace demos.",
+      "acceptanceCriteria": [
+        "Create web/examples/schemas/user.schema.json with id (string), name (string, optional), email (string format email)",
+        "Create web/examples/schemas/app.schema.json with theme (string enum: light/dark), language (string), debug (boolean, optional)",
+        "Both schemas are valid JSON Schema draft-2020-12",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Create Zod example and generate",
+      "description": "As a developer, I need Zod generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/zod/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/zod adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/zod/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": "Used two config files (user.xschema.jsonc, app.xschema.jsonc) since xschema namespace is per-file. Generated output manually via adapter CLI since packages aren't on npm yet."
+    },
+    {
+      "title": "Create Effect example and generate",
+      "description": "As a developer, I need Effect generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/effect/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/effect adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/effect/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": "Used two config files (user.xschema.jsonc, app.xschema.jsonc) since xschema namespace is per-file. Generated output manually via adapter CLI since packages aren't on npm yet."
+    },
+    {
+      "title": "Create ArkType example and generate",
+      "description": "As a developer, I need ArkType generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/arktype/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/arktype adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/arktype/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": "Used two config files (user.xschema.jsonc, app.xschema.jsonc) since xschema namespace is per-file. Generated output manually via adapter CLI since packages aren't on npm yet."
+    },
+    {
+      "title": "Create Valibot example and generate",
+      "description": "As a developer, I need Valibot generated code with multiple namespaces for Twoslash to import.",
+      "acceptanceCriteria": [
+        "Create web/examples/typescript/valibot/xschema.jsonc with two schemas",
+        "First schema: namespace 'user', id 'Profile', source ../../schemas/user.schema.json",
+        "Second schema: namespace 'app', id 'Config', source ../../schemas/app.schema.json",
+        "Both use @xschemadev/valibot adapter",
+        "Run xschema generate in that directory",
+        "Commit generated web/examples/typescript/valibot/.xschema/xschema.gen.ts",
+        "Generated file exports schemas with keys 'user:Profile' and 'app:Config'",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": "Used two config files (user.xschema.jsonc, app.xschema.jsonc) since xschema namespace is per-file. Generated output manually via adapter CLI since packages aren't on npm yet."
+    },
+    {
+      "title": "Install Twoslash packages",
+      "description": "As a developer, I need fumadocs-twoslash installed to enable type hovers.",
+      "acceptanceCriteria": [
+        "Run bun add fumadocs-twoslash twoslash in web/ directory",
+        "Packages added to package.json",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Configure Twoslash transformer in source.config.ts",
+      "description": "As a developer, I need Twoslash transformer added to Shiki config.",
+      "acceptanceCriteria": [
+        "Import transformerTwoslash from fumadocs-twoslash",
+        "Import rehypeCodeDefaultOptions from fumadocs-core/mdx-plugins",
+        "Add rehypeCodeOptions with transformers array including transformerTwoslash()",
+        "Add langs array with js, jsx, ts, tsx",
+        "Enable createFileSystemTypesCache() for performance",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": "Also added themes (github-light/github-dark) as required by RehypeCodeOptions type"
+    },
+    {
+      "title": "Add Twoslash CSS and UI components",
+      "description": "As a developer, I need Twoslash styles and components for type popups to render.",
+      "acceptanceCriteria": [
+        "Add @import 'fumadocs-twoslash/twoslash.css' to src/styles/app.css",
+        "Import Twoslash components from fumadocs-twoslash/ui in src/routes/docs/$.tsx",
+        "Spread Twoslash components into MDX components object",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Configure Vite SSR externals for Twoslash",
+      "description": "As a developer, I need typescript and twoslash externalized to avoid SSR bundling issues.",
+      "acceptanceCriteria": [
+        "Add ssr.external array to vite.config.ts with 'typescript' and 'twoslash'",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - docs pages load without SSR errors"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx client setup",
+      "description": "As a user reading the TypeScript guide, I want to see types when using createXSchemaClient.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Use the client' code block (around line 92)",
+        "Add ^? annotation under profileSchema variable to show its type",
+        "Import uses relative path to examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - hovering shows Zod schema type"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with // @filename: directives. Had to inline @xschemadev/client types since it's not published to npm. The ^? annotation shows ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString }, $loose>"
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx schema lookup section",
+      "description": "As a user, I want to see return types for schema lookups including multi-namespace and defaultNamespace.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Schema lookup' code blocks (around line 135)",
+        "Show xschema('user:Profile') with ^? annotation showing Zod schema type",
+        "Show xschema('app:Config') with ^? annotation showing different schema type",
+        "Show defaultNamespace: 'user' example with shorthand xschema('Profile')",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Added twoslash to both Schema lookup code blocks. First block shows full key format with types for both user:Profile (ZodObject with id, name?, email) and app:Config (ZodObject with theme enum, language, debug?). Second block shows defaultNamespace example with shorthand Profile lookup resolving correctly."
+    },
+    {
+      "title": "Add Twoslash to typescript.mdx XSchemaType section",
+      "description": "As a user, I want to see what types XSchemaType extracts.",
+      "acceptanceCriteria": [
+        "Add twoslash to XSchemaType example (around line 159)",
+        "Add ^? annotation to show extracted type shape",
+        "Add twoslash to function signatures example showing typed property access",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Added twoslash to both XSchemaType code blocks. First block shows Profile ({ id, email, name? }) and Config ({ theme enum, language, debug? }) extracted types. Second block shows function signatures with typed property access (data.email: string) and schema.parse() return type."
+    },
+    {
+      "title": "Add autocomplete and error examples to typescript.mdx",
+      "description": "As a user, I want to see autocomplete for schema keys and errors for invalid keys so I understand the DX benefits.",
+      "acceptanceCriteria": [
+        "Add 'Developer Experience' or similar section to typescript.mdx after 'Using the Client'",
+        "Show autocomplete example using ^| annotation displaying available schema keys",
+        "Show error example using @errors annotation for invalid key like xschema('wrong:Key')",
+        "Add Callout reminding users to run xschema generate after schema changes",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill - autocomplete popup and error highlight visible"
+      ],
+      "passes": true,
+      "notes": "Added ^| autocomplete annotation showing user:Profile and app:Config suggestions when typing 'u'. Error example uses // @errors: 2345 with typo 'user:Proflie'. Both render correctly in browser - autocomplete shows inline suggestions, error shows red text with full type error message."
+    },
+    {
+      "title": "Add Twoslash to Quick Start index.mdx",
+      "description": "As a new user on the Quick Start page, I want to see types in the usage example.",
+      "acceptanceCriteria": [
+        "Add twoslash to 'Use the generated schemas' code block (around line 118)",
+        "Add ^? annotation under profileSchema variable",
+        "Import uses relative path to examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with // @filename: directives and // ---cut--- to hide setup. Type popup shows ZodObject<{ id: ZodString; name: ZodOptional<ZodString>; email: ZodString }, $loose>"
+    },
+    {
+      "title": "Add Twoslash to Zod adapter usage",
+      "description": "As a user viewing the Zod adapter page, I want to see typed parse result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/zod/index.mdx (around line 63)",
+        "Add ^? annotation under user variable after .parse()",
+        "Import from examples/typescript/zod/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with inline Zod types and simplified client helper. Type popup shows { [x: string]: unknown; id: string; email: string; name?: string | undefined; }"
+    },
+    {
+      "title": "Add Twoslash to Effect adapter usage",
+      "description": "As a user viewing the Effect adapter page, I want to see typed decode result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/effect/index.mdx (around line 64)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/effect/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with inline Effect Schema types. Schema interface includes pipe() method for chaining. Type popup shows 'unknown' - see phase2 story 'Fix Effect adapter type inference' for the fix."
+    },
+    {
+      "title": "Add Twoslash to ArkType adapter usage",
+      "description": "As a user viewing the ArkType adapter page, I want to see typed validation result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/arktype/index.mdx (around line 64)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/arktype/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with inline ArkType types. TypeConstructor creates object types with optional key support via '?' suffix in key names. Type popup shows { id: string; name: string | undefined; email: string; }"
+    },
+    {
+      "title": "Add Twoslash to Valibot adapter usage",
+      "description": "As a user viewing the Valibot adapter page, I want to see typed parse result.",
+      "acceptanceCriteria": [
+        "Add twoslash to usage code block in adapters/valibot/index.mdx (around line 65)",
+        "Add ^? annotation under user variable",
+        "Import from examples/typescript/valibot/.xschema/xschema.gen",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": "Used virtual files pattern with inline Valibot types. BaseSchema<T> pattern with _output property for type inference. Type popup shows { id: string; email: string; name: string | undefined; } & { [x: string]: unknown }"
+    }
+  ]
+}

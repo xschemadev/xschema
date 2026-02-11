@@ -3,6 +3,7 @@ node_modules
 .DS_Store
 .cache
 .vercel
+.next
 .output
 .nitro
 /build/
@@ -20,3 +21,4 @@ node_modules
 # Generated at build time
 /public/schemas
 /content/docs/**/compliance.mdx
+/content/docs/compliance/unsupported-features.mdx

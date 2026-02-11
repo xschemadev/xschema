@@ -11,7 +11,7 @@ export {
 	hasPrototypeProperties,
 } from "./primitives.js";
 
-export { resolveJsonPointer, getRefName } from "./json-pointer.js";
+export { getRefName } from "./json-pointer.js";
 
 export {
 	chain,

@@ -32,8 +32,10 @@ func Language() language.Language {
 		ImportPattern:        `(?m)^import\s+.*$`,
 		InjectSchemasKey:     injectSchemasKeyBrace,
 		ClientFactoryPattern: `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
-		OutputFile:           "xschema.gen.ts",
-		Template:             outputTemplate,
+		OutputFiles: []language.OutputFileSpec{{
+			Path:     "xschema.gen.ts",
+			Template: outputTemplate,
+		}},
 		MergeImports:         MergeImports,
 		BuildVarName:         buildVarName,
 		IgnoreDirs:           []string{"node_modules", "dist", "build"},

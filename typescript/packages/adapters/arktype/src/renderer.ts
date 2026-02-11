@@ -16,7 +16,6 @@ import type {
 	NotNode,
 	LiteralNode,
 	EnumNode,
-	RefNode,
 	ConditionalNode,
 	TypeGuardedNode,
 	NullableNode,
@@ -28,6 +27,30 @@ import {
 	sortedStringify,
 	hasPrototypeProperties,
 } from "@xschemadev/core";
+
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string, optional: boolean): string {
+	if (optional) {
+		return canUseDirectSyntax(key) ? `"${key}?"` : `${escapeString(key + "?")}`;
+	}
+	return canUseDirectSyntax(key) ? key : escapeString(key);
+}
 
 /**
  * Render a SchemaNode to ArkType code
@@ -64,14 +87,17 @@ export function render(node: SchemaNode): string {
 			return "type.unknown";
 		case "never":
 			return "type.never";
-		case "ref":
-			return renderRef(node);
+
 		case "conditional":
 			return renderConditional(node);
 		case "typeGuarded":
 			return renderTypeGuarded(node);
 		case "nullable":
 			return renderNullable(node);
+		default:
+			// Exhaustive check - should never reach here
+			const _exhaustive: never = node;
+			throw new Error(`Unhandled node kind: ${(node as any).kind}`);
 	}
 }
 
@@ -219,17 +245,39 @@ function renderObject(node: ObjectNode): string {
 		return renderObjectWithProtoProps(node);
 	}
 
+	// Determine strictness from additionalProperties and unevaluatedProperties
+	// Key insight: if additionalProperties is explicitly set (true, schema, or false), it handles extra props.
+	// unevaluatedProperties only takes effect when additionalProperties is NOT explicitly set (undefined).
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+
+	// isStrict: reject extra properties
+	// - additionalProperties: false → strict
+	// - additionalProperties not set AND unevaluatedProperties: false → strict
+	const isStrict =
+		node.additionalProperties === false ||
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+
+	// Schema for validating extra properties
+	// - additionalProperties as schema takes precedence
+	// - Then unevaluatedProperties as schema (only if additionalProperties not set)
+	const additionalSchema =
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+			? node.additionalProperties
+			: !additionalPropsExplicit &&
+				  typeof node.unevaluatedProperties === "object" &&
+				  node.unevaluatedProperties.kind !== "any"
+				? node.unevaluatedProperties
+				: null;
+
 	let result: string;
 
 	if (propKeys.length === 0 && !hasPatternProps) {
 		// No properties defined
-		if (node.additionalProperties === false) {
+		if (isStrict) {
 			result = 'type({ "+": "reject" })';
-		} else if (
-			typeof node.additionalProperties === "object" &&
-			node.additionalProperties.kind !== "any"
-		) {
-			const valueSchema = render(node.additionalProperties);
+		} else if (additionalSchema) {
+			const valueSchema = render(additionalSchema);
 			result = `type({ "[string]": ${valueSchema} })`;
 		} else {
 			result = "type.object";
@@ -241,30 +289,23 @@ function renderObject(node: ObjectNode): string {
 		for (const key of propKeys) {
 			const prop = node.properties.get(key)!;
 			const propCode = render(prop.schema as SchemaNode);
-			const keyStr = prop.required
-				? escapeString(key)
-				: `${escapeString(key + "?")}`;
+			const keyStr = formatPropertyKey(key, !prop.required);
 			shape.push(`${keyStr}: ${propCode}`);
 		}
 
-		// Handle additional properties
-		if (node.additionalProperties === false && !hasPatternProps) {
+		// Handle strict mode (additionalProperties: false or unevaluatedProperties: false)
+		if (isStrict && !hasPatternProps) {
 			shape.push('"+": "reject"');
 		}
-		// Note: additionalProperties with schema is handled below via narrow
+		// Note: additionalProperties/unevaluatedProperties with schema is handled below via narrow
 		// to validate only additional keys (not the defined properties)
 
 		result = `type({ ${shape.join(", ")} })`;
 	}
 
-	// Handle additionalProperties with schema - validate only additional keys
-	if (
-		typeof node.additionalProperties === "object" &&
-		node.additionalProperties.kind !== "any" &&
-		!hasPatternProps &&
-		propKeys.length > 0
-	) {
-		const valueSchema = render(node.additionalProperties);
+	// Handle additionalProperties/unevaluatedProperties with schema - validate only additional keys
+	if (additionalSchema && !hasPatternProps && propKeys.length > 0) {
+		const valueSchema = render(additionalSchema);
 		const definedPropsJson = JSON.stringify(propKeys);
 		result += `.narrow((obj, ctx) => {
       const definedProps = new Set(${definedPropsJson});
@@ -374,6 +415,13 @@ function renderPatternPropsNarrow(
 	const patterns = node.patternProperties;
 	const definedPropsJson = JSON.stringify(propKeys);
 
+	// Check if additionalProperties is explicitly set
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+	// If additionalProperties is not set and unevaluatedProperties: false, reject non-matching props
+	const shouldRejectNonMatching =
+		node.additionalProperties === false ||
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+
 	let body = `
       const definedProps = new Set(${definedPropsJson});
       const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
@@ -390,8 +438,8 @@ function renderPatternPropsNarrow(
       }`;
 	});
 
-	// Additional properties validation
-	if (node.additionalProperties === false) {
+	// Additional/unevaluated properties validation
+	if (shouldRejectNonMatching) {
 		body += `
       for (const key of Object.keys(obj)) {
         if (definedProps.has(key)) continue;
@@ -451,8 +499,48 @@ function renderDependencies(node: ObjectNode): string {
 }
 
 function renderArray(node: ArrayNode): string {
+	// Check if this is a schema with only unevaluatedItems (no actual items schema)
+	// In that case, all items are "unevaluated" and subject to unevaluatedItems constraint
+	const hasRealItems = node.items.kind !== "any";
+
+	if (!hasRealItems && node.unevaluatedItems === false) {
+		// Schema like { "unevaluatedItems": false } - empty array only
+		let result = "type.unknown.array().narrow((arr, ctx) => arr.length === 0 || ctx.mustBe(\"an empty array\"))";
+		result += renderArrayConstraints(node.constraints);
+		return result;
+	}
+
+	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
+		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
+		const unevalSchema = render(node.unevaluatedItems);
+		let result = `${unevalSchema}.array()`;
+		result += renderArrayConstraints(node.constraints);
+		return result;
+	}
+
+	// Normal array with items schema
 	const itemSchema = render(node.items);
 	let result = `${itemSchema}.array()`;
+
+	// If items is defined AND unevaluatedItems is also defined, we need both validations
+	// But typically items covers all items, so unevaluatedItems wouldn't have effect
+	// Just in case, add the refinement
+	if (
+		hasRealItems &&
+		node.unevaluatedItems !== undefined &&
+		node.unevaluatedItems !== false &&
+		node.unevaluatedItems.kind !== "any"
+	) {
+		const unevalSchema = render(node.unevaluatedItems);
+		result += `.narrow((arr, ctx) => {
+      const schema = ${unevalSchema};
+      for (let i = 0; i < arr.length; i++) {
+        if (!schema.allows(arr[i])) return ctx.mustBe("valid unevaluated items");
+      }
+      return true;
+    })`;
+	}
+
 	result += renderArrayConstraints(node.constraints);
 	return result;
 }
@@ -460,9 +548,22 @@ function renderArray(node: ArrayNode): string {
 function renderTuple(node: TupleNode): string {
 	const prefixSchemas = node.prefixItems.map((item) => render(item));
 
-	// If no rest items - allow 0 to prefixItems.length items
+	// Determine if extra items are allowed and what schema to use
+	// unevaluatedItems takes precedence for standalone schemas (no applicators)
+	const disallowExtraItems =
+		node.restItems === false || node.unevaluatedItems === false;
+	const extraItemsSchema =
+		node.restItems !== false && node.restItems.kind !== "any"
+			? node.restItems
+			: node.unevaluatedItems !== undefined &&
+				  node.unevaluatedItems !== false &&
+				  node.unevaluatedItems.kind !== "any"
+				? node.unevaluatedItems
+				: null;
+
+	// If no extra items allowed - allow 0 to prefixItems.length items
 	// JSON Schema allows fewer items, just not more
-	if (node.restItems === false) {
+	if (disallowExtraItems) {
 		let result = `type.unknown.array().narrow((arr, ctx) => {
       const schemas = [${prefixSchemas.join(", ")}];
       if (arr.length > schemas.length) return ctx.mustBe("an array with at most " + schemas.length + " items");
@@ -475,8 +576,8 @@ function renderTuple(node: TupleNode): string {
 		return result;
 	}
 
-	// With rest items of "any" type - validate prefix then allow anything else
-	if (node.restItems.kind === "any") {
+	// With rest/unevaluated items of "any" type - validate prefix then allow anything else
+	if (!extraItemsSchema) {
 		let result = `type.unknown.array().narrow((arr, ctx) => {
       const schemas = [${prefixSchemas.join(", ")}];
       for (let i = 0; i < Math.min(arr.length, schemas.length); i++) {
@@ -488,8 +589,8 @@ function renderTuple(node: TupleNode): string {
 		return result;
 	}
 
-	// Tuple with typed rest items
-	const restSchema = render(node.restItems);
+	// Tuple with typed rest/unevaluated items
+	const restSchema = render(extraItemsSchema);
 	let result = `type.unknown.array().narrow((arr, ctx) => {
       const schemas = [${prefixSchemas.join(", ")}];
       for (let i = 0; i < Math.min(arr.length, schemas.length); i++) {
@@ -660,10 +761,7 @@ function renderEnum(node: EnumNode): string {
 	return `type.enumerated(${values.map((v) => JSON.stringify(v)).join(", ")})`;
 }
 
-function renderRef(node: RefNode): string {
-	// The resolved schema is already parsed, just render it
-	return render(node.resolved);
-}
+
 
 function renderConditional(node: ConditionalNode): string {
 	const ifSchema = render(node.if);

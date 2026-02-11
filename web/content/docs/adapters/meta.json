@@ -1,0 +1,19 @@
+{
+  "root": true,
+  "title": "Adapters",
+  "description": "Validation library adapters and their compliance",
+  "icon": "Puzzle",
+  "pages": [
+    "index",
+    "---TypeScript---",
+    "zod",
+    "arktype",
+    "effect",
+    "valibot",
+    "---Python---",
+    "pydantic",
+    "---Development---",
+    "building-adapters",
+    "protocol"
+  ]
+}

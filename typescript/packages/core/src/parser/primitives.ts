@@ -24,14 +24,8 @@ export function parseNumber(schema: JSONSchema, integer: boolean): NumberNode {
 		constraints: {
 			minimum: schema.minimum,
 			maximum: schema.maximum,
-			exclusiveMinimum:
-				typeof schema.exclusiveMinimum === "number"
-					? schema.exclusiveMinimum
-					: undefined,
-			exclusiveMaximum:
-				typeof schema.exclusiveMaximum === "number"
-					? schema.exclusiveMaximum
-					: undefined,
+			exclusiveMinimum: schema.exclusiveMinimum, // already normalized to number by Go CLI
+			exclusiveMaximum: schema.exclusiveMaximum, // already normalized to number by Go CLI
 			multipleOf: schema.multipleOf,
 		},
 	};

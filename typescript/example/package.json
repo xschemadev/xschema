@@ -10,7 +10,6 @@
     "@xschemadev/arktype": "workspace:*",
     "@xschemadev/client": "workspace:*",
     "@xschemadev/zod": "workspace:*",
-    "@xschemadev/typescript": "workspace:",
     "arktype": "^2.1.29",
     "zod": "^3.24.0"
   },
