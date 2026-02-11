@@ -33,16 +33,28 @@ func Language() language.Language {
 		InjectSchemasKey:     injectSchemasKeyDict,
 		ClientFactoryPattern: `create_xschema_client\s*\(\s*(\{[^}]*\})\s*\)`,
 		OutputDir:            "_xschema",
-		OutputFile:           "__init__.py",
-		Template:             outputTemplate,
-		MergeImports:         MergeImports,
-		BuildVarName:         buildVarName,
-		IgnoreDirs:           []string{"__pycache__", ".venv", "venv", ".tox", ".eggs", "site-packages", ".mypy_cache", ".pytest_cache"},
-		DetectHarnessRunner:  detectHarnessRunner,
-		GetPackageName:       getPackageName,
-		AdapterCLIPath:       getAdapterCLIPath,
-		HarnessExtension:     ".py",
-		HarnessTemplate:      harnessTemplate,
+		OutputFiles: []language.OutputFileSpec{
+			{
+				Path:     "__init__.py",
+				Template: initTemplate,
+			},
+			{
+				Path:     "schemas.py",
+				Template: schemasTemplate,
+			},
+			{
+				Path:     "__init__.pyi",
+				Template: initStubTemplate,
+			},
+		},
+		MergeImports:        MergeImports,
+		BuildVarName:        buildVarName,
+		IgnoreDirs:          []string{"__pycache__", ".venv", "venv", ".tox", ".eggs", "site-packages", ".mypy_cache", ".pytest_cache"},
+		DetectHarnessRunner: detectHarnessRunner,
+		GetPackageName:      getPackageName,
+		AdapterCLIPath:      getAdapterCLIPath,
+		HarnessExtension:    ".py",
+		HarnessTemplate:     harnessTemplate,
 	}
 }
 

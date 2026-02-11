@@ -1,19 +1,9 @@
-"""
-XSchema Example - Python
+"""XSchema example for Python runtime client usage."""
 
-This example shows how to use xschema to:
-1. Define JSON Schema sources in config files (*.jsonc)
-2. Generate type-safe validators (Pydantic)
-3. Use the generated schemas with full type inference
+import _xschema
+from xschema_client import create_xschema_client
 
-Run `uv run generate` to regenerate schemas, then `uv run python main.py` to run this file.
-"""
-
-# Import generated schemas and typed client
-from _xschema import create_typed_client
-
-# Create the typed xschema client with full autocomplete support
-xschema = create_typed_client()
+xschema: "_xschema.XSchemaClient" = create_xschema_client(_xschema.schemas)
 
 # ============================================
 # Type extraction using type annotations

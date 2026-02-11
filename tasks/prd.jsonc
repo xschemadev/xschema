@@ -1,98 +1,391 @@
 {
-	"project": "Pydantic Adapter 100% Compliance",
-	"description": "Fix all failing compliance tests in the pydantic adapter to achieve 100% coverage across all JSON Schema drafts",
-	"tasks": [
-		{
-			"title": "Fix field name shadowing Python builtins (63 failures)",
-			"steps": [
-				"Read renderer.py and find _sanitize_property_name function",
-				"Add a set of Python builtin names that shadow types: list, dict, str, int, float, bool, type, set, tuple, object, bytes, complex, frozenset, range, slice, property, classmethod, staticmethod",
-				"Update _sanitize_property_name to rename fields that match these builtins (e.g., list -> list_, or list_field)",
-				"Ensure the field uses Field(alias='list') to preserve JSON serialization",
-				"Write unit test for the new sanitization logic"
-			],
-			"verify": [
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft4 --keyword refRemote",
-				"All refRemote tests pass (no failures)",
-				"Run: cd python/packages/adapters/pydantic && bunx tsc --noEmit (if applicable) or python type checks pass"
-			],
-			"passes": true,
-			"id": "1"
-		},
-		{
-			"title": "Fix additionalItems applicator scoping (3 failures)",
-			"steps": [
-				"Read renderer.py array/tuple handling code",
-				"Find where additionalItems validation is implemented",
-				"The bug: additionalItems should NOT look inside allOf/anyOf/oneOf for items keyword",
-				"Per JSON Schema spec, additionalItems only interacts with items at the same schema level",
-				"Fix the logic to check for items only at the current level, not in nested applicators",
-				"The test schema has items inside allOf, additionalItems at root - root additionalItems should apply to ALL items"
-			],
-			"verify": [
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft4 --keyword additionalItems",
-				"All additionalItems tests pass (no failures)",
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft6 --keyword additionalItems",
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft7 --keyword additionalItems"
-			],
-			"passes": true,
-			"id": "2"
-		},
-		{
-			"title": "Fix unevaluatedProperties uncle schema (2 failures)",
-			"steps": [
-				"Study the failing test case: nested unevaluatedProperties inside foo.properties with anyOf at root defining foo.faz",
-				"The test {foo: {bar: 'test'}} should be VALID - only bar is present, bar is evaluated by foo.properties",
-				"Check how Zod adapter handles this case (it passes) - compare zod/src/renderer.ts with pydantic renderer.py",
-				"The issue: when generating code for nested objects, the adapter must not incorrectly flag properties as unevaluated",
-				"Properties defined in ancestor applicators (anyOf at root) do NOT count as evaluated for nested unevaluatedProperties",
-				"But the simple case (only bar present, bar in properties) should pass"
-			],
-			"verify": [
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2019-09 --keyword unevaluatedProperties",
-				"All unevaluatedProperties tests pass (no failures)",
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2020-12 --keyword unevaluatedProperties"
-			],
-			"passes": true,
-			"id": "3"
-		},
-		{
-			"title": "Fix JavaScript pseudo-array handling (1 failure)",
-			"steps": [
-				"Read renderer.py tuple/items handling code",
-				"The failing test: objects with numeric string keys like {'0': 'foo', '1': 'bar', 'length': 2}",
-				"Per JSON Schema, 'items' keyword applies to arrays, not objects - the pseudo-array is an object",
-				"Check if the adapter incorrectly validates objects against items schema",
-				"The fix: ensure tuple/items validation only applies to actual lists, not dict objects",
-				"Objects should pass through tuple schemas unchanged (no type constraint = pass non-arrays)"
-			],
-			"verify": [
-				"Run: cd python/packages/adapters/pydantic && bun run compliance -- --draft draft2019-09 --keyword items",
-				"All items tests pass (no failures)"
-			],
-			"passes": true,
-			"id": "4"
-		},
-		{
-			"title": "Run full compliance and verify 100% coverage",
-			"steps": [
-				"Run full compliance suite for all drafts",
-				"Verify all drafts show 100% pass rate (excluding unsupported features)",
-				"Update compliance results in compliance/results/ directory",
-				"Ensure REPORT.md shows all green badges"
-			],
-			"verify": [
-				"Run: cd python/packages/adapters/pydantic && bun run compliance",
-				"draft3: 100% (should already be 100%)",
-				"draft4: 100% (was 96.8%)",
-				"draft6: 100% (was 96.8%)",
-				"draft7: 100% (was 97.1%)",
-				"draft2019-09: 100% (was 99.8%)",
-				"draft2020-12: 100% (was 99.9%)",
-				"No failures in any draft"
-			],
-			"passes": true,
-			"id": "5"
-		}
-	]
+  "project": "Adapter Type Fidelity Hardening",
+  "description": "Remove avoidable type degradation across Python and TypeScript adapters, keep runtime compliance behavior stable, and add explicit static type-fidelity checks.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Baseline Python adapter runtime and typing",
+      "steps": [
+        "Create baseline artifacts under tasks/type-fidelity-baseline/python/",
+        "Record current pydantic compliance summary by draft and keyword from compliance results",
+        "Add a python probe fixture for mixed allOf, oneOf, not, conditional, typeGuarded, tuple, and complex const/enum",
+        "Record current inferred types from pyright for that fixture"
+      ],
+      "verify": [
+        "tasks/type-fidelity-baseline/python/ contains compliance summary and type probe output",
+        "Baseline clearly shows current TypeAdapter[Any] degradations",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "2",
+      "title": "Baseline Zod adapter runtime and typing",
+      "steps": [
+        "Create baseline artifacts under tasks/type-fidelity-baseline/zod/",
+        "Record current zod compliance summary by draft and keyword from compliance results",
+        "Add a zod probe fixture for oneOf, not, conditional, typeGuarded, tuple, and complex const/enum",
+        "Record current inferred types and any compile-time issues from tsc"
+      ],
+      "verify": [
+        "tasks/type-fidelity-baseline/zod/ contains compliance summary and type probe output",
+        "Baseline clearly shows current any or over-broad output points",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "3",
+      "title": "Baseline ArkType adapter runtime and typing",
+      "steps": [
+        "Create baseline artifacts under tasks/type-fidelity-baseline/arktype/",
+        "Record current arktype compliance summary by draft and keyword from compliance results",
+        "Add an arktype probe fixture for oneOf, not, conditional, typeGuarded, tuple, and complex const/enum",
+        "Record current inferred types from tsc"
+      ],
+      "verify": [
+        "tasks/type-fidelity-baseline/arktype/ contains compliance summary and type probe output",
+        "Baseline clearly shows current unknown-heavy paths",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "4",
+      "title": "Add Python type-fidelity harness",
+      "steps": [
+        "Add a pyright-based type-fidelity script for python/packages/adapters/pydantic",
+        "Add assertion fixtures that fail if targeted constructs regress to Any unexpectedly",
+        "Integrate the script into adapter-local development checks without changing compliance command behavior",
+        "Document how to run the new script"
+      ],
+      "verify": [
+        "New python type-fidelity script runs and produces pass/fail output",
+        "Script fails when a targeted fixture is intentionally weakened",
+        "Existing compliance script interface is unchanged",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "5",
+      "title": "Add Zod type-fidelity harness",
+      "steps": [
+        "Add a tsc assertion-based type-fidelity script for typescript/packages/adapters/zod",
+        "Create fixture assertions that detect any leakage for targeted constructs",
+        "Integrate the script into adapter-local development checks without changing compliance command behavior",
+        "Document how to run the new script"
+      ],
+      "verify": [
+        "New zod type-fidelity script runs and reports pass/fail",
+        "Script fails when a targeted fixture regresses to any",
+        "Existing compliance script interface is unchanged",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "6",
+      "title": "Add ArkType type-fidelity harness",
+      "steps": [
+        "Add a tsc assertion-based type-fidelity script for typescript/packages/adapters/arktype",
+        "Create fixture assertions that detect unnecessary unknown broadening",
+        "Integrate the script into adapter-local development checks without changing compliance command behavior",
+        "Document how to run the new script"
+      ],
+      "verify": [
+        "New arktype type-fidelity script runs and reports pass/fail",
+        "Script fails when targeted fixtures get weaker than expected",
+        "Existing compliance script interface is unchanged",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "7",
+      "title": "Python: remove fail-open renderer fallbacks",
+      "steps": [
+        "Update pydantic renderer to stop silently returning Any for unknown IR kinds",
+        "Update unresolved ref rendering path to fail with explicit conversion error",
+        "Add unit tests for unknown kind and unresolved ref behavior",
+        "Keep successful render paths unchanged"
+      ],
+      "verify": [
+        "Unknown IR kinds no longer silently produce Any",
+        "Unresolved refs no longer silently produce Any",
+        "python/packages/adapters/pydantic tests pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "8",
+      "title": "Python: preserve type information in mixed allOf",
+      "steps": [
+        "Refactor mixed allOf rendering to emit the narrowest representable type instead of Annotated[Any, BeforeValidator(...)] when possible",
+        "Keep runtime validator sequencing and error behavior intact",
+        "Add fixture coverage for TSConfig-like mixed allOf schemas",
+        "Ensure generated lookup type for that fixture is no longer TypeAdapter[Any]"
+      ],
+      "verify": [
+        "TSConfig-like fixture no longer infers TypeAdapter[Any]",
+        "Runtime pass/fail for allOf fixture matches baseline",
+        "python/packages/adapters/pydantic tests pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "9",
+      "title": "Python: narrow oneOf/not/conditional/typeGuarded typing",
+      "steps": [
+        "Introduce helper logic to compute a safe narrow static type expression for semantic combinators",
+        "Replace Annotated[Any, BeforeValidator(...)] with Annotated[<narrower-type>, BeforeValidator(...)] where representable",
+        "Use a shared broad-safe fallback only when no stronger static form exists",
+        "Add focused tests for oneOf, not, conditional, and typeGuarded fixtures"
+      ],
+      "verify": [
+        "Target combinator fixtures avoid TypeAdapter[Any] when representable",
+        "Runtime behavior for targeted fixtures matches baseline",
+        "python/packages/adapters/pydantic tests pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "10",
+      "title": "Python: narrow tuple and complex const/enum typing",
+      "steps": [
+        "Improve tuple rendering to avoid tuple[Any, ...] for common finite-prefix and constrained-rest patterns",
+        "Replace complex const/enum Any fallback with a narrower JSON-value typing model where possible",
+        "Preserve deep runtime equality behavior and current error semantics",
+        "Add tests for tuple and complex const/enum fixtures"
+      ],
+      "verify": [
+        "Tuple fixtures infer concrete element types where representable",
+        "Complex const/enum fixtures no longer default to Any unless unavoidable",
+        "python/packages/adapters/pydantic tests pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "11",
+      "title": "Zod: replace z.any semantic wrappers with z.unknown",
+      "steps": [
+        "Update oneOf, not, conditional, and typeGuarded rendering to use z.unknown wrappers",
+        "Preserve runtime validation logic and issue messages",
+        "Keep output shape compatible with existing generated integration points",
+        "Add tests guarding against any leakage in these paths"
+      ],
+      "verify": [
+        "Generated zod combinator fixtures infer unknown or narrower, not any",
+        "Runtime behavior for targeted fixtures matches baseline",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "12",
+      "title": "Zod: fix tuple and array constraint chaining on effects",
+      "steps": [
+        "Refactor tuple and array generation so min/max constraints are applied on ZodArray before effect wrappers",
+        "Remove generation patterns that call array methods on ZodEffects",
+        "Add regression tests for compile failures caused by effect chaining",
+        "Preserve runtime validation behavior"
+      ],
+      "verify": [
+        "Target fixtures compile without ZodEffects min/max errors",
+        "Runtime outcomes for target fixtures match baseline",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "13",
+      "title": "Zod: fix prototype-property object validation correctness",
+      "steps": [
+        "Update prototype-property object renderer path to reject non-object values when object validation is required",
+        "Preserve validation behavior for __proto__, constructor, and prototype keys",
+        "Add focused tests for primitive and object inputs with prototype-named keys",
+        "Keep error path and messaging style consistent"
+      ],
+      "verify": [
+        "Prototype-property object schemas do not accept primitives incorrectly",
+        "Prototype key object fixtures still validate correctly",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "14",
+      "title": "Zod: stabilize deep equality for complex const and enum",
+      "steps": [
+        "Replace shallow key-sort stringify logic with deterministic recursive normalization for complex values",
+        "Apply helper to zod const and enum complex-value rendering",
+        "Add fixtures covering nested objects and arrays",
+        "Keep primitive const and enum generation unchanged"
+      ],
+      "verify": [
+        "Complex const and enum fixtures validate deterministically for nested values",
+        "No regressions in primitive const and enum fixtures",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "15",
+      "title": "ArkType: stabilize deep equality for complex const and enum",
+      "steps": [
+        "Replace shallow key-sort stringify logic with deterministic recursive normalization for complex values",
+        "Apply helper to arktype const and enum complex-value rendering",
+        "Add fixtures covering nested objects and arrays",
+        "Keep primitive const and enum generation unchanged"
+      ],
+      "verify": [
+        "Complex const and enum fixtures validate deterministically for nested values",
+        "No regressions in primitive const and enum fixtures",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "16",
+      "title": "ArkType: narrow unknown-heavy combinator and tuple outputs",
+      "steps": [
+        "Improve oneOf, not, conditional, typeGuarded, and tuple rendering to preserve representable static type information",
+        "Keep unknown fallback only where semantics cannot be represented safely",
+        "Add type-fidelity assertions for targeted weak constructs",
+        "Preserve runtime validation behavior"
+      ],
+      "verify": [
+        "Target fixtures infer narrower than blanket unknown when representable",
+        "Runtime behavior for targeted fixtures matches baseline",
+        "typescript build and typecheck pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "17",
+      "title": "Compliance and reporting: preserve runtime semantics",
+      "steps": [
+        "Ensure runtime compliance scoring and output schema are unchanged",
+        "If report text implies static validation where none runs, update wording to match actual behavior",
+        "Keep static type-fidelity checks as separate artifacts from runtime compliance totals",
+        "Add regression coverage for skipped and type-only handling"
+      ],
+      "verify": [
+        "Compliance output format and runtime scoring remain unchanged",
+        "Static checks are reported separately from runtime compliance",
+        "cli go build, go vet, and go test all pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "18",
+      "title": "Final Python non-regression validation",
+      "steps": [
+        "Run full pydantic adapter compliance",
+        "Compare runtime results against baseline and ensure no regressions",
+        "Run python type-fidelity harness and confirm targeted typing improvements",
+        "Write before and after results to tasks/type-fidelity-baseline/python/final-report.md"
+      ],
+      "verify": [
+        "Python runtime compliance totals are unchanged or improved",
+        "Target python fixtures no longer degrade to Any when representable",
+        "Python type-fidelity harness passes",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "19",
+      "title": "Final Zod non-regression validation",
+      "steps": [
+        "Run full zod adapter compliance",
+        "Compare runtime results against baseline and ensure no regressions",
+        "Run zod type-fidelity harness and confirm any leakage reductions",
+        "Write before and after results to tasks/type-fidelity-baseline/zod/final-report.md"
+      ],
+      "verify": [
+        "Zod runtime compliance totals are unchanged or improved",
+        "Target zod fixtures avoid any where representable",
+        "Zod type-fidelity harness passes",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "20",
+      "title": "Final ArkType non-regression validation",
+      "steps": [
+        "Run full arktype adapter compliance",
+        "Compare runtime results against baseline and ensure no regressions",
+        "Run arktype type-fidelity harness and confirm targeted narrowing improvements",
+        "Write before and after results to tasks/type-fidelity-baseline/arktype/final-report.md"
+      ],
+      "verify": [
+        "ArkType runtime compliance totals are unchanged or improved",
+        "Target arktype fixtures are narrower than prior unknown-heavy baseline where representable",
+        "ArkType type-fidelity harness passes",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "21",
+      "title": "Document Python fallback typing guardrails",
+      "steps": [
+        "Document which python renderer constructs may still use broad fallback typing and why",
+        "Document disallowed fallback patterns and required test coverage for new renderer branches",
+        "Add local commands for python compliance and type-fidelity checks",
+        "Add troubleshooting notes for pyright fixture runs"
+      ],
+      "verify": [
+        "Python adapter docs include allowed and disallowed fallback typing rules",
+        "Python docs include local verification commands",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "22",
+      "title": "Document Zod fallback typing guardrails",
+      "steps": [
+        "Document zod constructs where unknown fallback is acceptable and where any is forbidden",
+        "Document required tests for semantic wrappers, tuple generation, and proto-property paths",
+        "Add local commands for zod compliance and type-fidelity checks",
+        "Add troubleshooting notes for tsc assertion fixtures"
+      ],
+      "verify": [
+        "Zod adapter docs include explicit no-any guardrails",
+        "Zod docs include local verification commands",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "23",
+      "title": "Document ArkType fallback typing guardrails",
+      "steps": [
+        "Document arktype constructs where unknown fallback is acceptable and where narrowing is required",
+        "Document required tests for combinators and tuple generation",
+        "Add local commands for arktype compliance and type-fidelity checks",
+        "Add troubleshooting notes for tsc assertion fixtures"
+      ],
+      "verify": [
+        "ArkType adapter docs include explicit fallback and narrowing guardrails",
+        "ArkType docs include local verification commands",
+        "Typecheck passes"
+      ],
+      "passes": false
+    }
+  ]
 }

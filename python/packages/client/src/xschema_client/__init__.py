@@ -32,11 +32,15 @@ Usage:
     user = User.model_validate({"name": "Alice"})
 """
 
-from typing import Any, Callable, Dict, Generic, Optional, TypeVar
+from typing import Any, Dict, Generic, Protocol, TypeVar
 
 __all__ = ["create_xschema_client", "XSchemaError"]
 
 T = TypeVar("T")
+
+
+class _SchemaLookup(Protocol[T]):
+    def __call__(self, key: str) -> T: ...
 
 
 class XSchemaError(Exception):
@@ -95,7 +99,7 @@ class XSchemaClient(Generic[T]):
         return self._schemas[key]
 
 
-def create_xschema_client(schemas: Dict[str, T]) -> Callable[[str], T]:
+def create_xschema_client(schemas: Dict[str, T]) -> _SchemaLookup[T]:
     """
     Create an xschema client for looking up schemas by namespace:id.
 
@@ -112,8 +116,8 @@ def create_xschema_client(schemas: Dict[str, T]) -> Callable[[str], T]:
                  Generated code provides this dict with all validators.
 
     Returns:
-        A callable that takes a "namespace:id" key and returns the validator.
-        Raises XSchemaError if the key is not found.
+        An XSchemaClient instance. It's callable and takes a "namespace:id"
+        key, returning the validator. Raises XSchemaError if the key is not found.
 
     Example:
         >>> from xschema_client import create_xschema_client
