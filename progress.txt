@@ -536,3 +536,20 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - pyright: 0 errors on src/
 - TS typecheck: all 6 packages pass
 
+### Task 19: Final Zod non-regression validation - COMPLETED
+
+**Runtime compliance**: identical to baseline — 100% across all 6 drafts, zero regressions.
+
+**Type-fidelity**: 9 any-free (was 1 baseline), 6 any (was 14 baseline). 8 probes improved.
+
+**Improvements**: oneOf (2), not (2), conditional (2), typeGuarded (2) — all from z.any() → z.unknown() swap.
+
+**Accepted any (6)**: tuples (3, ZodArray limitation), constArray (1, same), enumWithObjects (1, heterogeneous values), enumWithArrays (1, same).
+
+**Report**: `tasks/type-fidelity-baseline/zod/final-report.md`
+
+**Verification**:
+- Compliance: 100% all 6 drafts (no regressions)
+- Type-fidelity harness: 15/15 pass, 9 any-free, 6 any
+- TS typecheck: all 6 packages pass
+
