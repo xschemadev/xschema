@@ -547,6 +547,9 @@ function renderArray(node: ArrayNode): string {
 	const itemSchema = render(node.items);
 	let result = `z.array(${itemSchema})`;
 
+	// Size constraints (.min/.max) must go on ZodArray before any .superRefine
+	result += renderArraySizeConstraints(node.constraints);
+
 	// If items is defined AND unevaluatedItems is also defined, we need both validations
 	// But typically items covers all items, so unevaluatedItems wouldn't have effect
 	// Just in case, add the refinement
@@ -568,7 +571,8 @@ function renderArray(node: ArrayNode): string {
     })`;
 	}
 
-	result += renderArrayConstraints(node.constraints);
+	// Refinement constraints (.refine for uniqueItems/contains) work on ZodEffects
+	result += renderArrayRefinementConstraints(node.constraints);
 	return result;
 }
 
@@ -576,7 +580,8 @@ function renderTuple(node: TupleNode): string {
 	const tupleSchemas = node.prefixItems.map((item) => render(item));
 	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
-	let result = `z.array(z.any()).superRefine((val, ctx) => {
+	// Size constraints (.min/.max) must go on the ZodArray before any .superRefine/.refine
+	let result = `z.array(z.any())${renderArraySizeConstraints(node.constraints)}.superRefine((val, ctx) => {
       const schemas = ${schemasArray};
       for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
         const itemResult = schemas[i].safeParse(val[i]);
@@ -618,21 +623,31 @@ function renderTuple(node: TupleNode): string {
       })`;
 	}
 
-	result += renderArrayConstraints(node.constraints);
+	// Refinement constraints (.refine for uniqueItems/contains) work on ZodEffects
+	result += renderArrayRefinementConstraints(node.constraints);
 	return result;
 }
 
-function renderArrayConstraints(
+// .min() and .max() are ZodArray methods — must be applied before any
+// .superRefine()/.refine() that converts the chain to ZodEffects.
+function renderArraySizeConstraints(
 	constraints: ArrayNode["constraints"],
 ): string {
 	let result = "";
-
 	if (constraints.minItems !== undefined) {
 		result += `.min(${constraints.minItems})`;
 	}
 	if (constraints.maxItems !== undefined) {
 		result += `.max(${constraints.maxItems})`;
 	}
+	return result;
+}
+
+// .refine() works on both ZodArray and ZodEffects, safe to append last.
+function renderArrayRefinementConstraints(
+	constraints: ArrayNode["constraints"],
+): string {
+	let result = "";
 
 	if (constraints.uniqueItems) {
 		result += `.refine((arr) => {
@@ -671,6 +686,13 @@ function renderArrayConstraints(
 	}
 
 	return result;
+}
+
+// Convenience: apply all constraints on a bare ZodArray (no prior effects).
+function renderArrayConstraints(
+	constraints: ArrayNode["constraints"],
+): string {
+	return renderArraySizeConstraints(constraints) + renderArrayRefinementConstraints(constraints);
 }
 
 function renderUnion(node: UnionNode): string {

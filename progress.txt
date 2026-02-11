@@ -371,3 +371,23 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Type-fidelity: 15 probes pass, 9 any-free (was 1), 6 any (was 14)
 - Compliance: 100% across all 6 drafts (no regressions)
 
+### Task 12: Zod: fix tuple and array constraint chaining on effects - COMPLETED
+
+**Problem**: `renderArrayConstraints` appended `.min()`/`.max()` at the end of the chain. These are ZodArray methods, but `renderTuple` always wraps with `.superRefine()` first (converting to ZodEffects), and `renderArray` does so when `unevaluatedItems` is present. Calling `.min()` on `ZodEffects` is a TypeScript compile error.
+
+**Solution**: Split `renderArrayConstraints` into three functions:
+- `renderArraySizeConstraints` — `.min()`/`.max()` only, must go on bare ZodArray
+- `renderArrayRefinementConstraints` — `.refine()` for uniqueItems/contains, works on ZodEffects
+- `renderArrayConstraints` — convenience wrapper calling both (for paths with no intermediate effects)
+
+In `renderTuple`: size constraints go right after `z.array(z.any())`, before `.superRefine()`.
+In `renderArray`: size constraints go right after `z.array(itemSchema)`, before unevaluatedItems `.superRefine()`.
+Refinement constraints stay at the end in both cases.
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Compliance: 100% across all 6 drafts (no regressions)
+- Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
+- Generated tuple+minItems/maxItems code compiles (verified via ts.transpileModule)
+
