@@ -154,26 +154,24 @@ const probe_tupleMixedWithRest = z.array(z.any()).superRefine((val, ctx) => {
 type Probe_tupleMixedWithRest = z.infer<typeof probe_tupleMixedWithRest>;
 
 // const object
-const probe_constObject = z.object({}).passthrough().refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === "{\"age\":30,\"name\":\"alice\"}", { message: "Value must equal the const value" });
+const probe_constObject = z.object({}).passthrough().refine((val) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "{\"age\":30,\"name\":\"alice\"}", { message: "Value must equal the const value" });
 type Probe_constObject = z.infer<typeof probe_constObject>;
 
 // const array
-const probe_constArray = z.array(z.any()).refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === "[1,2,3]", { message: "Value must equal the const value" });
+const probe_constArray = z.array(z.any()).refine((val) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "[1,2,3]", { message: "Value must equal the const value" });
 type Probe_constArray = z.infer<typeof probe_constArray>;
 
 // enum with objects
 const probe_enumWithObjects = z.any().refine((val) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ["{\"a\":1}", "{\"b\":2}", "\"simple\""];
-      return validValues.includes(normalized);
+      return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val));
     }, { message: "Value must be one of the enum values" });
 type Probe_enumWithObjects = z.infer<typeof probe_enumWithObjects>;
 
 // enum with arrays
 const probe_enumWithArrays = z.any().refine((val) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ["[1,2]", "[3,4]", "null"];
-      return validValues.includes(normalized);
+      return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val));
     }, { message: "Value must be one of the enum values" });
 type Probe_enumWithArrays = z.infer<typeof probe_enumWithArrays>;
 

@@ -419,3 +419,30 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
 - Tests: 13/13 pass
 
+### Task 14: Zod: stabilize deep equality for complex const and enum - COMPLETED
+
+**Problem**: `sortedStringify` and runtime comparison code only sorted top-level object keys. Nested objects kept their original key insertion order, causing false negatives for semantically equal values with different nested key orders.
+
+**Changes**:
+- `core/src/utils/code-builder.ts`: replaced `sortedStringify` with recursive `deepSortKeys` helper that normalizes at every depth (objects and arrays)
+- `core/src/utils/code-builder.ts`: added `DEEP_SORTED_STRINGIFY_RUNTIME` constant — minified inline IIFE for runtime deep-sort-stringify in generated code
+- `zod/src/renderer.ts:renderLiteral`: replaced shallow `JSON.stringify(val, Object.keys(val as object).sort())` with `${DEEP_SORTED_STRINGIFY_RUNTIME}(val)`
+- `zod/src/renderer.ts:renderEnum`: same replacement for complex enum values; compile-time normalization now uses recursive `sortedStringify`
+
+**Tests added** (`__tests__/deep-const-enum.test.ts`, 23 tests):
+- Nested objects: reordered inner keys match, wrong values rejected
+- Nested arrays containing objects: inner key reorder matches
+- 3+ level deep nesting: all levels normalized
+- Enum with nested objects/arrays: all permutations work
+- Primitive const/enum: unchanged behavior confirmed
+
+**Key decision**: `DEEP_SORTED_STRINGIFY_RUNTIME` is a shared constant in core so all adapters (zod, arktype, valibot, effect) can reuse it. The runtime IIFE is ~180 chars — small enough to inline per refine/narrow call without a separate helper function in generated code.
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Tests: 36/36 pass (13 proto-property + 23 deep const/enum)
+- Compliance: 100% across all 6 drafts (no regressions)
+- Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
+- Go CLI: build, vet, tests all pass
+

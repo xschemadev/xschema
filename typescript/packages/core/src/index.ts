@@ -73,4 +73,5 @@ export {
   buildSafeParseCheck,
   buildPropertyCheck,
   sortedStringify,
+  DEEP_SORTED_STRINGIFY_RUNTIME,
 } from "./utils/index.js";

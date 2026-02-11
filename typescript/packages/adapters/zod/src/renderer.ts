@@ -26,6 +26,7 @@ import {
 	escapeString,
 	isPrimitive,
 	sortedStringify,
+	DEEP_SORTED_STRINGIFY_RUNTIME,
 	hasPrototypeProperties,
 	buildIntersection,
 } from "@xschemadev/core";
@@ -776,12 +777,12 @@ function renderLiteral(node: LiteralNode): string {
 		return `z.literal(${JSON.stringify(node.value)})`;
 	}
 
-	// Objects/arrays need deep equality
+	// Objects/arrays need deep equality with recursive key normalization
 	const isArray = Array.isArray(node.value);
 	const baseType = isArray ? "z.array(z.any())" : "z.object({}).passthrough()";
 	const sorted = sortedStringify(node.value);
 
-	return `${baseType}.refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, { message: "Value must equal the const value" })`;
+	return `${baseType}.refine((val) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)}, { message: "Value must equal the const value" })`;
 }
 
 function renderEnum(node: EnumNode): string {
@@ -802,20 +803,12 @@ function renderEnum(node: EnumNode): string {
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
-		const sortedValues = values.map((v) =>
-			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v).sort()
-					: undefined,
-			),
-		);
+		const sortedValues = values.map((v) => sortedStringify(v));
 		const valuesArrayCode = `[${sortedValues.map((v) => JSON.stringify(v)).join(", ")}]`;
 
 		return `z.any().refine((val) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ${valuesArrayCode};
-      return validValues.includes(normalized);
+      return validValues.includes(${DEEP_SORTED_STRINGIFY_RUNTIME}(val));
     }, { message: "Value must be one of the enum values" })`;
 	}
 
