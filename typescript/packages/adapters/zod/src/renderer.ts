@@ -719,11 +719,11 @@ function renderOneOf(node: OneOfNode): string {
 	const anyCount = filtered.filter((s) => s.kind === "any").length;
 	if (anyCount > 1) {
 		// Multiple "any" schemas means any value matches multiple
-		return `z.any().refine(() => false, { message: "oneOf has multiple 'true' schemas - impossible to match exactly one" })`;
+		return `z.unknown().refine(() => false, { message: "oneOf has multiple 'true' schemas - impossible to match exactly one" })`;
 	}
 
 	const schemas = filtered.map((s) => render(s));
-	return `z.any().superRefine((val, ctx) => {
+	return `z.unknown().superRefine((val, ctx) => {
     const schemas = [${schemas.join(", ")}];
     const results = schemas.map(s => s.safeParse(val));
     const validCount = results.filter(r => r.success).length;
@@ -743,7 +743,7 @@ function renderOneOf(node: OneOfNode): string {
 
 function renderNot(node: NotNode): string {
 	const schema = render(node.schema);
-	return `z.any().refine((val) => !${schema}.safeParse(val).success, { message: "Value must not match schema" })`;
+	return `z.unknown().refine((val) => !${schema}.safeParse(val).success, { message: "Value must not match schema" })`;
 }
 
 function renderLiteral(node: LiteralNode): string {
@@ -809,7 +809,7 @@ function renderConditional(node: ConditionalNode): string {
 	if (thenSchema && elseSchema) {
 		// If then is never, matching if means invalid
 		// If else is never, not matching if means invalid
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (ifResult.success) {
           const thenResult = ${thenSchema}.safeParse(val);
@@ -824,7 +824,7 @@ function renderConditional(node: ConditionalNode): string {
         }
       })`;
 	} else if (thenSchema) {
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (ifResult.success) {
           const thenResult = ${thenSchema}.safeParse(val);
@@ -834,7 +834,7 @@ function renderConditional(node: ConditionalNode): string {
         }
       })`;
 	} else if (elseSchema) {
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (!ifResult.success) {
           const elseResult = ${elseSchema}.safeParse(val);
@@ -846,11 +846,11 @@ function renderConditional(node: ConditionalNode): string {
 	}
 
 	// if without then/else has no effect
-	return "z.any()";
+	return "z.unknown()";
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-	if (node.guards.length === 0) return "z.any()";
+	if (node.guards.length === 0) return "z.unknown()";
 
 	const checks: string[] = [];
 
@@ -892,7 +892,7 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 		}
 	}
 
-	return `z.any().superRefine((val, ctx) => {
+	return `z.unknown().superRefine((val, ctx) => {
         ${checks.join("\n        ")}
       })`;
 }

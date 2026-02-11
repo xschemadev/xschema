@@ -348,3 +348,26 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - compliance: 100% across all 6 drafts (no regressions)
 - TS typecheck: all 6 packages pass
 
+### Task 11: Zod: replace z.any semantic wrappers with z.unknown - COMPLETED
+
+**Changes** (renderer.ts):
+- `renderOneOf`: `z.any().superRefine(...)` → `z.unknown().superRefine(...)`
+- `renderOneOf` (multiple-any branch): `z.any().refine(() => false, ...)` → `z.unknown().refine(() => false, ...)`
+- `renderNot`: `z.any().refine(...)` → `z.unknown().refine(...)`
+- `renderConditional`: all 3 branches + bare fallback changed from `z.any()` to `z.unknown()`
+- `renderTypeGuarded`: base + empty guard fallback changed from `z.any()` to `z.unknown()`
+
+**Type-fidelity harness updated**:
+- 8 probes flipped `expectAny` from true to false: oneOfStringOrNumber, oneOfObjects, notString, notBoolean, conditionalIfThenElse, conditionalIfThen, typeGuardedObject, typeGuardedArrayMinItems
+- All now infer `unknown` instead of `any`
+
+**Key insight**: `z.unknown()` and `z.any()` have identical runtime behavior (both accept any value). The only difference is the inferred TypeScript type: `unknown` (safe, forces narrowing) vs `any` (unsafe, disables type checking). `.superRefine()` and `.refine()` don't change the inferred type in either case.
+
+**Scope**: only changed the 4 semantic wrapper functions. Other `z.any()` usages (tuples, enum complex values, proto-property objects, IR "any" nodes, intersection empty cases) are intentionally untouched — those are separate tasks (12, 13, 14).
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Type-fidelity: 15 probes pass, 9 any-free (was 1), 6 any (was 14)
+- Compliance: 100% across all 6 drafts (no regressions)
+

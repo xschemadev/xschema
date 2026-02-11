@@ -28,7 +28,7 @@ const probeCases: ProbeCase[] = [
 		name: "oneOfStringOrNumber",
 		description: "oneOf string | number",
 		schema: { oneOf: [{ type: "string" }, { type: "number" }] },
-		expectAny: true,
+		expectAny: false,
 	},
 	{
 		name: "oneOfObjects",
@@ -39,7 +39,7 @@ const probeCases: ProbeCase[] = [
 				{ type: "object", properties: { kind: { const: "b" }, value: { type: "number" } }, required: ["kind", "value"] },
 			],
 		},
-		expectAny: true,
+		expectAny: false,
 	},
 
 	// --- not ---
@@ -47,13 +47,13 @@ const probeCases: ProbeCase[] = [
 		name: "notString",
 		description: "not string",
 		schema: { not: { type: "string" } },
-		expectAny: true,
+		expectAny: false,
 	},
 	{
 		name: "notBoolean",
 		description: "not boolean",
 		schema: { not: { type: "boolean" } },
-		expectAny: true,
+		expectAny: false,
 	},
 
 	// --- conditional ---
@@ -65,13 +65,13 @@ const probeCases: ProbeCase[] = [
 			then: { type: "object", properties: { kind: { const: "a" }, value: { type: "string" } }, required: ["kind", "value"] },
 			else: { type: "object", properties: { kind: { const: "b" }, value: { type: "number" } }, required: ["kind", "value"] },
 		},
-		expectAny: true,
+		expectAny: false,
 	},
 	{
 		name: "conditionalIfThen",
 		description: "if/then only",
 		schema: { if: { type: "string", minLength: 1 }, then: { type: "string", maxLength: 10 } },
-		expectAny: true,
+		expectAny: false,
 	},
 
 	// --- typeGuarded ---
@@ -79,13 +79,13 @@ const probeCases: ProbeCase[] = [
 		name: "typeGuardedObject",
 		description: "type-guarded object",
 		schema: { properties: { name: { type: "string" } }, required: ["name"] },
-		expectAny: true,
+		expectAny: false,
 	},
 	{
 		name: "typeGuardedArrayMinItems",
 		description: "type-guarded array constraint",
 		schema: { minItems: 1 },
-		expectAny: true,
+		expectAny: false,
 	},
 
 	// --- tuple ---

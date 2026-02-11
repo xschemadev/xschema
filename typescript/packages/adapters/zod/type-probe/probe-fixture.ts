@@ -5,7 +5,7 @@
 import { z } from "zod";
 
 // oneOf string | number
-const probe_oneOfStringOrNumber = z.any().superRefine((val, ctx) => {
+const probe_oneOfStringOrNumber = z.unknown().superRefine((val, ctx) => {
     const schemas = [z.string(), z.number()];
     const results = schemas.map(s => s.safeParse(val));
     const validCount = results.filter(r => r.success).length;
@@ -24,7 +24,7 @@ const probe_oneOfStringOrNumber = z.any().superRefine((val, ctx) => {
 type Probe_oneOfStringOrNumber = z.infer<typeof probe_oneOfStringOrNumber>;
 
 // oneOf discriminated objects
-const probe_oneOfObjects = z.any().superRefine((val, ctx) => {
+const probe_oneOfObjects = z.unknown().superRefine((val, ctx) => {
     const schemas = [z.object({ kind: z.literal("a"), value: z.string() }).passthrough(), z.object({ kind: z.literal("b"), value: z.number() }).passthrough()];
     const results = schemas.map(s => s.safeParse(val));
     const validCount = results.filter(r => r.success).length;
@@ -43,15 +43,15 @@ const probe_oneOfObjects = z.any().superRefine((val, ctx) => {
 type Probe_oneOfObjects = z.infer<typeof probe_oneOfObjects>;
 
 // not string
-const probe_notString = z.any().refine((val) => !z.string().safeParse(val).success, { message: "Value must not match schema" });
+const probe_notString = z.unknown().refine((val) => !z.string().safeParse(val).success, { message: "Value must not match schema" });
 type Probe_notString = z.infer<typeof probe_notString>;
 
 // not boolean
-const probe_notBoolean = z.any().refine((val) => !z.boolean().safeParse(val).success, { message: "Value must not match schema" });
+const probe_notBoolean = z.unknown().refine((val) => !z.boolean().safeParse(val).success, { message: "Value must not match schema" });
 type Probe_notBoolean = z.infer<typeof probe_notBoolean>;
 
 // if/then/else
-const probe_conditionalIfThenElse = z.any().superRefine((val, ctx) => {
+const probe_conditionalIfThenElse = z.unknown().superRefine((val, ctx) => {
         const ifResult = z.object({ kind: z.literal("a") }).passthrough().safeParse(val);
         if (ifResult.success) {
           const thenResult = z.object({ kind: z.literal("a"), value: z.string() }).passthrough().safeParse(val);
@@ -68,7 +68,7 @@ const probe_conditionalIfThenElse = z.any().superRefine((val, ctx) => {
 type Probe_conditionalIfThenElse = z.infer<typeof probe_conditionalIfThenElse>;
 
 // if/then only
-const probe_conditionalIfThen = z.any().superRefine((val, ctx) => {
+const probe_conditionalIfThen = z.unknown().superRefine((val, ctx) => {
         const ifResult = z.string().refine((val) => [...new Intl.Segmenter().segment(val)].length >= 1, { message: "String must have at least 1 character(s)" }).safeParse(val);
         if (ifResult.success) {
           const thenResult = z.string().refine((val) => [...new Intl.Segmenter().segment(val)].length <= 10, { message: "String must have at most 10 character(s)" }).safeParse(val);
@@ -80,7 +80,7 @@ const probe_conditionalIfThen = z.any().superRefine((val, ctx) => {
 type Probe_conditionalIfThen = z.infer<typeof probe_conditionalIfThen>;
 
 // type-guarded object
-const probe_typeGuardedObject = z.any().superRefine((val, ctx) => {
+const probe_typeGuardedObject = z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ name: z.string() }).passthrough().safeParse(val);
           if (!result.success) {
@@ -91,7 +91,7 @@ const probe_typeGuardedObject = z.any().superRefine((val, ctx) => {
 type Probe_typeGuardedObject = z.infer<typeof probe_typeGuardedObject>;
 
 // type-guarded array constraint
-const probe_typeGuardedArrayMinItems = z.any().superRefine((val, ctx) => {
+const probe_typeGuardedArrayMinItems = z.unknown().superRefine((val, ctx) => {
         if (Array.isArray(val)) {
           const result = z.array(z.any()).min(1).safeParse(val);
           if (!result.success) {
