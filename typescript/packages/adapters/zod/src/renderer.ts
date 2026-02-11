@@ -411,7 +411,10 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 	}
 
 	return `z.any().superRefine((val, ctx) => {
-      if (typeof val !== "object" || val === null || Array.isArray(val)) return;${validators.join("")}${additionalCheck}
+      if (typeof val !== "object" || val === null || Array.isArray(val)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Expected object" });
+        return;
+      }${validators.join("")}${additionalCheck}
     })`;
 }
 

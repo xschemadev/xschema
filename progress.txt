@@ -391,3 +391,31 @@ Refinement constraints stay at the end in both cases.
 - Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
 - Generated tuple+minItems/maxItems code compiles (verified via ts.transpileModule)
 
+### Task 13: Zod: fix prototype-property object validation correctness - COMPLETED
+
+**Problem**: `renderObjectWithProtoProps` generated `z.any().superRefine(...)` with a type guard that silently passed non-object values (`return;` without adding issues). Since this function is only called for `ObjectNode` (explicit `type: "object"`), non-objects should be rejected.
+
+**Root cause**: The guard `if (typeof val !== "object" || val === null || Array.isArray(val)) return;` was a passthrough — it detected non-objects but let them through instead of rejecting.
+
+**Solution**: Changed the guard to add a validation issue before returning:
+```typescript
+if (typeof val !== "object" || val === null || Array.isArray(val)) {
+  ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Expected object" });
+  return;
+}
+```
+
+**Why this is safe**: `renderObjectWithProtoProps` is only reachable from `renderObject` (handles `ObjectNode`, which requires explicit `type: "object"`). Schemas without `type: "object"` go through `TypeGuardedNode` → `renderTypeGuarded`, which applies the object schema only when the input is an object.
+
+**Tests added** (`__tests__/proto-property.test.ts`, 13 tests):
+- Rejects primitives (string, number, boolean, null, array) for type:object + proto properties
+- Validates required proto properties, optional proto properties, invalid values
+- Tests additionalProperties: false with proto property names
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Compliance: 100% across all 6 drafts (no regressions)
+- Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
+- Tests: 13/13 pass
+
