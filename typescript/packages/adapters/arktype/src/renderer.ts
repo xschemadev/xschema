@@ -607,6 +607,7 @@ function renderTuple(node: TupleNode): string {
 	return result;
 }
 
+
 function renderArrayConstraints(
 	constraints: ArrayNode["constraints"],
 ): string {
@@ -703,7 +704,13 @@ function renderOneOf(node: OneOfNode): string {
 	}
 
 	const schemas = filtered.map((s) => render(s));
-	return `type.unknown.narrow((val, ctx) => {
+
+	// build a typed union base so TS infers the union type instead of unknown
+	const base = schemas.length === 1
+		? schemas[0]!
+		: schemas.reduce((acc, s) => `${acc}.or(${s})`);
+
+	return `${base}.narrow((val, ctx) => {
     const schemas = [${schemas.join(", ")}];
     const validCount = schemas.filter(s => s.allows(val)).length;
     if (validCount === 0) return ctx.mustBe("matching exactly one schema (matched none)");
@@ -727,8 +734,71 @@ function renderLiteral(node: LiteralNode): string {
 	}
 
 	// Objects/arrays need deep equality with recursive key normalization
+	// use a typed base so TS infers object or T[] instead of unknown
 	const sorted = sortedStringify(node.value);
-	return `type.unknown.narrow((val, ctx) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
+	const base = Array.isArray(node.value)
+		? `${jsonValueBaseType(node.value)}.array()`
+		: "type.object";
+	return `${base}.narrow((val, ctx) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
+}
+
+/**
+ * Compute a narrow ArkType base for a JSON array's element types.
+ * Inspects element values to build a union like `type.number.or(type.string)`.
+ * Falls back to `type.unknown` when heterogeneous or nested.
+ */
+function jsonValueBaseType(arr: unknown[]): string {
+	const kinds = new Set<string>();
+	for (const item of arr) {
+		if (item === null) kinds.add("null");
+		else if (typeof item === "string") kinds.add("string");
+		else if (typeof item === "number") kinds.add("number");
+		else if (typeof item === "boolean") kinds.add("boolean");
+		else {
+			// object/array — can't cheaply narrow further
+			return "type.unknown";
+		}
+	}
+	if (kinds.size === 0) return "type.unknown";
+	const map: Record<string, string> = {
+		string: "type.string",
+		number: "type.number",
+		boolean: "type.boolean",
+		null: "type.null",
+	};
+	const parts = [...kinds].map((k) => map[k]!);
+	if (parts.length === 1) return parts[0]!;
+	return parts.reduce((acc, s) => `${acc}.or(${s})`);
+}
+
+/**
+ * Compute a narrow ArkType base for complex enum values.
+ * Collects the JS types present across all values and builds a union.
+ * For array values, inspects elements to build a typed array base.
+ */
+function enumBaseType(values: unknown[]): string {
+	const parts: string[] = [];
+	const seen = new Set<string>();
+
+	const addOnce = (s: string) => {
+		if (!seen.has(s)) { seen.add(s); parts.push(s); }
+	};
+
+	for (const v of values) {
+		if (v === null) addOnce("type.null");
+		else if (typeof v === "string") addOnce("type.string");
+		else if (typeof v === "number") addOnce("type.number");
+		else if (typeof v === "boolean") addOnce("type.boolean");
+		else if (Array.isArray(v)) {
+			const elemBase = jsonValueBaseType(v);
+			addOnce(`${elemBase}.array()`);
+		}
+		else if (typeof v === "object") addOnce("type.object");
+	}
+
+	if (parts.length === 0) return "type.unknown";
+	if (parts.length === 1) return parts[0]!;
+	return parts.reduce((acc, s) => `${acc}.or(${s})`);
 }
 
 function renderEnum(node: EnumNode): string {
@@ -745,7 +815,9 @@ function renderEnum(node: EnumNode): string {
 		const sortedValues = values.map((v) => sortedStringify(v));
 		const valuesArrayCode = `[${sortedValues.map((v) => JSON.stringify(v)).join(", ")}]`;
 
-		return `type.unknown.narrow((val, ctx) => {
+		// build a narrower base type from the enum values
+		const base = enumBaseType(values);
+		return `${base}.narrow((val, ctx) => {
       const validValues = ${valuesArrayCode};
       return validValues.includes(${DEEP_SORTED_STRINGIFY_RUNTIME}(val)) || ctx.mustBe("one of the enum values");
     })`;
@@ -762,7 +834,9 @@ function renderConditional(node: ConditionalNode): string {
 	const elseSchema = node.else ? render(node.else) : null;
 
 	if (thenSchema && elseSchema) {
-		return `type.unknown.narrow((val, ctx) => {
+		// union of then|else as base for narrower type inference
+		const base = `${thenSchema}.or(${elseSchema})`;
+		return `${base}.narrow((val, ctx) => {
       if (${ifSchema}.allows(val)) {
         return ${thenSchema}.allows(val) || ctx.mustBe("valid for then branch");
       } else {
@@ -770,6 +844,7 @@ function renderConditional(node: ConditionalNode): string {
       }
     })`;
 	} else if (thenSchema) {
+		// only then branch — passthrough when if doesn't match, domain is unbounded
 		return `type.unknown.narrow((val, ctx) => {
       if (${ifSchema}.allows(val)) {
         return ${thenSchema}.allows(val) || ctx.mustBe("valid for then branch");
@@ -777,6 +852,7 @@ function renderConditional(node: ConditionalNode): string {
       return true;
     })`;
 	} else if (elseSchema) {
+		// only else branch — passthrough when if matches, domain is unbounded
 		return `type.unknown.narrow((val, ctx) => {
       if (!${ifSchema}.allows(val)) {
         return ${elseSchema}.allows(val) || ctx.mustBe("valid for else branch");

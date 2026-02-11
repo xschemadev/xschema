@@ -269,7 +269,7 @@
         "typescript build and typecheck pass",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "17",

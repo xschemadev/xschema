@@ -28,7 +28,7 @@ const probeCases: ProbeCase[] = [
 		name: "oneOfStringOrNumber",
 		description: "oneOf string | number",
 		schema: { oneOf: [{ type: "string" }, { type: "number" }] },
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 	{
 		name: "oneOfObjects",
@@ -39,7 +39,7 @@ const probeCases: ProbeCase[] = [
 				{ type: "object", properties: { kind: { const: "b" }, value: { type: "number" } }, required: ["kind", "value"] },
 			],
 		},
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 
 	// --- not ---
@@ -65,7 +65,7 @@ const probeCases: ProbeCase[] = [
 			then: { type: "object", properties: { kind: { const: "a" }, value: { type: "string" } }, required: ["kind", "value"] },
 			else: { type: "object", properties: { kind: { const: "b" }, value: { type: "number" } }, required: ["kind", "value"] },
 		},
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 	{
 		name: "conditionalIfThen",
@@ -113,13 +113,13 @@ const probeCases: ProbeCase[] = [
 		name: "constObject",
 		description: "const object",
 		schema: { const: { name: "alice", age: 30 } },
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 	{
 		name: "constArray",
 		description: "const array",
 		schema: { const: [1, 2, 3] },
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 
 	// --- complex enum ---
@@ -127,13 +127,13 @@ const probeCases: ProbeCase[] = [
 		name: "enumWithObjects",
 		description: "enum with objects",
 		schema: { enum: [{ a: 1 }, { b: 2 }, "simple"] },
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 	{
 		name: "enumWithArrays",
 		description: "enum with arrays",
 		schema: { enum: [[1, 2], [3, 4], null] },
-		expectUnknown: true,
+		expectUnknown: false,
 	},
 ];
 

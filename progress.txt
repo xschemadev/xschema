@@ -470,3 +470,30 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - Compliance: 100% across all 6 drafts (no regressions)
 - Type-fidelity: 15 probes pass, 0 unknown-free, 15 unknown (unchanged — type narrowing is task 16)
 
+### Task 16: ArkType: narrow unknown-heavy combinator and tuple outputs - COMPLETED
+
+**Changes** (renderer.ts):
+- `renderOneOf`: builds typed union base via `.or()` chain instead of `type.unknown`, then `.narrow()` for exactly-one check
+- `renderConditional` (both then+else): uses `then.or(else)` as base for narrower type inference
+- `renderLiteral` (complex values): `type.object` for const objects, `jsonValueBaseType(arr).array()` for const arrays
+- `renderEnum` (complex values): `enumBaseType(values)` computes union from JS types of enum values
+- Added `jsonValueBaseType()` helper — inspects array elements to build typed base (string/number/boolean/null union)
+- Added `enumBaseType()` helper — inspects enum values including array element types
+
+**Unchanged** (kept `type.unknown`):
+- `renderNot` — negation is semantically unbounded
+- `renderConditional` (if/then only, if/else only) — passthrough when condition doesn't apply makes domain unbounded
+- `renderTypeGuarded` — unmatched types pass through
+- `renderTuple` — ArkType's `.array()` validates elements at runtime (unlike Zod's `z.array(z.any())`), so a typed array base rejects valid tuple values with additional items of different types
+
+**Key insight**: ArkType's `.or()` creates unions that both provide type info AND validate at runtime. This differs from Zod where `z.union()` is only used for type inference. For oneOf this is correct (value must match at least one schema), but for tuples it breaks because additional items may have different types than prefix items.
+
+**Type-fidelity**: 7 unknown-free (was 0), 8 unknown (was 15)
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Tests: 22/22 pass
+- Compliance: 100% across all 6 drafts (no regressions)
+- Type-fidelity: 15 probes pass, 7 unknown-free, 8 unknown
+

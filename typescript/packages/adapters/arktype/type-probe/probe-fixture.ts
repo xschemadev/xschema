@@ -5,7 +5,7 @@
 import { type } from "arktype";
 
 // oneOf string | number
-const probe_oneOfStringOrNumber = type.unknown.narrow((val, ctx) => {
+const probe_oneOfStringOrNumber = type.string.or(type.number).narrow((val, ctx) => {
     const schemas = [type.string, type.number];
     const validCount = schemas.filter(s => s.allows(val)).length;
     if (validCount === 0) return ctx.mustBe("matching exactly one schema (matched none)");
@@ -15,7 +15,7 @@ const probe_oneOfStringOrNumber = type.unknown.narrow((val, ctx) => {
 type Probe_oneOfStringOrNumber = typeof probe_oneOfStringOrNumber.infer;
 
 // oneOf discriminated objects
-const probe_oneOfObjects = type.unknown.narrow((val, ctx) => {
+const probe_oneOfObjects = type({ kind: type.unit("a"), value: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type({ kind: type.unit("b"), value: type.number }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"))).narrow((val, ctx) => {
     const schemas = [type({ kind: type.unit("a"), value: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")), type({ kind: type.unit("b"), value: type.number }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"))];
     const validCount = schemas.filter(s => s.allows(val)).length;
     if (validCount === 0) return ctx.mustBe("matching exactly one schema (matched none)");
@@ -33,7 +33,7 @@ const probe_notBoolean = type.unknown.narrow((val, ctx) => !type.boolean.allows(
 type Probe_notBoolean = typeof probe_notBoolean.infer;
 
 // if/then/else
-const probe_conditionalIfThenElse = type.unknown.narrow((val, ctx) => {
+const probe_conditionalIfThenElse = type({ kind: type.unit("a"), value: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type({ kind: type.unit("b"), value: type.number }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"))).narrow((val, ctx) => {
       if (type({ kind: type.unit("a") }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) {
         return type({ kind: type.unit("a"), value: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val) || ctx.mustBe("valid for then branch");
       } else {
@@ -105,22 +105,22 @@ const probe_tupleMixedWithRest = type.unknown.array().narrow((arr, ctx) => {
 type Probe_tupleMixedWithRest = typeof probe_tupleMixedWithRest.infer;
 
 // const object
-const probe_constObject = type.unknown.narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "{\"age\":30,\"name\":\"alice\"}" || ctx.mustBe("equal to the const value"));
+const probe_constObject = type.object.narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "{\"age\":30,\"name\":\"alice\"}" || ctx.mustBe("equal to the const value"));
 type Probe_constObject = typeof probe_constObject.infer;
 
 // const array
-const probe_constArray = type.unknown.narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "[1,2,3]" || ctx.mustBe("equal to the const value"));
+const probe_constArray = type.number.array().narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "[1,2,3]" || ctx.mustBe("equal to the const value"));
 type Probe_constArray = typeof probe_constArray.infer;
 
 // enum with objects
-const probe_enumWithObjects = type.unknown.narrow((val, ctx) => {
+const probe_enumWithObjects = type.object.or(type.string).narrow((val, ctx) => {
       const validValues = ["{\"a\":1}", "{\"b\":2}", "\"simple\""];
       return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val)) || ctx.mustBe("one of the enum values");
     });
 type Probe_enumWithObjects = typeof probe_enumWithObjects.infer;
 
 // enum with arrays
-const probe_enumWithArrays = type.unknown.narrow((val, ctx) => {
+const probe_enumWithArrays = type.number.array().or(type.null).narrow((val, ctx) => {
       const validValues = ["[1,2]", "[3,4]", "null"];
       return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val)) || ctx.mustBe("one of the enum values");
     });
