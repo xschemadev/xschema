@@ -32,7 +32,7 @@
         "Baseline clearly shows current any or over-broad output points",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "3",

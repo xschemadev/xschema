@@ -1,0 +1,203 @@
+/**
+ * Zod Type Probe Fixture - AUTO-GENERATED
+ *
+ * This file contains generated Zod code for representative schemas of each
+ * targeted construct. The inferred types reveal where z.any() degrades the
+ * TypeScript type information.
+ *
+ * Generated: 2026-02-11
+ * Do NOT edit manually - regenerate with: bun run tasks/type-fidelity-baseline/zod/generate-probe.ts
+ */
+import { z } from "zod";
+
+// oneOf with string | number - should ideally be string | number, currently any
+const probe_oneOfStringOrNumber = z.any().superRefine((val, ctx) => {
+    const schemas = [z.string(), z.number()];
+    const results = schemas.map(s => s.safeParse(val));
+    const validCount = results.filter(r => r.success).length;
+    if (validCount === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Value must match exactly one schema in oneOf, but matched none",
+      });
+    } else if (validCount > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Value must match exactly one schema in oneOf, but matched multiple",
+      });
+    }
+  });
+type Probe_oneOfStringOrNumber = z.infer<typeof probe_oneOfStringOrNumber>;
+
+// oneOf with discriminated objects - currently any
+const probe_oneOfObjects = z.any().superRefine((val, ctx) => {
+    const schemas = [z.object({ kind: z.literal("a"), value: z.string() }).passthrough(), z.object({ kind: z.literal("b"), value: z.number() }).passthrough()];
+    const results = schemas.map(s => s.safeParse(val));
+    const validCount = results.filter(r => r.success).length;
+    if (validCount === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Value must match exactly one schema in oneOf, but matched none",
+      });
+    } else if (validCount > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Value must match exactly one schema in oneOf, but matched multiple",
+      });
+    }
+  });
+type Probe_oneOfObjects = z.infer<typeof probe_oneOfObjects>;
+
+// not string - should be unknown, currently any
+const probe_notString = z.any().refine((val) => !z.string().safeParse(val).success, { message: "Value must not match schema" });
+type Probe_notString = z.infer<typeof probe_notString>;
+
+// not boolean - should be unknown, currently any
+const probe_notBoolean = z.any().refine((val) => !z.boolean().safeParse(val).success, { message: "Value must not match schema" });
+type Probe_notBoolean = z.infer<typeof probe_notBoolean>;
+
+// if/then/else - should be unknown, currently any
+const probe_conditionalIfThenElse = z.any().superRefine((val, ctx) => {
+        const ifResult = z.object({ kind: z.literal("a") }).passthrough().safeParse(val);
+        if (ifResult.success) {
+          const thenResult = z.object({ kind: z.literal("a"), value: z.string() }).passthrough().safeParse(val);
+          if (!thenResult.success) {
+            thenResult.error.issues.forEach(issue => ctx.addIssue(issue));
+          }
+        } else {
+          const elseResult = z.object({ kind: z.literal("b"), value: z.number() }).passthrough().safeParse(val);
+          if (!elseResult.success) {
+            elseResult.error.issues.forEach(issue => ctx.addIssue(issue));
+          }
+        }
+      });
+type Probe_conditionalIfThenElse = z.infer<typeof probe_conditionalIfThenElse>;
+
+// if/then only - should be unknown, currently any
+const probe_conditionalIfThen = z.any().superRefine((val, ctx) => {
+        const ifResult = z.string().refine((val) => [...new Intl.Segmenter().segment(val)].length >= 1, { message: "String must have at least 1 character(s)" }).safeParse(val);
+        if (ifResult.success) {
+          const thenResult = z.string().refine((val) => [...new Intl.Segmenter().segment(val)].length <= 10, { message: "String must have at most 10 character(s)" }).safeParse(val);
+          if (!thenResult.success) {
+            thenResult.error.issues.forEach(issue => ctx.addIssue(issue));
+          }
+        }
+      });
+type Probe_conditionalIfThen = z.infer<typeof probe_conditionalIfThen>;
+
+// type-guarded object properties without explicit type - currently any
+const probe_typeGuardedObject = z.any().superRefine((val, ctx) => {
+        if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          const result = z.object({ name: z.string() }).passthrough().safeParse(val);
+          if (!result.success) {
+            result.error.issues.forEach(issue => ctx.addIssue(issue));
+          }
+        }
+      });
+type Probe_typeGuardedObject = z.infer<typeof probe_typeGuardedObject>;
+
+// type-guarded array constraint without explicit type - currently any
+const probe_typeGuardedArrayMinItems = z.any().superRefine((val, ctx) => {
+        if (Array.isArray(val)) {
+          const result = z.array(z.any()).min(1).safeParse(val);
+          if (!result.success) {
+            result.error.issues.forEach(issue => ctx.addIssue(issue));
+          }
+        }
+      });
+type Probe_typeGuardedArrayMinItems = z.infer<typeof probe_typeGuardedArrayMinItems>;
+
+// tuple [string, number] - should be [string, number, ...any[]], currently any[]
+const probe_tupleStringNumber = z.array(z.any()).superRefine((val, ctx) => {
+      const schemas = [z.string(), z.number()];
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = schemas[i].safeParse(val[i]);
+        if (!itemResult.success) {
+          itemResult.error.issues.forEach(issue => {
+            ctx.addIssue({ ...issue, path: [i, ...issue.path] });
+          });
+        }
+      }
+    });
+type Probe_tupleStringNumber = z.infer<typeof probe_tupleStringNumber>;
+
+// closed tuple [string, number] - should be [string, number], currently any[]
+const probe_tupleStringNumberClosed = z.array(z.any()).superRefine((val, ctx) => {
+      const schemas = [z.string(), z.number()];
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = schemas[i].safeParse(val[i]);
+        if (!itemResult.success) {
+          itemResult.error.issues.forEach(issue => {
+            ctx.addIssue({ ...issue, path: [i, ...issue.path] });
+          });
+        }
+      }
+    }).refine((val) => val.length <= 2, { message: "Array must not have more than 2 items" });
+type Probe_tupleStringNumberClosed = z.infer<typeof probe_tupleStringNumberClosed>;
+
+// tuple [string, number, ...boolean[]] - currently any[]
+const probe_tupleMixedWithRest = z.array(z.any()).superRefine((val, ctx) => {
+      const schemas = [z.string(), z.number()];
+      for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
+        const itemResult = schemas[i].safeParse(val[i]);
+        if (!itemResult.success) {
+          itemResult.error.issues.forEach(issue => {
+            ctx.addIssue({ ...issue, path: [i, ...issue.path] });
+          });
+        }
+      }
+    }).superRefine((val, ctx) => {
+        const restSchema = z.boolean();
+        for (let i = 2; i < val.length; i++) {
+          const itemResult = restSchema.safeParse(val[i]);
+          if (!itemResult.success) {
+            itemResult.error.issues.forEach(issue => {
+              ctx.addIssue({ ...issue, path: [i, ...issue.path] });
+            });
+          }
+        }
+      });
+type Probe_tupleMixedWithRest = z.infer<typeof probe_tupleMixedWithRest>;
+
+// const object - should be narrow type, gets passthrough object
+const probe_constObject = z.object({}).passthrough().refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === "{\"age\":30,\"name\":\"alice\"}", { message: "Value must equal the const value" });
+type Probe_constObject = z.infer<typeof probe_constObject>;
+
+// const array - should be narrow type, gets any[]
+const probe_constArray = z.array(z.any()).refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === "[1,2,3]", { message: "Value must equal the const value" });
+type Probe_constArray = z.infer<typeof probe_constArray>;
+
+// enum with object values - currently any
+const probe_enumWithObjects = z.any().refine((val) => {
+      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
+      const validValues = ["{\"a\":1}", "{\"b\":2}", "\"simple\""];
+      return validValues.includes(normalized);
+    }, { message: "Value must be one of the enum values" });
+type Probe_enumWithObjects = z.infer<typeof probe_enumWithObjects>;
+
+// enum with array values - currently any
+const probe_enumWithArrays = z.any().refine((val) => {
+      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
+      const validValues = ["[1,2]", "[3,4]", "null"];
+      return validValues.includes(normalized);
+    }, { message: "Value must be one of the enum values" });
+type Probe_enumWithArrays = z.infer<typeof probe_enumWithArrays>;
+
+// Export all probe types for external inspection
+export type {
+  Probe_oneOfStringOrNumber,
+  Probe_oneOfObjects,
+  Probe_notString,
+  Probe_notBoolean,
+  Probe_conditionalIfThenElse,
+  Probe_conditionalIfThen,
+  Probe_typeGuardedObject,
+  Probe_typeGuardedArrayMinItems,
+  Probe_tupleStringNumber,
+  Probe_tupleStringNumberClosed,
+  Probe_tupleMixedWithRest,
+  Probe_constObject,
+  Probe_constArray,
+  Probe_enumWithObjects,
+  Probe_enumWithArrays,
+};

@@ -4,6 +4,12 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 
 ## Codebase Patterns
 
+### Zod type probe infrastructure
+- probe fixture lives in `typescript/packages/adapters/zod/type-probe/` (has its own tsconfig for tsc resolution)
+- `tasks/type-fidelity-baseline/zod/generate-probe.ts` generates probe-fixture.ts by calling the adapter's convert()
+- `typescript/packages/adapters/zod/type-probe/extract-types.ts` uses TS compiler API to extract inferred types
+- baseline artifacts go in `tasks/type-fidelity-baseline/zod/`
+
 ### Property name sanitization in pydantic adapter
 - `_PYTHON_TYPE_BUILTINS` contains generic types that would break type annotations if used as field names
 - Only includes types actually used in generic annotations: list, dict, set, tuple, type, frozenset
@@ -109,3 +115,23 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - draft2020-12: 950 passed, 201 unsupported (100.0%)
 
 **All 6 drafts at 100% compliance.** Project complete.
+
+---
+
+## PRD: Adapter Type Fidelity Hardening
+
+### Task 2: Baseline Zod adapter runtime and typing - COMPLETED
+
+**Artifacts created**:
+- `tasks/type-fidelity-baseline/zod/compliance-summary.md` - full compliance by draft/keyword
+- `tasks/type-fidelity-baseline/zod/type-probe-output.md` - inferred types for 15 probe cases
+- `tasks/type-fidelity-baseline/zod/probe-fixture.ts` - generated zod code for targeted constructs
+- `tasks/type-fidelity-baseline/zod/generate-probe.ts` - script to regenerate probe fixture
+- `typescript/packages/adapters/zod/type-probe/` - probe fixture + tsconfig + type extractor
+
+**Key findings**:
+- 100% runtime compliance across all 6 drafts (no failures)
+- 14 of 15 type probes degrade to `any` or `any[]`
+- Only `constObject` avoids `any` (gets broad `objectOutputType`)
+- Root cause: `z.any()` used as base in oneOf, not, conditional, typeGuarded, tuple, complex enum
+- Tuple uses `z.array(z.any())` losing positional type info
