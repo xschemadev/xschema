@@ -57,12 +57,23 @@ export interface NullNode {
 export interface ObjectNode {
 	kind: "object";
 	properties: Map<string, PropertyDef>;
-	additionalProperties: SchemaNode | boolean;
+	/**
+	 * additionalProperties - undefined means not specified in schema.
+	 * Explicitly true means additionalProperties: true was in schema (evaluates extra props).
+	 * false means additionalProperties: false.
+	 * SchemaNode means additionalProperties was a schema (evaluates and validates extra props).
+	 */
+	additionalProperties?: SchemaNode | boolean;
 	patternProperties: PatternPropertyDef[];
 	propertyNames?: SchemaNode;
 	minProperties?: number;
 	maxProperties?: number;
 	dependencies: Map<string, Dependency>;
+	/**
+	 * unevaluatedProperties - only valid for standalone use (no applicators).
+	 * Go CLI blocks schemas with unevaluated+applicators, so adapters only see simple cases.
+	 */
+	unevaluatedProperties?: SchemaNode | false;
 }
 
 /** Array schema node (homogeneous items) */
@@ -70,6 +81,11 @@ export interface ArrayNode {
 	kind: "array";
 	items: SchemaNode;
 	constraints: ArrayConstraints;
+	/**
+	 * unevaluatedItems - only valid for standalone use (no applicators).
+	 * Go CLI blocks schemas with unevaluated+applicators, so adapters only see simple cases.
+	 */
+	unevaluatedItems?: SchemaNode | false;
 }
 
 /** Tuple schema node (positional items) */
@@ -78,6 +94,11 @@ export interface TupleNode {
 	prefixItems: SchemaNode[];
 	restItems: SchemaNode | false;
 	constraints: ArrayConstraints;
+	/**
+	 * unevaluatedItems - only valid for standalone use (no applicators).
+	 * Go CLI blocks schemas with unevaluated+applicators, so adapters only see simple cases.
+	 */
+	unevaluatedItems?: SchemaNode | false;
 }
 
 /** Union schema node (anyOf - at least one must match) */
@@ -127,12 +148,6 @@ export interface NeverNode {
 }
 
 /** Reference schema node */
-export interface RefNode {
-	kind: "ref";
-	path: string;
-	resolved: SchemaNode;
-}
-
 /** Conditional schema node (if/then/else) */
 export interface ConditionalNode {
 	kind: "conditional";
@@ -184,7 +199,6 @@ export type SchemaNode =
 	| EnumNode
 	| AnyNode
 	| NeverNode
-	| RefNode
 	| ConditionalNode
 	| TypeGuardedNode
 	| NullableNode;

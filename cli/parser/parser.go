@@ -260,6 +260,12 @@ func mergeDeclarations(configs []ConfigFile) ([]Declaration, error) {
 			}
 			seenIDs[config.Namespace][schema.ID] = config.Path
 
+			// Validate: headers only allowed on URL sourceType
+			if len(schema.Headers) > 0 && schema.SourceType != SourceURL {
+				return nil, fmt.Errorf("schema %q in namespace %q: headers are only allowed for sourceType \"url\"",
+					schema.ID, config.Namespace)
+			}
+
 			declarations = append(declarations, Declaration{
 				Namespace:  config.Namespace,
 				ID:         schema.ID,
@@ -267,6 +273,7 @@ func mergeDeclarations(configs []ConfigFile) ([]Declaration, error) {
 				Source:     schema.Source,
 				Adapter:    schema.Adapter,
 				ConfigPath: config.Path,
+				Headers:    schema.Headers,
 			})
 		}
 	}

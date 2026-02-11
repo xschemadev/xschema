@@ -19,7 +19,7 @@ type ConvertResult struct {
 	Schema          string   `json:"schema,omitempty"`
 	Type            string   `json:"type,omitempty"`
 	Validate        string   `json:"validate,omitempty"`
-	ValidateImports []string `json:"validateImports,omitempty"`
+	ValidationImports []string `json:"validationImports,omitempty"`
 }
 
 // Key returns the full namespaced key like "namespace:id"

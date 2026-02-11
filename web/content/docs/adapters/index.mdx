@@ -1,0 +1,36 @@
+---
+title: Adapters
+description: Compare validation library adapters supported by xschema
+icon: Puzzle
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Adapters
+
+Adapters convert JSON Schema into native validation code for your chosen library. Each adapter is a standalone CLI that receives pre-processed schemas from xschema and outputs idiomatic code.
+
+See [What is XSchema](/docs/what-is-xschema) for the full architecture and [Adapter Protocol](/docs/adapters/protocol) for the technical specification.
+
+## TypeScript Adapters
+
+| Adapter | Compliance | Peer Dependency |
+|---------|------------|-----------------|
+| [@xschemadev/zod](/docs/adapters/zod) | [100%](/docs/adapters/zod/compliance) | `zod ^3.0.0` |
+| [@xschemadev/arktype](/docs/adapters/arktype) | [100%](/docs/adapters/arktype/compliance) | `arktype ^2.0.0` |
+| [@xschemadev/effect](/docs/adapters/effect) | [100%](/docs/adapters/effect/compliance) | `effect ^3.0.0` |
+| [@xschemadev/valibot](/docs/adapters/valibot) | [98.9%](/docs/adapters/valibot/compliance) | `valibot ^0.42.0` |
+
+## Python Adapters
+
+| Adapter | Compliance | Peer Dependency |
+|---------|------------|-----------------|
+| [@xschemadev/pydantic](/docs/adapters/pydantic) | Coming soon | `pydantic ^2.0.0` |
+
+## About Compliance
+
+Compliance percentages are calculated against the official JSON Schema Test Suite, excluding features that cannot be statically compiled. [Learn more about compliance testing](/docs/compliance).
+
+## Building Custom Adapters
+
+Want to add support for another validation library? See the [Building Adapters](/docs/adapters/building-adapters) guide.

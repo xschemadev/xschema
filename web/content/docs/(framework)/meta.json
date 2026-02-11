@@ -1,0 +1,17 @@
+{
+  "root": true,
+  "title": "Framework",
+  "description": "Generate validators from JSON Schema at build time",
+  "icon": "Layers",
+  "pages": [
+    "index",
+    "what-is-xschema",
+    "configuration",
+    "---Languages---",
+    "typescript",
+    "python",
+    "---Help---",
+    "faq",
+    "troubleshooting"
+  ]
+}

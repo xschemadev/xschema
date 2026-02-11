@@ -1,17 +1,23 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/xschemadev/xschema/adapter"
+	"github.com/xschemadev/xschema/config"
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/generator"
 	"github.com/xschemadev/xschema/injector"
 	"github.com/xschemadev/xschema/parser"
+	"github.com/xschemadev/xschema/processor"
 	"github.com/xschemadev/xschema/retriever"
 	"github.com/xschemadev/xschema/ui"
 )
@@ -23,6 +29,7 @@ var (
 	verbose     bool
 	dryRun      bool
 	concurrency int
+	envFile     string
 	// TODO: implement watch mode
 	watch bool
 )
@@ -42,6 +49,7 @@ func init() {
 	generateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show verbose output")
 	generateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "show what would be generated without writing")
 	generateCmd.Flags().IntVarP(&concurrency, "concurrency", "c", min(runtime.NumCPU(), 8), "number of parallel schema fetches")
+	generateCmd.Flags().StringVar(&envFile, "env-file", "", "path to env file for header variable substitution")
 	generateCmd.Flags().BoolVarP(&watch, "watch", "w", false, "watch for changes and regenerate")
 }
 
@@ -63,6 +71,11 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	// Load env file for header variable substitution
+	if err := config.LoadEnvFile(envFile, root); err != nil {
+		return err
+	}
+
 	// Make output directory absolute relative to project root
 	outDir := outputDir
 	if !filepath.IsAbs(outDir) {
@@ -70,7 +83,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Step 1: Parse config files
-	ui.Step(1, 4, "Scanning for xschema config files")
+	ui.Step(1, 5, "Scanning for xschema config files")
 	result, err := parser.Parse(ctx, root, langFilter)
 	if err != nil {
 		ui.ErrorMsg("Failed to parse config files", err)
@@ -85,9 +98,14 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Step 2: Fetch schemas (with spinner)
-	ui.Step(2, 4, "Fetching schemas")
+	ui.Step(2, 5, "Fetching schemas")
+
+	// Create shared cache for all schema fetching (retriever, processor, metaschema)
+	sharedCache := fetcher.NewSharedCache()
+
 	retrieverOpts := retriever.DefaultOptions()
 	retrieverOpts.Concurrency = concurrency
+	retrieverOpts.Cache = sharedCache
 
 	var schemas []retriever.RetrievedSchema
 	err = ui.RunWithSpinner("Fetching schemas...", func() error {
@@ -115,12 +133,31 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Step 3: Generate (with spinner per adapter)
-	ui.Step(3, 4, "Generating validators")
+	// Step 3: Process schemas (crawl external refs, validate, bundle)
+	ui.Step(3, 5, "Processing schemas")
+	var processed []processor.ProcessedSchema
+	err = ui.RunWithSpinner("Processing schemas...", func() error {
+		var procErr error
+		processed, procErr = processor.Process(ctx, schemas, processor.Options{
+			Fetcher:     newRetrieverFetcher(ctx, retrieverOpts),
+			OnVerbose:   verboseCallback(),
+			Cache:       sharedCache, // reuse cache from retriever
+			Concurrency: concurrency,
+		})
+		return procErr
+	})
+	if err != nil {
+		ui.ErrorMsg("Processing failed", err)
+		return err
+	}
+	ui.SuccessMsg(fmt.Sprintf("Processed %d schemas", len(processed)))
+
+	// Step 4: Generate (with spinner per adapter)
+	ui.Step(4, 5, "Generating validators")
 	var outputs []adapter.ConvertResult
 	err = ui.RunWithSpinner("Running adapters...", func() error {
 		var genErr error
-		outputs, genErr = generator.GenerateAll(ctx, schemas, result.Language.Name, root)
+		outputs, genErr = generator.GenerateAll(ctx, processed, result.Language.Name, root)
 		return genErr
 	})
 	if err != nil {
@@ -128,8 +165,8 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Step 4: Inject
-	ui.Step(4, 4, "Writing output files")
+	// Step 5: Inject
+	ui.Step(5, 5, "Writing output files")
 	err = injector.Inject(injector.InjectInput{
 		Language: result.Language.Name,
 		Outputs:  outputs,
@@ -184,5 +221,32 @@ func printDryRunSchemas(schemas []retriever.RetrievedSchema) {
 		for _, s := range adapterSchemas {
 			ui.Printf("    %s %s\n", ui.Dim.Render("•"), s.Key())
 		}
+	}
+}
+
+// retrieverFetcher wraps retriever package to implement fetcher.Fetcher.
+type retrieverFetcher struct {
+	ctx  context.Context
+	opts retriever.Options
+}
+
+func newRetrieverFetcher(ctx context.Context, opts retriever.Options) *retrieverFetcher {
+	return &retrieverFetcher{ctx: ctx, opts: opts}
+}
+
+func (f *retrieverFetcher) Fetch(ctx context.Context, uri string) (json.RawMessage, error) {
+	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
+		return retriever.RetrieveFromURL(ctx, uri, f.opts)
+	}
+	return retriever.RetrieveFromFilePath(ctx, uri)
+}
+
+// verboseCallback returns a callback for processor verbose output when verbose mode is enabled.
+func verboseCallback() func(string) {
+	if !verbose {
+		return nil
+	}
+	return func(msg string) {
+		ui.Verbosef("%s", msg)
 	}
 }

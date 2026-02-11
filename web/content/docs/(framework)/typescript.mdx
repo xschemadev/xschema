@@ -1,0 +1,500 @@
+---
+title: TypeScript
+description: Set up xschema with TypeScript in minutes
+icon: FileCode
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+## Getting Started
+
+<Steps>
+<Step>
+### Install the client and adapter
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
+
+The example uses Zod, but you can use any [adapter](/docs/adapters).
+</Step>
+<Step>
+### Create a config file
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/zod"
+    }
+  ]
+}
+```
+
+More on config files in [Configuration Reference](/docs/configuration).
+</Step>
+<Step>
+### Generate
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx xschema generate
+    ```
+  </Tab>
+</Tabs>
+
+This creates `.xschema/xschema.gen.ts` with your validators.
+</Step>
+<Step>
+### Use the client
+
+```ts twoslash
+// @filename: node_modules/zod/index.d.ts
+export declare const z: {
+  string: () => ZodString;
+  object: <T extends Record<string, ZodType>>(shape: T) => ZodObject<T>;
+};
+export type ZodType = { _output: unknown; optional: () => ZodType };
+export type ZodString = { _output: string; optional: () => ZodOptional<ZodString>; email: () => ZodString };
+export type ZodOptional<T> = { _output: T extends { _output: infer O } ? O | undefined : never };
+type InferShape<T> = { [K in keyof T]: T[K] extends { _output: infer O } ? O : never };
+export type ZodObject<T, Mode extends "passthrough" | "strict" = "strict"> = {
+  _output: Mode extends "passthrough" ? InferShape<T> & { [x: string]: unknown } : InferShape<T>;
+  passthrough: () => ZodObject<T, "passthrough">;
+  safeParse: (data: unknown) => { success: true; data: ZodObject<T, Mode>["_output"] } | { success: false; error: unknown };
+};
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+export const schemas = { "user:Profile": Profile } as const;
+// @filename: app.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+
+const profileSchema = xschema("user:Profile");
+//    ^?
+
+const result = profileSchema.safeParse({ id: "123", email: "alice@example.com" });
+//    ^?
+
+if (result.success) {
+  console.log(result.data.id, result.data.email);
+  //                    ^?
+}
+```
+
+See [Using the Client](#using-the-client) for full documentation.
+</Step>
+</Steps>
+
+## Using the Client
+
+The xschema client provides type-safe runtime schema lookups with full TypeScript autocompletion.
+
+### createXSchemaClient
+
+Creates a function for looking up schemas by key with compile-time type safety.
+
+```typescript
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./.xschema/xschema.gen";
+
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user", // optional
+});
+```
+
+#### Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `schemas` | `Record<string, unknown>` | The generated schemas object from `.xschema/xschema.gen` |
+| `defaultNamespace` | `string` | Optional namespace to use when looking up schemas without a prefix |
+
+#### Schema lookup
+
+Look up schemas using the `namespace:id` format:
+
+```ts twoslash
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+
+// Full key format
+const profileSchema = xschema("user:Profile");
+//    ^?
+const configSchema = xschema("app:Config");
+//    ^?
+```
+
+With `defaultNamespace` set, you can omit the namespace for that namespace's schemas:
+
+```ts twoslash
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user",
+});
+
+// Shorthand - resolves to "user:Profile"
+const profile = xschema("Profile");
+//    ^?
+
+// Still need full key for other namespaces
+const config = xschema("app:Config");
+//    ^?
+```
+
+### XSchemaType
+
+Extract TypeScript types from your schemas by key:
+
+```ts twoslash
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import type { XSchemaType } from "@xschemadev/client";
+
+type Profile = XSchemaType<"user:Profile">;
+//   ^?
+type Config = XSchemaType<"app:Config">;
+//   ^?
+```
+
+<Callout>
+`XSchemaType` only accepts full `namespace:id` keys for explicitness. Use the client for shorthand lookups.
+</Callout>
+
+#### Using in function signatures
+
+```ts twoslash
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import type { XSchemaType } from "@xschemadev/client";
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+type Profile = XSchemaType<"user:Profile">;
+const xschema = createXSchemaClient({ schemas });
+
+function createUser(data: Profile): void {
+  console.log(data.email);
+  //               ^?
+}
+
+function validateAndCreate(input: unknown): Profile {
+  const schema = xschema("user:Profile");
+  return schema.parse(input);
+  //            ^?
+}
+```
+
+### Schema types explained
+
+xschema adapters can generate three kinds of outputs:
+
+#### Schema + Type (most common)
+
+Adapters like Zod, ArkType, Effect, and Valibot generate both runtime validators and types. Both `xschema()` and `XSchemaType<>` work:
+
+```typescript
+const schema = xschema("user:Profile"); // runtime validator
+type Profile = XSchemaType<"user:Profile">; // extracted type
+```
+
+#### Type-only
+
+Some adapters may generate only types without runtime validators:
+
+```ts twoslash
+// @errors: 2345
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown>> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown>, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+// Type-only adapter generates SchemaTypes but no schemas
+export const schemas = {} as const;
+export type SchemaTypes = { "user:Profile": { id: string; name?: string; email: string } };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import type { XSchemaType } from "@xschemadev/client";
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+// XSchemaType works - types are available
+type Profile = XSchemaType<"user:Profile">;
+
+// Compile error - no runtime validator for this key
+const xschema = createXSchemaClient({ schemas });
+const schema = xschema("user:Profile");
+```
+
+#### Schema-only
+
+Some adapters may generate validators that don't expose inferred types. `XSchemaType` returns `typeof` the schema:
+
+```typescript
+const schema = xschema("user:Profile");
+type Profile = XSchemaType<"user:Profile">; // typeof schema
+```
+
+### Developer Experience
+
+The xschema client provides excellent TypeScript developer experience with autocomplete and compile-time error checking.
+
+#### Autocomplete
+
+Your IDE will autocomplete available schema keys as you type:
+
+```ts twoslash
+// @noErrors
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+
+// Start typing a schema key and see suggestions
+const schema = xschema("u
+//                      ^|
+```
+
+The valid keys are inferred from the generated `schemas` object, so you'll see suggestions like `"user:Profile"` and `"app:Config"`.
+
+#### Type Errors for Invalid Keys
+
+Invalid schema keys cause compile-time errors:
+
+```ts twoslash
+// @errors: 2345
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type SchemaKeys = Register extends { schemas: infer S } ? keyof S & string : never;
+type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & string : never;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaType<N extends SchemaTypeKeys> = Register extends { schemaTypes: infer T } ? N extends keyof T ? T[N] : never : never;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const user_Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+type user_ProfileType = z.infer<typeof user_Profile>;
+const app_Config = z.object({ theme: z.enum(["light", "dark"]), language: z.string(), debug: z.boolean().optional() }).passthrough();
+type app_ConfigType = z.infer<typeof app_Config>;
+export const schemas = { "user:Profile": user_Profile, "app:Config": app_Config } as const;
+export type SchemaTypes = { "user:Profile": user_ProfileType; "app:Config": app_ConfigType };
+declare module '@xschemadev/client' { interface Register { schemas: typeof schemas; schemaTypes: SchemaTypes } }
+// @filename: index.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+
+// Typo in schema key - caught at compile time!
+const schema = xschema("user:Proflie");
+```
+
+<Callout>
+After modifying your JSON Schema files, run `xschema generate` to update the generated code and keep autocomplete in sync.
+</Callout>
+
+## What's Generated
+
+The `.xschema/xschema.gen.ts` file contains:
+
+- **Validators**: Native Zod schemas (or ArkType types, Effect schemas, etc.)
+- **Types**: TypeScript types inferred from the validators
+- **Schema registry**: An object mapping `namespace:id` to validators
+
+Example output for a Zod adapter:
+
+```typescript
+// Generated by xschema - DO NOT EDIT
+import { z } from "zod"
+
+const user_Profile = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  email: z.string().email(),
+});
+type user_ProfileType = z.infer<typeof user_Profile>;
+
+export const schemas = {
+  "user:Profile": user_Profile,
+} as const;
+
+export type SchemaTypes = {
+  "user:Profile": user_ProfileType;
+};
+```
