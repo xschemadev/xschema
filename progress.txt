@@ -9,6 +9,16 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 - `tasks/type-fidelity-baseline/<adapter>/generate-probe.ts` generates probe-fixture.ts by calling the adapter's convert()
 - `typescript/packages/adapters/<adapter>/type-probe/extract-types.ts` uses TS compiler API to extract inferred types
 
+### Python type-fidelity harness pattern
+- single script at `python/packages/adapters/pydantic/type-probe/type-fidelity.py` does generate + pyright extract + assert
+- uses `pyright --outputjson` to parse `reveal_type()` diagnostics (severity: "information", message: `Type of "var" is "T"`)
+- pyright reports `TypeAdapter[Unknown]` for `Annotated[Any, ...]` patterns — harness checks for both `Any` and `Unknown`
+- each probe has `expectAny: bool` — True means degradation is known/accepted, False means regression guard
+- "FAIL" = probe expected any-free but regressed to Any (exit 1)
+- "IMPROVED" = probe expected Any but got narrower (advisory, update expectAny to lock in)
+- run from adapter dir: `uv run python type-probe/type-fidelity.py`
+- does NOT touch compliance command or output
+
 ### Type-fidelity harness pattern (zod, reuse for arktype)
 - single script at `type-probe/type-fidelity.ts` does generate + extract + assert in one shot
 - each probe has `expectAny: boolean` - true means any-leakage is known/accepted, false means regression guard
@@ -230,3 +240,24 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Regression detection: confirmed (set constObject expectUnknown=false → caught FAIL, exit 1)
 - Compliance interface unchanged: confirmed (compliance script untouched)
 - Typecheck passes: confirmed (all 6 TS packages pass)
+
+---
+
+### Task 4: Add Python type-fidelity harness - COMPLETED
+
+**Created**:
+- `python/packages/adapters/pydantic/type-probe/type-fidelity.py` - single-file harness (generate + pyright extract + assert)
+
+**How it works**:
+- 17 probe cases with `expectAny` boolean per probe
+- Regenerates probe-fixture.py via adapter's `convert()`, then runs `pyright --outputjson` to extract inferred types from `reveal_type()` calls
+- Parses pyright diagnostics (severity=information, message matches `Type of "var" is "type"`)
+- Checks for `Any` and `Unknown` in type strings (pyright renders `Annotated[Any, ...]` as `TypeAdapter[Unknown]`)
+- Exits non-zero on regression (probe expected any-free but got Any/Unknown)
+- Reports "IMPROVED" when a probe expected Any but got narrower (advisory to lock in)
+
+**Verification**:
+- Harness runs and reports pass/fail: confirmed (14 any, 3 any-free, all match expectations)
+- Regression detection: confirmed (set oneOfStringOrNumber expectAny=False -> caught FAIL, exit 1)
+- Compliance interface unchanged: confirmed (87 pytest tests pass, compliance script untouched)
+- Typecheck passes: confirmed (pyright 0 errors on src/ and type-fidelity.py, all 6 TS packages pass)
