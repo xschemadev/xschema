@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "value": { "$ref": "#myAnchor" }
+  },
+  "$defs": {
+    "Target": {
+      "$anchor": "myAnchor",
+      "type": "string"
+    }
+  }
+}

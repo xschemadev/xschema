@@ -5,7 +5,6 @@
   "typescript/packages/core": "0.1.0",
   "typescript/packages/client": "0.0.4",
   "typescript/packages/adapters/effect": "0.1.0",
-  "typescript/packages/adapters/typebox": "0.1.1",
-  "typescript/packages/adapters/valibot": "0.1.0",
-  "typescript/packages/adapters/typescript": "0.1.0"
+  "typescript/packages/adapters/typebox": "0.1.0",
+  "typescript/packages/adapters/valibot": "0.1.0"
 }

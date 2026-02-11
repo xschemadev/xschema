@@ -16,7 +16,7 @@ import type {
 	NotNode,
 	LiteralNode,
 	EnumNode,
-	RefNode,
+
 	ConditionalNode,
 	TypeGuardedNode,
 	NullableNode,
@@ -29,6 +29,27 @@ import {
 	hasPrototypeProperties,
 	buildIntersection,
 } from "@xschemadev/core";
+
+// JS identifier regex - keys matching this can use direct property syntax
+const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+// Reserved words that can't be used as unquoted property names
+const RESERVED_WORDS = new Set([
+	"break", "case", "catch", "continue", "debugger", "default", "delete",
+	"do", "else", "finally", "for", "function", "if", "in", "instanceof",
+	"new", "return", "switch", "this", "throw", "try", "typeof", "var",
+	"void", "while", "with", "class", "const", "enum", "export", "extends",
+	"import", "super", "implements", "interface", "let", "package", "private",
+	"protected", "public", "static", "yield"
+]);
+
+function canUseDirectSyntax(key: string): boolean {
+	return IDENTIFIER_RE.test(key) && !RESERVED_WORDS.has(key);
+}
+
+function formatPropertyKey(key: string): string {
+	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
+}
 
 /**
  * Render a SchemaNode to Zod code
@@ -65,14 +86,18 @@ export function render(node: SchemaNode): string {
 			return "z.any()";
 		case "never":
 			return "z.never()";
-		case "ref":
-			return renderRef(node);
+
 		case "conditional":
 			return renderConditional(node);
 		case "typeGuarded":
 			return renderTypeGuarded(node);
 		case "nullable":
 			return renderNullable(node);
+		
+		default:
+			// Exhaustive check - should never reach here
+			const _exhaustive: never = node;
+			throw new Error(`Unhandled node kind: ${(node as any).kind}`);
 	}
 }
 
@@ -182,17 +207,41 @@ function renderObject(node: ObjectNode): string {
 	const hasPatternProps = node.patternProperties.length > 0;
 	const needsPassthrough = hasPatternProps || node.propertyNames !== undefined;
 
+	// Determine strictness from additionalProperties and unevaluatedProperties
+	// Key insight: if additionalProperties is explicitly set (true, schema, or false), it handles extra props.
+	// unevaluatedProperties only takes effect when additionalProperties is NOT explicitly set (undefined).
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+	const additionalPropsHandled =
+		additionalPropsExplicit && node.additionalProperties !== false;
+
+	// isStrict: reject extra properties
+	// - additionalProperties: false → strict
+	// - additionalProperties not set AND unevaluatedProperties: false → strict
+	const isStrict =
+		node.additionalProperties === false ||
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+
+	// Schema for validating extra properties
+	// - additionalProperties as schema takes precedence
+	// - Then unevaluatedProperties as schema (only if additionalProperties not set)
+	const additionalSchema =
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+			? node.additionalProperties
+			: !additionalPropsExplicit &&
+				  typeof node.unevaluatedProperties === "object" &&
+				  node.unevaluatedProperties.kind !== "any"
+				? node.unevaluatedProperties
+				: null;
+
 	let result: string;
 
 	if (propKeys.length === 0 && !needsPassthrough) {
 		// No properties
-		if (node.additionalProperties === false) {
+		if (isStrict) {
 			result = "z.object({}).strict()";
-		} else if (
-			typeof node.additionalProperties === "object" &&
-			node.additionalProperties.kind !== "any"
-		) {
-			const valueSchema = render(node.additionalProperties);
+		} else if (additionalSchema) {
+			const valueSchema = render(additionalSchema);
 			result = `z.record(z.string(), ${valueSchema})`;
 		} else {
 			result = "z.object({}).passthrough()";
@@ -205,7 +254,7 @@ function renderObject(node: ObjectNode): string {
 			if (!prop.required) {
 				propCode += ".optional()";
 			}
-			return `[${escapeString(key)}]: ${propCode}`;
+			return `${formatPropertyKey(key)}: ${propCode}`;
 		});
 
 		result =
@@ -216,13 +265,10 @@ function renderObject(node: ObjectNode): string {
 		// Handle additional properties mode
 		if (needsPassthrough) {
 			result += ".passthrough()";
-		} else if (node.additionalProperties === false) {
+		} else if (isStrict) {
 			result += ".strict()";
-		} else if (
-			typeof node.additionalProperties === "object" &&
-			node.additionalProperties.kind !== "any"
-		) {
-			const valueSchema = render(node.additionalProperties);
+		} else if (additionalSchema) {
+			const valueSchema = render(additionalSchema);
 			result += `.catchall(${valueSchema})`;
 		} else {
 			result += ".passthrough()";
@@ -251,12 +297,38 @@ function renderObject(node: ObjectNode): string {
     })`;
 	}
 
-	// Required properties validation (for z.any() props)
-	if (requiredKeys.length > 0) {
-		const requiredJson = JSON.stringify(requiredKeys);
+	// If propertyNames is set without patternProperties, and we have unevaluatedProperties,
+	// we need to validate unevaluated property values
+	// (propertyNames validates keys but doesn't evaluate values)
+	if (
+		node.propertyNames &&
+		!hasPatternProps &&
+		!additionalPropsExplicit &&
+		typeof node.unevaluatedProperties === "object" &&
+		node.unevaluatedProperties.kind !== "any"
+	) {
+		const unevalSchema = render(node.unevaluatedProperties);
+		const definedPropsJson = JSON.stringify(propKeys);
 		result += `.superRefine((val, ctx) => {
-      const required = ${requiredJson};
-      for (const key of required) {
+      const definedProps = new Set(${definedPropsJson});
+      for (const [key, value] of Object.entries(val)) {
+        if (definedProps.has(key)) continue;
+        const result = ${unevalSchema}.safeParse(value);
+        if (!result.success) {
+          result.error.issues.forEach(issue => ctx.addIssue({ ...issue, path: [key, ...issue.path] }));
+        }
+      }
+    })`;
+	}
+
+	// Required properties validation - only needed when z.any() props exist (which accept undefined)
+	const requiredAnyProps = requiredKeys.filter(
+		(k) => (node.properties.get(k)!.schema as SchemaNode).kind === "any"
+	);
+	if (requiredAnyProps.length > 0) {
+		const requiredJson = JSON.stringify(requiredAnyProps);
+		result += `.superRefine((val, ctx) => {
+      for (const key of ${requiredJson}) {
         if (!Object.hasOwn(val, key)) {
           ctx.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Required" });
         }
@@ -373,8 +445,15 @@ function renderPatternPropsValidation(
       }`;
 	});
 
-	// Additional properties validation
-	if (node.additionalProperties === false) {
+	// Additional/unevaluated properties validation
+	// Check if additionalProperties is explicitly set
+	const additionalPropsExplicit = node.additionalProperties !== undefined;
+	// If additionalProperties is not set and unevaluatedProperties: false, reject non-matching props
+	const shouldRejectNonMatching =
+		node.additionalProperties === false ||
+		(!additionalPropsExplicit && node.unevaluatedProperties === false);
+
+	if (shouldRejectNonMatching) {
 		body += `
       for (const key of Object.keys(val)) {
         if (definedProps.has(key)) continue;
@@ -445,8 +524,50 @@ function renderDependencies(node: ObjectNode): string {
 }
 
 function renderArray(node: ArrayNode): string {
+	// Check if this is a schema with only unevaluatedItems (no actual items schema)
+	// In that case, all items are "unevaluated" and subject to unevaluatedItems constraint
+	const hasRealItems = node.items.kind !== "any";
+
+	if (!hasRealItems && node.unevaluatedItems === false) {
+		// Schema like { "unevaluatedItems": false } - empty array only
+		let result = "z.array(z.never()).max(0)";
+		result += renderArrayConstraints(node.constraints);
+		return result;
+	}
+
+	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
+		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
+		const unevalSchema = render(node.unevaluatedItems);
+		let result = `z.array(${unevalSchema})`;
+		result += renderArrayConstraints(node.constraints);
+		return result;
+	}
+
+	// Normal array with items schema
 	const itemSchema = render(node.items);
 	let result = `z.array(${itemSchema})`;
+
+	// If items is defined AND unevaluatedItems is also defined, we need both validations
+	// But typically items covers all items, so unevaluatedItems wouldn't have effect
+	// Just in case, add the refinement
+	if (
+		hasRealItems &&
+		node.unevaluatedItems !== undefined &&
+		node.unevaluatedItems !== false &&
+		node.unevaluatedItems.kind !== "any"
+	) {
+		const unevalSchema = render(node.unevaluatedItems);
+		result += `.superRefine((arr, ctx) => {
+      const schema = ${unevalSchema};
+      for (let i = 0; i < arr.length; i++) {
+        const r = schema.safeParse(arr[i]);
+        if (!r.success) {
+          r.error.issues.forEach(issue => ctx.addIssue({ ...issue, path: [i, ...issue.path] }));
+        }
+      }
+    })`;
+	}
+
 	result += renderArrayConstraints(node.constraints);
 	return result;
 }
@@ -467,11 +588,23 @@ function renderTuple(node: TupleNode): string {
       }
     })`;
 
-	// Rest items
-	if (node.restItems === false) {
+	// Determine if extra items are allowed and what schema to use
+	// unevaluatedItems takes precedence for standalone schemas (no applicators)
+	const disallowExtraItems =
+		node.restItems === false || node.unevaluatedItems === false;
+	const extraItemsSchema =
+		node.restItems !== false && node.restItems.kind !== "any"
+			? node.restItems
+			: node.unevaluatedItems !== undefined &&
+				  node.unevaluatedItems !== false &&
+				  node.unevaluatedItems.kind !== "any"
+				? node.unevaluatedItems
+				: null;
+
+	if (disallowExtraItems) {
 		result += `.refine((val) => val.length <= ${node.prefixItems.length}, { message: "Array must not have more than ${node.prefixItems.length} items" })`;
-	} else if (node.restItems.kind !== "any") {
-		const restSchema = render(node.restItems);
+	} else if (extraItemsSchema) {
+		const restSchema = render(extraItemsSchema);
 		result += `.superRefine((val, ctx) => {
         const restSchema = ${restSchema};
         for (let i = ${node.prefixItems.length}; i < val.length; i++) {
@@ -666,10 +799,7 @@ function renderEnum(node: EnumNode): string {
 	return `z.union([${literals.join(", ")}])`;
 }
 
-function renderRef(node: RefNode): string {
-	// The resolved schema is already parsed, just render it
-	return render(node.resolved);
-}
+
 
 function renderConditional(node: ConditionalNode): string {
 	const ifSchema = render(node.if);

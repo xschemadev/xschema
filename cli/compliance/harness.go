@@ -56,7 +56,7 @@ func GenerateHarness(lang *language.Language, items []HarnessItem, targetDir str
 	for i, item := range items {
 		// Collect imports
 		allImports = append(allImports, item.AdapterOutput.Imports...)
-		allImports = append(allImports, item.AdapterOutput.ValidateImports...)
+		allImports = append(allImports, item.AdapterOutput.ValidationImports...)
 
 		// Build schema entry
 		schemas[i] = HarnessSchemaEntry{

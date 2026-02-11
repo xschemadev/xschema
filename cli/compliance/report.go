@@ -29,19 +29,20 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 
 	// Summary table
 	sb.WriteString("## Summary\n\n")
-	sb.WriteString("| Draft | Passed | Failed | Skipped | Coverage |\n")
-	sb.WriteString("| ----- | ------ | ------ | ------- | -------- |\n")
+	sb.WriteString("| Draft | Passed | Failed | Skipped | Unsupported | Coverage |\n")
+	sb.WriteString("| ----- | ------ | ------ | ------- | ----------- | -------- |\n")
 
 	for _, draft := range sortedReport.Drafts {
 		coverage := "N/A (type-only)"
 		if !isTypeOnly {
 			coverage = fmt.Sprintf("%.1f%%", draft.Summary.Percentage)
 		}
-		fmt.Fprintf(&sb, "| %s | %d | %d | %d | %s |\n",
+		fmt.Fprintf(&sb, "| %s | %d | %d | %d | %d | %s |\n",
 			draft.Draft,
 			draft.Summary.Passed,
 			draft.Summary.Failed,
 			draft.Summary.Skipped,
+			draft.Summary.UnsupportedFeatures.Count,
 			coverage)
 	}
 	sb.WriteString("\n")
@@ -69,10 +70,26 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		}
 		sb.WriteString("\n")
 
-		// Failures details
+		// Unsupported Features section (grouped by reason)
+		if draft.Summary.UnsupportedFeatures.Count > 0 {
+			sb.WriteString("### Unsupported Features\n\n")
+			sb.WriteString("These tests are intentionally excluded due to documented limitations.\n\n")
+
+			byReason := groupUnsupportedFeaturesByReason(draft.Summary.UnsupportedFeatures.Items)
+			for _, group := range byReason {
+				fmt.Fprintf(&sb, "<details>\n<summary>%s (%d test%s)</summary>\n\n",
+					group.Reason, len(group.Tests), pluralize(len(group.Tests)))
+				for _, path := range group.Tests {
+					fmt.Fprintf(&sb, "- `%s`\n", path)
+				}
+				sb.WriteString("\n</details>\n\n")
+			}
+		}
+
+		// Unexpected Failures section
 		failedKeywords := getFailedKeywords(draft.Keywords)
 		if len(failedKeywords) > 0 {
-			sb.WriteString("### Failures\n\n")
+			sb.WriteString("### Unexpected Failures\n\n")
 			for _, keyword := range failedKeywords {
 				fmt.Fprintf(&sb, "<details>\n<summary>%s - %d failure%s</summary>\n\n",
 					keyword.Keyword, len(keyword.Failures), pluralize(len(keyword.Failures)))
@@ -208,6 +225,36 @@ func pluralize(n int) string {
 		return ""
 	}
 	return "s"
+}
+
+// reasonGroup holds unsupported feature paths grouped by reason
+type reasonGroup struct {
+	Reason string
+	Tests  []string
+}
+
+// groupUnsupportedFeaturesByReason groups unsupported feature items by their reason
+func groupUnsupportedFeaturesByReason(items []UnsupportedFeatureItem) []reasonGroup {
+	byReason := make(map[string][]string)
+	var order []string
+
+	for _, item := range items {
+		if _, exists := byReason[item.Reason]; !exists {
+			order = append(order, item.Reason)
+		}
+		byReason[item.Reason] = append(byReason[item.Reason], item.Path)
+	}
+
+	// Sort reasons alphabetically for deterministic output
+	sort.Strings(order)
+
+	var result []reasonGroup
+	for _, reason := range order {
+		paths := byReason[reason]
+		sort.Strings(paths)
+		result = append(result, reasonGroup{Reason: reason, Tests: paths})
+	}
+	return result
 }
 
 // isTypeOnlyAdapter returns true if the adapter produced type-only output.

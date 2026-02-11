@@ -1,0 +1,294 @@
+---
+title: Configuration Reference
+description: Complete reference for xschema config files
+icon: Settings
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+This page documents all options for xschema config files.
+
+## Config file structure
+
+```jsonc title="*.xschema.jsonc / *.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/{language}.jsonc",
+  "namespace": "optional-override",
+  "schemas": [
+    {
+      "id": "SchemaName",
+      "sourceType": "file" | "url" | "json",
+      "source": "...",
+      "adapter": "<package-name>",
+      "headers": { ... }
+    }
+  ]
+}
+```
+
+## Required: `$schema`
+
+The `$schema` URL is **required** - xschema uses it to discover config files in your project and determine the target language.
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/{language}.jsonc"
+}
+```
+
+Without this URL, xschema won't recognize the file as a config file and will skip it.
+
+### Schema URL reference
+
+| Language | URL |
+|----------|-----|
+| TypeScript | `https://xschema.dev/schemas/typescript.jsonc` |
+| Python | `https://xschema.dev/schemas/python.jsonc` (coming soon) |
+
+## Namespace
+
+The namespace groups related schemas together. It defaults to the filename (without extension).
+
+### Default behavior
+
+| Filename | Namespace |
+|----------|-----------|
+| `user.xschema.jsonc` | `user` |
+| `api.xschema.json` | `api` |
+| `models.jsonc` | `models` |
+
+### Explicit override
+
+Override the default with the `namespace` field:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/{language}.jsonc",
+  "namespace": "my-custom-namespace",
+  "schemas": [...]
+}
+```
+
+### Multiple config files
+
+You can have multiple config files in your project:
+
+```
+project/
+  user.xschema.jsonc      # namespace: user
+  api.xschema.jsonc       # namespace: api
+  subdir/
+    models.xschema.jsonc  # namespace: models
+```
+
+All are merged into a single output. Duplicate IDs within the same namespace cause an error:
+
+```
+duplicate schema ID "User" in namespace "user": defined in both user.xschema.jsonc and models.xschema.jsonc
+```
+
+## Schemas array
+
+The `schemas` array defines each schema to generate.
+
+### Required fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier within the namespace |
+| `sourceType` | `"file"` \| `"url"` \| `"json"` | How to retrieve the schema |
+| `source` | string \| object | The schema source (format depends on sourceType) |
+| `adapter` | string | Adapter package name (e.g., `"@xschemadev/zod"`) |
+
+### Optional fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `headers` | object | HTTP headers for URL sources (supports `${VAR}` syntax) |
+
+## Source types
+
+### `file` - Local file
+
+Load a JSON Schema from a file path relative to the config file:
+
+```jsonc
+{
+  "id": "User",
+  "sourceType": "file",
+  "source": "./schemas/user.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+<Callout>
+File paths are always relative to the config file's directory, not the current working directory.
+</Callout>
+
+### `url` - Remote URL
+
+Fetch a JSON Schema from a URL:
+
+```jsonc
+{
+  "id": "TSConfig",
+  "sourceType": "url",
+  "source": "https://json.schemastore.org/tsconfig.json",
+  "adapter": "@xschemadev/zod"
+}
+```
+
+URL sources support:
+- Automatic retries (3 attempts by default)
+- Caching to avoid redundant fetches
+- Custom headers (see below)
+
+### `json` - Inline schema
+
+Embed the JSON Schema directly in the config file:
+
+```jsonc
+{
+  "id": "Fruit",
+  "sourceType": "json",
+  "source": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "color": { "type": "string" }
+    },
+    "required": ["name"]
+  },
+  "adapter": "@xschemadev/zod"
+}
+```
+
+Inline schemas are useful for simple schemas or when you want everything in one file.
+
+## Headers and environment variables
+
+For URL sources, you can specify HTTP headers:
+
+```jsonc
+{
+  "id": "PrivateSchema",
+  "sourceType": "url",
+  "source": "https://api.example.com/schemas/user",
+  "adapter": "@xschemadev/zod",
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}",
+    "X-Api-Key": "${API_KEY}"
+  }
+}
+```
+
+### Environment variable substitution
+
+Header values support `${VAR}` syntax for environment variables:
+
+1. Variables are read from the environment
+2. xschema auto-loads `.env` files in the project root
+3. Use `--env-file` to specify a custom env file
+
+```bash
+# Uses .env in project root
+xschema generate
+
+# Uses custom env file
+xschema generate --env-file .env.production
+```
+
+If a referenced variable is missing:
+
+```
+missing env var: API_TOKEN. use --env-file to specify env file
+```
+
+<Callout type="warn">
+Headers are only allowed for `sourceType: "url"`. Using headers with `file` or `json` sources causes an error:
+```
+headers are only allowed for sourceType "url"
+```
+</Callout>
+
+## Adapters
+
+The `adapter` field specifies which validation library to generate code for. The value is the adapter's package name (e.g., `@xschemadev/zod`).
+
+See [Adapters](/docs/adapters) for the full list of available adapters.
+
+### Using multiple adapters
+
+You can use different adapters for different schemas in the same config file:
+
+```jsonc
+{
+  "$schema": "https://xschema.dev/schemas/{language}.jsonc",
+  "schemas": [
+    {
+      "id": "UserZod",
+      "sourceType": "file",
+      "source": "./user.json",
+      "adapter": "@xschemadev/zod"
+    },
+    {
+      "id": "UserArkType",
+      "sourceType": "file",
+      "source": "./user.json",
+      "adapter": "@xschemadev/arktype"
+    }
+  ]
+}
+```
+
+## Complete example
+
+```jsonc title="*.xschema.jsonc / *.jsonc"
+{
+  // The $schema URL is required for xschema to discover this file
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+
+  // Optional: override the namespace (defaults to filename without extension)
+  // "namespace": "custom",
+
+  "schemas": [
+    // Local file source
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./schemas/profile.json",
+      "adapter": "@xschemadev/zod"
+    },
+
+    // Remote URL source
+    {
+      "id": "TSConfig",
+      "sourceType": "url",
+      "source": "https://json.schemastore.org/tsconfig.json",
+      "adapter": "@xschemadev/zod"
+    },
+
+    // Remote URL with auth headers
+    {
+      "id": "PrivateAPI",
+      "sourceType": "url",
+      "source": "https://api.internal.com/schema",
+      "adapter": "@xschemadev/arktype",
+      "headers": {
+        "Authorization": "Bearer ${API_TOKEN}"
+      }
+    },
+
+    // Inline JSON schema
+    {
+      "id": "Status",
+      "sourceType": "json",
+      "source": {
+        "type": "string",
+        "enum": ["active", "inactive", "pending"]
+      },
+      "adapter": "@xschemadev/zod"
+    }
+  ]
+}
+```

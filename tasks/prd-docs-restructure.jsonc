@@ -1,0 +1,77 @@
+{
+  "project": "xschema-docs",
+  "description": "Restructure (framework) docs - move config up, unify language pages with setup + client",
+  "userStories": [
+    {
+      "title": "Create TypeScript page with setup content",
+      "description": "As a TypeScript developer, I want a comprehensive setup guide with package manager tabs so I can get started with my preferred tooling.",
+      "acceptanceCriteria": [
+        "Create `web/content/docs/(framework)/typescript.mdx` (not in subfolder)",
+        "Add frontmatter with title 'TypeScript', description, icon",
+        "Include Prerequisites section (Node 18+, tsconfig requirements)",
+        "Include Installation section using Tabs component with bun/npm/pnpm/yarn",
+        "Include Config file creation section with example",
+        "Include Run generator section using Tabs for package managers",
+        "Include 'What's generated' section explaining output",
+        "Use content from existing `getting-started/typescript.mdx` as base",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Add client reference section to TypeScript page",
+      "description": "As a TypeScript developer, I want client usage docs on the same page as setup so I don't navigate between pages.",
+      "acceptanceCriteria": [
+        "Add 'Using the Client' h2 section after setup content in typescript.mdx",
+        "Include createXSchemaClient documentation with options table",
+        "Include schema lookup examples (full key and shorthand)",
+        "Include XSchemaType documentation for extracting types",
+        "Include 'Schema types explained' section",
+        "Change 'Type-only (future)' heading to just 'Type-only'",
+        "Remove word 'Future' from Type-only description text",
+        "Include Adapter-specific usage section (Zod, ArkType, Effect, Valibot)",
+        "Include complete example at end",
+        "Use content from existing `typescript/client.mdx` as base",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Create Python placeholder page",
+      "description": "As a user exploring xschema, I want to see Python support is planned.",
+      "acceptanceCriteria": [
+        "Create `web/content/docs/(framework)/python.mdx`",
+        "Add frontmatter with title 'Python', description mentioning 'coming soon', icon",
+        "Add Callout with 'coming soon' message",
+        "Show planned workflow preview (pip install, xschema generate)",
+        "Show planned features list (Pydantic v2, type hints, compliance, config format)",
+        "Show example config and expected output preview",
+        "Add Cards linking to TypeScript page and GitHub",
+        "Use content from existing `getting-started/python.mdx` as base",
+        "Typecheck passes"
+      ],
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "title": "Update navigation and cleanup old folders",
+      "description": "As a user, I want clean sidebar navigation reflecting the new structure.",
+      "acceptanceCriteria": [
+        "Update `(framework)/meta.json` pages array to: index, what-is-xschema, configuration, ---Languages---, typescript, python, ---Help---, faq, troubleshooting",
+        "Delete `(framework)/getting-started/` folder and all contents",
+        "Delete `(framework)/getting-started/meta.json`",
+        "Delete `(framework)/typescript/` folder and all contents",
+        "Delete `(framework)/typescript/meta.json`",
+        "Sidebar shows correct order with Languages section header",
+        "Configuration appears directly after what-is-xschema (no section header between)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

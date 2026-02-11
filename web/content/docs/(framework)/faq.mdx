@@ -1,0 +1,86 @@
+---
+title: FAQ
+description: Frequently asked questions about xschema
+icon: CircleQuestionMark
+---
+
+<Accordions>
+  <Accordion title="Which adapter should I pick?">
+    Use whichever validation library you're already familiar with. See [Adapters](/docs/adapters) for a comparison.
+  </Accordion>
+  <Accordion title="What JSON Schema drafts are supported?">
+    All drafts from draft-03 to draft-2020-12. The CLI normalizes everything to draft-2020-12 internally.
+  </Accordion>
+  <Accordion title="What if a keyword isn't supported?">
+    You'll get a clear error at build time. No silent failures. See [Unsupported Features](/docs/compliance/unsupported-features) for the complete list.
+  </Accordion>
+  <Accordion title="Do I need to regenerate when schemas change?">
+    Yes. Run `xschema generate` after modifying your JSON Schema files. You can add it to your build script or use watch mode during development.
+  </Accordion>
+  <Accordion title="Can I use multiple adapters in one project?">
+    Yes. Each schema declaration in your config can specify a different adapter. Useful if different parts of your app use different validation libraries.
+  </Accordion>
+  <Accordion title="How do I handle schemas from external URLs?">
+    Set `sourceType: "url"` in your config. xschema will fetch and cache the schema. You can add custom headers for authenticated endpoints. See [Configuration Reference](/docs/configuration) for details.
+  </Accordion>
+  <Accordion title="Can I use xschema without the CLI and config files?">
+    Yes. [Runtime Mode](/docs/runtime) lets you call the adapters programmatically to convert schemas dynamically. Useful for building your own tools or handling schemas that aren't known at build time.
+  </Accordion>
+<Accordion title="Does xschema support $ref?">
+
+**Yes, fully.** xschema resolves all `$ref` references before adapters see the schema.
+
+The CLI:
+1. Fetches external `$ref` targets (URLs, files) recursively
+2. Bundles everything into local `$defs`
+3. Produces a self-contained schema with no external dependencies
+
+```json
+// Input schema with external ref
+{
+  "type": "object",
+  "properties": {
+    "address": { "$ref": "https://api.example.com/schemas/address.json" }
+  }
+}
+
+// After bundling (what adapters receive)
+{
+  "type": "object",
+  "properties": {
+    "address": { "$ref": "#/$defs/address_json__Address" }
+  },
+  "$defs": {
+    "address_json__Address": { /* resolved content */ }
+  }
+}
+```
+
+This means you can use:
+- Local file refs: `{ "$ref": "./types/address.json" }`
+- URL refs: `{ "$ref": "https://api.example.com/schemas/user.json" }`
+- Nested refs: Schemas that reference other schemas that reference more schemas
+
+See [architecture](/docs/what-is-xschema#architecture) for how the bundling pipeline works.
+
+</Accordion>
+
+<Accordion title="Why is feature X unsupported?">
+
+Some JSON Schema features cannot be statically compiled because they require runtime information:
+
+| Feature | Why unsupported |
+|---------|-----------------|
+| `$dynamicRef` / `$dynamicAnchor` | Target depends on the validation call stack |
+| `$recursiveRef` / `$recursiveAnchor` | Same issue, older draft syntax |
+| `unevaluatedProperties` with applicators | Requires tracking which properties were evaluated by each schema branch |
+
+These aren't xschema limitations - they're fundamental to any static code generator. The JSON Schema spec explicitly notes some features require runtime evaluation.
+
+**Good news:** Most schemas don't use these features. And if you only use `unevaluatedProperties: false` without complex applicators, it works fine.
+
+See [unsupported features](/docs/compliance/unsupported-features) for detailed explanations.
+
+</Accordion>
+
+</Accordions>

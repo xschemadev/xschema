@@ -13,7 +13,7 @@ import type {
 	Dependency,
 	ContainsConstraint,
 } from "../ir/nodes.js";
-import type { ParseContext } from "./context.js";
+import { type ParseContext } from "./context.js";
 
 type ParseSchemaFn = (
 	schema: JSONSchema | boolean,
@@ -82,15 +82,19 @@ export function parseObject(
 	}
 
 	// Parse additionalProperties
-	let additionalProperties: SchemaNode | boolean = true;
+	// Keep track of whether it was explicitly set to true vs not specified
+	let additionalProperties: SchemaNode | boolean | undefined;
 	if (schema.additionalProperties === false) {
 		additionalProperties = false;
+	} else if (schema.additionalProperties === true) {
+		additionalProperties = true; // Explicitly true
 	} else if (
 		schema.additionalProperties &&
 		typeof schema.additionalProperties === "object"
 	) {
 		additionalProperties = parseSchema(schema.additionalProperties, ctx);
 	}
+	// If not specified, leave as undefined (not defaulting to true)
 
 	// Parse propertyNames
 	const propertyNames =
@@ -121,21 +125,25 @@ export function parseObject(
 		}
 	}
 
-	// Handle legacy dependencies (draft3-7)
+	// Note: legacy dependencies should be normalized by the Go CLI to draft2020-12 format
+	// (dependentRequired for property deps, dependentSchemas for schema deps).
+	// If we encounter the legacy 'dependencies' keyword, it indicates incomplete bundling.
 	if (schema.dependencies) {
-		for (const [prop, dep] of Object.entries(schema.dependencies)) {
-			if (Array.isArray(dep)) {
-				dependencies.set(prop, {
-					kind: "property",
-					requiredProperties: dep,
-				});
-			} else {
-				dependencies.set(prop, {
-					kind: "schema",
-					schema: parseSchema(dep, ctx),
-				});
-			}
-		}
+		throw new Error(
+			`Encountered legacy 'dependencies' keyword - schemas must be normalized to draft2020-12 by the Go CLI. ` +
+			`Run the schema through xschema generate to normalize the format.`
+		);
+	}
+
+	// Parse unevaluatedProperties (only valid for standalone use - Go CLI blocks applicator combinations)
+	let unevaluatedProperties: SchemaNode | false | undefined;
+	if (schema.unevaluatedProperties === false) {
+		unevaluatedProperties = false;
+	} else if (
+		schema.unevaluatedProperties !== undefined &&
+		typeof schema.unevaluatedProperties === "object"
+	) {
+		unevaluatedProperties = parseSchema(schema.unevaluatedProperties, ctx);
 	}
 
 	return {
@@ -147,6 +155,7 @@ export function parseObject(
 		minProperties: schema.minProperties,
 		maxProperties: schema.maxProperties,
 		dependencies,
+		unevaluatedProperties,
 	};
 }
 
@@ -178,6 +187,7 @@ export function parseArray(
 			prefixItems: [],
 			restItems: false,
 			constraints: buildArrayConstraints(schema, ctx, parseSchema),
+			unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 		};
 	}
 
@@ -185,6 +195,7 @@ export function parseArray(
 		kind: "array",
 		items: itemSchema,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -215,6 +226,7 @@ function parseTuple(
 		prefixItems: parsedPrefixItems,
 		restItems,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -242,6 +254,7 @@ function parseTupleFromItems(
 		prefixItems: parsedItems,
 		restItems,
 		constraints: buildArrayConstraints(schema, ctx, parseSchema),
+		unevaluatedItems: parseUnevaluatedItems(schema, ctx, parseSchema),
 	};
 }
 
@@ -266,4 +279,21 @@ function buildArrayConstraints(
 		uniqueItems: schema.uniqueItems,
 		contains,
 	};
+}
+
+function parseUnevaluatedItems(
+	schema: JSONSchema,
+	ctx: ParseContext,
+	parseSchema: ParseSchemaFn,
+): SchemaNode | false | undefined {
+	if (schema.unevaluatedItems === false) {
+		return false;
+	}
+	if (
+		schema.unevaluatedItems !== undefined &&
+		typeof schema.unevaluatedItems === "object"
+	) {
+		return parseSchema(schema.unevaluatedItems, ctx);
+	}
+	return undefined;
 }
