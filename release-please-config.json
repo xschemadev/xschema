@@ -96,17 +96,9 @@
       "release-type": "node",
       "component": "effect"
     },
-    "typescript/packages/adapters/typebox": {
-      "release-type": "node",
-      "component": "typebox"
-    },
     "typescript/packages/adapters/valibot": {
       "release-type": "node",
       "component": "valibot"
-    },
-    "typescript/packages/adapters/typescript": {
-      "release-type": "node",
-      "component": "typescript"
     }
   },
   "separate-pull-requests": true,
