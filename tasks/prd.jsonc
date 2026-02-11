@@ -82,7 +82,7 @@
         "Existing compliance script interface is unchanged",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "6",

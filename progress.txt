@@ -8,6 +8,14 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 - probe fixture lives in `typescript/packages/adapters/<adapter>/type-probe/` (has its own tsconfig for tsc resolution)
 - `tasks/type-fidelity-baseline/<adapter>/generate-probe.ts` generates probe-fixture.ts by calling the adapter's convert()
 - `typescript/packages/adapters/<adapter>/type-probe/extract-types.ts` uses TS compiler API to extract inferred types
+
+### Type-fidelity harness pattern (zod, reuse for arktype)
+- single script at `type-probe/type-fidelity.ts` does generate + extract + assert in one shot
+- each probe has `expectAny: boolean` - true means any-leakage is known/accepted, false means regression guard
+- "FAIL" = probe expected any-free but regressed to any (exit 1)
+- "IMPROVED" = probe expected any but got narrower (advisory, update expectAny to lock in)
+- run from adapter dir: `bun run type-fidelity`
+- does NOT touch compliance command or output
 - baseline artifacts go in `tasks/type-fidelity-baseline/<adapter>/`
 - after generating, copy probe-fixture.ts into the type-probe/ dir before running extract-types
 
@@ -180,3 +188,24 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Root cause: `Annotated[Any, BeforeValidator(...)]` used as base for oneOf, not, conditional, typeGuarded, tuple, complex const/enum
 - Tuple uses `Annotated[tuple[Any, ...], BeforeValidator(...)]` losing positional type info
 - Python uses `Any` vs Zod's `any` and ArkType's `unknown` - same loss of type precision
+
+---
+
+### Task 5: Add Zod type-fidelity harness - COMPLETED
+
+**Created**:
+- `typescript/packages/adapters/zod/type-probe/type-fidelity.ts` - single-file harness (generate + extract + assert)
+- `package.json` script: `bun run type-fidelity`
+
+**How it works**:
+- 15 probe cases with `expectAny` boolean per probe
+- Regenerates probe-fixture.ts via adapter's `convert()`, then runs TS compiler API to extract inferred types
+- Compares each probe's inferred type against expectation
+- Exits non-zero on regression (probe expected any-free but got any)
+- Reports "IMPROVED" when a probe expected any but got narrower (advisory to lock in)
+
+**Verification**:
+- Harness runs and reports pass/fail: confirmed (14 any, 1 any-free, all match expectations)
+- Regression detection: confirmed (weakened constObject schema → caught FAIL, exit 1)
+- Compliance interface unchanged: confirmed (compliance script untouched)
+- Typecheck passes: confirmed (all 6 TS packages pass)
