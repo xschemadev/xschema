@@ -518,3 +518,21 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - go build, go vet, go test: all pass (22 test packages)
 - TS build + typecheck: all 6 packages pass
 
+### Task 18: Final Python non-regression validation - COMPLETED
+
+**Runtime compliance**: identical to baseline — 100% across all 6 drafts, zero regressions.
+
+**Type-fidelity**: 12 any-free (was 3 baseline), 5 any (was 14 baseline). 9 probes improved.
+
+**Improvements**: oneOf (2), conditional if/then/else (1), tuple closed (1), tuple with rest (1), const object/array (2), enum complex (2).
+
+**Accepted Any (5)**: not (2, unbounded negation), conditional if/then only (1, unconstrained passthrough), typeGuarded array (1, element types unknown), tuple open (1, heterogeneous prefix).
+
+**Report**: `tasks/type-fidelity-baseline/python/final-report.md`
+
+**Verification**:
+- Compliance: 100% all 6 drafts (no regressions)
+- Type-fidelity harness: 17/17 pass, 12 any-free, 5 any
+- pyright: 0 errors on src/
+- TS typecheck: all 6 packages pass
+

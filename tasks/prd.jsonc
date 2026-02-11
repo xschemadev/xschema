@@ -303,7 +303,7 @@
         "Python type-fidelity harness passes",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "19",
