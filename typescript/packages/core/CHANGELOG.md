@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/xschemadev/xschema/compare/core-v0.1.0...core-v0.2.0) (2026-02-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* redesign internal cli flow ([#58](https://github.com/xschemadev/xschema/issues/58))
+* rename validateImports to validationIMmports
+
+### Features
+
+* adapter compliance ([#48](https://github.com/xschemadev/xschema/issues/48)) ([f25debb](https://github.com/xschemadev/xschema/commit/f25debbf90a503d7bc1e8bdc29a4f57ecd06576a))
+* build var name in cli ([0a6026e](https://github.com/xschemadev/xschema/commit/0a6026e545ef006f50e902d2e8a3dc5eb65d237d))
+* perfect adapters ([53dbfac](https://github.com/xschemadev/xschema/commit/53dbfacc9f86fca3943968757ace7a66fe131400))
+* redesign internal cli flow ([#58](https://github.com/xschemadev/xschema/issues/58)) ([ce34e5c](https://github.com/xschemadev/xschema/commit/ce34e5c75363186f27350702fca8d2831f2d6be6))
+* rename validateImports to validationIMmports ([da05d77](https://github.com/xschemadev/xschema/commit/da05d7756f63da12c707597fe986081e13b11f95))
+* **ts:** allow adapters to have types only adapters ([#44](https://github.com/xschemadev/xschema/issues/44)) ([044285d](https://github.com/xschemadev/xschema/commit/044285d1e5e7bdb5419077c1ebe701f4f0f433ac))
+
 ## [0.1.1](https://github.com/xschemadev/xschema/compare/core-v0.1.0...core-v0.1.1) (2026-01-11)
 
 
