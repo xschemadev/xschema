@@ -261,3 +261,26 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Regression detection: confirmed (set oneOfStringOrNumber expectAny=False -> caught FAIL, exit 1)
 - Compliance interface unchanged: confirmed (87 pytest tests pass, compliance script untouched)
 - Typecheck passes: confirmed (pyright 0 errors on src/ and type-fidelity.py, all 6 TS packages pass)
+
+---
+
+### Task 7: Python: remove fail-open renderer fallbacks - COMPLETED
+
+**Changes**:
+- `renderer.py:406-410`: catch-all `case _:` now raises `ConversionError` instead of silently returning `Any`
+- `renderer.py:2522-2544`: `render_ref` restructured — recursive refs (path starts with `#`) still emit `Any` (deliberate, documented choice), truly unresolved external refs raise `ConversionError`
+- Added `ConversionError` import to renderer
+
+**Tests added** (test_renderer.py):
+- `test_render_unknown_ir_kind_raises` — fake node with kind="imaginary" raises ConversionError
+- `test_render_recursive_ref_emits_any` — `$ref: "#"` with resolved=None correctly produces Any
+- `test_render_recursive_ref_with_defs_path_emits_any` — `$ref: "#/$defs/Person"` with resolved=None produces Any
+- `test_render_unresolved_external_ref_raises` — external URL ref with resolved=None raises ConversionError
+- `test_render_resolved_ref_delegates` — resolved ref renders the inner schema
+
+**Key decision**: recursive refs (resolved=None, path starts with `#`) still produce `Any`. This is correct — the parser's cycle detection sets resolved=None exclusively for recursive schemas. Truly unresolvable refs raise ValueError in the parser and never reach the renderer. The defensive ConversionError for external refs guards against impossible-but-theoretically-reachable paths.
+
+**Verification**:
+- 92/92 pydantic tests pass
+- pyright: 0 errors on src/
+- compliance: 100% across all 6 drafts (no regressions)

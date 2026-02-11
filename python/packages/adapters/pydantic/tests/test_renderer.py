@@ -3,6 +3,10 @@
 Tests verify that IR nodes are correctly converted to Pydantic code.
 """
 
+from dataclasses import dataclass
+
+import pytest
+
 from xschema_core import (
     StringNode,
     StringConstraints,
@@ -29,7 +33,9 @@ from xschema_core import (
     TypeGuardedNode,
     TypeGuard,
     NullableNode,
+    RefNode,
 )
+from xschema_pydantic.errors import ConversionError
 from xschema_pydantic.renderer import render
 
 
@@ -740,3 +746,57 @@ def test_render_object_with_list_property_uses_list_type():
     # The field name should be sanitized
     assert "list_:" in result.code or "list_ :" in result.code
     assert 'alias="list"' in result.code
+
+
+# =============================================================================
+# Fail-Open Guard Rails
+# =============================================================================
+
+
+def test_render_unknown_ir_kind_raises():
+    """Unknown IR node kinds must raise ConversionError, not silently degrade to Any."""
+
+    @dataclass(frozen=True)
+    class FakeNode:
+        kind: str = "imaginary"
+
+    with pytest.raises(ConversionError, match="Unknown IR node kind 'imaginary'"):
+        render(FakeNode(), "Test")  # type: ignore[arg-type]
+
+
+def test_render_recursive_ref_emits_any():
+    """Recursive refs (resolved=None, path starts with '#') produce Any.
+
+    This is a deliberate choice — recursive schemas cannot be expressed as
+    static types in generated code without forward-ref infrastructure.
+    """
+    node = RefNode(path="#", resolved=None)
+    result = render(node, "Test")
+    assert result.type_expr == "Any"
+    assert "from typing import Any" in result.imports
+
+
+def test_render_recursive_ref_with_defs_path_emits_any():
+    """Recursive refs to $defs also produce Any."""
+    node = RefNode(path="#/$defs/Person", resolved=None)
+    result = render(node, "Test")
+    assert result.type_expr == "Any"
+
+
+def test_render_unresolved_external_ref_raises():
+    """Truly unresolved external refs must raise ConversionError.
+
+    The parser should prevent these from ever reaching the renderer,
+    but if they do, fail loud instead of degrading to Any.
+    """
+    node = RefNode(path="https://example.com/schema.json", resolved=None)
+    with pytest.raises(ConversionError, match="Unresolved \\$ref"):
+        render(node, "Test")
+
+
+def test_render_resolved_ref_delegates():
+    """Resolved refs render their resolved schema, not Any."""
+    inner = StringNode()
+    node = RefNode(path="#/$defs/Name", resolved=inner)
+    result = render(node, "Test")
+    assert result.type_expr == "StrictStr"

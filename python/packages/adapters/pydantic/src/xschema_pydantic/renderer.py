@@ -50,6 +50,8 @@ For a complex schema, the generated module looks like:
 from dataclasses import dataclass, field
 from typing import Any
 
+from xschema_pydantic.errors import ConversionError
+
 from xschema_core import (
     AnyNode,
     ArrayNode,
@@ -404,9 +406,9 @@ def render(node: SchemaNode, name: str) -> RenderResult:
         case "ref":
             return render_ref(node, name)
         case _:
-            # Fallback for unknown node types
-            return RenderResult(
-                code="", type_expr="Any", imports={"from typing import Any"}
+            raise ConversionError(
+                f"Unknown IR node kind '{node.kind}' — "
+                "the adapter does not know how to render this construct"
             )
 
 
@@ -2522,22 +2524,24 @@ def _type_guard_check_to_python(check: str) -> str:
 def render_ref(node: RefNode, name: str) -> RenderResult:
     """Render RefNode to Pydantic type.
 
-    For unresolved refs (where resolved=None), we can't know the target schema's
-    type constraint. Since JSON Schema allows any value to pass validation against
-    a schema without explicit 'type' keyword, we use 'Any' as the type.
-
-    The actual validation happens at runtime via the parent schema's validate
-    function, which recursively validates values against the full schema.
+    Resolved refs are rendered inline. Recursive refs (resolved=None, path
+    starts with '#') emit Any because Python's type system cannot express
+    self-referencing types in generated code without forward-ref infrastructure.
+    Truly unresolvable refs (should never reach the renderer — the parser
+    raises ValueError for those) produce a ConversionError.
     """
-    # If resolved, render the resolved schema
     if node.resolved is not None:
         return render(node.resolved, name)
 
-    # For unresolved refs (including $ref: "#" root refs), use Any type.
-    # JSON Schema semantics: a schema without 'type' keyword accepts any value,
-    # and only applies constraints (properties, additionalProperties, etc.) to
-    # matching types. Since we don't know the target schema's type here, we
-    # must accept any value at the type level.
-    #
-    # The validate function will handle recursive validation at runtime.
-    return RenderResult(code="", type_expr="Any", imports={"from typing import Any"})
+    # Recursive ref (cycle detected by the parser). Any is the only safe
+    # static type here; runtime validation still runs via the parent schema.
+    if node.path.startswith("#"):
+        return RenderResult(
+            code="", type_expr="Any", imports={"from typing import Any"}
+        )
+
+    # Genuinely unresolved ref — the parser should have caught this.
+    raise ConversionError(
+        f"Unresolved $ref '{node.path}' — "
+        "external refs must be bundled before reaching the adapter"
+    )
