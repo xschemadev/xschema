@@ -3,16 +3,30 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 18,
-      "failed": 1,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "total": 19,
       "failures": [
         {
-          "group": "additionalItems does not look in applicators, invalid case",
-          "test": "items defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
+          "group": "array of items with no additionalItems permitted",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "false",
           "passed": false
         }
       ]
@@ -117,10 +131,19 @@
     },
     {
       "keyword": "items",
-      "passed": 28,
-      "failed": 0,
+      "passed": 27,
+      "failed": 1,
       "skipped": 0,
-      "total": 28
+      "total": 28,
+      "failures": [
+        {
+          "group": "items and subitems",
+          "test": "fewer items is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "maxItems",
@@ -264,11 +287,11 @@
     }
   ],
   "summary": {
-    "passed": 759,
-    "failed": 1,
+    "passed": 756,
+    "failed": 4,
     "skipped": 0,
     "total": 760,
-    "percentage": 99.86842105263159,
+    "percentage": 99.47368421052632,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

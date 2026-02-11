@@ -136,10 +136,40 @@
     },
     {
       "keyword": "items",
-      "passed": 29,
-      "failed": 0,
+      "passed": 25,
+      "failed": 4,
       "skipped": 0,
-      "total": 29
+      "total": 29,
+      "failures": [
+        {
+          "group": "items and subitems",
+          "test": "fewer items is valid",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with no additional items allowed",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with no additional items allowed",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "prefixItems with no additional items allowed",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "maxContains",
@@ -304,19 +334,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 26,
-      "failed": 1,
+      "passed": 27,
+      "failed": 0,
       "skipped": 0,
-      "total": 27,
-      "failures": [
-        {
-          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
-          "test": "no extra properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 27
     },
     {
       "keyword": "uniqueItems",
@@ -334,11 +355,11 @@
     }
   ],
   "summary": {
-    "passed": 949,
-    "failed": 1,
+    "passed": 946,
+    "failed": 4,
     "skipped": 0,
     "total": 950,
-    "percentage": 99.89473684210526,
+    "percentage": 99.57894736842105,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

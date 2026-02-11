@@ -3,10 +3,33 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 14,
-      "failed": 0,
+      "passed": 11,
+      "failed": 3,
       "skipped": 0,
-      "total": 14
+      "total": 14,
+      "failures": [
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "additionalProperties",
@@ -178,11 +201,11 @@
     }
   ],
   "summary": {
-    "passed": 407,
-    "failed": 0,
+    "passed": 404,
+    "failed": 3,
     "skipped": 0,
     "total": 407,
-    "percentage": 100,
+    "percentage": 99.26289926289927,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

@@ -379,9 +379,10 @@ def test_render_tuple_fixed():
         constraints=ArrayConstraints(),
     )
     result = render(node, "Test")
-    # Now generates a custom validator that allows 0 to 3 items
+    # closed tuple allows 0..N items, so uses union of prefix types
     assert (
-        "Annotated[tuple[Any, ...], BeforeValidator(_tuple_test)]" in result.type_expr
+        "Annotated[tuple[StrictStr | StrictInt | StrictBool, ...], BeforeValidator(_tuple_test)]"
+        in result.type_expr
     )
     # Validator enforces max items and validates each present item
     assert "if len(v) > 3:" in result.code
@@ -401,10 +402,47 @@ def test_render_tuple_with_rest():
         constraints=ArrayConstraints(),
     )
     result = render(node, "Test")
+    # variable-length with rest: union of prefix + rest types
     assert (
-        "Annotated[tuple[Any, ...], BeforeValidator(_tuple_test)]" in result.type_expr
+        "Annotated[tuple[StrictStr | StrictInt | StrictBool, ...], BeforeValidator(_tuple_test)]"
+        in result.type_expr
     )
     assert "def _tuple_test" in result.code
+
+
+def test_render_tuple_closed_no_any():
+    """Closed tuple emits narrower union type instead of Any."""
+    node = TupleNode(
+        prefix_items=(StringNode(), NumberNode(integer=True)),
+        rest_items=False,
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[StrictStr | StrictInt, ...]" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_tuple_rest_no_any():
+    """Tuple with rest emits union of prefix + rest types."""
+    node = TupleNode(
+        prefix_items=(StringNode(),),
+        rest_items=NumberNode(integer=True),
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[StrictStr | StrictInt, ...]" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_tuple_open_stays_any():
+    """Open tuple (rest_items=None) can't narrow — extras are untyped."""
+    node = TupleNode(
+        prefix_items=(StringNode(),),
+        rest_items=None,
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[Any, ...]" in result.type_expr
 
 
 def test_render_tuple_with_constraints():
@@ -417,6 +455,65 @@ def test_render_tuple_with_constraints():
     result = render(node, "Test")
     assert "AfterValidator(_tuple_constraints_test)" in result.type_expr
     assert "def _tuple_constraints_test" in result.code
+
+
+def test_render_const_object_narrows_to_dict():
+    """Complex const object uses dict instead of Any."""
+    node = LiteralNode(value={"name": "alice", "age": 30})
+    result = render(node, "Test")
+    assert "Annotated[dict," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_const_validator" in result.type_expr
+
+
+def test_render_const_array_narrows_to_list():
+    """Complex const array uses list instead of Any."""
+    node = LiteralNode(value=[1, 2, 3])
+    result = render(node, "Test")
+    assert "Annotated[list," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_const_validator" in result.type_expr
+
+
+def test_render_const_bool_narrows_to_bool():
+    """Bool const uses bool instead of Any (strict check still needed)."""
+    node = LiteralNode(value=False)
+    result = render(node, "Test")
+    assert "Annotated[bool," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_const_int_zero_narrows_to_int():
+    """Integer 0 const uses int instead of Any."""
+    node = LiteralNode(value=0)
+    result = render(node, "Test")
+    assert "Annotated[int," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_enum_with_objects_narrows():
+    """Enum with complex values uses narrower union type."""
+    node = EnumNode(values=({"a": 1}, {"b": 2}, "simple"))
+    result = render(node, "Test")
+    assert "Annotated[dict | str," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_enum_validator" in result.type_expr
+
+
+def test_render_enum_with_arrays_narrows():
+    """Enum with arrays and null uses narrower union type."""
+    node = EnumNode(values=([1, 2], [3, 4], None))
+    result = render(node, "Test")
+    assert "Annotated[list | None," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_enum_with_bools_narrows():
+    """Enum with booleans uses bool instead of Any."""
+    node = EnumNode(values=(True, False))
+    result = render(node, "Test")
+    assert "Annotated[bool," in result.type_expr
+    assert "Any" not in result.type_expr
 
 
 # =============================================================================

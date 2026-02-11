@@ -159,7 +159,7 @@ PROBE_CASES = [
             "prefixItems": [{"type": "string"}, {"type": "number"}],
             "items": False,
         },
-        "expectAny": True,
+        "expectAny": False,
     },
     {
         "name": "tupleMixedWithRest",
@@ -169,33 +169,33 @@ PROBE_CASES = [
             "prefixItems": [{"type": "string"}, {"type": "number"}],
             "items": {"type": "boolean"},
         },
-        "expectAny": True,
+        "expectAny": False,
     },
     # --- complex const ---
     {
         "name": "constObject",
         "description": "const object",
         "schema": {"const": {"name": "alice", "age": 30}},
-        "expectAny": True,
+        "expectAny": False,
     },
     {
         "name": "constArray",
         "description": "const array",
         "schema": {"const": [1, 2, 3]},
-        "expectAny": True,
+        "expectAny": False,
     },
     # --- complex enum ---
     {
         "name": "enumWithObjects",
         "description": "enum with objects",
         "schema": {"enum": [{"a": 1}, {"b": 2}, "simple"]},
-        "expectAny": True,
+        "expectAny": False,
     },
     {
         "name": "enumWithArrays",
         "description": "enum with arrays",
         "schema": {"enum": [[1, 2], [3, 4], None]},
-        "expectAny": True,
+        "expectAny": False,
     },
 ]
 

@@ -3,10 +3,33 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 19,
-      "failed": 0,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
-      "total": 19
+      "total": 19,
+      "failures": [
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "empty array",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (1)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "array of items with no additionalItems permitted",
+          "test": "fewer number of items present (2)",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        }
+      ]
     },
     {
       "keyword": "additionalProperties",
@@ -142,8 +165,8 @@
       "total": 28,
       "failures": [
         {
-          "group": "an array of schemas for items",
-          "test": "JavaScript pseudo-array is valid",
+          "group": "items and subitems",
+          "test": "fewer items is valid",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -313,19 +336,10 @@
     },
     {
       "keyword": "unevaluatedProperties",
-      "passed": 24,
-      "failed": 1,
+      "passed": 25,
+      "failed": 0,
       "skipped": 0,
-      "total": 25,
-      "failures": [
-        {
-          "group": "property is evaluated in an uncle schema to unevaluatedProperties",
-          "test": "no extra properties",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 25
     },
     {
       "keyword": "uniqueItems",
@@ -343,11 +357,11 @@
     }
   ],
   "summary": {
-    "passed": 934,
-    "failed": 2,
+    "passed": 932,
+    "failed": 4,
     "skipped": 0,
     "total": 936,
-    "percentage": 99.78632478632478,
+    "percentage": 99.57264957264957,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

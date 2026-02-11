@@ -318,3 +318,33 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - pyright: 0 errors on src/
 - compliance: 100% across all 6 drafts (no regressions)
 
+---
+
+### Task 10: Python: narrow tuple and complex const/enum typing - COMPLETED
+
+**Changes**:
+- `renderer.py`: added `_json_value_type()` and `_json_values_union_type()` helpers to compute narrowest Python type for JSON values
+- `render_literal` (const): uses `_json_value_type(value)` instead of `Any` — dict for objects, list for arrays, bool/int for strict-check primitives
+- `render_enum`: uses `_json_values_union_type(values)` instead of `Any` — computes union of all value types (e.g. `dict | str`)
+- `render_tuple` (closed, rest_items=False): uses `_union_base_type(item_types)` for `tuple[T1 | T2 | ..., ...]` instead of `tuple[Any, ...]`
+  - can't use positional types like `tuple[str, int]` because closed tuples allow 0..N items (shorter arrays valid)
+- `render_tuple` (with rest schema): uses `_union_base_type(item_types + [rest_type])` for narrower homogeneous union
+- `render_tuple` (open, rest_items=None): stays `tuple[Any, ...]` — extras are untyped, can't narrow
+
+**Tests added** (10 new, 113 total):
+- `test_render_tuple_closed_no_any`, `test_render_tuple_rest_no_any`, `test_render_tuple_open_stays_any`
+- `test_render_const_object_narrows_to_dict`, `test_render_const_array_narrows_to_list`
+- `test_render_const_bool_narrows_to_bool`, `test_render_const_int_zero_narrows_to_int`
+- `test_render_enum_with_objects_narrows`, `test_render_enum_with_arrays_narrows`, `test_render_enum_with_bools_narrows`
+
+**Type-fidelity**: 12 any-free (was 6), 5 any (was 11). All 6 improved probes locked in.
+
+**Key decision**: closed tuple uses `tuple[T1 | T2, ...]` not positional `tuple[T1, T2]` because JSON Schema `prefixItems + items:false` allows shorter arrays (0 to N items). Positional types enforce exact length which caused compliance failures in `additionalItems` and `items` keywords.
+
+**Verification**:
+- 113/113 pydantic tests pass
+- type-fidelity harness: 17 probes pass, 12 any-free (was 6), 5 any (was 11)
+- pyright: 0 errors on src/
+- compliance: 100% across all 6 drafts (no regressions)
+- TS typecheck: all 6 packages pass
+

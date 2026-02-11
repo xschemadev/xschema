@@ -4,27 +4,27 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 934 | 2 | 0 | 178 | 99.8% |
-| draft2020-12 | 949 | 1 | 0 | 201 | 99.9% |
-| draft3 | 407 | 0 | 0 | 0 | 100.0% |
-| draft4 | 565 | 1 | 0 | 0 | 99.8% |
-| draft6 | 759 | 1 | 0 | 0 | 99.9% |
-| draft7 | 835 | 1 | 0 | 0 | 99.9% |
+| draft2019-09 | 932 | 4 | 0 | 178 | 99.6% |
+| draft2020-12 | 946 | 4 | 0 | 201 | 99.6% |
+| draft3 | 404 | 3 | 0 | 0 | 99.3% |
+| draft4 | 562 | 4 | 0 | 0 | 99.3% |
+| draft6 | 756 | 4 | 0 | 0 | 99.5% |
+| draft7 | 832 | 4 | 0 | 0 | 99.5% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.8%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.9%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-99.9%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-99.9%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.6%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.6%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-99.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.3%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-99.5%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-99.5%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ✅ | 19/19 |
+| additionalItems | ⚠️ | 16/19 |
 | additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
@@ -67,7 +67,7 @@
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
-| unevaluatedProperties | ⚠️ | 24/25 |
+| unevaluatedProperties | ✅ | 25/25 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -340,19 +340,25 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>additionalItems - 3 failures</summary>
 
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
+- **array of items with no additionalItems permitted**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (2)
   - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>unevaluatedProperties - 1 failure</summary>
+<summary>items - 1 failure</summary>
 
-- **property is evaluated in an uncle schema to unevaluatedProperties**
-  - Test: no extra properties
+- **items and subitems**
+  - Test: fewer items is valid
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -380,7 +386,7 @@ These tests are intentionally excluded due to documented limitations.
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 29/29 |
+| items | ⚠️ | 25/29 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -404,7 +410,7 @@ These tests are intentionally excluded due to documented limitations.
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
-| unevaluatedProperties | ⚠️ | 26/27 |
+| unevaluatedProperties | ✅ | 27/27 |
 | uniqueItems | ✅ | 69/69 |
 | vocabulary | ✅ | 5/5 |
 
@@ -748,10 +754,19 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>unevaluatedProperties - 1 failure</summary>
+<summary>items - 4 failures</summary>
 
-- **property is evaluated in an uncle schema to unevaluatedProperties**
-  - Test: no extra properties
+- **items and subitems**
+  - Test: fewer items is valid
+  - Expected: `valid`, Got: `false`
+- **prefixItems with no additional items allowed**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **prefixItems with no additional items allowed**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **prefixItems with no additional items allowed**
+  - Test: fewer number of items present (2)
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -760,7 +775,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ✅ | 14/14 |
+| additionalItems | ⚠️ | 11/14 |
 | additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
 | dependencies | ✅ | 18/18 |
@@ -786,11 +801,28 @@ These tests are intentionally excluded due to documented limitations.
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
 
+### Unexpected Failures
+
+<details>
+<summary>additionalItems - 3 failures</summary>
+
+- **array of items with no additionalItems permitted**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (2)
+  - Expected: `valid`, Got: `false`
+
+</details>
+
 ## draft4
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/17 |
+| additionalItems | ⚠️ | 14/17 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
@@ -800,7 +832,7 @@ These tests are intentionally excluded due to documented limitations.
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 21/21 |
+| items | ⚠️ | 20/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -824,11 +856,26 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 1 failure</summary>
+<summary>additionalItems - 3 failures</summary>
 
-- **additionalItems does not look in applicators, invalid case**
-  - Test: items defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
+- **array of items with no additionalItems permitted**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (2)
+  - Expected: `valid`, Got: `false`
+
+</details>
+
+<details>
+<summary>items - 1 failure</summary>
+
+- **items and subitems**
+  - Test: fewer items is valid
+  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -836,7 +883,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 18/19 |
+| additionalItems | ⚠️ | 16/19 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
@@ -851,7 +898,7 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 28/28 |
+| items | ⚠️ | 27/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -876,11 +923,26 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 1 failure</summary>
+<summary>additionalItems - 3 failures</summary>
 
-- **additionalItems does not look in applicators, invalid case**
-  - Test: items defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
+- **array of items with no additionalItems permitted**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (2)
+  - Expected: `valid`, Got: `false`
+
+</details>
+
+<details>
+<summary>items - 1 failure</summary>
+
+- **items and subitems**
+  - Test: fewer items is valid
+  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -888,7 +950,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 18/19 |
+| additionalItems | ⚠️ | 16/19 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
@@ -904,7 +966,7 @@ These tests are intentionally excluded due to documented limitations.
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ✅ | 28/28 |
+| items | ⚠️ | 27/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -929,11 +991,26 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 1 failure</summary>
+<summary>additionalItems - 3 failures</summary>
 
-- **additionalItems does not look in applicators, invalid case**
-  - Test: items defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
+- **array of items with no additionalItems permitted**
+  - Test: empty array
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (1)
+  - Expected: `valid`, Got: `false`
+- **array of items with no additionalItems permitted**
+  - Test: fewer number of items present (2)
+  - Expected: `valid`, Got: `false`
+
+</details>
+
+<details>
+<summary>items - 1 failure</summary>
+
+- **items and subitems**
+  - Test: fewer items is valid
+  - Expected: `valid`, Got: `false`
 
 </details>
 

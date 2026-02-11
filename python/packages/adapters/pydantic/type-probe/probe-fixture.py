@@ -261,7 +261,7 @@ def _tuple_probetuplestringnumberclosed(v) -> tuple:
             raise ValueError(f'Item at index 1 invalid: {e}')
     return tuple(validated)
 
-probe_tupleStringNumberClosed = TypeAdapter(Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplestringnumberclosed)])
+probe_tupleStringNumberClosed = TypeAdapter(Annotated[tuple[StrictStr | StrictFloat, ...], BeforeValidator(_tuple_probetuplestringnumberclosed)])
 
 # tuple [string, number, ...boolean[]]
 def _tuple_probetuplemixedwithrest(v) -> tuple:
@@ -291,7 +291,7 @@ def _tuple_probetuplemixedwithrest(v) -> tuple:
             raise ValueError(f'Item at index {i} must match rest schema: {e}')
     return tuple(validated)
 
-probe_tupleMixedWithRest = TypeAdapter(Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplemixedwithrest)])
+probe_tupleMixedWithRest = TypeAdapter(Annotated[tuple[StrictStr | StrictFloat | StrictBool, ...], BeforeValidator(_tuple_probetuplemixedwithrest)])
 
 # const object
 def _json_equals(a, b):
@@ -317,7 +317,7 @@ def _make_const_validator(expected):
         return v
     return validator
 
-probe_constObject = TypeAdapter(Annotated[Any, BeforeValidator(_make_const_validator({'name': 'alice', 'age': 30}))])
+probe_constObject = TypeAdapter(Annotated[dict, BeforeValidator(_make_const_validator({'name': 'alice', 'age': 30}))])
 
 # const array
 def _json_equals(a, b):
@@ -343,7 +343,7 @@ def _make_const_validator(expected):
         return v
     return validator
 
-probe_constArray = TypeAdapter(Annotated[Any, BeforeValidator(_make_const_validator([1, 2, 3]))])
+probe_constArray = TypeAdapter(Annotated[list, BeforeValidator(_make_const_validator([1, 2, 3]))])
 
 # enum with objects
 def _json_equals(a, b):
@@ -369,7 +369,7 @@ def _make_enum_validator(allowed_values):
         return v
     return validator
 
-probe_enumWithObjects = TypeAdapter(Annotated[Any, BeforeValidator(_make_enum_validator([{'a': 1}, {'b': 2}, "simple"]))])
+probe_enumWithObjects = TypeAdapter(Annotated[dict | str, BeforeValidator(_make_enum_validator([{'a': 1}, {'b': 2}, "simple"]))])
 
 # enum with arrays
 def _json_equals(a, b):
@@ -395,5 +395,5 @@ def _make_enum_validator(allowed_values):
         return v
     return validator
 
-probe_enumWithArrays = TypeAdapter(Annotated[Any, BeforeValidator(_make_enum_validator([[1, 2], [3, 4], None]))])
+probe_enumWithArrays = TypeAdapter(Annotated[list | None, BeforeValidator(_make_enum_validator([[1, 2], [3, 4], None]))])
 

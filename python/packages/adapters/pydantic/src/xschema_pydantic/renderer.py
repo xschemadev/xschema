@@ -47,6 +47,7 @@ For a complex schema, the generated module looks like:
     Person_Validator = TypeAdapter(Person)
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -772,6 +773,51 @@ def _format_json_value(value: Any) -> str:
         return repr(value)
 
 
+def _json_value_type(value: Any) -> str:
+    """Map a JSON value to its narrowest Python type string.
+
+    Used to replace Any with a concrete type in const/enum annotations where
+    Literal[] can't be used (complex values, bool/int conflation).
+    """
+    if isinstance(value, bool):
+        return "bool"
+    if isinstance(value, int):
+        return "int"
+    if isinstance(value, float):
+        return "float"
+    if isinstance(value, str):
+        return "str"
+    if value is None:
+        return "None"
+    if isinstance(value, list):
+        return "list"
+    if isinstance(value, dict):
+        return "dict"
+    return "Any"
+
+
+def _json_values_union_type(values: Sequence[Any]) -> str:
+    """Compute the union type for a list of JSON values.
+
+    Deduplicates and orders types deterministically. Falls back to Any only
+    if any individual value can't be typed.
+    """
+    types: list[str] = []
+    seen: set[str] = set()
+    for v in values:
+        t = _json_value_type(v)
+        if t == "Any":
+            return "Any"
+        if t not in seen:
+            seen.add(t)
+            types.append(t)
+    if not types:
+        return "Any"
+    if len(types) == 1:
+        return types[0]
+    return " | ".join(types)
+
+
 def render_literal(node: LiteralNode) -> RenderResult:
     """Render LiteralNode (JSON Schema 'const') to Pydantic type.
 
@@ -804,20 +850,22 @@ def render_literal(node: LiteralNode) -> RenderResult:
         type_expr = f"Literal[{literal_repr}]"
         return RenderResult(code="", type_expr=type_expr, imports=imports)
 
-    # complex value (list or dict) - need custom validator with deep equality
+    # complex value or needs strict check - use custom validator with deep equality
+    # use narrowest representable type instead of Any
+    narrow_type = _json_value_type(value)
     imports = {
-        "from typing import Annotated, Any",
+        "from typing import Annotated",
         "from pydantic import BeforeValidator",
     }
+    if narrow_type == "Any":
+        imports.add("from typing import Any")
 
     expected_repr = _format_json_value(value)
 
     # Register helper for const validation
     _register_helper("_make_const_validator")
 
-    type_expr = (
-        f"Annotated[Any, BeforeValidator(_make_const_validator({expected_repr}))]"
-    )
+    type_expr = f"Annotated[{narrow_type}, BeforeValidator(_make_const_validator({expected_repr}))]"
 
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
@@ -855,17 +903,21 @@ def render_enum(node: EnumNode) -> RenderResult:
         return RenderResult(code="", type_expr=type_expr, imports=imports)
 
     # has complex values or needs strict type checking - use custom validator
+    # use narrowest representable union type instead of Any
+    narrow_type = _json_values_union_type(node.values)
     imports = {
-        "from typing import Annotated, Any",
+        "from typing import Annotated",
         "from pydantic import BeforeValidator",
     }
+    if narrow_type == "Any":
+        imports.add("from typing import Any")
 
     # Register helper for enum validation
     _register_helper("_make_enum_validator")
 
     # generate list of allowed values for the validator
     values_repr = "[" + ", ".join(_format_json_value(v) for v in node.values) + "]"
-    type_expr = f"Annotated[Any, BeforeValidator(_make_enum_validator({values_repr}))]"
+    type_expr = f"Annotated[{narrow_type}, BeforeValidator(_make_enum_validator({values_repr}))]"
 
     return RenderResult(code="", type_expr=type_expr, imports=imports)
 
@@ -1064,9 +1116,7 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
         if rest_result.code:
             code_parts.append(rest_result.code)
 
-        # For variable-length tuples with heterogeneous types, use tuple[Any, ...]
-        # and validate each position in custom validator
-        imports.add("from typing import Annotated, Any")
+        imports.add("from typing import Annotated")
         imports.add("from pydantic import BeforeValidator, TypeAdapter")
 
         validator_name = f"_tuple_{name.lower()}"
@@ -1116,14 +1166,17 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
 
         code_parts.append("\n".join(validator_lines))
 
-        # Type as tuple[Any, ...] with validator doing the actual type checking
-        type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
+        # narrower static type: union of all prefix types + rest type
+        all_elem_types = _union_base_type(item_types + [rest_result.type_expr])
+        if all_elem_types == "Any":
+            imports.add("from typing import Any")
+        type_expr = f"Annotated[tuple[{all_elem_types}, ...], BeforeValidator({validator_name})]"
     elif node.rest_items is False:
         # rest_items is False - no additional items allowed beyond prefix
         # JSON Schema: prefixItems + items:false means 0 to N items, where N = len(prefixItems)
         # Each item that exists must match its corresponding prefixItem schema
         if item_types:
-            imports.add("from typing import Annotated, Any")
+            imports.add("from typing import Annotated")
             imports.add("from pydantic import BeforeValidator, TypeAdapter")
 
             validator_name = f"_tuple_{name.lower()}"
@@ -1161,8 +1214,12 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
 
             code_parts.append("\n".join(validator_lines))
 
-            # Type as tuple[Any, ...] with validator doing the actual type checking
-            type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
+            # closed tuple allows 0..N items, so positional types (which require
+            # exact length) would reject shorter arrays. use union of prefix types.
+            elem_union = _union_base_type(item_types)
+            if elem_union == "Any":
+                imports.add("from typing import Any")
+            type_expr = f"Annotated[tuple[{elem_union}, ...], BeforeValidator({validator_name})]"
         else:
             type_expr = "tuple[()]"  # Empty tuple (no items allowed)
     else:
@@ -1207,7 +1264,7 @@ def render_tuple(node: TupleNode, name: str) -> RenderResult:
 
             code_parts.append("\n".join(validator_lines))
 
-            # Type as tuple[Any, ...] with validator doing the actual type checking
+            # open tuple: extras untyped → tuple[Any, ...] (can't narrow)
             type_expr = f"Annotated[tuple[Any, ...], BeforeValidator({validator_name})]"
         else:
             # No prefix items, rest_items is None - empty tuple or any tuple allowed
