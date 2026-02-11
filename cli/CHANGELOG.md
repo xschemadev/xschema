@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.2](https://github.com/xschemadev/xschema/compare/cli-v0.2.1...cli-v0.2.2) (2026-01-11)
+
+
+### Features
+
+* adapter compliance ([#48](https://github.com/xschemadev/xschema/issues/48)) ([f25debb](https://github.com/xschemadev/xschema/commit/f25debbf90a503d7bc1e8bdc29a4f57ecd06576a))
+* add validator ([c3eeb9d](https://github.com/xschemadev/xschema/commit/c3eeb9d43f4d49924489efd346624605b853fbef))
+* build var name in cli ([0a6026e](https://github.com/xschemadev/xschema/commit/0a6026e545ef006f50e902d2e8a3dc5eb65d237d))
+* give possibility to use file names .xschema.json / .xschema.jsonc ([1168cdc](https://github.com/xschemadev/xschema/commit/1168cdc4ff5f9b3ae13a24d3a2876f625a7286a0))
+* internal language cli refactor ([#55](https://github.com/xschemadev/xschema/issues/55)) ([e5ac06b](https://github.com/xschemadev/xschema/commit/e5ac06b7b0a8be852c2518fcc0e0105d81b56956))
+* remove lockfiles from hidden ([f3009e8](https://github.com/xschemadev/xschema/commit/f3009e8a8176aeed32b5749596e0316b38435fea))
+* **ts:** allow adapters to have types only adapters ([#44](https://github.com/xschemadev/xschema/issues/44)) ([044285d](https://github.com/xschemadev/xschema/commit/044285d1e5e7bdb5419077c1ebe701f4f0f433ac))
+* update agents.md files ([913e841](https://github.com/xschemadev/xschema/commit/913e84140fe57736644c37b63514d839886464b1))
+
 ## [0.2.1](https://github.com/xschemadev/xschema/compare/cli-v0.2.0...cli-v0.2.1) (2026-01-06)
 
 
