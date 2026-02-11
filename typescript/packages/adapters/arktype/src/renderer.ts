@@ -26,6 +26,7 @@ import {
 	isPrimitive,
 	sortedStringify,
 	hasPrototypeProperties,
+	DEEP_SORTED_STRINGIFY_RUNTIME,
 } from "@xschemadev/core";
 
 // JS identifier regex - keys matching this can use direct property syntax
@@ -725,9 +726,9 @@ function renderLiteral(node: LiteralNode): string {
 		return `type.unit(${JSON.stringify(node.value)})`;
 	}
 
-	// Objects/arrays need deep equality
+	// Objects/arrays need deep equality with recursive key normalization
 	const sorted = sortedStringify(node.value);
-	return `type.unknown.narrow((val, ctx) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
+	return `type.unknown.narrow((val, ctx) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
 }
 
 function renderEnum(node: EnumNode): string {
@@ -741,20 +742,12 @@ function renderEnum(node: EnumNode): string {
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
-		const sortedValues = values.map((v) =>
-			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v as object).sort()
-					: undefined,
-			),
-		);
+		const sortedValues = values.map((v) => sortedStringify(v));
 		const valuesArrayCode = `[${sortedValues.map((v) => JSON.stringify(v)).join(", ")}]`;
 
 		return `type.unknown.narrow((val, ctx) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ${valuesArrayCode};
-      return validValues.includes(normalized) || ctx.mustBe("one of the enum values");
+      return validValues.includes(${DEEP_SORTED_STRINGIFY_RUNTIME}(val)) || ctx.mustBe("one of the enum values");
     })`;
 	}
 

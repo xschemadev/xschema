@@ -446,3 +446,27 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - Type-fidelity: 15 probes pass, 9 any-free, 6 any (unchanged)
 - Go CLI: build, vet, tests all pass
 
+### Task 15: ArkType: stabilize deep equality for complex const and enum - COMPLETED
+
+**Problem**: `renderLiteral` and `renderEnum` only sorted top-level object keys at runtime via `JSON.stringify(val, Object.keys(val).sort())`. Nested objects with different key orders would fail to match semantically equal values.
+
+**Changes** (renderer.ts):
+- Added `DEEP_SORTED_STRINGIFY_RUNTIME` import from `@xschemadev/core`
+- `renderLiteral`: replaced `JSON.stringify(val, Object.keys(val as object).sort())` with `${DEEP_SORTED_STRINGIFY_RUNTIME}(val)` for recursive key normalization
+- `renderEnum`: replaced shallow `JSON.stringify` with `sortedStringify` (compile-time) and `${DEEP_SORTED_STRINGIFY_RUNTIME}(val)` (runtime) for recursive normalization
+- Reuses same `DEEP_SORTED_STRINGIFY_RUNTIME` IIFE constant already used by Zod adapter
+
+**Tests added** (`__tests__/deep-const-enum.test.ts`, 22 tests):
+- Nested objects: reordered inner keys match, wrong values rejected
+- Nested arrays containing objects: inner key reorder matches
+- 3+ level deep nesting: all levels normalized
+- Enum with nested objects/arrays: all permutations work
+- Primitive const/enum: unchanged behavior confirmed
+
+**Verification**:
+- Build: all 6 TS packages compile
+- Typecheck: all 6 TS packages pass
+- Tests: 22/22 pass
+- Compliance: 100% across all 6 drafts (no regressions)
+- Type-fidelity: 15 probes pass, 0 unknown-free, 15 unknown (unchanged — type narrowing is task 16)
+

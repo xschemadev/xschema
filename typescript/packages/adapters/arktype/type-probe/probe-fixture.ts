@@ -105,26 +105,24 @@ const probe_tupleMixedWithRest = type.unknown.array().narrow((arr, ctx) => {
 type Probe_tupleMixedWithRest = typeof probe_tupleMixedWithRest.infer;
 
 // const object
-const probe_constObject = type.unknown.narrow((val, ctx) => JSON.stringify(val, Object.keys(val as object).sort()) === "{\"age\":30,\"name\":\"alice\"}" || ctx.mustBe("equal to the const value"));
+const probe_constObject = type.unknown.narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "{\"age\":30,\"name\":\"alice\"}" || ctx.mustBe("equal to the const value"));
 type Probe_constObject = typeof probe_constObject.infer;
 
 // const array
-const probe_constArray = type.unknown.narrow((val, ctx) => JSON.stringify(val, Object.keys(val as object).sort()) === "[1,2,3]" || ctx.mustBe("equal to the const value"));
+const probe_constArray = type.unknown.narrow((val, ctx) => ((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val) === "[1,2,3]" || ctx.mustBe("equal to the const value"));
 type Probe_constArray = typeof probe_constArray.infer;
 
 // enum with objects
 const probe_enumWithObjects = type.unknown.narrow((val, ctx) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ["{\"a\":1}", "{\"b\":2}", "\"simple\""];
-      return validValues.includes(normalized) || ctx.mustBe("one of the enum values");
+      return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val)) || ctx.mustBe("one of the enum values");
     });
 type Probe_enumWithObjects = typeof probe_enumWithObjects.infer;
 
 // enum with arrays
 const probe_enumWithArrays = type.unknown.narrow((val, ctx) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ["[1,2]", "[3,4]", "null"];
-      return validValues.includes(normalized) || ctx.mustBe("one of the enum values");
+      return validValues.includes(((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })(val)) || ctx.mustBe("one of the enum values");
     });
 type Probe_enumWithArrays = typeof probe_enumWithArrays.infer;
 
