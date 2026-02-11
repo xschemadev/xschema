@@ -570,7 +570,7 @@ def test_render_intersection_objects():
 
 
 def test_render_intersection_primitives():
-    """Test rendering intersection of primitives."""
+    """Test rendering intersection of primitives uses narrowed base type."""
     node = IntersectionNode(
         schemas=(
             StringNode(),
@@ -580,8 +580,83 @@ def test_render_intersection_primitives():
         )
     )
     result = render(node, "Test")
-    assert "Annotated[Any, BeforeValidator(_intersection_test)]" in result.type_expr
+    assert "Annotated[str, BeforeValidator(_intersection_test)]" in result.type_expr
     assert "def _intersection_test" in result.code
+    # should not need Any import when base type is narrowed
+    assert "from typing import Any" not in result.imports
+
+
+def test_render_intersection_mixed_kinds_falls_back_to_any():
+    """Intersection of different kinds falls back to Any."""
+    node = IntersectionNode(
+        schemas=(
+            StringNode(),
+            NumberNode(integer=True),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_intersection_test)]" in result.type_expr
+
+
+def test_render_intersection_numbers_preserves_int():
+    """Intersection of integer schemas preserves int base type."""
+    node = IntersectionNode(
+        schemas=(
+            NumberNode(integer=True),
+            NumberNode(
+                integer=True,
+                constraints=NumberConstraints(minimum=0),
+            ),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[int, BeforeValidator(_intersection_test)]" in result.type_expr
+
+
+def test_render_intersection_tsconfig_like_preserves_property_types():
+    """TSConfig-like allOf: object + property constraint refinement.
+
+    When two objects are merged and a property appears in both, the property-
+    level intersection should produce str (not Any) when both schemas agree
+    on the base type.
+    """
+    node = IntersectionNode(
+        schemas=(
+            ObjectNode(
+                properties=(
+                    (
+                        "compilerOptions",
+                        PropertyDef(schema=StringNode(), required=True),
+                    ),
+                    (
+                        "include",
+                        PropertyDef(
+                            schema=ArrayNode(items=StringNode()), required=False
+                        ),
+                    ),
+                ),
+            ),
+            ObjectNode(
+                properties=(
+                    (
+                        "compilerOptions",
+                        PropertyDef(
+                            schema=StringNode(
+                                constraints=StringConstraints(min_length=1),
+                            ),
+                            required=False,
+                        ),
+                    ),
+                ),
+            ),
+        )
+    )
+    result = render(node, "TsConfig")
+    # top-level should be a merged BaseModel, not Any
+    assert result.type_expr == "TsConfig"
+    # the compilerOptions property should use str, not Any
+    assert "Annotated[str, BeforeValidator(" in result.code
+    assert "Annotated[Any" not in result.code
 
 
 def test_render_not():

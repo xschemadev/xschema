@@ -2016,6 +2016,44 @@ def _detect_discriminator(variants: tuple[SchemaNode, ...]) -> str | None:
     return None
 
 
+def _intersection_base_type(schemas: tuple[SchemaNode, ...]) -> str:
+    """Compute the narrowest representable Python type for an intersection.
+
+    When all sub-schemas map to the same base Python type we use that instead of
+    Any so pyright (and users) see meaningful type information even though a
+    BeforeValidator still enforces the full intersection at runtime.
+    """
+    _KIND_BASE: dict[str, str] = {
+        "string": "str",
+        "boolean": "bool",
+        "null": "None",
+        "array": "list",
+        "tuple": "tuple",
+    }
+
+    base: str | None = None
+    for s in schemas:
+        kind = s.kind
+        if kind == "number":
+            t = "int" if getattr(s, "integer", False) else "float"
+        elif kind == "any":
+            # any doesn't constrain — skip; it won't widen the intersection
+            continue
+        elif kind in _KIND_BASE:
+            t = _KIND_BASE[kind]
+        else:
+            # object, union, oneOf, intersection, not, conditional, typeGuarded,
+            # literal, enum, ref, nullable, never — can't reduce to a single bare type
+            return "Any"
+
+        if base is None:
+            base = t
+        elif base != t:
+            return "Any"
+
+    return base if base is not None else "Any"
+
+
 def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
     """Render IntersectionNode (JSON Schema 'allOf') to Pydantic type.
 
@@ -2059,26 +2097,28 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
     # If mixed types, render each and combine
     # For primitives, use custom validator checking all schemas
     if non_object_schemas:
-        imports.add("from typing import Annotated, Any")
+        imports.add("from typing import Annotated")
         imports.add("from pydantic import BeforeValidator, TypeAdapter")
 
-        # Render each schema
+        # Render each schema and collect results
+        rendered: list[RenderResult] = []
         for i, schema in enumerate(node.schemas):
             schema_result = render(schema, f"{name}Part{i}")
+            rendered.append(schema_result)
             imports.update(schema_result.imports)
             if schema_result.code:
                 code_parts.append(schema_result.code)
 
+        # Compute narrowest static base type from sub-schemas
+        base_type = _intersection_base_type(node.schemas)
+        if base_type == "Any":
+            imports.add("from typing import Any")
+
         # Create validator that checks all schemas
         validator_name = f"_intersection_{name.lower()}"
-        validator_lines = [f"def {validator_name}(v) -> Any:"]
-        validator_lines.append(f"    # Validate against all schemas in intersection")
-        validator_lines.append(
-            f"    # Keep original value - each validator checks independently"
-        )
+        validator_lines = [f"def {validator_name}(v):"]
 
-        for i, schema in enumerate(node.schemas):
-            schema_result = render(schema, f"{name}Part{i}")
+        for i, schema_result in enumerate(rendered):
             validator_lines.append(
                 f"    validator_{i} = TypeAdapter({schema_result.type_expr})"
             )
@@ -2092,7 +2132,7 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
         validator_lines.append("    return v")
         code_parts.append("\n".join(validator_lines))
 
-        type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+        type_expr = f"Annotated[{base_type}, BeforeValidator({validator_name})]"
         code = "\n\n\n".join(code_parts)
         return RenderResult(code=code, type_expr=type_expr, imports=imports)
 

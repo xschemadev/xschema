@@ -14,14 +14,13 @@ from pydantic import BeforeValidator, StrictStr, TypeAdapter
 from pydantic import BeforeValidator, StringConstraints, TypeAdapter
 from pydantic import BeforeValidator, TypeAdapter
 from pydantic import Field, TypeAdapter
+from typing import Annotated
 from typing import Annotated, Any
 from typing import Annotated, Any, Literal
 
 
 # allOf with object + string constraint
-def _intersection_probeallofmixedname(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_probeallofmixedname(v):
     validator_0 = TypeAdapter(StrictStr)
     try:
         validator_0.validate_python(v)
@@ -36,7 +35,7 @@ def _intersection_probeallofmixedname(v) -> Any:
 
 
 class ProbeAllofmixed(BaseModel):
-    name: Annotated[Any, BeforeValidator(_intersection_probeallofmixedname)]
+    name: Annotated[str, BeforeValidator(_intersection_probeallofmixedname)]
     value: StrictInt | None = None
 
 probe_allOfMixed = TypeAdapter(ProbeAllofmixed)

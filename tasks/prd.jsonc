@@ -133,7 +133,7 @@
         "python/packages/adapters/pydantic tests pass",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "9",

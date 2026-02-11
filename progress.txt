@@ -284,3 +284,30 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - 92/92 pydantic tests pass
 - pyright: 0 errors on src/
 - compliance: 100% across all 6 drafts (no regressions)
+
+---
+
+### Task 8: Python: preserve type information in mixed allOf - COMPLETED
+
+**Problem**: `render_intersection` used `Annotated[Any, BeforeValidator(...)]` for all mixed (non-all-objects) intersections. When two object schemas are merged and a property appears in both with the same base type (e.g., two string schemas), the property-level intersection unnecessarily degraded to `Any`.
+
+**Solution**: Added `_intersection_base_type()` helper in `renderer.py` that examines all sub-schemas in the intersection and determines the narrowest representable Python base type:
+- If all schemas share the same base kind (string→str, number→int/float, boolean→bool, etc.), use that type
+- `any`-kind schemas are skipped (they don't constrain the intersection)
+- Complex kinds (object, union, conditional, etc.) fall back to `Any`
+
+**Location**: `renderer.py:2018` (`_intersection_base_type`), `renderer.py:2075` (usage in `render_intersection`)
+
+**Tests added** (test_renderer.py):
+- `test_render_intersection_primitives` — updated to assert `str` instead of `Any`
+- `test_render_intersection_mixed_kinds_falls_back_to_any` — string + int → Any
+- `test_render_intersection_numbers_preserves_int` — two integers → int
+- `test_render_intersection_tsconfig_like_preserves_property_types` — TSConfig-like allOf with property refinement preserves str
+
+**Generated code change**: `name: Annotated[Any, BeforeValidator(...)]` → `name: Annotated[str, BeforeValidator(...)]`
+
+**Verification**:
+- 95/95 pydantic tests pass
+- type-fidelity harness: all 17 probes pass, allOfMixed remains any-free
+- pyright: 0 errors on src/
+- compliance: 100% across all 6 drafts (no regressions)
