@@ -18,6 +18,12 @@ type SchemaEntry struct {
 	Type      string // type expression
 }
 
+// OutputFileSpec defines a single output file with its template
+type OutputFileSpec struct {
+	Path     string // relative path within output dir, e.g., "xschema.gen.ts" or "models/__init__.py"
+	Template string // Go text/template for this file's contents
+}
+
 // Key returns the full namespaced key like "user:TestUrl"
 func (s SchemaEntry) Key() string {
 	return s.Namespace + ":" + s.ID
@@ -39,8 +45,9 @@ type Language struct {
 	ClientFactoryPattern string                            // regex to find client factory calls e.g. createXSchemaClient({ ... })
 
 	// Output generation
-	OutputFile   string                                            // e.g. "xschema.gen.ts", "__init__.py"
-	Template     string                                            // Go text/template for output
+	OutputFile   string           // deprecated: use OutputFiles instead. e.g. "xschema.gen.ts", "__init__.py"
+	Template     string           // deprecated: use OutputFiles instead. Go text/template for output
+	OutputFiles  []OutputFileSpec // multiple output files with separate templates (preferred over OutputFile/Template)
 	MergeImports func(imports []string) string                     // dedupe/format imports
 	BuildHeader  func(outDir string, schemas []SchemaEntry) string // inserted at top
 	BuildFooter  func(outDir string, schemas []SchemaEntry) string // inserted at bottom

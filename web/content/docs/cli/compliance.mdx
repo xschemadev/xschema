@@ -1,0 +1,346 @@
+---
+title: xschema compliance
+description: Run JSON Schema Test Suite compliance tests against adapters
+icon: ShieldCheck
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { ShieldCheck, AlertCircle, Puzzle, Play } from "lucide-react";
+
+```bash
+xschema compliance [flags]
+```
+
+The `compliance` command runs adapters against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to verify correctness. Use this to test adapter implementations and generate compliance reports.
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--adapter-path` | `-p` | `.` | Path to adapter directory |
+| `--draft` | `-d` | all | Test specific draft only |
+| `--keyword` | `-k` | all | Test specific keyword only |
+| `--dev-report` | | `false` | Write results to `compliance/results/` |
+| `--verbose` | `-v` | `false` | Show detailed output |
+| `--profile` | | `false` | Print timing breakdown |
+| `--concurrency` | `-c` | `min(8, num_cpus)` | Number of parallel jobs |
+| `--lang` | `-l` | `typescript` | Target language (`typescript`, `python`) |
+
+## Examples
+
+### Basic Usage
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+```bash
+# Run from adapter directory
+cd typescript/packages/adapters/zod
+xschema compliance
+
+# Or specify adapter path
+xschema compliance --adapter-path ./typescript/packages/adapters/zod
+```
+
+</Tab>
+<Tab value="Python">
+
+```bash
+# Run from adapter directory
+cd python/packages/adapters/pydantic
+xschema compliance --lang python
+
+# Or specify adapter path
+xschema compliance --adapter-path ./python/packages/adapters/pydantic --lang python
+```
+
+</Tab>
+</Tabs>
+
+### Testing Specific Drafts
+
+```bash
+# Test only draft2020-12
+xschema compliance --draft draft2020-12
+
+# Test only draft7
+xschema compliance --draft draft7
+```
+
+### Testing Specific Keywords
+
+```bash
+# Test additionalProperties across all drafts
+xschema compliance --keyword additionalProperties
+
+# Test specific keyword for specific draft
+xschema compliance --draft draft2020-12 --keyword additionalProperties
+```
+
+### Debugging
+
+```bash
+# Verbose output shows each test
+xschema compliance --verbose
+
+# Timing breakdown
+xschema compliance --profile
+
+# Both for detailed debugging
+xschema compliance --verbose --profile
+```
+
+### Generating Reports
+
+```bash
+# Generate results for documentation
+xschema compliance --dev-report
+```
+
+<Callout type="warn">
+`--dev-report` cannot be combined with `--draft` or `--keyword` filters. It always runs all tests.
+</Callout>
+
+## How It Works
+
+<Steps>
+<Step>
+### Fetch Test Suite
+
+The JSON Schema Test Suite is downloaded from GitHub and cached at `~/.cache/xschema/`. The version is pinned to ensure reproducible results.
+
+```
+~/.cache/xschema/json-schema-test-suite-{version}/
+```
+
+If the cache exists, no download occurs.
+</Step>
+
+<Step>
+### Load Test Cases
+
+Test cases are loaded from the suite's `tests/{draft}/` directories. Each JSON file contains test groups for a specific keyword:
+
+```json
+// tests/draft2020-12/additionalProperties.json
+[
+  {
+    "description": "additionalProperties being false does not allow...",
+    "schema": { ... },
+    "tests": [
+      { "description": "no additional properties is valid", "data": {}, "valid": true },
+      { "description": "an additional property is invalid", "data": {"foo": 1}, "valid": false }
+    ]
+  }
+]
+```
+</Step>
+
+<Step>
+### Bundle Schemas
+
+Each test schema is bundled using the same bundler as `xschema generate`. This ensures adapters receive the same input format as production use.
+</Step>
+
+<Step>
+### Generate Code via Adapter
+
+The bundled schemas are sent to the adapter CLI via stdin/stdout JSON protocol. The adapter returns generated validator code.
+</Step>
+
+<Step>
+### Generate Test Harness
+
+A language-specific test harness is generated that:
+1. Imports the generated validators
+2. Runs each test case against the validator
+3. Reports pass/fail for each test
+</Step>
+
+<Step>
+### Execute Tests
+
+The harness is executed using the detected language runtime and results are collected.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+Executed via `bun run` (or `npx`/`pnpm exec` based on runner detection).
+
+</Tab>
+<Tab value="Python">
+
+Executed via `python` (or `uv run` if detected).
+
+</Tab>
+</Tabs>
+
+Each test is marked as:
+- **Passed**: Output matched expected `valid` value
+- **Failed**: Output didn't match expected value
+- **Skipped**: Adapter returned type-only output (no runtime validator)
+- **Unsupported**: Test uses features that can't be statically compiled
+</Step>
+
+<Step>
+### Report Results
+
+Results are aggregated by keyword and draft, then either:
+- Printed to terminal (default)
+- Written to `compliance/results/` (with `--dev-report`)
+</Step>
+</Steps>
+
+## Coverage Calculation
+
+Coverage is calculated as:
+
+```
+Coverage = Passed / (Total - Unsupported) * 100
+```
+
+Unsupported features are excluded because they represent fundamental limitations of static code generation (e.g., `$dynamicRef`, network-dependent validation). See [Unsupported Features](/docs/compliance/unsupported-features) for the full list.
+
+## The `--dev-report` Flag
+
+The `--dev-report` flag writes results to the adapter's `compliance/results/` directory:
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+```
+typescript/packages/adapters/{adapter}/compliance/results/
+  draft2020-12.json
+  draft2019-09.json
+  draft7.json
+  draft6.json
+  draft4.json
+  draft3.json
+  REPORT.md
+```
+
+</Tab>
+<Tab value="Python">
+
+```
+python/packages/adapters/{adapter}/compliance/results/
+  draft2020-12.json
+  draft2019-09.json
+  draft7.json
+  draft6.json
+  draft4.json
+  draft3.json
+  REPORT.md
+```
+
+</Tab>
+</Tabs>
+
+### JSON Files
+
+Each draft produces a JSON file with detailed results:
+
+```json
+{
+  "draft": "draft2020-12",
+  "keywords": [
+    {
+      "keyword": "additionalProperties",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "total": 24,
+      "failures": []
+    }
+  ],
+  "summary": {
+    "passed": 1234,
+    "failed": 0,
+    "skipped": 0,
+    "total": 1234,
+    "percentage": 100.0,
+    "unsupportedFeatures": { "count": 42, "items": [...] }
+  }
+}
+```
+
+### REPORT.md
+
+A human-readable markdown report is generated with summary tables and failure details.
+
+## Supported Drafts
+
+The compliance runner tests against these JSON Schema drafts:
+
+| Draft | Description |
+|-------|-------------|
+| `draft2020-12` | Latest draft (recommended) |
+| `draft2019-09` | Previous stable draft |
+| `draft7` | Widely adopted draft |
+| `draft6` | Legacy draft |
+| `draft4` | Legacy draft |
+| `draft3` | Oldest supported draft |
+
+All schemas are normalized to draft2020-12 internally, so older drafts are transformed before adapter invocation.
+
+## Docs Generation Flow
+
+The compliance results flow into the documentation:
+
+```
+xschema compliance --dev-report
+        |
+        v
+compliance/results/*.json
+        |
+        v
+web/scripts/generate-compliance.ts
+        |
+        v
+web/content/docs/adapters/{adapter}/compliance.mdx
+```
+
+<Steps>
+<Step>
+### Run Compliance Tests
+
+From each adapter directory, run:
+
+```bash
+xschema compliance --dev-report
+```
+
+This generates `compliance/results/*.json` files.
+</Step>
+
+<Step>
+### Generate Compliance Pages
+
+From the `web/` directory:
+
+```bash
+bun run generate:compliance
+```
+
+This script discovers adapters and generates compliance MDX pages from the results.
+</Step>
+
+<Step>
+### Build Docs
+
+The generated pages are built with the rest of the docs:
+
+```bash
+bun run build
+```
+</Step>
+</Steps>
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (adapter not found, test failures in strict mode, etc.) |

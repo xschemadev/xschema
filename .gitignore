@@ -13,6 +13,9 @@ cli/cli
 *.out
 go.work
 
+# Compliance test harness files
+xschema-harness-*
+
 # Python
 __pycache__/
 .venv/

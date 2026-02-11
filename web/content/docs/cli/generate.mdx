@@ -1,0 +1,242 @@
+---
+title: xschema generate
+description: Parse config files, convert schemas, and output native validators
+icon: Play
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+```bash
+xschema generate [flags]
+```
+
+The `generate` command is the main entry point for converting JSON Schema to native validators. It discovers config files, fetches schemas, processes references, and generates output code.
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--project` | `-p` | `.` | Project root directory |
+| `--output` | `-o` | `.xschema` | Output directory for generated files |
+| `--lang` | | auto | Filter to specific language if multiple detected |
+| `--verbose` | `-v` | `false` | Show detailed output |
+| `--dry-run` | | `false` | Preview without writing files |
+| `--concurrency` | `-c` | `min(8, num_cpus)` | Number of parallel schema fetches |
+| `--env-file` | | `.env` | Path to env file for header variable substitution |
+
+<Callout type="info">
+Watch mode (`--watch`) is planned but not yet implemented.
+</Callout>
+
+## Examples
+
+### Basic Usage
+
+```bash
+# Generate in current directory
+xschema generate
+
+# Specify project root
+xschema generate --project ./my-app
+
+# Custom output directory
+xschema generate --output ./generated
+```
+
+### Debugging
+
+```bash
+# Verbose output shows each step
+xschema generate --verbose
+
+# Preview without writing files
+xschema generate --dry-run
+
+# Both for detailed preview
+xschema generate --dry-run --verbose
+```
+
+### Performance
+
+```bash
+# Increase parallel fetches for many URL schemas
+xschema generate --concurrency 16
+
+# Lower concurrency if hitting rate limits
+xschema generate --concurrency 2
+```
+
+### Environment Variables
+
+```bash
+# Use custom env file for API keys in headers
+xschema generate --env-file .env.local
+
+# Env vars are substituted in header values:
+# "Authorization": "Bearer ${API_TOKEN}"
+```
+
+### Multi-language Projects
+
+```bash
+# Filter to specific language when both ts and py configs exist
+xschema generate --lang typescript
+xschema generate --lang python
+```
+
+## Common Workflows
+
+### CI/CD Pipeline
+
+```bash
+# Generate and fail if output differs (schema drift detection)
+xschema generate
+git diff --exit-code .xschema/
+```
+
+### Monorepo with Multiple Packages
+
+```bash
+# Generate for specific package
+xschema generate --project ./packages/api
+
+# Or run from package directory
+cd packages/api && xschema generate
+```
+
+### Private Schema Registries
+
+```jsonc title="schemas.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/ts.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "adapter": "zod",
+      "sourceType": "url",
+      "source": "https://schema.internal.company/user.json",
+      "headers": {
+        "Authorization": "Bearer ${SCHEMA_REGISTRY_TOKEN}"
+      }
+    }
+  ]
+}
+```
+
+```bash
+# Set token and generate
+export SCHEMA_REGISTRY_TOKEN="your-token"
+xschema generate
+```
+
+## Config File Discovery
+
+The CLI discovers config files using two methods:
+
+1. **Git-based (default)** - Uses `git ls-files` for fast discovery in git repos
+2. **Directory walk** - Falls back to walking the directory tree if not in a git repo
+
+Config files are identified by the `$schema` URL:
+
+- `https://xschema.dev/ts.jsonc` - TypeScript config
+- `https://xschema.dev/py.jsonc` - Python config (coming soon)
+
+The file extension pattern is `*.xschema.jsonc` by convention, but any JSON/JSONC file with the correct `$schema` URL will be discovered.
+
+## Runner Detection
+
+The CLI auto-detects which package runner to use for invoking adapters based on your project's configuration.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+| Detection Method | Runner |
+|-----------------|--------|
+| `package.json` has `packageManager: "bun@..."` | `bunx` |
+| `package.json` has `packageManager: "pnpm@..."` | `pnpm exec` |
+| `bun.lock` exists | `bunx` |
+| `pnpm-lock.yaml` exists | `pnpm exec` |
+| `package-lock.json` exists | `npx` |
+| Default | `npx` |
+
+<Callout>
+The `packageManager` field in `package.json` takes priority over lockfile detection.
+</Callout>
+
+</Tab>
+<Tab value="Python">
+
+| Detection Method | Runner |
+|-----------------|--------|
+| `uv.lock` exists | `uv run` |
+| `pyproject.toml` exists | `python -m` |
+| Default | `python -m` |
+
+<Callout>
+Python runner detection is coming soon. Currently defaults to `python -m`.
+</Callout>
+
+</Tab>
+</Tabs>
+
+## JSON Schema Drafts
+
+The CLI supports these JSON Schema drafts:
+
+| Draft | Meta-Schema URI |
+|-------|-----------------|
+| draft2020-12 | `https://json-schema.org/draft/2020-12/schema` |
+| draft2019-09 | `https://json-schema.org/draft/2019-09/schema` |
+| draft-07 | `http://json-schema.org/draft-07/schema#` |
+| draft-06 | `http://json-schema.org/draft-06/schema#` |
+| draft-04 | `http://json-schema.org/draft-04/schema#` |
+| draft-03 | `http://json-schema.org/draft-03/schema#` |
+
+All schemas are normalized to draft2020-12 internally. Legacy syntax is automatically transformed:
+
+| Legacy Syntax | Modern Equivalent |
+|--------------|-------------------|
+| `definitions` | `$defs` |
+| `dependencies` | `dependentSchemas` / `dependentRequired` |
+| `items` (array) | `prefixItems` |
+| `additionalItems` | `items` |
+| `id` | `$id` |
+| `exclusiveMinimum` (boolean) | `exclusiveMinimum` (number) |
+| `exclusiveMaximum` (boolean) | `exclusiveMaximum` (number) |
+
+## Output Structure
+
+After running `xschema generate`, the output directory contains generated validators and a manifest file.
+
+<Tabs groupId="lang" items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+```
+.xschema/
+  xschema.gen.ts         # Generated validators and types
+  xschema.manifest.json  # Tracking file for stale detection
+```
+
+</Tab>
+<Tab value="Python">
+
+```
+.xschema/
+  xschema_gen.py         # Generated validators and types
+  xschema.manifest.json  # Tracking file for stale detection
+```
+
+</Tab>
+</Tabs>
+
+The manifest tracks which schemas were generated so the CLI can detect and remove stale files when schemas are removed from config.
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (config not found, fetch failed, adapter error, etc.) |
+
+

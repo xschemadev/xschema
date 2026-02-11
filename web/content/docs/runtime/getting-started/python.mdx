@@ -1,0 +1,107 @@
+---
+title: Python
+description: Getting started with runtime mode in Python (coming soon)
+icon: Code
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Code, Rocket } from "lucide-react";
+
+<Callout type="info">
+Runtime mode for Python is **coming soon**. This page shows the planned usage.
+</Callout>
+
+## Prerequisites
+
+- Python 3.10+
+- Pydantic v2 (planned adapter)
+
+## Planned Installation
+
+```bash
+pip install xschema
+```
+
+## Planned Usage
+
+### Basic Conversion
+
+```python
+from xschema import convert
+
+# Your JSON Schema
+user_schema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "name": {"type": "string"},
+        "email": {"type": "string", "format": "email"}
+    },
+    "required": ["id", "name", "email"]
+}
+
+# Convert to Pydantic model at runtime
+User = convert(user_schema, adapter="pydantic")
+
+# Use it
+user = User(id=1, name="Alice", email="alice@example.com")
+print(user.model_dump())
+```
+
+### With Schema Fetching
+
+```python
+import httpx
+from xschema import convert
+
+async def validate_user(data: dict):
+    # Fetch schema from registry
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://api.example.com/schemas/user")
+        schema = response.json()
+    
+    # Convert and validate
+    User = convert(schema, adapter="pydantic")
+    return User.model_validate(data)
+```
+
+### With Caching
+
+```python
+from xschema import Runtime
+
+runtime = Runtime(adapter="pydantic", cache=True)
+
+# First call converts and caches
+User = runtime.convert(user_schema)
+
+# Second call returns cached version
+User = runtime.convert(user_schema)
+```
+
+## Planned Features
+
+- **Pydantic v2 adapter**: Generate Pydantic models from JSON Schema
+- **Full type hints**: Generated models include proper type annotations
+- **Validation**: Use Pydantic's validation with JSON Schema rules
+- **Serialization**: JSON serialization via Pydantic
+
+## Current Status
+
+Python support is planned. Development will begin after TypeScript runtime mode is complete.
+
+<Cards>
+  <Card
+    title="TypeScript Runtime"
+    description="Runtime mode for TypeScript"
+    href="/docs/runtime/getting-started/typescript"
+    icon={<Code />}
+  />
+  <Card
+    title="Framework Mode (TypeScript)"
+    description="Build-time generation for TypeScript"
+    href="/docs/getting-started/typescript"
+    icon={<Rocket />}
+  />
+</Cards>
