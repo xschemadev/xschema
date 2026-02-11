@@ -369,7 +369,7 @@
         "Zod docs include local verification commands",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "23",

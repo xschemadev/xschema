@@ -585,3 +585,19 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - pyright: 0 errors on src/
 - TS typecheck: all 6 packages pass
 
+### Task 22: Document Zod fallback typing guardrails - COMPLETED
+
+**Updated**: `typescript/packages/adapters/zod/README.md`
+
+**Contents**:
+- Local verification commands: compliance, unit tests, typecheck, type-fidelity harness
+- Allowed `z.any()` fallbacks table: IR any node, empty/all-any intersection, tuple base, complex const array, complex enum, prototype-property objects — with reasons
+- Allowed `z.unknown()` usage table: not, oneOf, conditional, typeGuarded — with reasons (not type-degrading in TS)
+- Narrowed constructs table: oneOf, not, conditional, typeGuarded, const object — all swapped from `z.any()` to `z.unknown()`
+- Disallowed patterns: unknown IR kinds, undocumented `z.any()`, any-regressions on probes
+- Required test coverage rules: semantic wrappers, tuple constraints, proto-property objects, deep equality
+- Troubleshooting: IMPROVED advisories, FAIL regressions, ZodEffects method errors, compliance failures
+
+**Verification**:
+- TS typecheck: all 6 packages pass
+
