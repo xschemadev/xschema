@@ -348,7 +348,23 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - compliance: 100% across all 6 drafts (no regressions)
 - TS typecheck: all 6 packages pass
 
-### Task 11: Zod: replace z.any semantic wrappers with z.unknown - COMPLETED
+### Task 20: Final ArkType non-regression validation - COMPLETED
+
+**Runtime compliance**: identical to baseline — 100% across all 6 drafts, zero regressions.
+
+**Type-fidelity**: 7 unknown-free (was 0 baseline), 8 unknown (was 15 baseline). 7 probes improved.
+
+**Improvements**: oneOf (2), conditional if/then/else (1), constObject (1), constArray (1), enumWithObjects (1), enumWithArrays (1).
+
+**Accepted unknown (8)**: not (2, unbounded negation), conditional if/then only (1, unconstrained passthrough), typeGuarded (2, unmatched types passthrough), tuples (3, ArkType .array() validates at runtime — typed base rejects valid heterogeneous items).
+
+**Report**: `tasks/type-fidelity-baseline/arktype/final-report.md`
+
+**Verification**:
+- Compliance: 100% all 6 drafts (no regressions)
+- Type-fidelity harness: 15/15 pass, 7 unknown-free, 8 unknown
+- TS typecheck: all 6 packages pass
+
 
 **Changes** (renderer.ts):
 - `renderOneOf`: `z.any().superRefine(...)` → `z.unknown().superRefine(...)`
