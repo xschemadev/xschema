@@ -23,8 +23,8 @@ func GenerateMarkdownReport(report ComplianceReport) string {
 		sb.WriteString("Runtime validation tests are **skipped** because:\n")
 		sb.WriteString("1. Compliance tests require runtime validation (checking if data matches a schema)\n")
 		sb.WriteString("2. Types exist only at compile-time and are erased at runtime\n")
-		sb.WriteString("3. The generated code is validated via **TypeScript type-checking** (`tsc --noEmit`)\n\n")
-		sb.WriteString("**Note:** Any failures shown below indicate TypeScript compilation errors in the generated types, not runtime validation failures.\n\n")
+		sb.WriteString("3. Static type correctness should be verified separately via the language's type checker\n\n")
+		sb.WriteString("**Note:** Any failures shown below indicate compilation errors in the generated types, not runtime validation failures.\n\n")
 	}
 
 	// Summary table

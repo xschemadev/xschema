@@ -497,3 +497,24 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - Compliance: 100% across all 6 drafts (no regressions)
 - Type-fidelity: 15 probes pass, 7 unknown-free, 8 unknown
 
+### Task 17: Compliance and reporting - preserve runtime semantics - COMPLETED
+
+**Changes**:
+- `report.go:20-27`: fixed type-only adapter text — removed hardcoded "TypeScript type-checking (`tsc --noEmit`)" claim. The compliance system doesn't run tsc; it just returns "skipped" for type-only schemas. Replaced with language-agnostic wording: "Static type correctness should be verified separately via the language's type checker."
+- `report.go:27`: removed "TypeScript" from failure note — now just says "compilation errors" not "TypeScript compilation errors"
+
+**Tests added** (report_test.go, 4 new test functions):
+- `TestIsTypeOnlyAdapter` — 5 cases: all skipped, runtime, mixed, empty, no tests
+- `TestGenerateMarkdownReport_TypeOnly` — verifies type-only section, no hardcoded TypeScript/tsc, N/A coverage, no badges
+- `TestGenerateMarkdownReport_SkippedAffectsPercentage` — verifies skipped tests reduce percentage (8/10 = 80%)
+- `TestGenerateMarkdownReport_UnsupportedExcludedFromTotal` — verifies unsupported features don't affect percentage
+
+**Key findings**:
+- Runtime compliance scoring and output schema are unchanged — types.go, runner.go scoring logic untouched by PRD work
+- Static type-fidelity checks are fully separate: live in `type-probe/` dirs, have own scripts, no cross-references with compliance code
+- Only misleading text was in report.go's type-only section (implied compliance runs tsc)
+
+**Verification**:
+- go build, go vet, go test: all pass (22 test packages)
+- TS build + typecheck: all 6 packages pass
+

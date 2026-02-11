@@ -286,7 +286,7 @@
         "cli go build, go vet, and go test all pass",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "18",
