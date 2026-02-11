@@ -209,3 +209,24 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Regression detection: confirmed (weakened constObject schema → caught FAIL, exit 1)
 - Compliance interface unchanged: confirmed (compliance script untouched)
 - Typecheck passes: confirmed (all 6 TS packages pass)
+
+---
+
+### Task 6: Add ArkType type-fidelity harness - COMPLETED
+
+**Created**:
+- `typescript/packages/adapters/arktype/type-probe/type-fidelity.ts` - single-file harness (generate + extract + assert)
+- `package.json` script: `bun run type-fidelity`
+
+**How it works**:
+- 15 probe cases with `expectUnknown` boolean per probe (mirrors Zod's `expectAny` pattern)
+- Regenerates probe-fixture.ts via adapter's `convert()`, then runs TS compiler API to extract inferred types
+- Compares each probe's inferred type against expectation
+- Exits non-zero on regression (probe expected unknown-free but got unknown)
+- Reports "IMPROVED" when a probe expected unknown but got narrower (advisory to lock in)
+
+**Verification**:
+- Harness runs and reports pass/fail: confirmed (15 unknown, 0 unknown-free, all match expectations)
+- Regression detection: confirmed (set constObject expectUnknown=false → caught FAIL, exit 1)
+- Compliance interface unchanged: confirmed (compliance script untouched)
+- Typecheck passes: confirmed (all 6 TS packages pass)
