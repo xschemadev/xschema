@@ -569,3 +569,19 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 - Type-fidelity harness: 15/15 pass, 9 any-free, 6 any
 - TS typecheck: all 6 packages pass
 
+### Task 21: Document Python fallback typing guardrails - COMPLETED
+
+**Updated**: `python/packages/adapters/pydantic/README.md`
+
+**Contents**:
+- Local verification commands: compliance, unit tests, pyright, type-fidelity harness
+- Allowed Any fallbacks table: not, conditional (single branch), typeGuarded, open tuple, recursive refs — with reasons
+- Narrowed constructs table: oneOf, conditional (both branches), closed tuple, tuple+rest, const, enum, allOf — with narrowing mechanism
+- Disallowed patterns: unknown IR kinds, unresolved external refs, silent Any fallbacks
+- Required test coverage rules for new renderer branches
+- Troubleshooting: pyright TypeAdapter[Unknown], IMPROVED advisories, pyright errors, compliance failures
+
+**Verification**:
+- pyright: 0 errors on src/
+- TS typecheck: all 6 packages pass
+
