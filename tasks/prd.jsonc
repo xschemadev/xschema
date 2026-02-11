@@ -48,7 +48,7 @@
         "Baseline clearly shows current unknown-heavy paths",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "4",
