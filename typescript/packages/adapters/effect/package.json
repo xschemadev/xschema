@@ -1,6 +1,6 @@
 {
 	"name": "@xschemadev/effect",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"description": "XSchema Effect/Schema Adapter",
 	"exports": {
