@@ -24,10 +24,11 @@ type ConfigFileRaw struct {
 
 // SchemaEntryRaw represents one schema entry in a config file
 type SchemaEntryRaw struct {
-	ID         string          `json:"id"`
-	SourceType SourceType      `json:"sourceType"` // "url", "file", "json"
-	Source     json.RawMessage `json:"source"`     // string for url/file, object for json
-	Adapter    string          `json:"adapter"`    // full package name e.g., "zod"
+	ID         string            `json:"id"`
+	SourceType SourceType        `json:"sourceType"`         // "url", "file", "json"
+	Source     json.RawMessage   `json:"source"`             // string for url/file, object for json
+	Adapter    string            `json:"adapter"`            // full package name e.g., "zod"
+	Headers    map[string]string `json:"headers,omitempty"`  // HTTP headers for URL sources (supports ${ENV_VAR} syntax)
 }
 
 // ConfigFile represents a parsed xschema config file
@@ -40,12 +41,13 @@ type ConfigFile struct {
 
 // Declaration represents a schema declaration ready for retrieval
 type Declaration struct {
-	Namespace  string          // e.g., "user"
-	ID         string          // e.g., "TestUrl"
-	SourceType SourceType      // "url", "file", "json"
-	Source     json.RawMessage // URL string, file path string, or inline JSON object
-	Adapter    string          // full adapter package e.g., "zod"
-	ConfigPath string          // path to config file (for relative file resolution)
+	Namespace  string            // e.g., "user"
+	ID         string            // e.g., "TestUrl"
+	SourceType SourceType        // "url", "file", "json"
+	Source     json.RawMessage   // URL string, file path string, or inline JSON object
+	Adapter    string            // full adapter package e.g., "zod"
+	ConfigPath string            // path to config file (for relative file resolution)
+	Headers    map[string]string // HTTP headers for URL sources (raw, with ${ENV_VAR} syntax)
 }
 
 // Key returns the full namespaced key like "user:TestUrl"

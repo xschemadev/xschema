@@ -1,0 +1,104 @@
+---
+title: ArkType
+description: Generate ArkType schemas from JSON Schema definitions
+icon: Shield
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The ArkType adapter converts JSON Schema definitions into [ArkType](https://arktype.io) validation schemas with full TypeScript type inference.
+
+## Overview
+
+- **Package:** `@xschemadev/arktype`
+- **Peer Dependency:** `arktype ^2.0.0`
+- **Compliance:** [100%](/docs/adapters/arktype/compliance)
+
+ArkType is a TypeScript-native validation library with a unique syntax that mirrors TypeScript's type syntax. The xschema ArkType adapter generates native ArkType schemas from JSON Schema with:
+
+- **100% compliance** with JSON Schema Test Suite (all supported drafts)
+- **Full type inference** - generated schemas include TypeScript types
+- **Runtime validation** - validate data with detailed error messages
+- **Type-level validation** - errors are surfaced at compile time where possible
+
+## Installation
+
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/arktype arktype
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/arktype arktype
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/arktype arktype
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/arktype arktype
+    ```
+  </Tab>
+</Tabs>
+
+## Usage
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "adapter": "@xschemadev/arktype",
+      "source": "./user.schema.json"
+    }
+  ]
+}
+```
+
+```ts twoslash
+// @filename: node_modules/arktype/index.d.ts
+export declare const type: TypeConstructor & {
+  string: Type<string>;
+  boolean: Type<boolean>;
+  enumerated: <T extends [string, ...string[]]>(...values: T) => Type<T[number]>;
+};
+type TypeConstructor = <T extends Record<string, Type<any>>>(shape: T) => ObjectType<{
+  [K in keyof T as K extends `${infer N}?` ? N : K]: K extends `${string}?` 
+    ? T[K] extends Type<infer V> ? V | undefined : never 
+    : T[K] extends Type<infer V> ? V : never;
+}>;
+interface Type<T> {
+  infer: T;
+  narrow: (fn: (val: T, ctx: { mustBe: (msg: string) => boolean }) => boolean) => Type<T>;
+}
+interface ObjectType<T> extends Type<T> {
+  infer: T;
+}
+// @filename: xschema.gen.ts
+import { type } from "arktype"
+const User = type({ id: type.string, "name?": type.string, email: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object"));
+export const schemas = { "User": User } as const;
+// @filename: client.ts
+import { schemas } from "./xschema.gen";
+export const xschema = <K extends keyof typeof schemas>(key: K) => (data: unknown) => schemas[key].infer as (typeof schemas)[K]["infer"];
+// @filename: app.ts
+// ---cut---
+import { xschema } from "./client";
+
+const user = xschema("User")({ id: "1", name: "Alice", email: "alice@example.com" });
+//    ^?
+```
+
+See the [TypeScript guide](/docs/typescript) for full setup instructions.
+
+## Supported Features
+
+The ArkType adapter has **100% compliance** across all JSON Schema drafts. All tests pass.
+
+See the [Compliance](/docs/adapters/arktype/compliance) page for the full breakdown by draft.

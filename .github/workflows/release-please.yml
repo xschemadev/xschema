@@ -26,7 +26,6 @@ jobs:
       effect--release_created: ${{ steps.release.outputs['typescript/packages/adapters/effect--release_created'] }}
       typebox--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typebox--release_created'] }}
       valibot--release_created: ${{ steps.release.outputs['typescript/packages/adapters/valibot--release_created'] }}
-      typescript--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typescript--release_created'] }}
     steps:
       # Using PAT instead of GITHUB_TOKEN so PRs trigger workflow runs
       - uses: googleapis/release-please-action@v4
@@ -41,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           prs=$(gh pr list --repo ${{ github.repository }} --state open --json headRefName --jq '.[] | select(.headRefName | startswith("release-please--")) | .headRefName')
-          
+
           for branch in $prs; do
             echo "Dispatching CI for branch: $branch"
             gh workflow run CI --repo ${{ github.repository }} --ref "$branch"
@@ -83,24 +82,24 @@ jobs:
           COMMIT="${GITHUB_SHA::7}"
           DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           LDFLAGS="-s -w -X github.com/xschemadev/xschema/cmd.version=$VERSION -X github.com/xschemadev/xschema/cmd.commit=$COMMIT -X github.com/xschemadev/xschema/cmd.date=$DATE"
-          
+
           mkdir -p dist
-          
+
           echo "Building linux/amd64..."
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-linux-x64/xschema .
-          
+
           echo "Building linux/arm64..."
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-linux-arm64/xschema .
-          
+
           echo "Building darwin/amd64..."
           CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-darwin-x64/xschema .
-          
+
           echo "Building darwin/arm64..."
           CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-darwin-arm64/xschema .
-          
+
           echo "Building windows/amd64..."
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/xschema-win32-x64/xschema.exe .
-          
+
           echo "Building windows/arm64..."
           CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/xschema-win32-arm64/xschema.exe .
         working-directory: cli
@@ -217,12 +216,5 @@ jobs:
         if: needs.release-please.outputs.valibot--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/valibot
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish @xschemadev/typescript
-        if: needs.release-please.outputs.typescript--release_created == 'true'
-        run: bun publish --access public
-        working-directory: typescript/packages/adapters/typescript
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

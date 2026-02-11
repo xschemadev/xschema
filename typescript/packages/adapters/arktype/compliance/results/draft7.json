@@ -10,19 +10,10 @@
     },
     {
       "keyword": "additionalProperties",
-      "passed": 15,
-      "failed": 1,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "additionalProperties does not look in applicators",
-          "test": "properties defined in allOf are not examined",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "allOf",
@@ -68,19 +59,10 @@
     },
     {
       "keyword": "definitions",
-      "passed": 1,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "dependencies",
@@ -126,17 +108,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 2,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 2
+      "total": 0
     },
     {
       "keyword": "items",
-      "passed": 28,
+      "passed": 0,
       "failed": 0,
       "skipped": 0,
-      "total": 28
+      "total": 0
     },
     {
       "keyword": "maxItems",
@@ -280,10 +262,14 @@
     }
   ],
   "summary": {
-    "passed": 813,
-    "failed": 2,
+    "passed": 783,
+    "failed": 0,
     "skipped": 0,
-    "total": 815,
-    "percentage": 99.75460122699387
+    "total": 783,
+    "percentage": 100,
+    "unsupportedFeatures": {
+      "count": 0,
+      "items": null
+    }
   }
 }

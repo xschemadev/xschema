@@ -1,0 +1,336 @@
+---
+title: Troubleshooting
+description: Common error messages and how to fix them
+icon: CircleQuestionMark
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Terminal, ShieldCheck } from "lucide-react";
+
+## CLI Errors
+
+### "no xschema config files found"
+
+xschema discovers config files by looking for JSON/JSONC files with a `$schema` URL pointing to `xschema.dev`.
+
+**Cause:** No config files found in the project directory (or its subdirectories).
+
+**Fix:** Ensure your config file has the `$schema` property:
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    { "id": "User", "sourceType": "file", "source": "./user.schema.json" }
+  ]
+}
+```
+
+The `$schema` URL is required for xschema to discover your config files. Without it, the file won't be recognized.
+
+---
+
+### "multiple languages detected"
+
+**Cause:** Config files for different languages (e.g., TypeScript and Python) exist in the same project, and xschema doesn't know which to process.
+
+**Fix:** Use the `--lang` flag to specify which language to generate:
+
+```bash
+xschema generate --lang typescript
+```
+
+Or organize config files so each project only contains one language.
+
+---
+
+### "duplicate schema ID"
+
+**Cause:** Two config files define the same `id` within the same namespace.
+
+**Example error:**
+```
+duplicate schema ID "User" in namespace "user": defined in both user.xschema.jsonc and api/user.xschema.jsonc
+```
+
+**Fix:** Either:
+1. Use different IDs for each schema
+2. Use explicit namespace overrides to separate them:
+
+```jsonc title="api/user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "namespace": "api_user",
+  "schemas": [
+    { "id": "User", "sourceType": "file", "source": "./user.schema.json" }
+  ]
+}
+```
+
+---
+
+### "headers are only allowed for sourceType url"
+
+**Cause:** You specified `headers` on a schema with `sourceType: "file"` or `sourceType: "json"`.
+
+**Fix:** Headers are only valid for URL sources. Remove the `headers` field for file or inline schemas:
+
+```jsonc
+// Wrong - headers on file source
+{
+  "id": "User",
+  "sourceType": "file",
+  "source": "./user.schema.json",
+  "headers": { "Authorization": "Bearer ${TOKEN}" } // Remove this
+}
+
+// Correct - headers only on URL sources
+{
+  "id": "User",
+  "sourceType": "url",
+  "source": "https://api.example.com/schemas/user.json",
+  "headers": { "Authorization": "Bearer ${TOKEN}" }
+}
+```
+
+---
+
+### "missing env var"
+
+**Cause:** A header value references an environment variable using `${VAR}` syntax, but that variable isn't set.
+
+**Example error:**
+```
+missing env var: API_TOKEN. use --env-file to specify env file
+```
+
+**Fix:** Either:
+
+1. Set the environment variable before running:
+```bash
+export API_TOKEN="your-token"
+xschema generate
+```
+
+2. Create a `.env` file in your project root (auto-loaded):
+```bash title=".env"
+API_TOKEN=your-token
+```
+
+3. Use the `--env-file` flag to specify a different env file:
+```bash
+xschema generate --env-file .env.local
+```
+
+---
+
+### "unsupported language"
+
+**Cause:** The `--lang` flag was passed with an unknown language name.
+
+**Fix:** Currently supported languages:
+- `typescript` (detected from `ts.jsonc` or `typescript.jsonc` schema URLs)
+
+Python support is planned.
+
+---
+
+### Runner not found (bun/pnpm/npx)
+
+**Cause:** xschema couldn't find a package runner to execute the adapter.
+
+**How runner detection works:**
+1. Checks `package.json` for `packageManager` field
+2. Falls back to lockfile detection:
+   - `bun.lock` → `bunx`
+   - `pnpm-lock.yaml` → `pnpm exec`
+   - Default: `npx`
+
+**Fix:** Ensure you have the appropriate package manager installed, or add a `packageManager` field to your `package.json`:
+
+```json title="package.json"
+{
+  "packageManager": "bun@1.0.0"
+}
+```
+
+---
+
+### "adapter failed" with stderr output
+
+**Cause:** The adapter CLI crashed or returned an error.
+
+**Common causes:**
+1. Adapter package not installed
+2. Adapter not built (for local development)
+3. Schema contains features the adapter doesn't support
+
+**Fix:**
+1. Ensure the adapter is installed:
+```bash
+bun add @xschemadev/zod
+```
+
+2. Run with `--verbose` to see detailed output:
+```bash
+xschema generate --verbose
+```
+
+3. Check the [compliance pages](/docs/compliance) for unsupported features.
+
+---
+
+## Client Errors
+
+### "Unknown schema: X. Run `xschema generate`."
+
+The client tried to access a schema key that doesn't exist in the generated manifest.
+
+**Common causes:**
+1. You haven't run `xschema generate` yet
+2. The schema ID or namespace is misspelled
+3. The schema was removed from the config but the code still references it
+
+**Fix:**
+
+1. Run generation:
+```bash
+xschema generate
+```
+
+2. Check your schema key matches the format `namespace:id`:
+```typescript
+// Config: user.xschema.jsonc with id: "Profile"
+// Correct key: "user:Profile"
+
+const schema = xschema("user:Profile"); // Correct
+const schema = xschema("Profile");      // Wrong (unless defaultNamespace is "user")
+```
+
+3. With `defaultNamespace`, you can omit the namespace prefix:
+```typescript
+const xschema = createXSchemaClient({
+  schemas,
+  defaultNamespace: "user"
+});
+
+const schema = xschema("Profile"); // Resolves to "user:Profile"
+```
+
+---
+
+## Schema Validation Errors
+
+### "$ref resolution failed"
+
+**Cause:** A `$ref` in your schema points to a resource that couldn't be fetched or doesn't exist.
+
+**Fix:**
+1. Ensure the referenced file exists
+2. For URLs, check network connectivity
+3. For local files, paths are relative to the config file's directory, not the working directory
+
+```jsonc
+// Config at: src/schemas/user.xschema.jsonc
+// Schema at: src/schemas/types/address.schema.json
+
+{
+  "id": "User",
+  "sourceType": "file",
+  "source": "./types/address.schema.json" // Relative to config file
+}
+```
+
+---
+
+## Compliance Runner Errors
+
+<Callout type="info">
+These errors apply when running `xschema compliance` for adapter development.
+</Callout>
+
+### "adapter CLI not found"
+
+**Cause:** The compliance runner couldn't find the adapter's compiled CLI binary.
+
+**Example error:**
+```
+adapter CLI not found at /path/to/adapter/dist/cli.js
+Make sure the adapter is built
+```
+
+**Fix:** Build the adapter first:
+
+```bash
+# From the adapter directory
+bun run build
+```
+
+---
+
+### "keyword not found"
+
+**Cause:** The keyword filter (`--keyword`) specified a keyword that doesn't exist in the test suite for the given draft.
+
+**Example error:**
+```
+keyword "foobar" not found in draft2020-12 (available: 45 keywords)
+```
+
+**Fix:** Check available keywords by running without the filter, or verify the keyword name against the [JSON Schema specification](https://json-schema.org/specification).
+
+---
+
+### "harness execution failed"
+
+**Cause:** The test harness (which executes generated validators) crashed during execution.
+
+**Common causes:**
+1. Generated code has syntax errors
+2. Missing dependencies
+3. Runtime incompatibility
+
+**Fix:**
+1. Run with `--verbose` to see the full error
+2. Check the adapter's generated code for issues
+3. Ensure all peer dependencies are installed
+
+---
+
+### "test suite not found"
+
+**Cause:** The JSON Schema Test Suite hasn't been downloaded or is corrupted.
+
+**Fix:** The test suite is cached at `~/.cache/xschema/json-schema-test-suite-{version}/`. Try removing this directory to force a fresh download:
+
+```bash
+rm -rf ~/.cache/xschema/json-schema-test-suite-*
+xschema compliance --adapter zod
+```
+
+---
+
+## Getting More Help
+
+If you encounter an error not listed here:
+
+1. Run with `--verbose` flag for detailed output
+2. Check the [CLI reference](/docs/cli) for command options
+3. Review [adapter compliance](/docs/compliance) for supported features
+4. Open an issue on [GitHub](https://github.com/xschemadev/xschema) with the full error message and reproduction steps
+
+<Cards>
+  <Card
+    title="CLI Reference"
+    description="Full command documentation"
+    href="/docs/cli"
+    icon={<Terminal />}
+  />
+  <Card
+    title="Compliance Reports"
+    description="Adapter feature support"
+    href="/docs/compliance"
+    icon={<ShieldCheck />}
+  />
+</Cards>

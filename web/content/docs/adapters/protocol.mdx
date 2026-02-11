@@ -1,0 +1,129 @@
+---
+title: Adapter Protocol
+description: How adapters communicate with the xschema CLI
+icon: ArrowLeftRight
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Adapters are standalone CLIs that communicate with the xschema CLI via stdin/stdout JSON. This page documents the protocol specification.
+
+## Overview
+
+```
+xschema CLI --[JSON array]--> stdin --> adapter --> stdout --[JSON array]--> xschema CLI
+```
+
+The CLI handles all preprocessing before calling adapters:
+
+| CLI handles | Adapter handles |
+|-------------|-----------------|
+| Config discovery | Parse IR to code |
+| Schema fetching | Render validation library syntax |
+| `$ref` resolution | Generate import statements |
+| Draft normalization | Return type expressions |
+| Bundling `$defs` | |
+| Validation against meta-schema | |
+
+By the time an adapter receives a schema, it's:
+- Normalized to a single draft (2020-12)
+- Self-contained (all `$ref`s point to local `$defs`)
+- Already validated against the meta-schema
+
+<Callout>
+You probably don't need the details below unless you're building an adapter or debugging. But if you want to know what happens under the hood, here it is.
+</Callout>
+
+## Input Format
+
+The CLI sends a JSON array of objects with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `namespace` | string | Logical grouping from the config file. Defaults to filename without extension. |
+| `id` | string | Schema identifier, unique within namespace. |
+| `varName` | string | Safe variable name derived from namespace + id. |
+| `schema` | object | The JSON Schema to convert. Already bundled and normalized to draft 2020-12. |
+
+Example:
+
+```json
+[
+  {
+    "namespace": "user",
+    "id": "Profile",
+    "varName": "userProfile",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "age": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["name"]
+    }
+  }
+]
+```
+
+## Output Format
+
+Adapters return a JSON array of objects with the following fields:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Echo back from input. |
+| `id` | string | yes | Echo back from input. |
+| `varName` | string | yes | Echo back from input. |
+| `imports` | string[] | yes | Import statements needed by the generated code. |
+| `schema` | string | one of schema/type | The generated validator code. |
+| `type` | string | one of schema/type | Type expression for the schema. |
+| `validate` | string | no | Standalone validation function. |
+| `validationImports` | string[] | no | Imports needed by validation function. |
+
+Example:
+
+```json
+[
+  {
+    "namespace": "user",
+    "id": "Profile",
+    "varName": "userProfile",
+    "imports": ["import { z } from \"zod\""],
+    "schema": "z.object({ name: z.string(), age: z.number().int().min(0).optional() })",
+    "type": "z.infer<typeof userProfile>"
+  }
+]
+```
+
+## What Adapters Never See
+
+### Unresolved References
+
+The CLI resolves all `$ref` and embeds definitions in `$defs`. Adapters never receive external references—only local `#/$defs/...` refs pointing to definitions within the same schema.
+
+### Old Draft Syntax
+
+All schemas are normalized to draft 2020-12. Adapters don't need to handle:
+
+- `definitions` (converted to `$defs`)
+- `items` as array (converted to `prefixItems`)
+- `additionalItems` (converted to `items`)
+- Boolean `exclusiveMinimum`/`exclusiveMaximum` (converted to numeric)
+
+### Dynamic Features
+
+The CLI blocks schemas using features that can't be statically compiled:
+
+- `$dynamicRef` / `$dynamicAnchor`
+- `$recursiveRef` / `$recursiveAnchor`
+
+## Error Handling
+
+Adapters should write errors to stderr. The CLI captures stderr and displays it to users.
+
+For unrecoverable errors, exit with a non-zero status code.
+
+## See Also
+
+- [Building Adapters](/docs/adapters/building-adapters) - step-by-step guide to creating adapters
+- [Adapters](/docs/adapters) - compare available adapters

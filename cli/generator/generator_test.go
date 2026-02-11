@@ -9,7 +9,7 @@ import (
 
 	"github.com/xschemadev/xschema/adapter"
 	_ "github.com/xschemadev/xschema/language/langs"
-	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/processor"
 )
 
 func TestConvertResultKey(t *testing.T) {
@@ -30,7 +30,7 @@ func TestGenerateAdapterNotFound(t *testing.T) {
 
 	adapterRef := "@xschemadev/nonexistent-adapter"
 	input := GenerateBatchInput{
-		Schemas: []retriever.RetrievedSchema{
+		Schemas: []processor.ProcessedSchema{
 			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: adapterRef},
 		},
 		AdapterRef:  adapterRef,
@@ -46,7 +46,7 @@ func TestGenerateAdapterNotFound(t *testing.T) {
 
 func TestGenerateLegacyAdapterRefMigrationGuidance(t *testing.T) {
 	input := GenerateBatchInput{
-		Schemas: []retriever.RetrievedSchema{
+		Schemas: []processor.ProcessedSchema{
 			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "zod"},
 		},
 		AdapterRef:  "zod",
@@ -65,7 +65,7 @@ func TestGenerateLegacyAdapterRefMigrationGuidance(t *testing.T) {
 
 func TestGenerateUnsupportedLanguage(t *testing.T) {
 	input := GenerateBatchInput{
-		Schemas: []retriever.RetrievedSchema{
+		Schemas: []processor.ProcessedSchema{
 			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: "zod"},
 		},
 		AdapterRef:  "zod",
@@ -89,7 +89,7 @@ func TestGenerateContextCancellation(t *testing.T) {
 
 	adapterRef := "@xschemadev/zod"
 	input := GenerateBatchInput{
-		Schemas: []retriever.RetrievedSchema{
+		Schemas: []processor.ProcessedSchema{
 			{Namespace: "test", ID: "Test", Schema: json.RawMessage(`{"type": "string"}`), Adapter: adapterRef},
 		},
 		AdapterRef:  adapterRef,
@@ -104,7 +104,7 @@ func TestGenerateContextCancellation(t *testing.T) {
 }
 
 func TestGenerateAllEmptySchemas(t *testing.T) {
-	outputs, err := GenerateAll(context.Background(), []retriever.RetrievedSchema{}, "typescript", ".")
+	outputs, err := GenerateAll(context.Background(), []processor.ProcessedSchema{}, "typescript", ".")
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}

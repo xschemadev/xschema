@@ -1,0 +1,211 @@
+---
+title: Quick Start
+description: Getting Started with xschema
+icon: Layers
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Lightbulb, Puzzle, Terminal, Code, Settings } from "lucide-react";
+
+## Introduction
+
+XSchema converts [JSON Schema](https://json-schema.org/) to native validators _(Zod, Pydantic, Effect, and more...)_ in many languages _(Typescript, Python, Go, and more...)_ with full type inference. Every adapter runs against the official JSON Schema Test Suite, so you know exactly what works.
+
+### Components
+
+Under the hood, xschema has these building blocks:
+
+- **[CLI](/docs/cli)** - Does the heavy lifting: finds your schemas, handles all the JSON Schema complexity, and calls adapters to generate code. Also runs [compliance tests](/docs/compliance) against the official JSON Schema Test Suite
+- **[Configuration files](/docs/configuration)** - Define which schemas to process and how
+- **[Adapters](/docs/adapters)** - Convert bundled schemas to native validation code for each language
+- **Clients** - Language-specific packages to use generated schemas
+
+These components don't have to be used together (**framework mode**): if you want to build your own pipeline and just use the conversion and adapters programmatically, see [Runtime Mode](/docs/runtime).
+
+<Callout>
+  Want to understand the architecture and design philosophy? Read [What is XSchema](/docs/what-is-xschema).
+</Callout>
+
+### Terminology
+
+**JSON Schema** is a vocabulary for annotating and validating JSON documents. It's used in OpenAPI specs, API contracts, and configuration files. xschema takes JSON Schema as input and generates code for your preferred validation library.
+
+## Quick Setup
+
+This example uses TypeScript. xschema supports multiple languages (see later)
+
+<Steps>
+<Step>
+### Install the client and adapter
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/client @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
+</Step>
+<Step>
+### Create a config file
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "Profile",
+      "sourceType": "file",
+      "source": "./profile.schema.json",
+      "adapter": "@xschemadev/zod"
+    }
+  ]
+}
+```
+
+More on config files in [Configuration Reference](/docs/configuration).
+</Step>
+<Step>
+### Run the generator
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bunx xschema generate
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npx xschema generate
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm exec xschema generate
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx xschema generate
+    ```
+  </Tab>
+</Tabs>
+
+This creates `.xschema/xschema.gen.ts` with your validators.
+</Step>
+<Step>
+### Use the generated schemas
+
+```ts twoslash
+// @filename: node_modules/zod/index.d.ts
+export declare const z: {
+  string: () => ZodString;
+  object: <T extends Record<string, ZodType>>(shape: T) => ZodObject<T>;
+};
+export type ZodType = { _output: unknown; optional: () => ZodType };
+export type ZodString = { _output: string; optional: () => ZodOptional<ZodString>; email: () => ZodString };
+export type ZodOptional<T> = { _output: T extends { _output: infer O } ? O | undefined : never };
+type InferShape<T> = { [K in keyof T]: T[K] extends { _output: infer O } ? O : never };
+export type ZodObject<T, Mode extends "passthrough" | "strict" = "strict"> = {
+  _output: Mode extends "passthrough" ? InferShape<T> & { [x: string]: unknown } : InferShape<T>;
+  passthrough: () => ZodObject<T, "passthrough">;
+  safeParse: (data: unknown) => { success: true; data: ZodObject<T, Mode>["_output"] } | { success: false; error: unknown };
+};
+// @filename: node_modules/@xschemadev/client/index.d.ts
+export interface Register {}
+export type RegisteredSchemas = Register extends { schemas: infer S } ? S : Record<string, unknown>;
+type ValidKeys<T, DefaultNS extends string | undefined> = DefaultNS extends string ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS> : keyof T & string;
+type ExtractID<Keys extends string, NS extends string> = Keys extends `${NS}:${infer ID}` ? ID : never;
+type ResolveKey<K extends string, DefaultNS extends string | undefined> = K extends `${string}:${string}` ? K : DefaultNS extends string ? `${DefaultNS}:${K}` : K;
+export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas> = { schemas?: T; defaultNamespace?: string };
+export function createXSchemaClient<const T extends Record<string, unknown> = RegisteredSchemas, const DefaultNS extends string | undefined = undefined>(config: XSchemaConfig<T> & { defaultNamespace?: DefaultNS }): <K extends ValidKeys<T, DefaultNS>>(key: K) => T[ResolveKey<K, DefaultNS> & keyof T];
+// @filename: xschema.gen.ts
+import { z } from "zod"
+const Profile = z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough();
+export const schemas = { "user:Profile": Profile } as const;
+// @filename: app.ts
+// ---cut---
+import { createXSchemaClient } from "@xschemadev/client";
+import { schemas } from "./xschema.gen";
+
+const xschema = createXSchemaClient({ schemas });
+
+const profileSchema = xschema("user:Profile");
+//    ^?
+
+const result = profileSchema.safeParse({ id: "123", email: "alice@example.com" });
+//    ^?
+```
+</Step>
+</Steps>
+
+## Learn More
+
+New to xschema? Don't worry, we welcome your questions.
+
+If you find anything confusing, please give your feedback on [GitHub Discussions](https://github.com/xschemadev/xschema/discussions)!
+
+### Get Started With Any Language
+
+<Cards>
+  <Card 
+    title="TypeScript" 
+    description="Zod, ArkType, Effect, Valibot"
+    href="/docs/typescript"
+    icon={<Code />}
+  />
+  <Card 
+    title="Python" 
+    description="Pydantic (coming soon)"
+    href="/docs/python"
+    icon={<Code />}
+  />
+</Cards>
+
+### Reference
+
+<Cards>
+  <Card 
+    title="What is XSchema" 
+    description="Architecture, philosophy, and when to use it"
+    href="/docs/what-is-xschema"
+    icon={<Lightbulb />}
+  />
+  <Card 
+    title="Adapters" 
+    description="Compare validation libraries"
+    href="/docs/adapters"
+    icon={<Puzzle />}
+  />
+  <Card 
+    title="Configuration" 
+    description="All config file options"
+    href="/docs/configuration"
+    icon={<Settings />}
+  />
+  <Card 
+    title="CLI Reference" 
+    description="Commands and flags"
+    href="/docs/cli"
+    icon={<Terminal />}
+  />
+</Cards>

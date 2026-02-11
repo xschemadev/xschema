@@ -1,0 +1,102 @@
+---
+title: CLI Overview
+description: Install and use the xschema command-line interface
+icon: Terminal
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The xschema CLI converts JSON Schema files into native validators for your target language. It handles schema discovery, fetching, bundling, and code generation.
+
+## Installation
+
+### TypeScript
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+  ```bash
+  bun add -g xschema
+  ```
+  </Tab>
+  <Tab value="npm">
+  ```bash
+  npm install -g xschema
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add -g xschema
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn global add xschema
+  ```
+  </Tab>
+</Tabs>
+
+Or run directly without installing:
+
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+  ```bash
+  bunx xschema generate
+  ```
+  </Tab>
+  <Tab value="npm">
+  ```bash
+  npx xschema generate
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm dlx xschema generate
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn dlx xschema generate
+  ```
+  </Tab>
+</Tabs>
+
+### Python
+
+<Tabs groupId="py-pm" items={["pip", "uv", "pipx"]}>
+  <Tab value="pip">
+  ```bash
+  pip install xschema
+  ```
+  </Tab>
+  <Tab value="uv">
+  ```bash
+  uv tool install xschema
+  ```
+  </Tab>
+  <Tab value="pipx">
+  ```bash
+  pipx install xschema
+  ```
+  </Tab>
+</Tabs>
+
+### Go
+
+```bash
+go install github.com/xschemadev/xschema@latest
+```
+
+## Version
+
+Check the installed version:
+
+```bash
+xschema --version
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| [`generate`](/docs/cli/generate) | Parse config files, convert schemas, output native validators |
+| [`compliance`](/docs/cli/compliance) | Run JSON Schema Test Suite compliance tests for adapters |

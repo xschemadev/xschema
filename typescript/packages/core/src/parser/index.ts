@@ -5,9 +5,7 @@
 
 import type { JSONSchema } from "../schema/json-schema.js";
 import type { SchemaNode, TypeGuard } from "../ir/nodes.js";
-import { detectVersion, supportsRefSiblings } from "../schema/version.js";
-import { normalizeDeep } from "../schema/normalizer.js";
-import { resolveJsonPointer } from "../utils/json-pointer.js";
+// Note: $ref resolution is handled by the Go CLI bundler
 import { isEmptyObject } from "../utils/primitives.js";
 import { createContext, type ParseContext } from "./context.js";
 import { parseString, parseNumber } from "./primitives.js";
@@ -25,6 +23,8 @@ export type { ParseContext } from "./context.js";
 
 /**
  * Parse a JSON Schema into SchemaNode IR
+ * Expects schemas to be pre-normalized to draft2020-12 by the bundler.
+ * @param schema The JSON Schema to parse
  */
 export function parse(schema: JSONSchema | boolean): SchemaNode {
 	// Handle boolean schemas at root level
@@ -32,10 +32,8 @@ export function parse(schema: JSONSchema | boolean): SchemaNode {
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	const version = detectVersion(schema);
-	const normalized = normalizeDeep(schema, version);
-	const ctx = createContext(normalized, version);
-	return parseSchema(normalized, ctx);
+	const ctx = createContext(schema);
+	return parseSchema(schema, ctx);
 }
 
 /**
@@ -50,29 +48,12 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Handle unsupported features
-	if (schema.unevaluatedItems !== undefined) {
-		throw new Error("unevaluatedItems is not supported");
-	}
-	if (schema.unevaluatedProperties !== undefined) {
-		const hasApplicators =
-			schema.allOf ||
-			schema.anyOf ||
-			schema.oneOf ||
-			schema.if ||
-			schema.$ref ||
-			schema.dependentSchemas ||
-			schema.not;
-		if (hasApplicators) {
-			throw new Error(
-				"unevaluatedProperties with applicators is not supported",
-			);
-		}
-	}
-
-	// Handle $ref
+	// Handle $ref - schemas must be bundled by Go CLI
 	if (schema.$ref) {
-		return parseRef(schema, ctx);
+		throw new Error(
+			`Encountered $ref "${schema.$ref}" - schemas must be bundled by the Go CLI before processing. ` +
+			`Run the schema through xschema generate to bundle all references.`
+		);
 	}
 
 	// Handle not - check before composition since { not: {} } = never
@@ -93,16 +74,43 @@ export function parseSchema(
 	const hasAnyOf = schema.anyOf && schema.anyOf.length > 0;
 	const hasOneOf = schema.oneOf && schema.oneOf.length > 0;
 
-	// Check for base schema (type-specific properties)
+	// Check for base schema keywords alongside composition operators.
+	// If we have base constraints (like additionalProperties/dependencies/etc), they must
+	// be intersected with the composition result.
 	const hasBaseSchema =
 		schema.type !== undefined ||
+		// object keywords
 		schema.properties !== undefined ||
+		schema.additionalProperties !== undefined ||
+		schema.patternProperties !== undefined ||
+		schema.required !== undefined ||
+		schema.propertyNames !== undefined ||
+		schema.minProperties !== undefined ||
+		schema.maxProperties !== undefined ||
+		schema.dependentRequired !== undefined ||
+		schema.dependentSchemas !== undefined ||
+		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined ||
+		// array keywords
 		schema.items !== undefined ||
+		schema.prefixItems !== undefined ||
+		schema.additionalItems !== undefined ||
+		schema.minItems !== undefined ||
+		schema.maxItems !== undefined ||
+		schema.uniqueItems !== undefined ||
+		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined ||
+		// primitive keywords
 		schema.minimum !== undefined ||
 		schema.maximum !== undefined ||
+		schema.exclusiveMinimum !== undefined ||
+		schema.exclusiveMaximum !== undefined ||
+		schema.multipleOf !== undefined ||
 		schema.minLength !== undefined ||
 		schema.maxLength !== undefined ||
 		schema.pattern !== undefined ||
+		schema.format !== undefined ||
+		// value keywords
 		schema.enum !== undefined ||
 		schema.const !== undefined;
 
@@ -126,6 +134,10 @@ export function parseSchema(
 	if (Array.isArray(type)) {
 		// Multiple types - create union
 		const variants = type.map((t) => {
+			// Draft3: type array can contain inline schemas
+			if (typeof t === "object" && t !== null) {
+				return parseSchema(t as JSONSchema, ctx);
+			}
 			const typeSchema: JSONSchema = { ...schema, type: t };
 			delete typeSchema.enum;
 			return parseSchema(typeSchema, ctx);
@@ -178,66 +190,7 @@ export function parseSchema(
 	return result;
 }
 
-function parseRef(schema: JSONSchema, ctx: ParseContext): SchemaNode {
-	const refPath = schema.$ref!;
 
-	// Check cache
-	if (ctx.refs.has(refPath)) {
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: ctx.refs.get(refPath)!,
-		};
-	}
-
-	// Check for circular reference
-	if (ctx.processing.has(refPath)) {
-		// Circular ref - return a lazy any
-		return {
-			kind: "ref",
-			path: refPath,
-			resolved: { kind: "any" },
-		};
-	}
-
-	// Resolve and parse
-	ctx.processing.add(refPath);
-	const resolved = resolveJsonPointer(refPath, ctx.rootSchema);
-	const parsed = parseSchema(resolved, ctx);
-	ctx.refs.set(refPath, parsed);
-	ctx.processing.delete(refPath);
-
-	// Handle sibling keywords in draft-2019-09+
-	if (supportsRefSiblings(ctx.version)) {
-		const siblingSchema = { ...schema };
-		delete siblingSchema.$ref;
-		delete siblingSchema.$id;
-		delete siblingSchema.$anchor;
-		delete siblingSchema.$defs;
-		delete siblingSchema.definitions;
-		delete siblingSchema.$schema;
-		delete siblingSchema.$comment;
-		delete siblingSchema.$dynamicRef;
-		delete siblingSchema.$dynamicAnchor;
-
-		if (Object.keys(siblingSchema).length > 0) {
-			const siblingNode = parseSchema(siblingSchema, ctx);
-			return {
-				kind: "intersection",
-				schemas: [
-					{ kind: "ref", path: refPath, resolved: parsed },
-					siblingNode,
-				],
-			};
-		}
-	}
-
-	return {
-		kind: "ref",
-		path: refPath,
-		resolved: parsed,
-	};
-}
 
 function parseComposition(
 	schema: JSONSchema,
@@ -302,17 +255,20 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 	const guards: TypeGuard[] = [];
 
 	// Check for object keywords
+	// Note: required as boolean (draft3 property-level) should NOT trigger object detection
+	// Only array-style required (draft4+) indicates schema-level object constraints
 	const hasObjectKeywords =
 		schema.properties !== undefined ||
 		schema.additionalProperties !== undefined ||
 		schema.patternProperties !== undefined ||
-		schema.required !== undefined ||
+		(Array.isArray(schema.required) && schema.required.length > 0) ||
 		schema.propertyNames !== undefined ||
 		schema.minProperties !== undefined ||
 		schema.maxProperties !== undefined ||
 		schema.dependentRequired !== undefined ||
 		schema.dependentSchemas !== undefined ||
-		schema.dependencies !== undefined;
+		schema.dependencies !== undefined ||
+		schema.unevaluatedProperties !== undefined;
 
 	// Check for array keywords
 	const hasArrayKeywords =
@@ -322,7 +278,8 @@ function parseTypeless(schema: JSONSchema, ctx: ParseContext): SchemaNode {
 		schema.minItems !== undefined ||
 		schema.maxItems !== undefined ||
 		schema.uniqueItems !== undefined ||
-		schema.contains !== undefined;
+		schema.contains !== undefined ||
+		schema.unevaluatedItems !== undefined;
 
 	// Check for numeric keywords
 	const hasNumericKeywords =

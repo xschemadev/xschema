@@ -3,16 +3,460 @@
 import { type } from "arktype"
 import { z } from "zod"
 
-const user_User = type({ "age?": type("number >= 0").and(type("number % 1")), "email": type("string.email"), "id": type.string, "name?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"));
+const another_TSConfigNative = type.object.narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "compilerOptions?": type({ "allowArbitraryExtensions?": type.boolean.or(type.null), "allowImportingTsExtensions?": type.boolean.or(type.null), "allowJs?": type.boolean.or(type.null), "allowSyntheticDefaultImports?": type.boolean.or(type.null), "allowUmdGlobalAccess?": type.boolean.or(type.null), "allowUnreachableCode?": type.boolean.or(type.null), "allowUnusedLabels?": type.boolean.or(type.null), "alwaysStrict?": type.boolean.or(type.null), "assumeChangesOnlyAffectDirectDependencies?": type.boolean.or(type.null), "baseUrl?": type.string.or(type.null), "charset?": type.string.or(type.null), "checkJs?": type.boolean.or(type.null), "composite?": type.boolean.or(type.null), "customConditions?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "declaration?": type.boolean.or(type.null), "declarationDir?": type.string.or(type.null), "declarationMap?": type.boolean.or(type.null), "diagnostics?": type.boolean.or(type.null), "disableReferencedProjectLoad?": type.boolean.or(type.null), "disableSizeLimit?": type.boolean.or(type.null), "disableSolutionSearching?": type.boolean.or(type.null), "disableSourceOfProjectReferenceRedirect?": type.boolean.or(type.null), "downlevelIteration?": type.boolean.or(type.null), "emitBOM?": type.boolean.or(type.null), "emitDeclarationOnly?": type.boolean.or(type.null), "emitDecoratorMetadata?": type.boolean.or(type.null), "erasableSyntaxOnly?": type.boolean.or(type.null), "esModuleInterop?": type.boolean.or(type.null), "exactOptionalPropertyTypes?": type.boolean.or(type.null), "experimentalDecorators?": type.boolean.or(type.null), "extendedDiagnostics?": type.boolean.or(type.null), "fallbackPolling?": type.enumerated("fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"), "forceConsistentCasingInFileNames?": type.boolean.or(type.null), "generateCpuProfile?": type.string.or(type.null), "importHelpers?": type.boolean.or(type.null), "importsNotUsedAsValues?": type.enumerated("remove", "preserve", "error"), "incremental?": type.boolean.or(type.null), "inlineSourceMap?": type.boolean.or(type.null), "inlineSources?": type.boolean.or(type.null), "isolatedDeclarations?": type.boolean.or(type.null), "isolatedModules?": type.boolean.or(type.null), "jsx?": type.enumerated("preserve", "react", "react-jsx", "react-jsxdev", "react-native"), "jsxFactory?": type.string.or(type.null), "jsxFragmentFactory?": type.string.or(type.null), "jsxImportSource?": type.string.or(type.null), "keyofStringsOnly?": type.boolean.or(type.null), "lib?": type.string.and(type.enumerated("ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))).array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "libReplacement?": type.boolean.or(type.null), "listEmittedFiles?": type.boolean.or(type.null), "listFiles?": type.boolean.or(type.null), "listFilesOnly?": type.boolean.or(type.null), "mapRoot?": type.string.or(type.null), "maxNodeModuleJsDepth?": type.number.or(type.null), "module?": type.string.or(type.null).and(type.enumerated("commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "moduleDetection?": type.enumerated("auto", "legacy", "force"), "moduleResolution?": type.string.or(type.null).and(type.enumerated("classic", "node", "node10", "node16", "nodenext", "bundler").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "moduleSuffixes?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "newLine?": type.string.or(type.null).and(type.enumerated("crlf", "lf").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^(CRLF|LF|crlf|lf)$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "noCheck?": type.boolean.or(type.null), "noEmit?": type.boolean.or(type.null), "noEmitHelpers?": type.boolean.or(type.null), "noEmitOnError?": type.boolean.or(type.null), "noErrorTruncation?": type.boolean.or(type.null), "noFallthroughCasesInSwitch?": type.boolean.or(type.null), "noImplicitAny?": type.boolean.or(type.null), "noImplicitOverride?": type.boolean.or(type.null), "noImplicitReturns?": type.boolean.or(type.null), "noImplicitThis?": type.boolean.or(type.null), "noImplicitUseStrict?": type.boolean.or(type.null), "noLib?": type.boolean.or(type.null), "noPropertyAccessFromIndexSignature?": type.boolean.or(type.null), "noResolve?": type.boolean.or(type.null), "noStrictGenericChecks?": type.boolean.or(type.null), "noUncheckedIndexedAccess?": type.boolean.or(type.null), "noUncheckedSideEffectImports?": type.boolean.or(type.null), "noUnusedLocals?": type.boolean.or(type.null), "noUnusedParameters?": type.boolean.or(type.null), "out?": type.string.or(type.null), "outDir?": type.string.or(type.null), "outFile?": type.string.or(type.null), "paths?": type({ "[string]": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null), "plugins?": type({ "name?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).array().or(type.null), "preserveConstEnums?": type.boolean.or(type.null), "preserveSymlinks?": type.boolean.or(type.null), "preserveValueImports?": type.boolean.or(type.null), "preserveWatchOutput?": type.boolean.or(type.null), "pretty?": type.boolean.or(type.null), "reactNamespace?": type.string.or(type.null), "removeComments?": type.boolean.or(type.null), "resolveJsonModule?": type.boolean.or(type.null), "resolvePackageJsonExports?": type.boolean.or(type.null), "resolvePackageJsonImports?": type.boolean.or(type.null), "rewriteRelativeImportExtensions?": type.boolean.or(type.null), "rootDir?": type.string.or(type.null), "rootDirs?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "skipDefaultLibCheck?": type.boolean.or(type.null), "skipLibCheck?": type.boolean.or(type.null), "sourceMap?": type.boolean.or(type.null), "sourceRoot?": type.string.or(type.null), "strict?": type.boolean.or(type.null), "strictBindCallApply?": type.boolean.or(type.null), "strictBuiltinIteratorReturn?": type.boolean.or(type.null), "strictFunctionTypes?": type.boolean.or(type.null), "strictNullChecks?": type.boolean.or(type.null), "strictPropertyInitialization?": type.boolean.or(type.null), "stripInternal?": type.boolean.or(type.null), "suppressExcessPropertyErrors?": type.boolean.or(type.null), "suppressImplicitAnyIndexErrors?": type.boolean.or(type.null), "target?": type.string.or(type.null).and(type.enumerated("es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "traceResolution?": type.boolean.or(type.null), "tsBuildInfoFile?": type.string.or(type.null), "typeRoots?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "types?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "useDefineForClassFields?": type.boolean.or(type.null), "useUnknownInCatchVariables?": type.boolean.or(type.null), "verbatimModuleSyntax?": type.boolean.or(type.null), "watch?": type.boolean.or(type.null), "watchDirectory?": type.enumerated("useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"), "watchFile?": type.enumerated("fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling") }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  }).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "compileOnSave?": type.boolean.or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "typeAcquisition?": type({ "enable?": type.boolean.or(type.null), "exclude?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "include?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "allOf?": type.unknown }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "watchOptions?": type({ "excludeDirectories?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "excludeFiles?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "fallbackPolling?": type.string.or(type.null), "force?": type.string.or(type.null), "synchronousWatchDirectory?": type.boolean.or(type.null), "watchDirectory?": type.string.or(type.null), "watchFile?": type.string.or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "buildOptions?": type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "assumeChangesOnlyAffectDirectDependencies?": type.boolean.or(type.null), "dry?": type.boolean.or(type.null), "force?": type.boolean.or(type.null), "incremental?": type.boolean.or(type.null), "traceResolution?": type.boolean.or(type.null), "verbose?": type.boolean.or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  }) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "ts-node?": type({ "compiler?": type.string.or(type.null), "compilerHost?": type.boolean.or(type.null), "compilerOptions?": type.object.narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null).and(type({ "allowArbitraryExtensions?": type.boolean.or(type.null), "allowImportingTsExtensions?": type.boolean.or(type.null), "allowJs?": type.boolean.or(type.null), "allowSyntheticDefaultImports?": type.boolean.or(type.null), "allowUmdGlobalAccess?": type.boolean.or(type.null), "allowUnreachableCode?": type.boolean.or(type.null), "allowUnusedLabels?": type.boolean.or(type.null), "alwaysStrict?": type.boolean.or(type.null), "assumeChangesOnlyAffectDirectDependencies?": type.boolean.or(type.null), "baseUrl?": type.string.or(type.null), "charset?": type.string.or(type.null), "checkJs?": type.boolean.or(type.null), "composite?": type.boolean.or(type.null), "customConditions?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "declaration?": type.boolean.or(type.null), "declarationDir?": type.string.or(type.null), "declarationMap?": type.boolean.or(type.null), "diagnostics?": type.boolean.or(type.null), "disableReferencedProjectLoad?": type.boolean.or(type.null), "disableSizeLimit?": type.boolean.or(type.null), "disableSolutionSearching?": type.boolean.or(type.null), "disableSourceOfProjectReferenceRedirect?": type.boolean.or(type.null), "downlevelIteration?": type.boolean.or(type.null), "emitBOM?": type.boolean.or(type.null), "emitDeclarationOnly?": type.boolean.or(type.null), "emitDecoratorMetadata?": type.boolean.or(type.null), "erasableSyntaxOnly?": type.boolean.or(type.null), "esModuleInterop?": type.boolean.or(type.null), "exactOptionalPropertyTypes?": type.boolean.or(type.null), "experimentalDecorators?": type.boolean.or(type.null), "extendedDiagnostics?": type.boolean.or(type.null), "fallbackPolling?": type.enumerated("fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"), "forceConsistentCasingInFileNames?": type.boolean.or(type.null), "generateCpuProfile?": type.string.or(type.null), "importHelpers?": type.boolean.or(type.null), "importsNotUsedAsValues?": type.enumerated("remove", "preserve", "error"), "incremental?": type.boolean.or(type.null), "inlineSourceMap?": type.boolean.or(type.null), "inlineSources?": type.boolean.or(type.null), "isolatedDeclarations?": type.boolean.or(type.null), "isolatedModules?": type.boolean.or(type.null), "jsx?": type.enumerated("preserve", "react", "react-jsx", "react-jsxdev", "react-native"), "jsxFactory?": type.string.or(type.null), "jsxFragmentFactory?": type.string.or(type.null), "jsxImportSource?": type.string.or(type.null), "keyofStringsOnly?": type.boolean.or(type.null), "lib?": type.string.and(type.enumerated("ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))).array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "libReplacement?": type.boolean.or(type.null), "listEmittedFiles?": type.boolean.or(type.null), "listFiles?": type.boolean.or(type.null), "listFilesOnly?": type.boolean.or(type.null), "mapRoot?": type.string.or(type.null), "maxNodeModuleJsDepth?": type.number.or(type.null), "module?": type.string.or(type.null).and(type.enumerated("commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "moduleDetection?": type.enumerated("auto", "legacy", "force"), "moduleResolution?": type.string.or(type.null).and(type.enumerated("classic", "node", "node10", "node16", "nodenext", "bundler").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "moduleSuffixes?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "newLine?": type.string.or(type.null).and(type.enumerated("crlf", "lf").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^(CRLF|LF|crlf|lf)$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "noCheck?": type.boolean.or(type.null), "noEmit?": type.boolean.or(type.null), "noEmitHelpers?": type.boolean.or(type.null), "noEmitOnError?": type.boolean.or(type.null), "noErrorTruncation?": type.boolean.or(type.null), "noFallthroughCasesInSwitch?": type.boolean.or(type.null), "noImplicitAny?": type.boolean.or(type.null), "noImplicitOverride?": type.boolean.or(type.null), "noImplicitReturns?": type.boolean.or(type.null), "noImplicitThis?": type.boolean.or(type.null), "noImplicitUseStrict?": type.boolean.or(type.null), "noLib?": type.boolean.or(type.null), "noPropertyAccessFromIndexSignature?": type.boolean.or(type.null), "noResolve?": type.boolean.or(type.null), "noStrictGenericChecks?": type.boolean.or(type.null), "noUncheckedIndexedAccess?": type.boolean.or(type.null), "noUncheckedSideEffectImports?": type.boolean.or(type.null), "noUnusedLocals?": type.boolean.or(type.null), "noUnusedParameters?": type.boolean.or(type.null), "out?": type.string.or(type.null), "outDir?": type.string.or(type.null), "outFile?": type.string.or(type.null), "paths?": type({ "[string]": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null), "plugins?": type({ "name?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).array().or(type.null), "preserveConstEnums?": type.boolean.or(type.null), "preserveSymlinks?": type.boolean.or(type.null), "preserveValueImports?": type.boolean.or(type.null), "preserveWatchOutput?": type.boolean.or(type.null), "pretty?": type.boolean.or(type.null), "reactNamespace?": type.string.or(type.null), "removeComments?": type.boolean.or(type.null), "resolveJsonModule?": type.boolean.or(type.null), "resolvePackageJsonExports?": type.boolean.or(type.null), "resolvePackageJsonImports?": type.boolean.or(type.null), "rewriteRelativeImportExtensions?": type.boolean.or(type.null), "rootDir?": type.string.or(type.null), "rootDirs?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "skipDefaultLibCheck?": type.boolean.or(type.null), "skipLibCheck?": type.boolean.or(type.null), "sourceMap?": type.boolean.or(type.null), "sourceRoot?": type.string.or(type.null), "strict?": type.boolean.or(type.null), "strictBindCallApply?": type.boolean.or(type.null), "strictBuiltinIteratorReturn?": type.boolean.or(type.null), "strictFunctionTypes?": type.boolean.or(type.null), "strictNullChecks?": type.boolean.or(type.null), "strictPropertyInitialization?": type.boolean.or(type.null), "stripInternal?": type.boolean.or(type.null), "suppressExcessPropertyErrors?": type.boolean.or(type.null), "suppressImplicitAnyIndexErrors?": type.boolean.or(type.null), "target?": type.string.or(type.null).and(type.enumerated("es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext").or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "string") {
+          if (!type(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).allows(val)) return ctx.mustBe("a valid string");
+        }
+    return true;
+  }))), "traceResolution?": type.boolean.or(type.null), "tsBuildInfoFile?": type.string.or(type.null), "typeRoots?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "types?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null), "useDefineForClassFields?": type.boolean.or(type.null), "useUnknownInCatchVariables?": type.boolean.or(type.null), "verbatimModuleSyntax?": type.boolean.or(type.null), "watch?": type.boolean.or(type.null), "watchDirectory?": type.enumerated("useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"), "watchFile?": type.enumerated("fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling") }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null)), "emit?": type.boolean.or(type.null), "esm?": type.boolean.or(type.null), "experimentalReplAwait?": type.boolean.or(type.null), "experimentalResolver?": type.boolean.or(type.null), "experimentalSpecifierResolution?": type.enumerated("explicit", "node"), "files?": type.boolean.or(type.null), "ignore?": type.string.array().or(type.null), "ignoreDiagnostics?": type.string.or(type.number).array().or(type.null), "logError?": type.boolean.or(type.null), "moduleTypes?": type.object.narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null), "preferTsExts?": type.boolean.or(type.null), "pretty?": type.boolean.or(type.null), "require?": type.string.array().or(type.null), "scope?": type.boolean.or(type.null), "scopeDir?": type.string.or(type.null), "skipIgnore?": type.boolean.or(type.null), "swc?": type.boolean.or(type.null), "transpileOnly?": type.boolean.or(type.null), "transpiler?": type.unknown.array().narrow((arr, ctx) => {
+      const schemas = [type.string.or(type.null), type.object.narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null)];
+      for (let i = 0; i < Math.min(arr.length, schemas.length); i++) {
+        if (!schemas[i].allows(arr[i])) return ctx.mustBe("valid tuple items");
+      }
+      return true;
+    }).narrow((arr, ctx) => arr.length >= 2 && arr.length <= 2 || ctx.mustBe("an array with 2-2 items")).or(type.null).or(type.string.or(type.null)), "typeCheck?": type.boolean.or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).and(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "files?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  }).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "exclude?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "include?": type.string.array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }).or(type.null) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  })).or(type.unknown.narrow((val, ctx) => {
+    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+          if (!type({ "references?": type({ "path?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).array().narrow((arr, ctx) => {
+      const seen = new Set();
+      for (const item of arr) {
+        const key = JSON.stringify(item);
+        if (seen.has(key)) return ctx.mustBe("an array with unique items");
+        seen.add(key);
+      }
+      return true;
+    }) }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).allows(val)) return ctx.mustBe("a valid object");
+        }
+    return true;
+  }))));
+type another_TSConfigNativeType = typeof another_TSConfigNative.infer;
+
+const another_Native = type({ fruits: type.enumerated("apple", "orange", "pear").array(), vegetables: type({ veggieLike: type.boolean, veggieName: type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array")).array() }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"));
+type another_NativeType = typeof another_Native.infer;
+
+const user_User = type({ "age?": type("number >= 0").and(type("number % 1")), email: type("string.email"), id: type.string, "name?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"));
 type user_UserType = typeof user_User.infer;
-
-export type another_TSConfigNative = Record<string, unknown> & { compilerOptions?: { allowArbitraryExtensions?: boolean | null; allowImportingTsExtensions?: boolean | null; allowJs?: boolean | null; allowSyntheticDefaultImports?: boolean | null; allowUmdGlobalAccess?: boolean | null; allowUnreachableCode?: boolean | null; allowUnusedLabels?: boolean | null; alwaysStrict?: boolean | null; assumeChangesOnlyAffectDirectDependencies?: boolean | null; baseUrl?: string | null; charset?: string | null; checkJs?: boolean | null; composite?: boolean | null; customConditions?: string[] | null; declaration?: boolean | null; declarationDir?: string | null; declarationMap?: boolean | null; diagnostics?: boolean | null; disableReferencedProjectLoad?: boolean | null; disableSizeLimit?: boolean | null; disableSolutionSearching?: boolean | null; disableSourceOfProjectReferenceRedirect?: boolean | null; downlevelIteration?: boolean | null; emitBOM?: boolean | null; emitDeclarationOnly?: boolean | null; emitDecoratorMetadata?: boolean | null; erasableSyntaxOnly?: boolean | null; esModuleInterop?: boolean | null; exactOptionalPropertyTypes?: boolean | null; experimentalDecorators?: boolean | null; extendedDiagnostics?: boolean | null; fallbackPolling?: "fixedPollingInterval" | "priorityPollingInterval" | "dynamicPriorityPolling" | "fixedInterval" | "priorityInterval" | "dynamicPriority" | "fixedChunkSize"; forceConsistentCasingInFileNames?: boolean | null; generateCpuProfile?: string | null; importHelpers?: boolean | null; importsNotUsedAsValues?: "remove" | "preserve" | "error"; incremental?: boolean | null; inlineSourceMap?: boolean | null; inlineSources?: boolean | null; isolatedDeclarations?: boolean | null; isolatedModules?: boolean | null; jsx?: "preserve" | "react" | "react-jsx" | "react-jsxdev" | "react-native"; jsxFactory?: string | null; jsxFragmentFactory?: string | null; jsxImportSource?: string | null; keyofStringsOnly?: boolean | null; lib?: string & "ES5" | "ES6" | "ES2015" | "ES2015.Collection" | "ES2015.Core" | "ES2015.Generator" | "ES2015.Iterable" | "ES2015.Promise" | "ES2015.Proxy" | "ES2015.Reflect" | "ES2015.Symbol.WellKnown" | "ES2015.Symbol" | "ES2016" | "ES2016.Array.Include" | "ES2017" | "ES2017.Intl" | "ES2017.Object" | "ES2017.SharedMemory" | "ES2017.String" | "ES2017.TypedArrays" | "ES2017.ArrayBuffer" | "ES2018" | "ES2018.AsyncGenerator" | "ES2018.AsyncIterable" | "ES2018.Intl" | "ES2018.Promise" | "ES2018.Regexp" | "ES2019" | "ES2019.Array" | "ES2019.Intl" | "ES2019.Object" | "ES2019.String" | "ES2019.Symbol" | "ES2020" | "ES2020.BigInt" | "ES2020.Promise" | "ES2020.String" | "ES2020.Symbol.WellKnown" | "ESNext" | "ESNext.Array" | "ESNext.AsyncIterable" | "ESNext.BigInt" | "ESNext.Collection" | "ESNext.Intl" | "ESNext.Iterator" | "ESNext.Object" | "ESNext.Promise" | "ESNext.Regexp" | "ESNext.String" | "ESNext.Symbol" | "DOM" | "DOM.AsyncIterable" | "DOM.Iterable" | "ScriptHost" | "WebWorker" | "WebWorker.AsyncIterable" | "WebWorker.ImportScripts" | "Webworker.Iterable" | "ES7" | "ES2021" | "ES2020.SharedMemory" | "ES2020.Intl" | "ES2020.Date" | "ES2020.Number" | "ES2021.Promise" | "ES2021.String" | "ES2021.WeakRef" | "ESNext.WeakRef" | "ES2021.Intl" | "ES2022" | "ES2022.Array" | "ES2022.Error" | "ES2022.Intl" | "ES2022.Object" | "ES2022.String" | "ES2022.SharedMemory" | "ES2022.RegExp" | "ES2023" | "ES2023.Array" | "ES2024" | "ES2024.ArrayBuffer" | "ES2024.Collection" | "ES2024.Object" | "ES2024.Promise" | "ES2024.Regexp" | "ES2024.SharedMemory" | "ES2024.String" | "Decorators" | "Decorators.Legacy" | "ES2017.Date" | "ES2023.Collection" | "ESNext.Decorators" | "ESNext.Disposable" | "ESNext.Error" | "ESNext.Sharedmemory" | string | string | string | string | string | string | string | string | string | string | string | string | string | string | string | string[] | null; libReplacement?: boolean | null; listEmittedFiles?: boolean | null; listFiles?: boolean | null; listFilesOnly?: boolean | null; mapRoot?: string | null; maxNodeModuleJsDepth?: number | null; module?: string | null & "commonjs" | "amd" | "system" | "umd" | "es6" | "es2015" | "es2020" | "esnext" | "none" | "es2022" | "node16" | "node18" | "node20" | "nodenext" | "preserve" | string; moduleDetection?: "auto" | "legacy" | "force"; moduleResolution?: string | null & "classic" | "node" | "node10" | "node16" | "nodenext" | "bundler" | string; moduleSuffixes?: string[] | null; newLine?: string | null & "crlf" | "lf" | string; noCheck?: boolean | null; noEmit?: boolean | null; noEmitHelpers?: boolean | null; noEmitOnError?: boolean | null; noErrorTruncation?: boolean | null; noFallthroughCasesInSwitch?: boolean | null; noImplicitAny?: boolean | null; noImplicitOverride?: boolean | null; noImplicitReturns?: boolean | null; noImplicitThis?: boolean | null; noImplicitUseStrict?: boolean | null; noLib?: boolean | null; noPropertyAccessFromIndexSignature?: boolean | null; noResolve?: boolean | null; noStrictGenericChecks?: boolean | null; noUncheckedIndexedAccess?: boolean | null; noUncheckedSideEffectImports?: boolean | null; noUnusedLocals?: boolean | null; noUnusedParameters?: boolean | null; out?: string | null; outDir?: string | null; outFile?: string | null; paths?: Record<string, string[] | null> | null; plugins?: { name?: string; [key: string]: unknown }[] | null; preserveConstEnums?: boolean | null; preserveSymlinks?: boolean | null; preserveValueImports?: boolean | null; preserveWatchOutput?: boolean | null; pretty?: boolean | null; reactNamespace?: string | null; removeComments?: boolean | null; resolveJsonModule?: boolean | null; resolvePackageJsonExports?: boolean | null; resolvePackageJsonImports?: boolean | null; rewriteRelativeImportExtensions?: boolean | null; rootDir?: string | null; rootDirs?: string[] | null; skipDefaultLibCheck?: boolean | null; skipLibCheck?: boolean | null; sourceMap?: boolean | null; sourceRoot?: string | null; strict?: boolean | null; strictBindCallApply?: boolean | null; strictBuiltinIteratorReturn?: boolean | null; strictFunctionTypes?: boolean | null; strictNullChecks?: boolean | null; strictPropertyInitialization?: boolean | null; stripInternal?: boolean | null; suppressExcessPropertyErrors?: boolean | null; suppressImplicitAnyIndexErrors?: boolean | null; target?: string | null & "es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "es2018" | "es2019" | "es2020" | "es2021" | "es2022" | "es2023" | "es2024" | "esnext" | string; traceResolution?: boolean | null; tsBuildInfoFile?: string | null; typeRoots?: string[] | null; types?: string[] | null; useDefineForClassFields?: boolean | null; useUnknownInCatchVariables?: boolean | null; verbatimModuleSyntax?: boolean | null; watch?: boolean | null; watchDirectory?: "useFsEvents" | "fixedPollingInterval" | "dynamicPriorityPolling" | "fixedChunkSizePolling"; watchFile?: "fixedPollingInterval" | "priorityPollingInterval" | "dynamicPriorityPolling" | "useFsEvents" | "useFsEventsOnParentDirectory" | "fixedChunkSizePolling"; [key: string]: unknown } | null; [key: string]: unknown } & { compileOnSave?: boolean | null; [key: string]: unknown } & { typeAcquisition?: { enable?: boolean | null; exclude?: string[] | null; include?: string[] | null; [key: string]: unknown } | null; [key: string]: unknown } & { extends?: string | string[]; [key: string]: unknown } & { watchOptions?: { excludeDirectories?: string[] | null; excludeFiles?: string[] | null; fallbackPolling?: string | null; force?: string | null; synchronousWatchDirectory?: boolean | null; watchDirectory?: string | null; watchFile?: string | null; [key: string]: unknown } | null; [key: string]: unknown } & { buildOptions?: { assumeChangesOnlyAffectDirectDependencies?: boolean | null; dry?: boolean | null; force?: boolean | null; incremental?: boolean | null; traceResolution?: boolean | null; verbose?: boolean | null; [key: string]: unknown }; [key: string]: unknown } & { "ts-node"?: { compiler?: string | null; compilerHost?: boolean | null; compilerOptions?: Record<string, unknown> | null & { allowArbitraryExtensions?: boolean | null; allowImportingTsExtensions?: boolean | null; allowJs?: boolean | null; allowSyntheticDefaultImports?: boolean | null; allowUmdGlobalAccess?: boolean | null; allowUnreachableCode?: boolean | null; allowUnusedLabels?: boolean | null; alwaysStrict?: boolean | null; assumeChangesOnlyAffectDirectDependencies?: boolean | null; baseUrl?: string | null; charset?: string | null; checkJs?: boolean | null; composite?: boolean | null; customConditions?: string[] | null; declaration?: boolean | null; declarationDir?: string | null; declarationMap?: boolean | null; diagnostics?: boolean | null; disableReferencedProjectLoad?: boolean | null; disableSizeLimit?: boolean | null; disableSolutionSearching?: boolean | null; disableSourceOfProjectReferenceRedirect?: boolean | null; downlevelIteration?: boolean | null; emitBOM?: boolean | null; emitDeclarationOnly?: boolean | null; emitDecoratorMetadata?: boolean | null; erasableSyntaxOnly?: boolean | null; esModuleInterop?: boolean | null; exactOptionalPropertyTypes?: boolean | null; experimentalDecorators?: boolean | null; extendedDiagnostics?: boolean | null; fallbackPolling?: "fixedPollingInterval" | "priorityPollingInterval" | "dynamicPriorityPolling" | "fixedInterval" | "priorityInterval" | "dynamicPriority" | "fixedChunkSize"; forceConsistentCasingInFileNames?: boolean | null; generateCpuProfile?: string | null; importHelpers?: boolean | null; importsNotUsedAsValues?: "remove" | "preserve" | "error"; incremental?: boolean | null; inlineSourceMap?: boolean | null; inlineSources?: boolean | null; isolatedDeclarations?: boolean | null; isolatedModules?: boolean | null; jsx?: "preserve" | "react" | "react-jsx" | "react-jsxdev" | "react-native"; jsxFactory?: string | null; jsxFragmentFactory?: string | null; jsxImportSource?: string | null; keyofStringsOnly?: boolean | null; lib?: string & "ES5" | "ES6" | "ES2015" | "ES2015.Collection" | "ES2015.Core" | "ES2015.Generator" | "ES2015.Iterable" | "ES2015.Promise" | "ES2015.Proxy" | "ES2015.Reflect" | "ES2015.Symbol.WellKnown" | "ES2015.Symbol" | "ES2016" | "ES2016.Array.Include" | "ES2017" | "ES2017.Intl" | "ES2017.Object" | "ES2017.SharedMemory" | "ES2017.String" | "ES2017.TypedArrays" | "ES2017.ArrayBuffer" | "ES2018" | "ES2018.AsyncGenerator" | "ES2018.AsyncIterable" | "ES2018.Intl" | "ES2018.Promise" | "ES2018.Regexp" | "ES2019" | "ES2019.Array" | "ES2019.Intl" | "ES2019.Object" | "ES2019.String" | "ES2019.Symbol" | "ES2020" | "ES2020.BigInt" | "ES2020.Promise" | "ES2020.String" | "ES2020.Symbol.WellKnown" | "ESNext" | "ESNext.Array" | "ESNext.AsyncIterable" | "ESNext.BigInt" | "ESNext.Collection" | "ESNext.Intl" | "ESNext.Iterator" | "ESNext.Object" | "ESNext.Promise" | "ESNext.Regexp" | "ESNext.String" | "ESNext.Symbol" | "DOM" | "DOM.AsyncIterable" | "DOM.Iterable" | "ScriptHost" | "WebWorker" | "WebWorker.AsyncIterable" | "WebWorker.ImportScripts" | "Webworker.Iterable" | "ES7" | "ES2021" | "ES2020.SharedMemory" | "ES2020.Intl" | "ES2020.Date" | "ES2020.Number" | "ES2021.Promise" | "ES2021.String" | "ES2021.WeakRef" | "ESNext.WeakRef" | "ES2021.Intl" | "ES2022" | "ES2022.Array" | "ES2022.Error" | "ES2022.Intl" | "ES2022.Object" | "ES2022.String" | "ES2022.SharedMemory" | "ES2022.RegExp" | "ES2023" | "ES2023.Array" | "ES2024" | "ES2024.ArrayBuffer" | "ES2024.Collection" | "ES2024.Object" | "ES2024.Promise" | "ES2024.Regexp" | "ES2024.SharedMemory" | "ES2024.String" | "Decorators" | "Decorators.Legacy" | "ES2017.Date" | "ES2023.Collection" | "ESNext.Decorators" | "ESNext.Disposable" | "ESNext.Error" | "ESNext.Sharedmemory" | string | string | string | string | string | string | string | string | string | string | string | string | string | string | string | string[] | null; libReplacement?: boolean | null; listEmittedFiles?: boolean | null; listFiles?: boolean | null; listFilesOnly?: boolean | null; mapRoot?: string | null; maxNodeModuleJsDepth?: number | null; module?: string | null & "commonjs" | "amd" | "system" | "umd" | "es6" | "es2015" | "es2020" | "esnext" | "none" | "es2022" | "node16" | "node18" | "node20" | "nodenext" | "preserve" | string; moduleDetection?: "auto" | "legacy" | "force"; moduleResolution?: string | null & "classic" | "node" | "node10" | "node16" | "nodenext" | "bundler" | string; moduleSuffixes?: string[] | null; newLine?: string | null & "crlf" | "lf" | string; noCheck?: boolean | null; noEmit?: boolean | null; noEmitHelpers?: boolean | null; noEmitOnError?: boolean | null; noErrorTruncation?: boolean | null; noFallthroughCasesInSwitch?: boolean | null; noImplicitAny?: boolean | null; noImplicitOverride?: boolean | null; noImplicitReturns?: boolean | null; noImplicitThis?: boolean | null; noImplicitUseStrict?: boolean | null; noLib?: boolean | null; noPropertyAccessFromIndexSignature?: boolean | null; noResolve?: boolean | null; noStrictGenericChecks?: boolean | null; noUncheckedIndexedAccess?: boolean | null; noUncheckedSideEffectImports?: boolean | null; noUnusedLocals?: boolean | null; noUnusedParameters?: boolean | null; out?: string | null; outDir?: string | null; outFile?: string | null; paths?: Record<string, string[] | null> | null; plugins?: { name?: string; [key: string]: unknown }[] | null; preserveConstEnums?: boolean | null; preserveSymlinks?: boolean | null; preserveValueImports?: boolean | null; preserveWatchOutput?: boolean | null; pretty?: boolean | null; reactNamespace?: string | null; removeComments?: boolean | null; resolveJsonModule?: boolean | null; resolvePackageJsonExports?: boolean | null; resolvePackageJsonImports?: boolean | null; rewriteRelativeImportExtensions?: boolean | null; rootDir?: string | null; rootDirs?: string[] | null; skipDefaultLibCheck?: boolean | null; skipLibCheck?: boolean | null; sourceMap?: boolean | null; sourceRoot?: string | null; strict?: boolean | null; strictBindCallApply?: boolean | null; strictBuiltinIteratorReturn?: boolean | null; strictFunctionTypes?: boolean | null; strictNullChecks?: boolean | null; strictPropertyInitialization?: boolean | null; stripInternal?: boolean | null; suppressExcessPropertyErrors?: boolean | null; suppressImplicitAnyIndexErrors?: boolean | null; target?: string | null & "es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "es2018" | "es2019" | "es2020" | "es2021" | "es2022" | "es2023" | "es2024" | "esnext" | string; traceResolution?: boolean | null; tsBuildInfoFile?: string | null; typeRoots?: string[] | null; types?: string[] | null; useDefineForClassFields?: boolean | null; useUnknownInCatchVariables?: boolean | null; verbatimModuleSyntax?: boolean | null; watch?: boolean | null; watchDirectory?: "useFsEvents" | "fixedPollingInterval" | "dynamicPriorityPolling" | "fixedChunkSizePolling"; watchFile?: "fixedPollingInterval" | "priorityPollingInterval" | "dynamicPriorityPolling" | "useFsEvents" | "useFsEventsOnParentDirectory" | "fixedChunkSizePolling"; [key: string]: unknown } | null; emit?: boolean | null; esm?: boolean | null; experimentalReplAwait?: boolean | null; experimentalResolver?: boolean | null; experimentalSpecifierResolution?: "explicit" | "node"; files?: boolean | null; ignore?: string[] | null; ignoreDiagnostics?: string | number[] | null; logError?: boolean | null; moduleTypes?: Record<string, unknown> | null; preferTsExts?: boolean | null; pretty?: boolean | null; require?: string[] | null; scope?: boolean | null; scopeDir?: string | null; skipIgnore?: boolean | null; swc?: boolean | null; transpileOnly?: boolean | null; transpiler?: [string | null, Record<string, unknown> | null, ...unknown[]] | null | string | null; typeCheck?: boolean | null; [key: string]: unknown } | null; [key: string]: unknown } & { files?: string[] | null; [key: string]: unknown } | { exclude?: string[] | null; [key: string]: unknown } | { include?: string[] | null; [key: string]: unknown } | { references?: { path?: string; [key: string]: unknown }[]; [key: string]: unknown };
-
-export type another_Native = { fruits: "apple" | "orange" | "pear"[]; vegetables: { veggieName: string; veggieLike: boolean; [key: string]: unknown }[]; [key: string]: unknown };
 
 const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["compilerOptions"]: z.union([z.object({ ["allowArbitraryExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["allowImportingTsExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["allowJs"]: z.union([z.boolean(), z.null()]).optional(), ["allowSyntheticDefaultImports"]: z.union([z.boolean(), z.null()]).optional(), ["allowUmdGlobalAccess"]: z.union([z.boolean(), z.null()]).optional(), ["allowUnreachableCode"]: z.union([z.boolean(), z.null()]).optional(), ["allowUnusedLabels"]: z.union([z.boolean(), z.null()]).optional(), ["alwaysStrict"]: z.union([z.boolean(), z.null()]).optional(), ["assumeChangesOnlyAffectDirectDependencies"]: z.union([z.boolean(), z.null()]).optional(), ["baseUrl"]: z.union([z.string(), z.null()]).optional(), ["charset"]: z.union([z.string(), z.null()]).optional(), ["checkJs"]: z.union([z.boolean(), z.null()]).optional(), ["composite"]: z.union([z.boolean(), z.null()]).optional(), ["customConditions"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ compilerOptions: z.union([z.object({ allowArbitraryExtensions: z.union([z.boolean(), z.null()]).optional(), allowImportingTsExtensions: z.union([z.boolean(), z.null()]).optional(), allowJs: z.union([z.boolean(), z.null()]).optional(), allowSyntheticDefaultImports: z.union([z.boolean(), z.null()]).optional(), allowUmdGlobalAccess: z.union([z.boolean(), z.null()]).optional(), allowUnreachableCode: z.union([z.boolean(), z.null()]).optional(), allowUnusedLabels: z.union([z.boolean(), z.null()]).optional(), alwaysStrict: z.union([z.boolean(), z.null()]).optional(), assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), baseUrl: z.union([z.string(), z.null()]).optional(), charset: z.union([z.string(), z.null()]).optional(), checkJs: z.union([z.boolean(), z.null()]).optional(), composite: z.union([z.boolean(), z.null()]).optional(), customConditions: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -20,7 +464,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["declaration"]: z.union([z.boolean(), z.null()]).optional(), ["declarationDir"]: z.union([z.string(), z.null()]).optional(), ["declarationMap"]: z.union([z.boolean(), z.null()]).optional(), ["diagnostics"]: z.union([z.boolean(), z.null()]).optional(), ["disableReferencedProjectLoad"]: z.union([z.boolean(), z.null()]).optional(), ["disableSizeLimit"]: z.union([z.boolean(), z.null()]).optional(), ["disableSolutionSearching"]: z.union([z.boolean(), z.null()]).optional(), ["disableSourceOfProjectReferenceRedirect"]: z.union([z.boolean(), z.null()]).optional(), ["downlevelIteration"]: z.union([z.boolean(), z.null()]).optional(), ["emitBOM"]: z.union([z.boolean(), z.null()]).optional(), ["emitDeclarationOnly"]: z.union([z.boolean(), z.null()]).optional(), ["emitDecoratorMetadata"]: z.union([z.boolean(), z.null()]).optional(), ["erasableSyntaxOnly"]: z.union([z.boolean(), z.null()]).optional(), ["esModuleInterop"]: z.union([z.boolean(), z.null()]).optional(), ["exactOptionalPropertyTypes"]: z.union([z.boolean(), z.null()]).optional(), ["experimentalDecorators"]: z.union([z.boolean(), z.null()]).optional(), ["extendedDiagnostics"]: z.union([z.boolean(), z.null()]).optional(), ["fallbackPolling"]: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), ["forceConsistentCasingInFileNames"]: z.union([z.boolean(), z.null()]).optional(), ["generateCpuProfile"]: z.union([z.string(), z.null()]).optional(), ["importHelpers"]: z.union([z.boolean(), z.null()]).optional(), ["importsNotUsedAsValues"]: z.enum(["remove", "preserve", "error"]).optional(), ["incremental"]: z.union([z.boolean(), z.null()]).optional(), ["inlineSourceMap"]: z.union([z.boolean(), z.null()]).optional(), ["inlineSources"]: z.union([z.boolean(), z.null()]).optional(), ["isolatedDeclarations"]: z.union([z.boolean(), z.null()]).optional(), ["isolatedModules"]: z.union([z.boolean(), z.null()]).optional(), ["jsx"]: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), ["jsxFactory"]: z.union([z.string(), z.null()]).optional(), ["jsxFragmentFactory"]: z.union([z.string(), z.null()]).optional(), ["jsxImportSource"]: z.union([z.string(), z.null()]).optional(), ["keyofStringsOnly"]: z.union([z.boolean(), z.null()]).optional(), ["lib"]: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).safeParse(val);
           if (!result.success) {
@@ -140,21 +584,21 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["libReplacement"]: z.union([z.boolean(), z.null()]).optional(), ["listEmittedFiles"]: z.union([z.boolean(), z.null()]).optional(), ["listFiles"]: z.union([z.boolean(), z.null()]).optional(), ["listFilesOnly"]: z.union([z.boolean(), z.null()]).optional(), ["mapRoot"]: z.union([z.string(), z.null()]).optional(), ["maxNodeModuleJsDepth"]: z.union([z.number(), z.null()]).optional(), ["module"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["moduleDetection"]: z.enum(["auto", "legacy", "force"]).optional(), ["moduleResolution"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
+      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["moduleSuffixes"]: z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), moduleSuffixes: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -162,14 +606,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["newLine"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(CRLF|LF|crlf|lf)$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["noCheck"]: z.union([z.boolean(), z.null()]).optional(), ["noEmit"]: z.union([z.boolean(), z.null()]).optional(), ["noEmitHelpers"]: z.union([z.boolean(), z.null()]).optional(), ["noEmitOnError"]: z.union([z.boolean(), z.null()]).optional(), ["noErrorTruncation"]: z.union([z.boolean(), z.null()]).optional(), ["noFallthroughCasesInSwitch"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitAny"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitOverride"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitReturns"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitThis"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitUseStrict"]: z.union([z.boolean(), z.null()]).optional(), ["noLib"]: z.union([z.boolean(), z.null()]).optional(), ["noPropertyAccessFromIndexSignature"]: z.union([z.boolean(), z.null()]).optional(), ["noResolve"]: z.union([z.boolean(), z.null()]).optional(), ["noStrictGenericChecks"]: z.union([z.boolean(), z.null()]).optional(), ["noUncheckedIndexedAccess"]: z.union([z.boolean(), z.null()]).optional(), ["noUncheckedSideEffectImports"]: z.union([z.boolean(), z.null()]).optional(), ["noUnusedLocals"]: z.union([z.boolean(), z.null()]).optional(), ["noUnusedParameters"]: z.union([z.boolean(), z.null()]).optional(), ["out"]: z.union([z.string(), z.null()]).optional(), ["outDir"]: z.union([z.string(), z.null()]).optional(), ["outFile"]: z.union([z.string(), z.null()]).optional(), ["paths"]: z.union([z.record(z.string(), z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), noCheck: z.union([z.boolean(), z.null()]).optional(), noEmit: z.union([z.boolean(), z.null()]).optional(), noEmitHelpers: z.union([z.boolean(), z.null()]).optional(), noEmitOnError: z.union([z.boolean(), z.null()]).optional(), noErrorTruncation: z.union([z.boolean(), z.null()]).optional(), noFallthroughCasesInSwitch: z.union([z.boolean(), z.null()]).optional(), noImplicitAny: z.union([z.boolean(), z.null()]).optional(), noImplicitOverride: z.union([z.boolean(), z.null()]).optional(), noImplicitReturns: z.union([z.boolean(), z.null()]).optional(), noImplicitThis: z.union([z.boolean(), z.null()]).optional(), noImplicitUseStrict: z.union([z.boolean(), z.null()]).optional(), noLib: z.union([z.boolean(), z.null()]).optional(), noPropertyAccessFromIndexSignature: z.union([z.boolean(), z.null()]).optional(), noResolve: z.union([z.boolean(), z.null()]).optional(), noStrictGenericChecks: z.union([z.boolean(), z.null()]).optional(), noUncheckedIndexedAccess: z.union([z.boolean(), z.null()]).optional(), noUncheckedSideEffectImports: z.union([z.boolean(), z.null()]).optional(), noUnusedLocals: z.union([z.boolean(), z.null()]).optional(), noUnusedParameters: z.union([z.boolean(), z.null()]).optional(), out: z.union([z.string(), z.null()]).optional(), outDir: z.union([z.string(), z.null()]).optional(), outFile: z.union([z.string(), z.null()]).optional(), paths: z.union([z.record(z.string(), z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -177,7 +621,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()])), z.null()]).optional(), ["plugins"]: z.union([z.array(z.object({ ["name"]: z.string().optional() }).passthrough()), z.null()]).optional(), ["preserveConstEnums"]: z.union([z.boolean(), z.null()]).optional(), ["preserveSymlinks"]: z.union([z.boolean(), z.null()]).optional(), ["preserveValueImports"]: z.union([z.boolean(), z.null()]).optional(), ["preserveWatchOutput"]: z.union([z.boolean(), z.null()]).optional(), ["pretty"]: z.union([z.boolean(), z.null()]).optional(), ["reactNamespace"]: z.union([z.string(), z.null()]).optional(), ["removeComments"]: z.union([z.boolean(), z.null()]).optional(), ["resolveJsonModule"]: z.union([z.boolean(), z.null()]).optional(), ["resolvePackageJsonExports"]: z.union([z.boolean(), z.null()]).optional(), ["resolvePackageJsonImports"]: z.union([z.boolean(), z.null()]).optional(), ["rewriteRelativeImportExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["rootDir"]: z.union([z.string(), z.null()]).optional(), ["rootDirs"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()])), z.null()]).optional(), plugins: z.union([z.array(z.object({ name: z.string().optional() }).passthrough()), z.null()]).optional(), preserveConstEnums: z.union([z.boolean(), z.null()]).optional(), preserveSymlinks: z.union([z.boolean(), z.null()]).optional(), preserveValueImports: z.union([z.boolean(), z.null()]).optional(), preserveWatchOutput: z.union([z.boolean(), z.null()]).optional(), pretty: z.union([z.boolean(), z.null()]).optional(), reactNamespace: z.union([z.string(), z.null()]).optional(), removeComments: z.union([z.boolean(), z.null()]).optional(), resolveJsonModule: z.union([z.boolean(), z.null()]).optional(), resolvePackageJsonExports: z.union([z.boolean(), z.null()]).optional(), resolvePackageJsonImports: z.union([z.boolean(), z.null()]).optional(), rewriteRelativeImportExtensions: z.union([z.boolean(), z.null()]).optional(), rootDir: z.union([z.string(), z.null()]).optional(), rootDirs: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -185,14 +629,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["skipDefaultLibCheck"]: z.union([z.boolean(), z.null()]).optional(), ["skipLibCheck"]: z.union([z.boolean(), z.null()]).optional(), ["sourceMap"]: z.union([z.boolean(), z.null()]).optional(), ["sourceRoot"]: z.union([z.string(), z.null()]).optional(), ["strict"]: z.union([z.boolean(), z.null()]).optional(), ["strictBindCallApply"]: z.union([z.boolean(), z.null()]).optional(), ["strictBuiltinIteratorReturn"]: z.union([z.boolean(), z.null()]).optional(), ["strictFunctionTypes"]: z.union([z.boolean(), z.null()]).optional(), ["strictNullChecks"]: z.union([z.boolean(), z.null()]).optional(), ["strictPropertyInitialization"]: z.union([z.boolean(), z.null()]).optional(), ["stripInternal"]: z.union([z.boolean(), z.null()]).optional(), ["suppressExcessPropertyErrors"]: z.union([z.boolean(), z.null()]).optional(), ["suppressImplicitAnyIndexErrors"]: z.union([z.boolean(), z.null()]).optional(), ["target"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["traceResolution"]: z.union([z.boolean(), z.null()]).optional(), ["tsBuildInfoFile"]: z.union([z.string(), z.null()]).optional(), ["typeRoots"]: z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), traceResolution: z.union([z.boolean(), z.null()]).optional(), tsBuildInfoFile: z.union([z.string(), z.null()]).optional(), typeRoots: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -200,7 +644,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["types"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), types: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -208,21 +652,21 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["useDefineForClassFields"]: z.union([z.boolean(), z.null()]).optional(), ["useUnknownInCatchVariables"]: z.union([z.boolean(), z.null()]).optional(), ["verbatimModuleSyntax"]: z.union([z.boolean(), z.null()]).optional(), ["watch"]: z.union([z.boolean(), z.null()]).optional(), ["watchDirectory"]: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), ["watchFile"]: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
+    }, { message: "Array items must be unique" }), z.null()]).optional(), useDefineForClassFields: z.union([z.boolean(), z.null()]).optional(), useUnknownInCatchVariables: z.union([z.boolean(), z.null()]).optional(), verbatimModuleSyntax: z.union([z.boolean(), z.null()]).optional(), watch: z.union([z.boolean(), z.null()]).optional(), watchDirectory: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), watchFile: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       }), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["compileOnSave"]: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
+          const result = z.object({ compileOnSave: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       })), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["typeAcquisition"]: z.union([z.object({ ["enable"]: z.union([z.boolean(), z.null()]).optional(), ["exclude"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ typeAcquisition: z.union([z.object({ enable: z.union([z.boolean(), z.null()]).optional(), exclude: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -230,7 +674,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["include"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), include: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -245,29 +689,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         }
       })), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["extends"]: z.any().superRefine((val, ctx) => {
-    const schemas = [z.string(), z.array(z.string())];
-    const results = schemas.map(s => s.safeParse(val));
-    const validCount = results.filter(r => r.success).length;
-    if (validCount === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Value must match exactly one schema in oneOf, but matched none",
-      });
-    } else if (validCount > 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Value must match exactly one schema in oneOf, but matched multiple",
-      });
-    }
-  }).optional() }).passthrough().safeParse(val);
+          const result = z.object({ allOf: z.any().optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       })), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["watchOptions"]: z.union([z.object({ ["excludeDirectories"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ watchOptions: z.union([z.object({ excludeDirectories: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -275,7 +704,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["excludeFiles"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), excludeFiles: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -283,16 +712,16 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["fallbackPolling"]: z.union([z.string(), z.null()]).optional(), ["force"]: z.union([z.string(), z.null()]).optional(), ["synchronousWatchDirectory"]: z.union([z.boolean(), z.null()]).optional(), ["watchDirectory"]: z.union([z.string(), z.null()]).optional(), ["watchFile"]: z.union([z.string(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
+    }, { message: "Array items must be unique" }), z.null()]).optional(), fallbackPolling: z.union([z.string(), z.null()]).optional(), force: z.union([z.string(), z.null()]).optional(), synchronousWatchDirectory: z.union([z.boolean(), z.null()]).optional(), watchDirectory: z.union([z.string(), z.null()]).optional(), watchFile: z.union([z.string(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       })), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["buildOptions"]: z.any().superRefine((val, ctx) => {
+          const result = z.object({ buildOptions: z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["assumeChangesOnlyAffectDirectDependencies"]: z.union([z.boolean(), z.null()]).optional(), ["dry"]: z.union([z.boolean(), z.null()]).optional(), ["force"]: z.union([z.boolean(), z.null()]).optional(), ["incremental"]: z.union([z.boolean(), z.null()]).optional(), ["traceResolution"]: z.union([z.boolean(), z.null()]).optional(), ["verbose"]: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
+          const result = z.object({ assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), dry: z.union([z.boolean(), z.null()]).optional(), force: z.union([z.boolean(), z.null()]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), traceResolution: z.union([z.boolean(), z.null()]).optional(), verbose: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
@@ -304,7 +733,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         }
       })), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["ts-node"]: z.union([z.object({ ["compiler"]: z.union([z.string(), z.null()]).optional(), ["compilerHost"]: z.union([z.boolean(), z.null()]).optional(), ["compilerOptions"]: z.intersection(z.union([z.object({}).passthrough(), z.null()]), z.union([z.object({ ["allowArbitraryExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["allowImportingTsExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["allowJs"]: z.union([z.boolean(), z.null()]).optional(), ["allowSyntheticDefaultImports"]: z.union([z.boolean(), z.null()]).optional(), ["allowUmdGlobalAccess"]: z.union([z.boolean(), z.null()]).optional(), ["allowUnreachableCode"]: z.union([z.boolean(), z.null()]).optional(), ["allowUnusedLabels"]: z.union([z.boolean(), z.null()]).optional(), ["alwaysStrict"]: z.union([z.boolean(), z.null()]).optional(), ["assumeChangesOnlyAffectDirectDependencies"]: z.union([z.boolean(), z.null()]).optional(), ["baseUrl"]: z.union([z.string(), z.null()]).optional(), ["charset"]: z.union([z.string(), z.null()]).optional(), ["checkJs"]: z.union([z.boolean(), z.null()]).optional(), ["composite"]: z.union([z.boolean(), z.null()]).optional(), ["customConditions"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ ["ts-node"]: z.union([z.object({ compiler: z.union([z.string(), z.null()]).optional(), compilerHost: z.union([z.boolean(), z.null()]).optional(), compilerOptions: z.intersection(z.union([z.object({}).passthrough(), z.null()]), z.union([z.object({ allowArbitraryExtensions: z.union([z.boolean(), z.null()]).optional(), allowImportingTsExtensions: z.union([z.boolean(), z.null()]).optional(), allowJs: z.union([z.boolean(), z.null()]).optional(), allowSyntheticDefaultImports: z.union([z.boolean(), z.null()]).optional(), allowUmdGlobalAccess: z.union([z.boolean(), z.null()]).optional(), allowUnreachableCode: z.union([z.boolean(), z.null()]).optional(), allowUnusedLabels: z.union([z.boolean(), z.null()]).optional(), alwaysStrict: z.union([z.boolean(), z.null()]).optional(), assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), baseUrl: z.union([z.string(), z.null()]).optional(), charset: z.union([z.string(), z.null()]).optional(), checkJs: z.union([z.boolean(), z.null()]).optional(), composite: z.union([z.boolean(), z.null()]).optional(), customConditions: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -312,7 +741,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["declaration"]: z.union([z.boolean(), z.null()]).optional(), ["declarationDir"]: z.union([z.string(), z.null()]).optional(), ["declarationMap"]: z.union([z.boolean(), z.null()]).optional(), ["diagnostics"]: z.union([z.boolean(), z.null()]).optional(), ["disableReferencedProjectLoad"]: z.union([z.boolean(), z.null()]).optional(), ["disableSizeLimit"]: z.union([z.boolean(), z.null()]).optional(), ["disableSolutionSearching"]: z.union([z.boolean(), z.null()]).optional(), ["disableSourceOfProjectReferenceRedirect"]: z.union([z.boolean(), z.null()]).optional(), ["downlevelIteration"]: z.union([z.boolean(), z.null()]).optional(), ["emitBOM"]: z.union([z.boolean(), z.null()]).optional(), ["emitDeclarationOnly"]: z.union([z.boolean(), z.null()]).optional(), ["emitDecoratorMetadata"]: z.union([z.boolean(), z.null()]).optional(), ["erasableSyntaxOnly"]: z.union([z.boolean(), z.null()]).optional(), ["esModuleInterop"]: z.union([z.boolean(), z.null()]).optional(), ["exactOptionalPropertyTypes"]: z.union([z.boolean(), z.null()]).optional(), ["experimentalDecorators"]: z.union([z.boolean(), z.null()]).optional(), ["extendedDiagnostics"]: z.union([z.boolean(), z.null()]).optional(), ["fallbackPolling"]: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), ["forceConsistentCasingInFileNames"]: z.union([z.boolean(), z.null()]).optional(), ["generateCpuProfile"]: z.union([z.string(), z.null()]).optional(), ["importHelpers"]: z.union([z.boolean(), z.null()]).optional(), ["importsNotUsedAsValues"]: z.enum(["remove", "preserve", "error"]).optional(), ["incremental"]: z.union([z.boolean(), z.null()]).optional(), ["inlineSourceMap"]: z.union([z.boolean(), z.null()]).optional(), ["inlineSources"]: z.union([z.boolean(), z.null()]).optional(), ["isolatedDeclarations"]: z.union([z.boolean(), z.null()]).optional(), ["isolatedModules"]: z.union([z.boolean(), z.null()]).optional(), ["jsx"]: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), ["jsxFactory"]: z.union([z.string(), z.null()]).optional(), ["jsxFragmentFactory"]: z.union([z.string(), z.null()]).optional(), ["jsxImportSource"]: z.union([z.string(), z.null()]).optional(), ["keyofStringsOnly"]: z.union([z.boolean(), z.null()]).optional(), ["lib"]: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).safeParse(val);
           if (!result.success) {
@@ -432,21 +861,21 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["libReplacement"]: z.union([z.boolean(), z.null()]).optional(), ["listEmittedFiles"]: z.union([z.boolean(), z.null()]).optional(), ["listFiles"]: z.union([z.boolean(), z.null()]).optional(), ["listFilesOnly"]: z.union([z.boolean(), z.null()]).optional(), ["mapRoot"]: z.union([z.string(), z.null()]).optional(), ["maxNodeModuleJsDepth"]: z.union([z.number(), z.null()]).optional(), ["module"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["moduleDetection"]: z.enum(["auto", "legacy", "force"]).optional(), ["moduleResolution"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
+      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["moduleSuffixes"]: z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), moduleSuffixes: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -454,14 +883,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["newLine"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(CRLF|LF|crlf|lf)$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["noCheck"]: z.union([z.boolean(), z.null()]).optional(), ["noEmit"]: z.union([z.boolean(), z.null()]).optional(), ["noEmitHelpers"]: z.union([z.boolean(), z.null()]).optional(), ["noEmitOnError"]: z.union([z.boolean(), z.null()]).optional(), ["noErrorTruncation"]: z.union([z.boolean(), z.null()]).optional(), ["noFallthroughCasesInSwitch"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitAny"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitOverride"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitReturns"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitThis"]: z.union([z.boolean(), z.null()]).optional(), ["noImplicitUseStrict"]: z.union([z.boolean(), z.null()]).optional(), ["noLib"]: z.union([z.boolean(), z.null()]).optional(), ["noPropertyAccessFromIndexSignature"]: z.union([z.boolean(), z.null()]).optional(), ["noResolve"]: z.union([z.boolean(), z.null()]).optional(), ["noStrictGenericChecks"]: z.union([z.boolean(), z.null()]).optional(), ["noUncheckedIndexedAccess"]: z.union([z.boolean(), z.null()]).optional(), ["noUncheckedSideEffectImports"]: z.union([z.boolean(), z.null()]).optional(), ["noUnusedLocals"]: z.union([z.boolean(), z.null()]).optional(), ["noUnusedParameters"]: z.union([z.boolean(), z.null()]).optional(), ["out"]: z.union([z.string(), z.null()]).optional(), ["outDir"]: z.union([z.string(), z.null()]).optional(), ["outFile"]: z.union([z.string(), z.null()]).optional(), ["paths"]: z.union([z.record(z.string(), z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), noCheck: z.union([z.boolean(), z.null()]).optional(), noEmit: z.union([z.boolean(), z.null()]).optional(), noEmitHelpers: z.union([z.boolean(), z.null()]).optional(), noEmitOnError: z.union([z.boolean(), z.null()]).optional(), noErrorTruncation: z.union([z.boolean(), z.null()]).optional(), noFallthroughCasesInSwitch: z.union([z.boolean(), z.null()]).optional(), noImplicitAny: z.union([z.boolean(), z.null()]).optional(), noImplicitOverride: z.union([z.boolean(), z.null()]).optional(), noImplicitReturns: z.union([z.boolean(), z.null()]).optional(), noImplicitThis: z.union([z.boolean(), z.null()]).optional(), noImplicitUseStrict: z.union([z.boolean(), z.null()]).optional(), noLib: z.union([z.boolean(), z.null()]).optional(), noPropertyAccessFromIndexSignature: z.union([z.boolean(), z.null()]).optional(), noResolve: z.union([z.boolean(), z.null()]).optional(), noStrictGenericChecks: z.union([z.boolean(), z.null()]).optional(), noUncheckedIndexedAccess: z.union([z.boolean(), z.null()]).optional(), noUncheckedSideEffectImports: z.union([z.boolean(), z.null()]).optional(), noUnusedLocals: z.union([z.boolean(), z.null()]).optional(), noUnusedParameters: z.union([z.boolean(), z.null()]).optional(), out: z.union([z.string(), z.null()]).optional(), outDir: z.union([z.string(), z.null()]).optional(), outFile: z.union([z.string(), z.null()]).optional(), paths: z.union([z.record(z.string(), z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -469,7 +898,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()])), z.null()]).optional(), ["plugins"]: z.union([z.array(z.object({ ["name"]: z.string().optional() }).passthrough()), z.null()]).optional(), ["preserveConstEnums"]: z.union([z.boolean(), z.null()]).optional(), ["preserveSymlinks"]: z.union([z.boolean(), z.null()]).optional(), ["preserveValueImports"]: z.union([z.boolean(), z.null()]).optional(), ["preserveWatchOutput"]: z.union([z.boolean(), z.null()]).optional(), ["pretty"]: z.union([z.boolean(), z.null()]).optional(), ["reactNamespace"]: z.union([z.string(), z.null()]).optional(), ["removeComments"]: z.union([z.boolean(), z.null()]).optional(), ["resolveJsonModule"]: z.union([z.boolean(), z.null()]).optional(), ["resolvePackageJsonExports"]: z.union([z.boolean(), z.null()]).optional(), ["resolvePackageJsonImports"]: z.union([z.boolean(), z.null()]).optional(), ["rewriteRelativeImportExtensions"]: z.union([z.boolean(), z.null()]).optional(), ["rootDir"]: z.union([z.string(), z.null()]).optional(), ["rootDirs"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()])), z.null()]).optional(), plugins: z.union([z.array(z.object({ name: z.string().optional() }).passthrough()), z.null()]).optional(), preserveConstEnums: z.union([z.boolean(), z.null()]).optional(), preserveSymlinks: z.union([z.boolean(), z.null()]).optional(), preserveValueImports: z.union([z.boolean(), z.null()]).optional(), preserveWatchOutput: z.union([z.boolean(), z.null()]).optional(), pretty: z.union([z.boolean(), z.null()]).optional(), reactNamespace: z.union([z.string(), z.null()]).optional(), removeComments: z.union([z.boolean(), z.null()]).optional(), resolveJsonModule: z.union([z.boolean(), z.null()]).optional(), resolvePackageJsonExports: z.union([z.boolean(), z.null()]).optional(), resolvePackageJsonImports: z.union([z.boolean(), z.null()]).optional(), rewriteRelativeImportExtensions: z.union([z.boolean(), z.null()]).optional(), rootDir: z.union([z.string(), z.null()]).optional(), rootDirs: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -477,14 +906,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["skipDefaultLibCheck"]: z.union([z.boolean(), z.null()]).optional(), ["skipLibCheck"]: z.union([z.boolean(), z.null()]).optional(), ["sourceMap"]: z.union([z.boolean(), z.null()]).optional(), ["sourceRoot"]: z.union([z.string(), z.null()]).optional(), ["strict"]: z.union([z.boolean(), z.null()]).optional(), ["strictBindCallApply"]: z.union([z.boolean(), z.null()]).optional(), ["strictBuiltinIteratorReturn"]: z.union([z.boolean(), z.null()]).optional(), ["strictFunctionTypes"]: z.union([z.boolean(), z.null()]).optional(), ["strictNullChecks"]: z.union([z.boolean(), z.null()]).optional(), ["strictPropertyInitialization"]: z.union([z.boolean(), z.null()]).optional(), ["stripInternal"]: z.union([z.boolean(), z.null()]).optional(), ["suppressExcessPropertyErrors"]: z.union([z.boolean(), z.null()]).optional(), ["suppressImplicitAnyIndexErrors"]: z.union([z.boolean(), z.null()]).optional(), ["target"]: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), ["traceResolution"]: z.union([z.boolean(), z.null()]).optional(), ["tsBuildInfoFile"]: z.union([z.string(), z.null()]).optional(), ["typeRoots"]: z.union([z.array(z.string()).refine((arr) => {
+      })])).optional(), traceResolution: z.union([z.boolean(), z.null()]).optional(), tsBuildInfoFile: z.union([z.string(), z.null()]).optional(), typeRoots: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -492,7 +921,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["types"]: z.union([z.array(z.string()).refine((arr) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), types: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -500,7 +929,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), ["useDefineForClassFields"]: z.union([z.boolean(), z.null()]).optional(), ["useUnknownInCatchVariables"]: z.union([z.boolean(), z.null()]).optional(), ["verbatimModuleSyntax"]: z.union([z.boolean(), z.null()]).optional(), ["watch"]: z.union([z.boolean(), z.null()]).optional(), ["watchDirectory"]: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), ["watchFile"]: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()])).optional(), ["emit"]: z.union([z.boolean(), z.null()]).optional(), ["esm"]: z.union([z.boolean(), z.null()]).optional(), ["experimentalReplAwait"]: z.union([z.boolean(), z.null()]).optional(), ["experimentalResolver"]: z.union([z.boolean(), z.null()]).optional(), ["experimentalSpecifierResolution"]: z.enum(["explicit", "node"]).optional(), ["files"]: z.union([z.boolean(), z.null()]).optional(), ["ignore"]: z.union([z.array(z.string()), z.null()]).optional(), ["ignoreDiagnostics"]: z.union([z.array(z.union([z.string(), z.number()])), z.null()]).optional(), ["logError"]: z.union([z.boolean(), z.null()]).optional(), ["moduleTypes"]: z.union([z.object({}).passthrough(), z.null()]).optional(), ["preferTsExts"]: z.union([z.boolean(), z.null()]).optional(), ["pretty"]: z.union([z.boolean(), z.null()]).optional(), ["require"]: z.union([z.array(z.string()), z.null()]).optional(), ["scope"]: z.union([z.boolean(), z.null()]).optional(), ["scopeDir"]: z.union([z.string(), z.null()]).optional(), ["skipIgnore"]: z.union([z.boolean(), z.null()]).optional(), ["swc"]: z.union([z.boolean(), z.null()]).optional(), ["transpileOnly"]: z.union([z.boolean(), z.null()]).optional(), ["transpiler"]: z.union([z.union([z.array(z.any()).superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), useDefineForClassFields: z.union([z.boolean(), z.null()]).optional(), useUnknownInCatchVariables: z.union([z.boolean(), z.null()]).optional(), verbatimModuleSyntax: z.union([z.boolean(), z.null()]).optional(), watch: z.union([z.boolean(), z.null()]).optional(), watchDirectory: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), watchFile: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()])).optional(), emit: z.union([z.boolean(), z.null()]).optional(), esm: z.union([z.boolean(), z.null()]).optional(), experimentalReplAwait: z.union([z.boolean(), z.null()]).optional(), experimentalResolver: z.union([z.boolean(), z.null()]).optional(), experimentalSpecifierResolution: z.enum(["explicit", "node"]).optional(), files: z.union([z.boolean(), z.null()]).optional(), ignore: z.union([z.array(z.string()), z.null()]).optional(), ignoreDiagnostics: z.union([z.array(z.union([z.string(), z.number()])), z.null()]).optional(), logError: z.union([z.boolean(), z.null()]).optional(), moduleTypes: z.union([z.object({}).passthrough(), z.null()]).optional(), preferTsExts: z.union([z.boolean(), z.null()]).optional(), pretty: z.union([z.boolean(), z.null()]).optional(), require: z.union([z.array(z.string()), z.null()]).optional(), scope: z.union([z.boolean(), z.null()]).optional(), scopeDir: z.union([z.string(), z.null()]).optional(), skipIgnore: z.union([z.boolean(), z.null()]).optional(), swc: z.union([z.boolean(), z.null()]).optional(), transpileOnly: z.union([z.boolean(), z.null()]).optional(), transpiler: z.union([z.union([z.array(z.any()).superRefine((val, ctx) => {
       const schemas = [z.union([z.string(), z.null()]), z.union([z.object({}).passthrough(), z.null()])];
       for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
         const itemResult = schemas[i].safeParse(val[i]);
@@ -510,14 +939,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
           });
         }
       }
-    }).min(2).max(2), z.null()]), z.union([z.string(), z.null()])]).optional(), ["typeCheck"]: z.union([z.boolean(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
+    }).min(2).max(2), z.null()]), z.union([z.string(), z.null()])]).optional(), typeCheck: z.union([z.boolean(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
       })), z.union([z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["files"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ files: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -532,7 +961,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         }
       }), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["exclude"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ exclude: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -547,7 +976,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         }
       }), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["include"]: z.union([z.array(z.string()).refine((arr) => {
+          const result = z.object({ include: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -562,7 +991,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         }
       }), z.any().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ ["references"]: z.array(z.object({ ["path"]: z.string().optional() }).passthrough()).refine((arr) => {
+          const result = z.object({ references: z.array(z.object({ path: z.string().optional() }).passthrough()).refine((arr) => {
       const seen = new Set();
       for (const item of arr) {
         const key = JSON.stringify(item);
@@ -578,9 +1007,8 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
       })])));
 type another_TSConfigType = z.infer<typeof another_TSConfig>;
 
-const user_Calendar = z.object({ ["category"]: z.string().optional(), ["description"]: z.string().optional(), ["duration"]: z.string().optional(), ["endDate"]: z.string().optional(), ["geo"]: z.object({ ["lat"]: z.number().optional(), ["lng"]: z.number().optional() }).passthrough().optional(), ["location"]: z.string().optional(), ["recurrenceDate"]: z.string().optional(), ["recurrenceDule"]: z.string().optional(), ["startDate"]: z.string().optional(), ["summary"]: z.string(), ["url"]: z.string().optional(), ["dtstart"]: z.any() }).passthrough().superRefine((val, ctx) => {
-      const required = ["summary","dtstart"];
-      for (const key of required) {
+const user_Calendar = z.object({ category: z.string().optional(), description: z.string().optional(), duration: z.string().optional(), endDate: z.string().optional(), geo: z.object({ lat: z.number().optional(), lng: z.number().optional() }).passthrough().optional(), location: z.string().optional(), recurrenceDate: z.string().optional(), recurrenceDule: z.string().optional(), startDate: z.string().optional(), summary: z.string(), url: z.string().optional(), dtstart: z.any() }).passthrough().superRefine((val, ctx) => {
+      for (const key of ["dtstart"]) {
         if (!Object.hasOwn(val, key)) {
           ctx.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Required" });
         }
@@ -589,15 +1017,17 @@ const user_Calendar = z.object({ ["category"]: z.string().optional(), ["descript
 type user_CalendarType = z.infer<typeof user_Calendar>;
 
 export const schemas = {
+  "another:TSConfigNative": another_TSConfigNative,
+  "another:Native": another_Native,
   "user:User": user_User,
   "another:TSConfig": another_TSConfig,
   "user:Calendar": user_Calendar,
 } as const;
 
 export type SchemaTypes = {
+  "another:TSConfigNative": another_TSConfigNativeType;
+  "another:Native": another_NativeType;
   "user:User": user_UserType;
-  "another:TSConfigNative": another_TSConfigNative;
-  "another:Native": another_Native;
   "another:TSConfig": another_TSConfigType;
   "user:Calendar": user_CalendarType;
 };

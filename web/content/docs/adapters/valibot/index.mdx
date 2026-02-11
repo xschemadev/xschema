@@ -1,0 +1,130 @@
+---
+title: Valibot
+description: Generate Valibot schemas from JSON Schema definitions
+icon: Shield
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The Valibot adapter converts JSON Schema definitions into [Valibot](https://valibot.dev) validation schemas with full TypeScript type inference.
+
+## Overview
+
+- **Package:** `@xschemadev/valibot`
+- **Peer Dependency:** `valibot ^0.42.0`
+- **Compliance:** [98.9%](/docs/adapters/valibot/compliance)
+
+Valibot is a modular validation library focused on bundle size. xschema's Valibot adapter provides:
+
+- **Near-complete compliance** with JSON Schema specifications (98.9% for draft2020-12)
+- **Full type inference** - generated schemas include TypeScript types
+- **Tree-shakeable** - only include what you use
+- **Minimal bundle size** - modular design keeps bundles small
+
+## Installation
+
+<Tabs groupId="package-manager" items={["bun", "npm", "pnpm", "yarn"]} persist>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/valibot valibot
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/valibot valibot
+    ```
+  </Tab>
+</Tabs>
+
+## Usage
+
+```jsonc title="user.xschema.jsonc"
+{
+  "$schema": "https://xschema.dev/schemas/typescript.jsonc",
+  "schemas": [
+    {
+      "id": "User",
+      "adapter": "@xschemadev/valibot",
+      "source": "./user.schema.json"
+    }
+  ]
+}
+```
+
+```ts twoslash
+// @filename: node_modules/valibot/index.d.ts
+type BaseSchema<T> = { _output: T };
+type ObjectEntries = Record<string, BaseSchema<unknown>>;
+export type InferOutput<T extends BaseSchema<unknown>> = T["_output"];
+// pipe returns type of last argument - use overloads
+export declare function pipe<A, B, C extends BaseSchema<unknown>>(a: A, b: B, c: C): C;
+export declare function unknown(): BaseSchema<unknown>;
+export declare function rawCheck(fn: unknown): unknown;
+export declare function looseObject<T extends ObjectEntries>(entries: T): BaseSchema<{ [K in keyof T]: T[K]["_output"] } & { [x: string]: unknown }>;
+export declare function string(): BaseSchema<string>;
+export declare function boolean(): BaseSchema<boolean>;
+export declare function optional<T extends BaseSchema<unknown>>(schema: T): BaseSchema<T["_output"] | undefined>;
+export declare function picklist<T extends [string, ...string[]]>(values: T): BaseSchema<T[number]>;
+export declare function email(): unknown;
+export declare function parse<T extends BaseSchema<unknown>>(schema: T, data: unknown): T["_output"];
+// @filename: xschema.gen.ts
+import * as v from "valibot"
+const User = v.pipe(v.unknown(), v.rawCheck(() => {}), v.looseObject({ id: v.string(), name: v.optional(v.string()), email: v.string() }));
+export const schemas = { "User": User } as const;
+// @filename: client.ts
+import { schemas } from "./xschema.gen";
+export const xschema = <K extends keyof typeof schemas>(key: K) => schemas[key];
+// @filename: app.ts
+// ---cut---
+import { xschema } from "./client";
+import * as v from "valibot";
+
+const user = v.parse(xschema("User"), { id: "1", name: "Alice", email: "alice@example.com" });
+//    ^?
+```
+
+See the [TypeScript guide](/docs/typescript) for full setup instructions.
+
+## Supported Features
+
+The Valibot adapter supports most JSON Schema keywords. See the [Compliance](/docs/adapters/valibot/compliance) page for detailed coverage by JSON Schema draft.
+
+## Known Limitation
+
+Valibot has a bug where object properties with prototype-related names cause runtime errors:
+
+- `__proto__`
+- `constructor`
+- `toString`
+
+When validating an object schema that includes any of these property names, Valibot throws:
+
+```
+this.entries[key]._run is not a function
+```
+
+**This is a Valibot library bug**, not an xschema issue. The generated code is correct, but Valibot's internal object handling conflicts with JavaScript's prototype chain.
+
+**Workaround**: Avoid using these property names in your JSON Schemas when using the Valibot adapter. If you need to support schemas with these property names, consider using a different adapter like [Zod](/docs/adapters/zod) or [ArkType](/docs/adapters/arktype), which have 100% compliance.
+
+## Bundle Size Advantage
+
+Valibot's modular design means generated schemas only include the validators actually used:
+
+```typescript
+// Only these functions are included in your bundle
+import { object, string, optional, number, pipe, minLength } from "valibot";
+```
+
+This makes Valibot an excellent choice for frontend applications where bundle size matters.

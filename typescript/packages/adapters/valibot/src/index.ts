@@ -15,6 +15,6 @@ export function convert(input: ConvertInput): ConvertResult {
 		schema: schemaCode,
 		type: `v.InferOutput<typeof ${varName}>`,
 		validate: "(data: unknown) => safeParse(schema, data).success",
-		validateImports: ['import { safeParse } from "valibot"'],
+		validationImports: ['import { safeParse } from "valibot"'],
 	};
 }
