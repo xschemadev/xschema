@@ -16,7 +16,7 @@
         "Baseline clearly shows current TypeAdapter[Any] degradations",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "2",

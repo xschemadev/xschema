@@ -1,0 +1,104 @@
+[
+  {
+    "name": "allOfMixed",
+    "description": "allOf with object + string constraint - should ideally preserve object type",
+    "type_expr": "ProbeAllofmixed",
+    "has_any": false
+  },
+  {
+    "name": "allOfObjectAndAdditional",
+    "description": "TSConfig-like allOf with object + additionalProperties constraint",
+    "type_expr": "ProbeAllofobjectandadditional",
+    "has_any": false
+  },
+  {
+    "name": "oneOfStringOrNumber",
+    "description": "oneOf with string | number - should be str | int, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_oneof_probeoneofstringornumber)]",
+    "has_any": true
+  },
+  {
+    "name": "oneOfObjects",
+    "description": "oneOf with discriminated objects - currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_oneof_probeoneofobjects)]",
+    "has_any": true
+  },
+  {
+    "name": "notString",
+    "description": "not string - negation can't narrow, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_not_probenotstring)]",
+    "has_any": true
+  },
+  {
+    "name": "notBoolean",
+    "description": "not boolean - negation can't narrow, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_not_probenotboolean)]",
+    "has_any": true
+  },
+  {
+    "name": "conditionalIfThenElse",
+    "description": "if/then/else - should ideally be union of then/else types, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_conditional_probeconditionalifthenelse)]",
+    "has_any": true
+  },
+  {
+    "name": "conditionalIfThen",
+    "description": "if/then only - currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_conditional_probeconditionalifthen)]",
+    "has_any": true
+  },
+  {
+    "name": "typeGuardedObject",
+    "description": "type-guarded object without explicit type - currently Any",
+    "type_expr": "ProbeTypeguardedobject",
+    "has_any": false
+  },
+  {
+    "name": "typeGuardedArrayMinItems",
+    "description": "type-guarded array constraint without explicit type - currently Any",
+    "type_expr": "Annotated[list[Any], Field(min_length=1)]",
+    "has_any": true
+  },
+  {
+    "name": "tupleStringNumber",
+    "description": "tuple [string, number] - should be tuple[str, int, ...], currently tuple[Any, ...]",
+    "type_expr": "Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplestringnumber)]",
+    "has_any": true
+  },
+  {
+    "name": "tupleStringNumberClosed",
+    "description": "closed tuple [string, number] - should be tuple[str, int], currently tuple[Any, ...]",
+    "type_expr": "Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplestringnumberclosed)]",
+    "has_any": true
+  },
+  {
+    "name": "tupleMixedWithRest",
+    "description": "tuple [string, number, ...boolean[]] - currently tuple[Any, ...]",
+    "type_expr": "Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplemixedwithrest)]",
+    "has_any": true
+  },
+  {
+    "name": "constObject",
+    "description": "const object - should narrow, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_make_const_validator({'name': 'alice', 'age': 30}))]",
+    "has_any": true
+  },
+  {
+    "name": "constArray",
+    "description": "const array - should narrow, currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_make_const_validator([1, 2, 3]))]",
+    "has_any": true
+  },
+  {
+    "name": "enumWithObjects",
+    "description": "enum with object values - currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_make_enum_validator([{'a': 1}, {'b': 2}, \"simple\"]))]",
+    "has_any": true
+  },
+  {
+    "name": "enumWithArrays",
+    "description": "enum with array values - currently Any",
+    "type_expr": "Annotated[Any, BeforeValidator(_make_enum_validator([[1, 2], [3, 4], None]))]",
+    "has_any": true
+  }
+]

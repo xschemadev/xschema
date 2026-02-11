@@ -11,6 +11,13 @@ Started: Tue Jan 27 03:22:42 PM CET 2026
 - baseline artifacts go in `tasks/type-fidelity-baseline/<adapter>/`
 - after generating, copy probe-fixture.ts into the type-probe/ dir before running extract-types
 
+### Python type probe infrastructure
+- `tasks/type-fidelity-baseline/python/generate-probe.py` generates probe-fixture.py by calling convert()
+- run from pydantic adapter dir: `cd python/packages/adapters/pydantic && uv run python ../../../../tasks/type-fidelity-baseline/python/generate-probe.py`
+- pyright for type inference: `cd python/packages/adapters/pydantic && uv run pyright ../../../../tasks/type-fidelity-baseline/python/probe-fixture.py`
+- pyright reports `TypeAdapter[Unknown]` for `Annotated[Any, ...]` patterns (same effect as TypeAdapter[Any])
+- probe-summary.json has machine-readable type_expr + has_any per probe
+
 ### Property name sanitization in pydantic adapter
 - `_PYTHON_TYPE_BUILTINS` contains generic types that would break type annotations if used as field names
 - Only includes types actually used in generic annotations: list, dict, set, tuple, type, frozenset
@@ -154,3 +161,22 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 - Root cause: `type.unknown` used as base in all semantic wrappers (oneOf, not, conditional, typeGuarded, tuple, complex const/enum)
 - ArkType uses `unknown` vs Zod's `any` - safer but same loss of type precision
 - Tuple uses `type.unknown.array()` losing positional type info
+
+---
+
+### Task 1: Baseline Python adapter runtime and typing - COMPLETED
+
+**Artifacts created**:
+- `tasks/type-fidelity-baseline/python/compliance-summary.md` - full compliance by draft/keyword
+- `tasks/type-fidelity-baseline/python/type-probe-output.md` - inferred types for 17 probe cases
+- `tasks/type-fidelity-baseline/python/probe-fixture.py` - generated pydantic code for targeted constructs
+- `tasks/type-fidelity-baseline/python/probe-summary.json` - machine-readable type expressions
+- `tasks/type-fidelity-baseline/python/generate-probe.py` - script to regenerate probe fixture
+
+**Key findings**:
+- 100% runtime compliance across all 6 drafts (no failures)
+- 14 of 17 type probes degrade to `TypeAdapter[Unknown]` (pyright's rendering of `Annotated[Any, ...]`)
+- 3 probes preserve type: allOfMixed, allOfObjectAndAdditional, typeGuardedObject (all BaseModel subclasses)
+- Root cause: `Annotated[Any, BeforeValidator(...)]` used as base for oneOf, not, conditional, typeGuarded, tuple, complex const/enum
+- Tuple uses `Annotated[tuple[Any, ...], BeforeValidator(...)]` losing positional type info
+- Python uses `Any` vs Zod's `any` and ArkType's `unknown` - same loss of type precision

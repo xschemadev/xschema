@@ -1,0 +1,443 @@
+"""
+Pydantic Type Probe Fixture - AUTO-GENERATED
+
+This file contains generated Pydantic code for representative schemas of each
+targeted construct. The inferred types from pyright reveal where TypeAdapter[Any]
+degrades the type information.
+
+Generated: 2026-02-11
+Do NOT edit manually - regenerate with:
+    cd python/packages/adapters/pydantic
+    uv run python ../../../../tasks/type-fidelity-baseline/python/generate-probe.py
+"""
+
+from pydantic import BaseModel, BeforeValidator, StrictFloat, StrictStr, TypeAdapter
+from pydantic import BaseModel, BeforeValidator, StrictInt, StrictStr, StringConstraints, TypeAdapter
+from pydantic import BaseModel, StrictBool, StrictStr, TypeAdapter, model_validator
+from pydantic import BaseModel, StrictStr, TypeAdapter
+from pydantic import BeforeValidator, StrictBool, StrictFloat, StrictStr, TypeAdapter
+from pydantic import BeforeValidator, StrictBool, TypeAdapter
+from pydantic import BeforeValidator, StrictFloat, StrictStr, TypeAdapter
+from pydantic import BeforeValidator, StrictStr, TypeAdapter
+from pydantic import BeforeValidator, StringConstraints, TypeAdapter
+from pydantic import BeforeValidator, TypeAdapter
+from pydantic import Field, TypeAdapter
+from typing import Annotated, Any
+from typing import Annotated, Any, Literal
+
+
+# Helper functions needed by generated code
+def _json_equals(a: object, b: object) -> bool:
+    import json
+    return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
+def _try_validate(fn):
+    def wrapper(v):
+        try:
+            fn(v)
+            return True
+        except Exception:
+            return False
+    return wrapper
+
+
+# allOf with object + string constraint - should ideally preserve object type
+def _intersection_probeallofmixedname(v) -> Any:
+    # Validate against all schemas in intersection
+    # Keep original value - each validator checks independently
+    validator_0 = TypeAdapter(StrictStr)
+    try:
+        validator_0.validate_python(v)
+    except Exception as e:
+        raise ValueError(f'Failed intersection schema 0: {e}')
+    validator_1 = TypeAdapter(Annotated[str, StringConstraints(strict=True, min_length=1)])
+    try:
+        validator_1.validate_python(v)
+    except Exception as e:
+        raise ValueError(f'Failed intersection schema 1: {e}')
+    return v
+
+
+class ProbeAllofmixed(BaseModel):
+    name: Annotated[Any, BeforeValidator(_intersection_probeallofmixedname)]
+    value: StrictInt | None = None
+
+probe_allOfMixed = TypeAdapter(ProbeAllofmixed)
+
+# TSConfig-like allOf with object + additionalProperties constraint
+class ProbeAllofobjectandadditional(BaseModel):
+    strict: StrictBool | None = None
+
+    @model_validator(mode='after')
+    def _validate_additional_props_0(self):
+        # Validate all properties against additionalProperties schema from allOf merge
+        validator = TypeAdapter(StrictStr)
+        for key, value in self.model_dump(exclude_unset=True).items():
+            try:
+                validator.validate_python(value)
+            except Exception as e:
+                raise ValueError(f'Property {key} must match additionalProperties schema: {e}')
+        return self
+
+probe_allOfObjectAndAdditional = TypeAdapter(ProbeAllofobjectandadditional)
+
+# oneOf with string | number - should be str | int, currently Any
+def _oneof_probeoneofstringornumber(v) -> Any:
+    matches = []
+    validator_0 = TypeAdapter(StrictStr)
+    try:
+        validator_0.validate_python(v)
+        matches.append(0)
+    except Exception:
+        pass
+    validator_1 = TypeAdapter(StrictFloat)
+    try:
+        validator_1.validate_python(v)
+        matches.append(1)
+    except Exception:
+        pass
+    if len(matches) == 0:
+        raise ValueError('Value must match at least one schema')
+    if len(matches) > 1:
+        raise ValueError(f'Value must match exactly one schema, but matched {len(matches)} schemas')
+    return v
+
+probe_oneOfStringOrNumber = TypeAdapter(Annotated[Any, BeforeValidator(_oneof_probeoneofstringornumber)])
+
+# oneOf with discriminated objects - currently Any
+class ProbeOneofobjectsOption0(BaseModel):
+    kind: Literal["a"]
+    value: StrictStr
+
+
+class ProbeOneofobjectsOption1(BaseModel):
+    kind: Literal["b"]
+    value: StrictFloat
+
+
+def _oneof_probeoneofobjects(v) -> Any:
+    matches = []
+    validator_0 = TypeAdapter(ProbeOneofobjectsOption0)
+    try:
+        validator_0.validate_python(v)
+        matches.append(0)
+    except Exception:
+        pass
+    validator_1 = TypeAdapter(ProbeOneofobjectsOption1)
+    try:
+        validator_1.validate_python(v)
+        matches.append(1)
+    except Exception:
+        pass
+    if len(matches) == 0:
+        raise ValueError('Value must match at least one schema')
+    if len(matches) > 1:
+        raise ValueError(f'Value must match exactly one schema, but matched {len(matches)} schemas')
+    return v
+
+probe_oneOfObjects = TypeAdapter(Annotated[Any, BeforeValidator(_oneof_probeoneofobjects)])
+
+# not string - negation can't narrow, currently Any
+def _not_probenotstring(v) -> Any:
+    validator = TypeAdapter(StrictStr)
+    matched = False
+    try:
+        validator.validate_python(v)
+        matched = True
+    except Exception:
+        pass
+    if matched:
+        raise ValueError('Value must NOT match the schema')
+    return v
+
+probe_notString = TypeAdapter(Annotated[Any, BeforeValidator(_not_probenotstring)])
+
+# not boolean - negation can't narrow, currently Any
+def _not_probenotboolean(v) -> Any:
+    validator = TypeAdapter(StrictBool)
+    matched = False
+    try:
+        validator.validate_python(v)
+        matched = True
+    except Exception:
+        pass
+    if matched:
+        raise ValueError('Value must NOT match the schema')
+    return v
+
+probe_notBoolean = TypeAdapter(Annotated[Any, BeforeValidator(_not_probenotboolean)])
+
+# if/then/else - should ideally be union of then/else types, currently Any
+class ProbeConditionalifthenelseIf(BaseModel):
+    kind: Literal["a"]
+
+
+class ProbeConditionalifthenelseThen(BaseModel):
+    kind: Literal["a"]
+    value: StrictStr
+
+
+class ProbeConditionalifthenelseElse(BaseModel):
+    kind: Literal["b"]
+    value: StrictFloat
+
+
+def _conditional_probeconditionalifthenelse(v) -> Any:
+    # Check if 'if' schema matches
+    if_validator = TypeAdapter(ProbeConditionalifthenelseIf)
+    try:
+        if_validator.validate_python(v)
+        if_matches = True
+    except Exception:
+        if_matches = False
+    # If 'if' matches and 'then' exists, validate against 'then'
+    if if_matches:
+        then_validator = TypeAdapter(ProbeConditionalifthenelseThen)
+        try:
+            return then_validator.validate_python(v)
+        except Exception as e:
+            raise ValueError(f'Value must match then schema: {e}')
+    # If 'if' doesn't match and 'else' exists, validate against 'else'
+    if not if_matches:
+        else_validator = TypeAdapter(ProbeConditionalifthenelseElse)
+        try:
+            return else_validator.validate_python(v)
+        except Exception as e:
+            raise ValueError(f'Value must match else schema: {e}')
+    # Otherwise, value is valid as-is
+    return v
+
+probe_conditionalIfThenElse = TypeAdapter(Annotated[Any, BeforeValidator(_conditional_probeconditionalifthenelse)])
+
+# if/then only - currently Any
+def _conditional_probeconditionalifthen(v) -> Any:
+    # Check if 'if' schema matches
+    if_validator = TypeAdapter(Annotated[str, StringConstraints(strict=True, min_length=1)])
+    try:
+        if_validator.validate_python(v)
+        if_matches = True
+    except Exception:
+        if_matches = False
+    # If 'if' matches and 'then' exists, validate against 'then'
+    if if_matches:
+        then_validator = TypeAdapter(Annotated[str, StringConstraints(strict=True, max_length=10)])
+        try:
+            return then_validator.validate_python(v)
+        except Exception as e:
+            raise ValueError(f'Value must match then schema: {e}')
+    # Otherwise, value is valid as-is
+    return v
+
+probe_conditionalIfThen = TypeAdapter(Annotated[Any, BeforeValidator(_conditional_probeconditionalifthen)])
+
+# type-guarded object without explicit type - currently Any
+class ProbeTypeguardedobject(BaseModel):
+    name: StrictStr
+
+probe_typeGuardedObject = TypeAdapter(ProbeTypeguardedobject)
+
+# type-guarded array constraint without explicit type - currently Any
+probe_typeGuardedArrayMinItems = TypeAdapter(Annotated[list[Any], Field(min_length=1)])
+
+# tuple [string, number] - should be tuple[str, int, ...], currently tuple[Any, ...]
+def _tuple_probetuplestringnumber(v) -> tuple:
+    if not isinstance(v, tuple):
+        v = tuple(v) if hasattr(v, '__iter__') else (v,)
+    validated = list(v)
+    # Validate item 0 if present
+    if len(v) > 0:
+        prefix_0_validator = TypeAdapter(StrictStr)
+        try:
+            validated[0] = prefix_0_validator.validate_python(v[0])
+        except Exception as e:
+            raise ValueError(f'Item at index 0 invalid: {e}')
+    # Validate item 1 if present
+    if len(v) > 1:
+        prefix_1_validator = TypeAdapter(StrictFloat)
+        try:
+            validated[1] = prefix_1_validator.validate_python(v[1])
+        except Exception as e:
+            raise ValueError(f'Item at index 1 invalid: {e}')
+    return tuple(validated)
+
+probe_tupleStringNumber = TypeAdapter(Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplestringnumber)])
+
+# closed tuple [string, number] - should be tuple[str, int], currently tuple[Any, ...]
+def _tuple_probetuplestringnumberclosed(v) -> tuple:
+    if not isinstance(v, tuple):
+        v = tuple(v) if hasattr(v, '__iter__') else (v,)
+    if len(v) > 2:
+        raise ValueError(f'Tuple must have at most 2 items, got {len(v)}')
+    validated = []
+    # Validate item 0 if present
+    if len(v) > 0:
+        prefix_0_validator = TypeAdapter(StrictStr)
+        try:
+            validated.append(prefix_0_validator.validate_python(v[0]))
+        except Exception as e:
+            raise ValueError(f'Item at index 0 invalid: {e}')
+    # Validate item 1 if present
+    if len(v) > 1:
+        prefix_1_validator = TypeAdapter(StrictFloat)
+        try:
+            validated.append(prefix_1_validator.validate_python(v[1]))
+        except Exception as e:
+            raise ValueError(f'Item at index 1 invalid: {e}')
+    return tuple(validated)
+
+probe_tupleStringNumberClosed = TypeAdapter(Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplestringnumberclosed)])
+
+# tuple [string, number, ...boolean[]] - currently tuple[Any, ...]
+def _tuple_probetuplemixedwithrest(v) -> tuple:
+    if not isinstance(v, tuple):
+        v = tuple(v) if hasattr(v, '__iter__') else (v,)
+    if len(v) < 2:
+        raise ValueError(f'Tuple must have at least 2 items, got {len(v)}')
+    validated = []
+    # Validate item 0
+    prefix_0_validator = TypeAdapter(StrictStr)
+    try:
+        validated.append(prefix_0_validator.validate_python(v[0]))
+    except Exception as e:
+        raise ValueError(f'Item at index 0 invalid: {e}')
+    # Validate item 1
+    prefix_1_validator = TypeAdapter(StrictFloat)
+    try:
+        validated.append(prefix_1_validator.validate_python(v[1]))
+    except Exception as e:
+        raise ValueError(f'Item at index 1 invalid: {e}')
+    # Validate rest items
+    rest_validator = TypeAdapter(StrictBool)
+    for i in range(2, len(v)):
+        try:
+            validated.append(rest_validator.validate_python(v[i]))
+        except Exception as e:
+            raise ValueError(f'Item at index {i} must match rest schema: {e}')
+    return tuple(validated)
+
+probe_tupleMixedWithRest = TypeAdapter(Annotated[tuple[Any, ...], BeforeValidator(_tuple_probetuplemixedwithrest)])
+
+# const object - should narrow, currently Any
+def _json_equals(a, b):
+    """Check JSON Schema equality semantics: false != 0, true != 1, deep equality."""
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b
+
+
+def _make_const_validator(expected):
+    """Create a validator that checks for exact JSON Schema equality with a constant."""
+    def validator(v):
+        if not _json_equals(v, expected):
+            raise ValueError(f"Value must equal {expected}")
+        return v
+    return validator
+
+probe_constObject = TypeAdapter(Annotated[Any, BeforeValidator(_make_const_validator({'name': 'alice', 'age': 30}))])
+
+# const array - should narrow, currently Any
+def _json_equals(a, b):
+    """Check JSON Schema equality semantics: false != 0, true != 1, deep equality."""
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b
+
+
+def _make_const_validator(expected):
+    """Create a validator that checks for exact JSON Schema equality with a constant."""
+    def validator(v):
+        if not _json_equals(v, expected):
+            raise ValueError(f"Value must equal {expected}")
+        return v
+    return validator
+
+probe_constArray = TypeAdapter(Annotated[Any, BeforeValidator(_make_const_validator([1, 2, 3]))])
+
+# enum with object values - currently Any
+def _json_equals(a, b):
+    """Check JSON Schema equality semantics: false != 0, true != 1, deep equality."""
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b
+
+
+def _make_enum_validator(allowed_values):
+    """Create a validator that checks if value is in enum using JSON Schema equality."""
+    def validator(v):
+        if not any(_json_equals(v, allowed) for allowed in allowed_values):
+            raise ValueError(f"Value must be one of {allowed_values}")
+        return v
+    return validator
+
+probe_enumWithObjects = TypeAdapter(Annotated[Any, BeforeValidator(_make_enum_validator([{'a': 1}, {'b': 2}, "simple"]))])
+
+# enum with array values - currently Any
+def _json_equals(a, b):
+    """Check JSON Schema equality semantics: false != 0, true != 1, deep equality."""
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return False
+        return all(_json_equals(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or set(a.keys()) != set(b.keys()):
+            return False
+        return all(_json_equals(a[k], b[k]) for k in a)
+    return a == b
+
+
+def _make_enum_validator(allowed_values):
+    """Create a validator that checks if value is in enum using JSON Schema equality."""
+    def validator(v):
+        if not any(_json_equals(v, allowed) for allowed in allowed_values):
+            raise ValueError(f"Value must be one of {allowed_values}")
+        return v
+    return validator
+
+probe_enumWithArrays = TypeAdapter(Annotated[Any, BeforeValidator(_make_enum_validator([[1, 2], [3, 4], None]))])
+
+
+# reveal_type calls for pyright type inspection
+reveal_type(probe_allOfMixed)  # noqa: F821
+reveal_type(probe_allOfObjectAndAdditional)  # noqa: F821
+reveal_type(probe_oneOfStringOrNumber)  # noqa: F821
+reveal_type(probe_oneOfObjects)  # noqa: F821
+reveal_type(probe_notString)  # noqa: F821
+reveal_type(probe_notBoolean)  # noqa: F821
+reveal_type(probe_conditionalIfThenElse)  # noqa: F821
+reveal_type(probe_conditionalIfThen)  # noqa: F821
+reveal_type(probe_typeGuardedObject)  # noqa: F821
+reveal_type(probe_typeGuardedArrayMinItems)  # noqa: F821
+reveal_type(probe_tupleStringNumber)  # noqa: F821
+reveal_type(probe_tupleStringNumberClosed)  # noqa: F821
+reveal_type(probe_tupleMixedWithRest)  # noqa: F821
+reveal_type(probe_constObject)  # noqa: F821
+reveal_type(probe_constArray)  # noqa: F821
+reveal_type(probe_enumWithObjects)  # noqa: F821
+reveal_type(probe_enumWithArrays)  # noqa: F821
