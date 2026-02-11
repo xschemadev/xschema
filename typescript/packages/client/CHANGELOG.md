@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/xschemadev/xschema/compare/client-v0.0.4...client-v0.0.5) (2026-02-11)
+
+
+### Features
+
+* **ts:** allow adapters to have types only adapters ([#44](https://github.com/xschemadev/xschema/issues/44)) ([044285d](https://github.com/xschemadev/xschema/commit/044285d1e5e7bdb5419077c1ebe701f4f0f433ac))
+
 ## [0.0.5](https://github.com/xschemadev/xschema/compare/client-v0.0.4...client-v0.0.5) (2026-01-11)
 
 
