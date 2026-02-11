@@ -138,7 +138,7 @@ func TestGenerateHarness_MergedImports(t *testing.T) {
 				Schema:          `z.object({ name: z.string() })`,
 				Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
 				Validate:        `(data) => schema.safeParse(data).success`,
-				ValidateImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
+				ValidationImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
 			},
 			Tests: []TestCase{{Description: "valid", Data: map[string]any{"name": "test"}, Valid: true}},
 		},

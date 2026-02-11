@@ -14,8 +14,11 @@ import (
 	"time"
 
 	"github.com/xschemadev/xschema/adapter"
-	"github.com/xschemadev/xschema/bundler"
+	"github.com/xschemadev/xschema/fetcher"
 	"github.com/xschemadev/xschema/language"
+	"github.com/xschemadev/xschema/processor"
+	"github.com/xschemadev/xschema/retriever"
+	"github.com/xschemadev/xschema/unsupported"
 )
 
 // ProgressUpdate contains info about current test progress
@@ -321,6 +324,8 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 			result.Summary.Failed += localSummary.Failed
 			result.Summary.Skipped += localSummary.Skipped
 			result.Summary.Total += localSummary.Total
+			result.Summary.UnsupportedFeatures.Count += localSummary.UnsupportedFeatures.Count
+			result.Summary.UnsupportedFeatures.Items = append(result.Summary.UnsupportedFeatures.Items, localSummary.UnsupportedFeatures.Items...)
 			mu.Unlock()
 		}()
 	}
@@ -330,6 +335,11 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 	if firstErr != nil {
 		return &result, firstErr
 	}
+
+	// Sort unsupported features for deterministic output
+	sort.Slice(result.Summary.UnsupportedFeatures.Items, func(i, j int) bool {
+		return result.Summary.UnsupportedFeatures.Items[i].Path < result.Summary.UnsupportedFeatures.Items[j].Path
+	})
 
 	// Calculate percentage
 	if result.Summary.Total > 0 {
@@ -341,50 +351,201 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 
 // bundledGroup holds a test group with its pre-bundled schema
 type bundledGroup struct {
-	group         TestGroup
-	bundledSchema RawSchema
-	bundleErr     error
+	group          TestGroup
+	bundledSchema  RawSchema
+	bundleErr      error
+	unsupportedErr *unsupported.UnsupportedKeywordError
 }
 
-// processKeyword batches adapter invocation and harness execution for all groups in a keyword
+// groupFilter holds test information for a group
+type groupFilter struct {
+	allKnown        bool
+	filteredTests   []TestCase
+	filteredIndices []int
+}
+
+// processKeyword batches adapter invocation and harness execution for all groups in a keyword.
+// Pipeline: filter → bundle → adapt → harness → results
 func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGroup, keywordResult *KeywordResult, summary *DraftSummary) error {
 	if len(groups) == 0 {
 		return nil
 	}
 
-	// Phase 1: Bundle all schemas
-	bundled := make([]bundledGroup, len(groups))
+	// Phase 1: Initialize group filters (unsupported keyword detection happens in bundling)
+	groupFilters := initGroupFilters(groups)
+
+	// Phase 2: Bundle schemas
+	bundled, err := bundleSchemas(ctx, groups, groupFilters, opts, keywordResult.Keyword)
+	if err != nil {
+		return err
+	}
+	markBundleErrors(bundled, groupFilters, keywordResult, summary, opts.draft, keywordResult.Keyword)
+
+	// Phase 3: Call adapter
+	adapterOutputByGroup, err := callAdapter(ctx, bundled, opts)
+	if err != nil {
+		return err
+	}
+	if adapterOutputByGroup == nil {
+		return nil // all groups failed bundling
+	}
+
+	// Phase 4: Build harness items
+	harnessItems, groupByID, filteredTestsByGroup := buildHarnessItems(
+		bundled, groupFilters, adapterOutputByGroup, keywordResult, summary,
+	)
+	if len(harnessItems) == 0 {
+		return nil // all groups failed
+	}
+
+	// Phase 5: Execute harness
+	harnessResults, err := executeHarness(ctx, harnessItems, groupByID, opts, keywordResult, summary)
+	if err != nil {
+		return err
+	}
+	if harnessResults == nil {
+		return nil // harness failed, errors already recorded
+	}
+
+	// Phase 6: Process results
+	processHarnessResults(harnessResults, groupByID, filteredTestsByGroup, keywordResult, summary)
+	return nil
+}
+
+// initGroupFilters creates groupFilter entries for each test group.
+// Initialize group filters. Unsupported keyword detection happens during bundling.
+func initGroupFilters(groups []TestGroup) []groupFilter {
+	groupFilters := make([]groupFilter, len(groups))
+
 	for i, group := range groups {
+		filteredIndices := make([]int, len(group.Tests))
+		for j := range group.Tests {
+			filteredIndices[j] = j
+		}
+
+		gf := groupFilter{
+			allKnown:        false,
+			filteredTests:   group.Tests,
+			filteredIndices: filteredIndices,
+		}
+
+		groupFilters[i] = gf
+	}
+
+	return groupFilters
+}
+
+// bundleSchemas processes each schema through the processor pipeline.
+func bundleSchemas(ctx context.Context, groups []TestGroup, groupFilters []groupFilter, opts runDraftOptions, keyword string) ([]bundledGroup, error) {
+	bundled := make([]bundledGroup, len(groups))
+	remotesPath := filepath.Join(opts.suitePath, "remotes")
+	localhostFetcher := fetcher.NewLocalhostFetcher(remotesPath)
+
+	for i, group := range groups {
+		// Skip groups where all tests are known issues
+		if groupFilters[i].allKnown {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("skipped: all tests are known issues"),
+			}
+			continue
+		}
+
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return nil, ctx.Err()
 		default:
 		}
 
+		schemaJSON, err := json.Marshal(group.Schema)
+		if err != nil {
+			bundled[i] = bundledGroup{
+				group:     group,
+				bundleErr: fmt.Errorf("failed to marshal schema: %w", err),
+			}
+			continue
+		}
+
 		bundleStart := time.Now()
-		bundledSchema, err := bundleSchema(ctx, group.Schema, opts.suitePath)
+		toProcess := []retriever.RetrievedSchema{{
+			Namespace: "compliance",
+			ID:        fmt.Sprintf("group_%d", i),
+			Schema:    schemaJSON,
+			Adapter:   "compliance",
+			SourceURI: fmt.Sprintf("compliance://%s/%s/group_%d", opts.draft, keyword, i),
+		}}
+
+		processed, err := processor.Process(ctx, toProcess, processor.Options{
+			Fetcher: localhostFetcher,
+			Draft:   opts.draft,
+		})
 		opts.timing.addSchemaBundling(time.Since(bundleStart))
 
-		bundled[i] = bundledGroup{
-			group:         group,
-			bundledSchema: bundledSchema,
-			bundleErr:     err,
+		if err != nil {
+			// Check if this is an UnsupportedKeywordError - these should be skipped, not failed
+			var unsupportedErr *unsupported.UnsupportedKeywordError
+			if errors.As(err, &unsupportedErr) {
+				bundled[i] = bundledGroup{group: group, unsupportedErr: unsupportedErr}
+			} else {
+				bundled[i] = bundledGroup{group: group, bundleErr: err}
+			}
+			continue
 		}
+
+		if len(processed) == 0 {
+			bundled[i] = bundledGroup{group: group, bundleErr: fmt.Errorf("processor returned no results")}
+			continue
+		}
+
+		var schema RawSchema
+		if jsonErr := json.Unmarshal(processed[0].Schema, &schema); jsonErr != nil {
+			bundled[i] = bundledGroup{group: group, bundleErr: fmt.Errorf("failed to unmarshal processed schema: %w", jsonErr)}
+			continue
+		}
+
+		bundled[i] = bundledGroup{group: group, bundledSchema: schema}
 	}
 
-	// Mark bundle errors as failed first
+	return bundled, nil
+}
+
+// markBundleErrors marks bundle failures as test failures and unsupported keyword errors as unsupported features.
+func markBundleErrors(bundled []bundledGroup, groupFilters []groupFilter, keywordResult *KeywordResult, summary *DraftSummary, draft, keyword string) {
 	for i, bg := range bundled {
+		// Skip groups where all tests were already marked as known issues
+		if groupFilters[i].allKnown {
+			continue
+		}
+
+		// Handle unsupported keyword errors - mark as unsupported features, not failures
+		if bg.unsupportedErr != nil {
+			for _, tc := range bg.group.Tests {
+				testPath := fmt.Sprintf("%s/%s/%s/%s", draft, keyword, bg.group.Description, tc.Description)
+				summary.UnsupportedFeatures.Count++
+				summary.UnsupportedFeatures.Items = append(summary.UnsupportedFeatures.Items, UnsupportedFeatureItem{
+					Path:   testPath,
+					Reason: bg.unsupportedErr.Error(),
+				})
+			}
+			continue
+		}
+
+		// Handle regular bundle errors - mark as failures
 		if bg.bundleErr != nil {
 			markAllFailed(keywordResult, summary, bg.group, fmt.Sprintf("bundling error: %v", bg.bundleErr))
-			bundled[i].bundleErr = bg.bundleErr // keep marked
 		}
 	}
+}
 
-	// Phase 2: Batch adapter call for groups that bundled successfully
+// callAdapter calls the adapter for all successfully bundled schemas.
+// Returns nil map if all groups failed bundling.
+func callAdapter(ctx context.Context, bundled []bundledGroup, opts runDraftOptions) (map[int]*adapter.ConvertResult, error) {
 	var adapterInputs []adapter.ConvertInput
-	var inputIndexes []int // maps adapter input index to bundled group index
+	var inputIndexes []int
+
 	for i, bg := range bundled {
-		if bg.bundleErr == nil {
+		// Skip groups with bundle errors or unsupported keyword errors
+		if bg.bundleErr == nil && bg.unsupportedErr == nil {
 			groupID := fmt.Sprintf("group_%d", i)
 			adapterInputs = append(adapterInputs, adapter.ConvertInput{
 				Namespace: "compliance",
@@ -397,29 +558,39 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 	}
 
 	if len(adapterInputs) == 0 {
-		return nil // all groups failed bundling
+		return nil, nil
 	}
 
 	adapterStart := time.Now()
 	adapterOutputs, err := CallAdapterBatch(ctx, opts.adapterBin, opts.runner, opts.runnerArgs, adapterInputs)
 	opts.timing.addAdapterInvocation(time.Since(adapterStart))
 	if err != nil {
-		return fmt.Errorf("adapter call failed: %w", err)
+		return nil, fmt.Errorf("adapter call failed: %w", err)
 	}
 
-	// Build map of group index -> adapter output
-	adapterOutputByGroup := make(map[int]*adapter.ConvertResult)
+	result := make(map[int]*adapter.ConvertResult)
 	for i, outIdx := range inputIndexes {
-		adapterOutputByGroup[outIdx] = &adapterOutputs[i]
+		result[outIdx] = &adapterOutputs[i]
 	}
+	return result, nil
+}
 
-	// Phase 3: Build harness items and execute single batch harness
+// buildHarnessItems creates harness items from adapter outputs.
+func buildHarnessItems(
+	bundled []bundledGroup,
+	groupFilters []groupFilter,
+	adapterOutputByGroup map[int]*adapter.ConvertResult,
+	keywordResult *KeywordResult,
+	summary *DraftSummary,
+) ([]HarnessItem, map[string]*TestGroup, map[string][]int) {
 	var harnessItems []HarnessItem
-	groupByID := make(map[string]*TestGroup) // for result processing
+	groupByID := make(map[string]*TestGroup)
+	filteredTestsByGroup := make(map[string][]int)
 
 	for i, bg := range bundled {
-		if bg.bundleErr != nil {
-			continue // already marked as failed
+		// Skip groups with bundle errors or unsupported keyword errors
+		if bg.bundleErr != nil || bg.unsupportedErr != nil {
+			continue
 		}
 
 		adapterOutput := adapterOutputByGroup[i]
@@ -428,55 +599,65 @@ func processKeyword(ctx context.Context, opts runDraftOptions, groups []TestGrou
 			continue
 		}
 
+		gf := groupFilters[i]
+
+		if len(gf.filteredTests) == 0 {
+			continue
+		}
+
 		groupID := fmt.Sprintf("group_%d", i)
 		harnessItems = append(harnessItems, HarnessItem{
 			GroupID:       groupID,
 			AdapterOutput: adapterOutput,
-			Tests:         bg.group.Tests,
+			Tests:         gf.filteredTests,
 		})
 		groupByID[groupID] = &bg.group
+		filteredTestsByGroup[groupID] = gf.filteredIndices
 	}
 
-	if len(harnessItems) == 0 {
-		return nil // all groups failed
-	}
+	return harnessItems, groupByID, filteredTestsByGroup
+}
 
-	// Generate single batch harness
+// executeHarness generates and runs the test harness.
+// Returns nil results if harness failed (errors already recorded).
+func executeHarness(
+	ctx context.Context,
+	harnessItems []HarnessItem,
+	groupByID map[string]*TestGroup,
+	opts runDraftOptions,
+	keywordResult *KeywordResult,
+	summary *DraftSummary,
+) ([]HarnessResult, error) {
 	harnessStart := time.Now()
 	tempHarness, err := GenerateHarness(opts.language, harnessItems, opts.workDir)
 	opts.timing.addHarnessGeneration(time.Since(harnessStart))
 	if err != nil {
-		// Mark all groups as failed
 		for _, item := range harnessItems {
 			if group := groupByID[item.GroupID]; group != nil {
 				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness generation error: %v", err))
 			}
 		}
-		return nil
+		return nil, nil
 	}
 	defer os.Remove(tempHarness)
 
-	// Execute batch harness
 	execStart := time.Now()
 	harnessResults, err := ExecuteHarness(ctx, tempHarness, opts.runner, opts.runnerArgs, opts.workDir)
 	opts.timing.addHarnessExecution(time.Since(execStart))
 
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return err
+			return nil, err
 		}
-		// Mark all groups as failed
 		for _, item := range harnessItems {
 			if group := groupByID[item.GroupID]; group != nil {
 				markAllFailed(keywordResult, summary, *group, fmt.Sprintf("harness execution error: %v", err))
 			}
 		}
-		return nil
+		return nil, nil
 	}
 
-	// Process results by groupId
-	processHarnessResults(harnessResults, groupByID, keywordResult, summary)
-	return nil
+	return harnessResults, nil
 }
 
 func markAllFailed(keywordResult *KeywordResult, summary *DraftSummary, group TestGroup, errorMsg string) {
@@ -510,17 +691,23 @@ func normalizeErrorPath(errorMsg string) string {
 	return errorMsg
 }
 
-func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, keywordResult *KeywordResult, summary *DraftSummary) {
+func processHarnessResults(harnessResults []HarnessResult, groupByID map[string]*TestGroup, filteredTestsByGroup map[string][]int, keywordResult *KeywordResult, summary *DraftSummary) {
 	for _, hr := range harnessResults {
 		group := groupByID[hr.GroupID]
 		if group == nil {
 			continue // unknown group, skip
 		}
 
-		if hr.Index >= len(group.Tests) {
+		// Map filtered index back to original index
+		filteredIndices := filteredTestsByGroup[hr.GroupID]
+		if hr.Index >= len(filteredIndices) {
 			continue // invalid index, skip
 		}
-		tc := group.Tests[hr.Index]
+		originalIdx := filteredIndices[hr.Index]
+		if originalIdx >= len(group.Tests) {
+			continue // invalid original index, skip
+		}
+		tc := group.Tests[originalIdx]
 
 		keywordResult.Total++
 		summary.Total++
@@ -583,27 +770,4 @@ func WriteResults(adapterPath string, report *ComplianceReport) error {
 	}
 
 	return nil
-}
-
-func bundleSchema(ctx context.Context, schema RawSchema, suitePath string) (RawSchema, error) {
-	schemaJSON, err := json.Marshal(schema)
-	if err != nil {
-		return RawSchema{}, fmt.Errorf("failed to marshal schema: %w", err)
-	}
-
-	bundleOpts := bundler.Options{
-		RemotesPath: filepath.Join(suitePath, "remotes"),
-	}
-
-	bundled, err := bundler.Bundle(ctx, schemaJSON, bundleOpts)
-	if err != nil {
-		return RawSchema{}, err
-	}
-
-	var result RawSchema
-	if err := json.Unmarshal(bundled, &result); err != nil {
-		return RawSchema{}, fmt.Errorf("failed to unmarshal bundled schema: %w", err)
-	}
-
-	return result, nil
 }

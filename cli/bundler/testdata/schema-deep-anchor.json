@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "value": { "$ref": "#deepAnchor" }
+  },
+  "$defs": {
+    "Level1": {
+      "$defs": {
+        "Level2": {
+          "$defs": {
+            "Target": {
+              "$anchor": "deepAnchor",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

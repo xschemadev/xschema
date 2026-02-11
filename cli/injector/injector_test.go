@@ -849,3 +849,185 @@ func TestInject_NilLanguage(t *testing.T) {
 		t.Error("Expected error for empty language")
 	}
 }
+
+// testMultiFileLang returns a test language with multiple output files
+func testMultiFileLang() language.Language {
+	return language.Language{
+		Name:       "test-multifile",
+		Extensions: []string{".ts"},
+		SchemaURL:  language.XSchemaBaseURL + "test-multifile.jsonc",
+		OutputFiles: []language.OutputFileSpec{
+			{
+				Path:     "schemas.ts",
+				Template: `// schemas.ts
+{{range .Schemas}}
+export const {{.VarName}} = {{.Code}};
+{{end}}`,
+			},
+			{
+				Path:     "types.ts",
+				Template: `// types.ts
+{{range .Schemas}}
+export type {{.VarName}}Type = {{.Type}};
+{{end}}`,
+			},
+			{
+				Path:     "nested/index.ts",
+				Template: `// nested/index.ts
+export * from "../schemas";
+export * from "../types";
+`,
+			},
+		},
+		MergeImports: func(imports []string) string { return "" },
+		BuildVarName: func(ns, id string) string { return ns + "_" + id },
+	}
+}
+
+func TestInject_MultipleOutputFiles(t *testing.T) {
+	// Register test language
+	lang := testMultiFileLang()
+	if err := language.Register(lang); err != nil {
+		t.Fatalf("failed to register test language: %v", err)
+	}
+	defer language.Unregister("test-multifile")
+
+	tmpDir := t.TempDir()
+
+	input := InjectInput{
+		Language: "test-multifile",
+		OutDir:   tmpDir,
+		Outputs: []adapter.ConvertResult{
+			{
+				Namespace: "user",
+				ID:        "User",
+				VarName:   "user_User",
+				Schema:    `{ id: string }`,
+				Type:      "UserType",
+			},
+			{
+				Namespace: "post",
+				ID:        "Post",
+				VarName:   "post_Post",
+				Schema:    `{ title: string }`,
+				Type:      "PostType",
+			},
+		},
+	}
+
+	err := Inject(input)
+	if err != nil {
+		t.Fatalf("Inject failed: %v", err)
+	}
+
+	// Verify all 3 files created
+	schemasContent, err := os.ReadFile(filepath.Join(tmpDir, "schemas.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read schemas.ts: %v", err)
+	}
+	if !strings.Contains(string(schemasContent), "user_User") || !strings.Contains(string(schemasContent), "post_Post") {
+		t.Errorf("schemas.ts missing schemas: %s", schemasContent)
+	}
+
+	typesContent, err := os.ReadFile(filepath.Join(tmpDir, "types.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read types.ts: %v", err)
+	}
+	if !strings.Contains(string(typesContent), "user_UserType") || !strings.Contains(string(typesContent), "post_PostType") {
+		t.Errorf("types.ts missing types: %s", typesContent)
+	}
+
+	nestedContent, err := os.ReadFile(filepath.Join(tmpDir, "nested", "index.ts"))
+	if err != nil {
+		t.Fatalf("Failed to read nested/index.ts: %v", err)
+	}
+	if !strings.Contains(string(nestedContent), `export * from "../schemas"`) {
+		t.Errorf("nested/index.ts missing re-exports: %s", nestedContent)
+	}
+
+	// Verify manifest contains all 3 files
+	manifestBytes, err := os.ReadFile(filepath.Join(tmpDir, manifestFileName))
+	if err != nil {
+		t.Fatalf("Failed to read manifest: %v", err)
+	}
+	var m manifest
+	if err := json.Unmarshal(manifestBytes, &m); err != nil {
+		t.Fatalf("Failed to parse manifest: %v", err)
+	}
+	if len(m.Files) != 3 {
+		t.Errorf("Expected 3 files in manifest, got %d: %v", len(m.Files), m.Files)
+	}
+}
+
+func TestInject_MultipleOutputFiles_StaleCleanup(t *testing.T) {
+	// Register test language
+	lang := testMultiFileLang()
+	if err := language.Register(lang); err != nil {
+		t.Fatalf("failed to register test language: %v", err)
+	}
+	defer language.Unregister("test-multifile")
+
+	tmpDir := t.TempDir()
+
+	// First injection: creates 3 files
+	input := InjectInput{
+		Language: "test-multifile",
+		OutDir:   tmpDir,
+		Outputs: []adapter.ConvertResult{
+			{Namespace: "user", ID: "User", VarName: "user_User", Schema: `{}`, Type: "T"},
+		},
+	}
+
+	if err := Inject(input); err != nil {
+		t.Fatalf("First inject failed: %v", err)
+	}
+
+	// Verify all files exist
+	for _, path := range []string{"schemas.ts", "types.ts", "nested/index.ts"} {
+		if _, err := os.Stat(filepath.Join(tmpDir, path)); os.IsNotExist(err) {
+			t.Fatalf("Expected %s to exist after first inject", path)
+		}
+	}
+
+	// Modify language to only output 1 file
+	singleFileLang := language.Language{
+		Name:       "test-multifile",
+		Extensions: []string{".ts"},
+		SchemaURL:  language.XSchemaBaseURL + "test-multifile.jsonc",
+		OutputFiles: []language.OutputFileSpec{
+			{
+				Path:     "single.ts",
+				Template: `// single file
+{{range .Schemas}}export const {{.VarName}} = {{.Code}};{{end}}`,
+			},
+		},
+		MergeImports: func(imports []string) string { return "" },
+		BuildVarName: func(ns, id string) string { return ns + "_" + id },
+	}
+	language.Unregister("test-multifile")
+	if err := language.Register(singleFileLang); err != nil {
+		t.Fatalf("failed to re-register test language: %v", err)
+	}
+
+	// Second injection: should cleanup stale files
+	if err := Inject(input); err != nil {
+		t.Fatalf("Second inject failed: %v", err)
+	}
+
+	// Verify new file exists
+	if _, err := os.Stat(filepath.Join(tmpDir, "single.ts")); os.IsNotExist(err) {
+		t.Fatal("Expected single.ts to exist after second inject")
+	}
+
+	// Verify old files are removed
+	for _, path := range []string{"schemas.ts", "types.ts", "nested/index.ts"} {
+		if _, err := os.Stat(filepath.Join(tmpDir, path)); !os.IsNotExist(err) {
+			t.Errorf("Expected %s to be deleted after second inject", path)
+		}
+	}
+
+	// Verify nested dir is also cleaned up
+	if _, err := os.Stat(filepath.Join(tmpDir, "nested")); !os.IsNotExist(err) {
+		t.Error("Expected nested directory to be cleaned up")
+	}
+}

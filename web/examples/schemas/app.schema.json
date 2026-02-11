@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/app.schema.json",
+  "type": "object",
+  "properties": {
+    "theme": {
+      "type": "string",
+      "enum": ["light", "dark"]
+    },
+    "language": {
+      "type": "string"
+    },
+    "debug": {
+      "type": "boolean"
+    }
+  },
+  "required": ["theme", "language"]
+}

@@ -2,386 +2,346 @@
 
 ## Summary
 
-| Draft | Passed | Failed | Skipped | Coverage |
-| ----- | ------ | ------ | ------- | -------- |
-| draft2019-09 | 769 | 90 | 0 | 89.5% |
-| draft2020-12 | 782 | 89 | 0 | 89.8% |
-| draft3 | 363 | 44 | 0 | 89.2% |
-| draft4 | 475 | 76 | 0 | 86.2% |
-| draft6 | 652 | 87 | 0 | 88.2% |
-| draft7 | 728 | 87 | 0 | 89.3% |
+| Draft | Passed | Failed | Skipped | Unsupported | Coverage |
+| ----- | ------ | ------ | ------- | ----------- | -------- |
+| draft2019-09 | 896 | 10 | 0 | 178 | 98.9% |
+| draft2020-12 | 909 | 10 | 0 | 201 | 98.9% |
+| draft3 | 397 | 0 | 0 | 0 | 100.0% |
+| draft4 | 516 | 10 | 0 | 0 | 98.1% |
+| draft6 | 697 | 10 | 0 | 0 | 98.6% |
+| draft7 | 773 | 10 | 0 | 0 | 98.7% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-89.5%25-yellow)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-89.8%25-yellow)
-![draft3](https://img.shields.io/badge/draft3%20compliance-89.2%25-yellow)
-![draft4](https://img.shields.io/badge/draft4%20compliance-86.2%25-yellow)
-![draft6](https://img.shields.io/badge/draft6%20compliance-88.2%25-yellow)
-![draft7](https://img.shields.io/badge/draft7%20compliance-89.3%25-yellow)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.9%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.9%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-100.0%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.1%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.6%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.7%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 16/21 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 17/20 |
-| dependentSchemas | ⚠️ | 16/20 |
-| enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
+| enum | ✅ | 45/45 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxContains | ✅ | 12/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
 | minContains | ✅ | 28/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
-| not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
+| propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 5/16 |
-| type | ⚠️ | 79/80 |
-| unevaluatedItems | ✅ | 0/0 |
-| unevaluatedProperties | ✅ | 0/0 |
-| uniqueItems | ⚠️ | 67/69 |
-| vocabulary | ⚠️ | 4/5 |
+| required | ⚠️ | 11/16 |
+| type | ✅ | 80/80 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ✅ | 25/25 |
+| uniqueItems | ✅ | 69/69 |
+| vocabulary | ✅ | 5/5 |
 
-### Failures
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>$recursiveAnchor is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at /$defs/inner) (4 tests)</summary>
 
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
+- `draft2019-09/recursiveRef/dynamic $recursiveRef destination (not predictable at schema compile time)/integer node`
+- `draft2019-09/recursiveRef/dynamic $recursiveRef destination (not predictable at schema compile time)/numeric node`
+- `draft2019-09/recursiveRef/multiple dynamic paths to the $recursiveRef keyword/recurse to anyLeafNode - floats are allowed`
+- `draft2019-09/recursiveRef/multiple dynamic paths to the $recursiveRef keyword/recurse to integerNode - floats are not allowed`
 
 </details>
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>$recursiveAnchor is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at /$defs/myobject) (10 tests)</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/two levels, integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor works like $ref/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/two levels, no match`
+- `draft2019-09/recursiveRef/$recursiveRef without using nesting/two levels, properties match with inner definition`
 
 </details>
 
 <details>
-<summary>contains - 2 failures</summary>
+<summary>$recursiveAnchor is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at /anyOf/1/additionalProperties) (3 tests)</summary>
 
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node does not match: recursion only uses inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node does not match; no recursion`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the outer schema resource/leaf node matches: recursion only uses inner schema`
 
 </details>
 
 <details>
-<summary>dependentRequired - 3 failures</summary>
+<summary>$recursiveAnchor is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at root) (19 tests)</summary>
 
-- **empty dependents**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>dependentSchemas - 4 failures</summary>
-
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/two levels, integer does not match as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with $recursiveAnchor: false works like $ref/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/integer matches at the outer level`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/integer now matches as a property value`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/single level match`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/two levels, properties match with $recursiveRef`
+- `draft2019-09/recursiveRef/$recursiveRef with nesting/two levels, properties match with inner definition`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node does not match: recursion uses the inner schema`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node does not match; no recursion`
+- `draft2019-09/recursiveRef/$recursiveRef with no $recursiveAnchor in the initial target schema resource/leaf node matches: recursion uses the inner schema`
+- `draft2019-09/ref/$ref with $recursiveAnchor/extra items allowed for inner arrays`
+- `draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $recursiveRef/with unevaluated items`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $recursiveRef/with unevaluated properties`
 
 </details>
 
 <details>
-<summary>enum - 2 failures</summary>
+<summary>$recursiveRef is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at /properties/foo) (4 tests)</summary>
 
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/match`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/mismatch`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive match`
+- `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive mismatch`
 
 </details>
 
 <details>
-<summary>exclusiveMaximum - 1 failure</summary>
+<summary>unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
 
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails`
 
 </details>
 
 <details>
-<summary>exclusiveMinimum - 1 failure</summary>
+<summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo) (2 tests)</summary>
 
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/no extra items`
+- `draft2019-09/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/uncle keyword evaluation is not significant`
 
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
+<summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root) (37 tests)</summary>
 
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location`
+- `draft2019-09/unevaluatedItems/unevaluatedItems before $ref/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems before $ref/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/invalid in case if is evaluated`
+- `draft2019-09/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/valid in case if is evaluated`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $ref/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with $ref/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with boolean schemas/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with boolean schemas/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with ignored additionalItems/all valid under unevaluatedItems`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with ignored additionalItems/invalid under unevaluatedItems`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with ignored applicator additionalItems/all valid under unevaluatedItems`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with ignored applicator additionalItems/invalid under unevaluatedItems`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with items and additionalItems/unevaluatedItems doesn't apply`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested items and additionalItems/with additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested items and additionalItems/with no additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested items/with invalid additional item`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested items/with no additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested items/with only (valid) additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested tuple/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested tuple/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with no additional items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with not/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with oneOf/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with oneOf/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with tuple/with no unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with tuple/with unevaluated items`
+- `draft2019-09/unevaluatedItems/unevaluatedItems with uniform items/unevaluatedItems doesn't apply`
 
 </details>
 
 <details>
-<summary>minLength - 1 failure</summary>
+<summary>unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root) (7 tests)</summary>
 
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
 
 </details>
 
 <details>
-<summary>minimum - 2 failures</summary>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0) (8 tests)</summary>
 
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails`
 
 </details>
 
 <details>
-<summary>oneOf - 4 failures</summary>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
 
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails`
 
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0) (3 tests)</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2019-09/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing`
 
 </details>
 
 <details>
-<summary>patternProperties - 2 failures</summary>
+<summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not) (2 tests)</summary>
 
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'`
+- `draft2019-09/not/collect annotations inside a 'not', even if collection is disabled/unevaluated property`
 
 </details>
 
 <details>
-<summary>properties - 9 failures</summary>
+<summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root) (77 tests)</summary>
 
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
+- `draft2019-09/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't consider dependentSchemas`
+- `draft2019-09/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't see bar when foo2 is absent`
+- `draft2019-09/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties sees bar when foo2 is present`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/Empty is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/a + b is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/a + c is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/a + d is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/a is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/all + a is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/all + foo is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/all is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/b + c is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/b + d is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/b is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/c + d is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/c is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/d is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + a is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + b is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + c is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + d is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + foo is invalid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx + foox is valid`
+- `draft2019-09/unevaluatedProperties/dynamic evalation inside nested refs/xx is valid`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/Empty is invalid (no x or y)`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x and y are invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x are valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and y are valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b are invalid (no x or y)`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and x are valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and y are valid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/x and y are invalid`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties before $ref/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties before $ref/with unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/invalid in case if is evaluated`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/valid in case if is evaluated`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $ref/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with $ref/with unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with boolean schemas/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with boolean schemas/with unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with no additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with no additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested properties/with additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested properties/with no additional properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with no nested unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with not/with unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with oneOf/with no unevaluated properties`
+- `draft2019-09/unevaluatedProperties/unevaluatedProperties with oneOf/with unevaluated properties`
+
+</details>
+
+### Unexpected Failures
+
+<details>
+<summary>properties - 5 failures</summary>
+
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -392,52 +352,16 @@
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
-
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 11 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -449,59 +373,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>vocabulary - 1 failure</summary>
-
-- **schema that uses custom metaschema with with no validation vocabulary**
-  - Test: no validation: invalid number, but it still validates
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -509,361 +385,395 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalProperties | ⚠️ | 16/21 |
+| additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
 | anchor | ✅ | 0/0 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
 | defs | ✅ | 0/0 |
-| dependentRequired | ⚠️ | 17/20 |
-| dependentSchemas | ⚠️ | 16/20 |
+| dependentRequired | ✅ | 20/20 |
+| dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
-| enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| enum | ✅ | 45/45 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 20/29 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
 | maxContains | ✅ | 12/12 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
 | minContains | ✅ | 28/28 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
-| not | ✅ | 0/0 |
-| oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| prefixItems | ⚠️ | 6/11 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
+| not | ✅ | 38/38 |
+| oneOf | ✅ | 27/27 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| prefixItems | ✅ | 11/11 |
+| properties | ⚠️ | 23/28 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 5/16 |
-| type | ⚠️ | 79/80 |
-| unevaluatedItems | ✅ | 0/0 |
-| unevaluatedProperties | ✅ | 0/0 |
-| uniqueItems | ⚠️ | 67/69 |
-| vocabulary | ⚠️ | 4/5 |
+| required | ⚠️ | 11/16 |
+| type | ✅ | 80/80 |
+| unevaluatedItems | ✅ | 14/14 |
+| unevaluatedProperties | ✅ | 27/27 |
+| uniqueItems | ✅ | 69/69 |
+| vocabulary | ✅ | 5/5 |
 
-### Failures
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/content) (2 tests)</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
+- `draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes`
+- `draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails`
 
 </details>
 
 <details>
-<summary>contains - 2 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/defaultItemType) (4 tests)</summary>
 
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with number values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with string values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with number values`
+- `draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with string values`
 
 </details>
 
 <details>
-<summary>dependentRequired - 3 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/detached) (2 tests)</summary>
 
-- **empty dependents**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid`
+- `draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid`
 
 </details>
 
 <details>
-<summary>dependentSchemas - 4 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements) (6 tests)</summary>
 
-- **dependencies with escaped characters**
-  - Test: quoted quote
-  - Expected: `invalid`, Got: `true`
-- **dependencies with escaped characters**
-  - Test: quoted quote invalid under dependent schema
-  - Expected: `invalid`, Got: `true`
-- **single dependency**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **single dependency**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect extended schema`
+- `draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema`
 
 </details>
 
 <details>
-<summary>enum - 2 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo) (12 tests)</summary>
 
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated/An array of strings is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution/An array of strings is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef without a matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of numbers is valid`
+- `draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of strings is invalid`
+- `draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
 
 </details>
 
 <details>
-<summary>exclusiveMinimum - 1 failure</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items) (1 test)</summary>
 
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid`
 
 </details>
 
 <details>
-<summary>items - 9 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length) (2 tests)</summary>
 
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **prefixItems with no additional items allowed**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
+- `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length`
+- `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length`
 
 </details>
 
 <details>
-<summary>maxItems - 1 failure</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /allOf/0/$defs/elements) (3 tests)</summary>
 
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema`
+- `draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema`
 
 </details>
 
 <details>
-<summary>maxProperties - 3 failures</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root) (5 tests)</summary>
 
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is not valid against the root`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root`
+- `draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor/The recursive part doesn't need to validate against the root`
+- `draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field`
+- `draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with misspelled field`
 
 </details>
 
 <details>
-<summary>maximum - 1 failure</summary>
+<summary>$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema) (4 tests)</summary>
 
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with unevaluated items`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with $dynamicRef/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with $dynamicRef/with unevaluated properties`
 
 </details>
 
 <details>
-<summary>minLength - 1 failure</summary>
+<summary>$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/start) (3 tests)</summary>
 
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef`
+- `draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here`
 
 </details>
 
 <details>
-<summary>minimum - 2 failures</summary>
+<summary>$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /items) (2 tests)</summary>
 
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid`
+- `draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid`
 
 </details>
 
 <details>
-<summary>multipleOf - 1 failure</summary>
+<summary>$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /properties/false) (2 tests)</summary>
 
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema`
+- `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema`
 
 </details>
 
 <details>
-<summary>pattern - 6 failures</summary>
+<summary>unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
 
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails`
 
 </details>
 
 <details>
-<summary>patternProperties - 2 failures</summary>
+<summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo) (2 tests)</summary>
 
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/no extra items`
+- `draft2020-12/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/uncle keyword evaluation is not significant`
 
 </details>
 
 <details>
-<summary>prefixItems - 5 failures</summary>
+<summary>unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root) (52 tests)</summary>
 
-- **a schema given for prefixItems**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **a schema given for prefixItems**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **prefixItems with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/a's and b's are valid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/a's, b's and c's are valid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/empty array is valid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only a's and c's are invalid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only a's are valid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only b's and c's are invalid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only b's are invalid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only c's are invalid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems before $ref/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems before $ref/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/invalid in case if is evaluated`
+- `draft2020-12/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/valid in case if is evaluated`
+- `draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/contains fails, second item is not evaluated`
+- `draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/contains passes, second item is not evaluated`
+- `draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/second item is evaluated by contains`
+- `draft2020-12/unevaluatedItems/unevaluatedItems depends on multiple nested contains/5 not evaluated, passes unevaluatedItems`
+- `draft2020-12/unevaluatedItems/unevaluatedItems depends on multiple nested contains/7 not evaluated, fails unevaluatedItems`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with $ref/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with $ref/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with boolean schemas/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with boolean schemas/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with items and prefixItems/unevaluatedItems doesn't apply`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with items/invalid under items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with items/valid under items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/all items evaluated by contains`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/empty array is valid`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/no items evaluated by contains`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/some but not all items evaluated by contains`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with invalid additional item`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with no additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with only (valid) additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested prefixItems and items/with additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested prefixItems and items/with no additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested tuple/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested tuple/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with no additional items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with not/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with oneOf/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with oneOf/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with tuple/with no unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with tuple/with unevaluated items`
+- `draft2020-12/unevaluatedItems/unevaluatedItems with uniform items/unevaluatedItems doesn't apply`
 
 </details>
 
 <details>
-<summary>properties - 9 failures</summary>
+<summary>unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root) (7 tests)</summary>
 
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0) (8 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1) (1 test)</summary>
+
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0) (3 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing`
+- `draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not) (2 tests)</summary>
+
+- `draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'`
+- `draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/unevaluated property`
+
+</details>
+
+<details>
+<summary>unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root) (77 tests)</summary>
+
+- `draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't consider dependentSchemas`
+- `draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't see bar when foo2 is absent`
+- `draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties sees bar when foo2 is present`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/Empty is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + b is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + c is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + d is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all + a is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all + foo is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b + c is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b + d is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/c + d is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/c is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/d is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + a is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + b is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + c is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + d is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + foo is invalid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + foox is valid`
+- `draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx is valid`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/Empty is invalid (no x or y)`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x and y are invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x are valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and y are valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b are invalid (no x or y)`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and x are valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and y are valid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/x and y are invalid`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties before $ref/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties before $ref/with unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/invalid in case if is evaluated`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/valid in case if is evaluated`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with $ref/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with $ref/with unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with boolean schemas/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with boolean schemas/with unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with no additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with no additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested properties/with additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested properties/with no additional properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with no nested unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with not/with unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with no unevaluated properties`
+- `draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with unevaluated properties`
+
+</details>
+
+### Unexpected Failures
+
+<details>
+<summary>properties - 5 failures</summary>
+
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -874,52 +784,16 @@
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
-
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 11 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -931,59 +805,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>vocabulary - 1 failure</summary>
-
-- **schema that uses custom metaschema with with no validation vocabulary**
-  - Test: no validation: invalid number, but it still validates
-  - Expected: `valid`, Got: `false`
 
 </details>
 
@@ -991,584 +817,72 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 11/14 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ✅ | 14/14 |
+| additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
-| dependencies | ⚠️ | 15/18 |
+| dependencies | ✅ | 18/18 |
 | disallow | ✅ | 9/9 |
-| divisibleBy | ⚠️ | 7/8 |
-| enum | ⚠️ | 15/16 |
+| divisibleBy | ✅ | 8/8 |
+| enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 6/7 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
-| maximum | ⚠️ | 11/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
-| minimum | ⚠️ | 10/13 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 16/17 |
-| properties | ⚠️ | 13/15 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 7/7 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
+| minimum | ✅ | 13/13 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 17/17 |
+| properties | ✅ | 15/15 |
 | ref | ✅ | 0/0 |
-| refRemote | ✅ | 8/8 |
-| required | ⚠️ | 3/4 |
-| type | ⚠️ | 72/80 |
-| uniqueItems | ⚠️ | 60/62 |
-
-### Failures
-
-<details>
-<summary>additionalItems - 3 failures</summary>
-
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>additionalProperties - 5 failures</summary>
-
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in extends are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 3 failures</summary>
-
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: missing dependency
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>divisibleBy - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>enum - 1 failure</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 1 failure</summary>
-
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 3 failures</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 3 failures</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 1 failure</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 2 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>required - 1 failure</summary>
-
-- **required validation**
-  - Test: present required property is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>type - 8 failures</summary>
-
-- **applies a nested schema**
-  - Test: an object is invalid otherwise
-  - Expected: `invalid`, Got: `true`
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-- **types can include schemas**
-  - Test: a boolean is invalid
-  - Expected: `invalid`, Got: `true`
-- **types can include schemas**
-  - Test: a float is invalid
-  - Expected: `invalid`, Got: `true`
-- **types can include schemas**
-  - Test: a string is invalid
-  - Expected: `invalid`, Got: `true`
-- **types can include schemas**
-  - Test: an integer is invalid
-  - Expected: `invalid`, Got: `true`
-- **types can include schemas**
-  - Test: null is invalid
-  - Expected: `invalid`, Got: `true`
-- **types from separate schemas are merged**
-  - Test: an integer is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-
-</details>
+| refRemote | ✅ | 0/0 |
+| required | ✅ | 4/4 |
+| type | ✅ | 80/80 |
+| uniqueItems | ✅ | 62/62 |
 
 ## draft4
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/17 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ✅ | 17/17 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 26/29 |
-| enum | ⚠️ | 47/49 |
+| definitions | ✅ | 0/0 |
+| dependencies | ✅ | 29/29 |
+| enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 12/21 |
-| maxItems | ⚠️ | 3/4 |
-| maxLength | ⚠️ | 4/5 |
-| maxProperties | ⚠️ | 5/8 |
-| maximum | ⚠️ | 11/14 |
-| minItems | ⚠️ | 3/4 |
-| minLength | ⚠️ | 4/5 |
-| minProperties | ⚠️ | 3/6 |
-| minimum | ⚠️ | 13/17 |
-| multipleOf | ⚠️ | 9/10 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
+| maxItems | ✅ | 4/4 |
+| maxLength | ✅ | 5/5 |
+| maxProperties | ✅ | 8/8 |
+| maximum | ✅ | 14/14 |
+| minItems | ✅ | 4/4 |
+| minLength | ✅ | 5/5 |
+| minProperties | ✅ | 6/6 |
+| minimum | ✅ | 17/17 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 20/20 |
-| oneOf | ⚠️ | 19/23 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 16/18 |
-| properties | ⚠️ | 15/24 |
+| oneOf | ✅ | 23/23 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 18/18 |
+| properties | ⚠️ | 19/24 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 4/15 |
-| type | ⚠️ | 78/79 |
-| uniqueItems | ⚠️ | 67/69 |
+| required | ⚠️ | 10/15 |
+| type | ✅ | 79/79 |
+| uniqueItems | ✅ | 69/69 |
 
-### Failures
-
-<details>
-<summary>additionalItems - 3 failures</summary>
-
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
+### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>properties - 5 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 3 failures</summary>
-
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 9 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 3 failures</summary>
-
-- **exclusiveMaximum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **maximum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 4 failures</summary>
-
-- **exclusiveMinimum validation**
-  - Test: boundary point is invalid
-  - Expected: `invalid`, Got: `true`
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation (explicit false exclusivity)**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -1579,25 +893,16 @@
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>required - 11 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -1609,50 +914,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1660,348 +926,48 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 17/19 |
+| contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 32/36 |
-| enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| definitions | ✅ | 0/0 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| oneOf | ✅ | 27/27 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 5/16 |
-| type | ⚠️ | 79/80 |
-| uniqueItems | ⚠️ | 67/69 |
+| required | ⚠️ | 11/16 |
+| type | ✅ | 80/80 |
+| uniqueItems | ✅ | 69/69 |
 
-### Failures
-
-<details>
-<summary>additionalItems - 3 failures</summary>
-
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
+### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>properties - 5 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 4 failures</summary>
-
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies with empty array**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2012,52 +978,16 @@
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
-
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 11 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -2069,50 +999,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -2120,349 +1011,49 @@
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
-| additionalProperties | ⚠️ | 11/16 |
+| additionalItems | ✅ | 19/19 |
+| additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
-| contains | ⚠️ | 19/21 |
+| contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
-| dependencies | ⚠️ | 32/36 |
-| enum | ⚠️ | 43/45 |
-| exclusiveMaximum | ⚠️ | 3/4 |
-| exclusiveMinimum | ⚠️ | 3/4 |
+| definitions | ✅ | 0/0 |
+| dependencies | ✅ | 36/36 |
+| enum | ✅ | 45/45 |
+| exclusiveMaximum | ✅ | 4/4 |
+| exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 16/28 |
-| maxItems | ⚠️ | 5/6 |
-| maxLength | ⚠️ | 6/7 |
-| maxProperties | ⚠️ | 7/10 |
-| maximum | ⚠️ | 7/8 |
-| minItems | ⚠️ | 5/6 |
-| minLength | ⚠️ | 6/7 |
-| minProperties | ⚠️ | 5/8 |
-| minimum | ⚠️ | 9/11 |
-| multipleOf | ⚠️ | 9/10 |
+| infinite-loop-detection | ✅ | 0/0 |
+| items | ✅ | 0/0 |
+| maxItems | ✅ | 6/6 |
+| maxLength | ✅ | 7/7 |
+| maxProperties | ✅ | 10/10 |
+| maximum | ✅ | 8/8 |
+| minItems | ✅ | 6/6 |
+| minLength | ✅ | 7/7 |
+| minProperties | ✅ | 8/8 |
+| minimum | ✅ | 11/11 |
+| multipleOf | ✅ | 10/10 |
 | not | ✅ | 38/38 |
-| oneOf | ⚠️ | 23/27 |
-| pattern | ⚠️ | 3/9 |
-| patternProperties | ⚠️ | 21/23 |
-| properties | ⚠️ | 19/28 |
-| propertyNames | ⚠️ | 13/20 |
+| oneOf | ✅ | 27/27 |
+| pattern | ✅ | 9/9 |
+| patternProperties | ✅ | 23/23 |
+| properties | ⚠️ | 23/28 |
+| propertyNames | ✅ | 20/20 |
 | ref | ✅ | 0/0 |
 | refRemote | ✅ | 0/0 |
-| required | ⚠️ | 5/16 |
-| type | ⚠️ | 79/80 |
-| uniqueItems | ⚠️ | 67/69 |
+| required | ⚠️ | 11/16 |
+| type | ✅ | 80/80 |
+| uniqueItems | ✅ | 69/69 |
 
-### Failures
-
-<details>
-<summary>additionalItems - 3 failures</summary>
-
-- **additionalItems as false without items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **additionalItems with heterogeneous array**
-  - Test: heterogeneous invalid instance
-  - Expected: `invalid`, Got: `true`
-- **array of items with no additionalItems permitted**
-  - Test: additional items are not permitted
-  - Expected: `invalid`, Got: `true`
-
-</details>
+### Unexpected Failures
 
 <details>
-<summary>additionalProperties - 5 failures</summary>
+<summary>properties - 5 failures</summary>
 
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **additionalProperties being false does not allow other properties**
-  - Test: patternProperties are not additional properties
-  - Expected: `valid`, Got: `false`
-- **additionalProperties does not look in applicators**
-  - Test: properties defined in allOf are not examined
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>contains - 2 failures</summary>
-
-- **contains keyword validation**
-  - Test: not array is valid
-  - Expected: `valid`, Got: `false`
-- **contains keyword with boolean schema false**
-  - Test: non-arrays are valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>definitions - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>dependencies - 4 failures</summary>
-
-- **dependencies**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **dependencies**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **dependencies with empty array**
-  - Test: non-object is valid
-  - Expected: `valid`, Got: `false`
-- **dependencies with escaped characters**
-  - Test: invalid object 3
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>enum - 2 failures</summary>
-
-- **heterogeneous enum validation**
-  - Test: one of the enum is valid
-  - Expected: `valid`, Got: `false`
-- **heterogeneous enum validation**
-  - Test: valid object matches
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMaximum - 1 failure</summary>
-
-- **exclusiveMaximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>exclusiveMinimum - 1 failure</summary>
-
-- **exclusiveMinimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>items - 12 failures</summary>
-
-- **a schema given for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **a schema given for items**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: JavaScript pseudo-array is valid
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **an array of schemas for items**
-  - Test: incomplete array of items
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: fewer items is valid
-  - Expected: `valid`, Got: `false`
-- **items and subitems**
-  - Test: too many items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: too many sub-items
-  - Expected: `invalid`, Got: `true`
-- **items and subitems**
-  - Test: wrong sub-item
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schema (false)**
-  - Test: any non-empty array is invalid
-  - Expected: `invalid`, Got: `true`
-- **items with boolean schemas**
-  - Test: array with one item is valid
-  - Expected: `valid`, Got: `false`
-- **items with boolean schemas**
-  - Test: empty array is valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxItems - 1 failure</summary>
-
-- **maxItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxLength - 1 failure</summary>
-
-- **maxLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maxProperties - 3 failures</summary>
-
-- **maxProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **maxProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>maximum - 1 failure</summary>
-
-- **maximum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minItems - 1 failure</summary>
-
-- **minItems validation**
-  - Test: ignores non-arrays
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minLength - 1 failure</summary>
-
-- **minLength validation**
-  - Test: ignores non-strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minProperties - 3 failures</summary>
-
-- **minProperties validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **minProperties validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>minimum - 2 failures</summary>
-
-- **minimum validation**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-- **minimum validation with signed integer**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>multipleOf - 1 failure</summary>
-
-- **by int**
-  - Test: ignores non-numbers
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>oneOf - 4 failures</summary>
-
-- **oneOf with missing optional property**
-  - Test: first oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with missing optional property**
-  - Test: second oneOf valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: first valid - valid
-  - Expected: `valid`, Got: `false`
-- **oneOf with required**
-  - Test: second valid - valid
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>pattern - 6 failures</summary>
-
-- **pattern validation**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores booleans
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores floats
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores integers
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores null
-  - Expected: `valid`, Got: `false`
-- **pattern validation**
-  - Test: ignores objects
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>patternProperties - 2 failures</summary>
-
-- **patternProperties validates properties matching a regex**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **patternProperties validates properties matching a regex**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-
-</details>
-
-<details>
-<summary>properties - 9 failures</summary>
-
-- **object properties validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
 - **properties whose names are Javascript object property names**
   - Test: __proto__ not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
@@ -2473,52 +1064,16 @@
   - Test: constructor not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **properties whose names are Javascript object property names**
   - Test: toString not valid
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties, patternProperties, additionalProperties interaction**
-  - Test: patternProperty validates nonproperty
-  - Expected: `valid`, Got: `false`
 
 </details>
 
 <details>
-<summary>propertyNames - 7 failures</summary>
-
-- **propertyNames validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **propertyNames validation**
-  - Test: some property names invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames validation with pattern**
-  - Test: non-matching property name is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with boolean schema false**
-  - Test: object with any properties is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with const**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-- **propertyNames with enum**
-  - Test: object with any other property is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>required - 11 failures</summary>
+<summary>required - 5 failures</summary>
 
 - **required properties whose names are Javascript object property names**
   - Test: __proto__ present
@@ -2530,50 +1085,11 @@
   - Test: constructor present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
-  - Test: ignores arrays
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required properties whose names are Javascript object property names**
   - Test: none of the properties mentioned
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 - **required properties whose names are Javascript object property names**
   - Test: toString present
   - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required validation**
-  - Test: ignores other non-objects
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: ignores strings
-  - Expected: `valid`, Got: `false`
-- **required validation**
-  - Test: non-present required property is invalid
-  - Expected: `invalid`, Got: `true`
-- **required with escaped characters**
-  - Test: object with some properties missing is invalid
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>type - 1 failure</summary>
-
-- **object type matches objects**
-  - Test: an array is not an object
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>uniqueItems - 2 failures</summary>
-
-- **uniqueItems with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
-- **uniqueItems=false with an array of items and additionalItems=false**
-  - Test: extra items are invalid even if unique
-  - Expected: `invalid`, Got: `true`
 
 </details>
 
