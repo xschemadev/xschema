@@ -601,3 +601,19 @@ if (typeof val !== "object" || val === null || Array.isArray(val)) {
 **Verification**:
 - TS typecheck: all 6 packages pass
 
+### Task 23: Document ArkType fallback typing guardrails - COMPLETED
+
+**Updated**: `typescript/packages/adapters/arktype/README.md`
+
+**Contents**:
+- Local verification commands: compliance, unit tests, typecheck, type-fidelity harness
+- Allowed `type.unknown` fallbacks table: IR any node, empty/all-any intersection, not, conditional (single branch/bare), typeGuarded, tuple (all variants), helper fallbacks — with reasons
+- Narrowed constructs table: oneOf, conditional (if/then/else), const object/array, enum complex — with narrowing mechanism
+- Disallowed patterns: unknown IR kinds, undocumented `type.unknown`, unknown-regressions on probes
+- Required test coverage rules: combinators, tuple generation, deep equality, proto-property objects
+- Troubleshooting: IMPROVED advisories, FAIL regressions, `.array()` runtime validation gotcha, compliance failures
+- ArkType-specific gotcha: `.array()` validates elements at runtime (unlike Zod), so tuple bases must stay `type.unknown.array()`
+
+**Verification**:
+- TS typecheck: all 6 packages pass
+
