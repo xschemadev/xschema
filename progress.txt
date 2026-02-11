@@ -287,27 +287,34 @@ validator_{i}.validate_python(v)  # Just validate, don't reassign
 
 ---
 
-### Task 8: Python: preserve type information in mixed allOf - COMPLETED
+### Task 9: Python: narrow oneOf/not/conditional/typeGuarded typing - COMPLETED
 
-**Problem**: `render_intersection` used `Annotated[Any, BeforeValidator(...)]` for all mixed (non-all-objects) intersections. When two object schemas are merged and a property appears in both with the same base type (e.g., two string schemas), the property-level intersection unnecessarily degraded to `Any`.
+**Changes**:
+- `renderer.py:2056-2071`: added `_union_base_type()` helper — computes union type from rendered type expressions, falls back to Any if any sub-expr contains Any
+- `renderer.py:2297-2373`: `render_oneof` now uses `Annotated[T1 | T2, BeforeValidator(...)]` instead of `Annotated[Any, ...]` when all sub-schemas produce narrowable types
+- `renderer.py:2410-2501`: `render_conditional` uses `Union[then_type, else_type]` when both branches exist and are narrowable; falls back to Any when only one branch (unconstrained passthrough)
+- `render_not` and `render_type_guarded` deliberately keep `Any` — negation is semantically unbounded, and typeGuarded has an unconstrained passthrough for unmatched types
 
-**Solution**: Added `_intersection_base_type()` helper in `renderer.py` that examines all sub-schemas in the intersection and determines the narrowest representable Python base type:
-- If all schemas share the same base kind (string→str, number→int/float, boolean→bool, etc.), use that type
-- `any`-kind schemas are skipped (they don't constrain the intersection)
-- Complex kinds (object, union, conditional, etc.) fall back to `Any`
-
-**Location**: `renderer.py:2018` (`_intersection_base_type`), `renderer.py:2075` (usage in `render_intersection`)
+**Type-fidelity harness updated**:
+- Rewrote `type-probe/type-fidelity.py` to check rendered type_expr from convert() output directly, instead of relying on pyright's TypeAdapter inference (pyright can't infer TypeAdapter[T] for non-class types)
+- Removed pyright dependency from harness — simpler, faster, and more accurate
+- Updated `expectAny` for oneOfStringOrNumber, oneOfObjects, conditionalIfThenElse from True to False
 
 **Tests added** (test_renderer.py):
-- `test_render_intersection_primitives` — updated to assert `str` instead of `Any`
-- `test_render_intersection_mixed_kinds_falls_back_to_any` — string + int → Any
-- `test_render_intersection_numbers_preserves_int` — two integers → int
-- `test_render_intersection_tsconfig_like_preserves_property_types` — TSConfig-like allOf with property refinement preserves str
+- `test_render_oneof_narrows_primitives` — string|int|bool → `StrictStr | StrictInt | StrictBool`
+- `test_render_oneof_with_any_schema_falls_back` — string|any → Any
+- `test_render_oneof_objects_narrows_to_union` — two objects → union of class names
+- `test_render_conditional_if_then_else_narrows` — both branches → union
+- `test_render_conditional_if_then_only_stays_any` — then only → Any
+- `test_render_conditional_if_else_only_stays_any` — else only → Any
+- `test_render_not_stays_any` — negation → Any
+- `test_render_type_guarded_stays_any` — passthrough → Any
 
-**Generated code change**: `name: Annotated[Any, BeforeValidator(...)]` → `name: Annotated[str, BeforeValidator(...)]`
+**Key decision**: not/typeGuarded keep Any. Not-schema means "anything except X" which can't be represented as a union. TypeGuarded has a passthrough path (no guard matches → value passes) making the domain unbounded.
 
 **Verification**:
-- 95/95 pydantic tests pass
-- type-fidelity harness: all 17 probes pass, allOfMixed remains any-free
+- 103/103 pydantic tests pass
+- type-fidelity harness: 17 probes pass, 6 any-free (was 3), 11 any (was 14)
 - pyright: 0 errors on src/
 - compliance: 100% across all 6 drafts (no regressions)
+

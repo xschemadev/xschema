@@ -16,7 +16,7 @@ from pydantic import BeforeValidator, TypeAdapter
 from pydantic import Field, TypeAdapter
 from typing import Annotated
 from typing import Annotated, Any
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 
 # allOf with object + string constraint
@@ -58,7 +58,7 @@ class ProbeAllofobjectandadditional(BaseModel):
 probe_allOfObjectAndAdditional = TypeAdapter(ProbeAllofobjectandadditional)
 
 # oneOf string | number
-def _oneof_probeoneofstringornumber(v) -> Any:
+def _oneof_probeoneofstringornumber(v):
     matches = []
     validator_0 = TypeAdapter(StrictStr)
     try:
@@ -78,7 +78,7 @@ def _oneof_probeoneofstringornumber(v) -> Any:
         raise ValueError(f'Value must match exactly one schema, but matched {len(matches)} schemas')
     return v
 
-probe_oneOfStringOrNumber = TypeAdapter(Annotated[Any, BeforeValidator(_oneof_probeoneofstringornumber)])
+probe_oneOfStringOrNumber = TypeAdapter(Annotated[StrictStr | StrictFloat, BeforeValidator(_oneof_probeoneofstringornumber)])
 
 # oneOf discriminated objects
 class ProbeOneofobjectsOption0(BaseModel):
@@ -91,7 +91,7 @@ class ProbeOneofobjectsOption1(BaseModel):
     value: StrictFloat
 
 
-def _oneof_probeoneofobjects(v) -> Any:
+def _oneof_probeoneofobjects(v):
     matches = []
     validator_0 = TypeAdapter(ProbeOneofobjectsOption0)
     try:
@@ -111,7 +111,7 @@ def _oneof_probeoneofobjects(v) -> Any:
         raise ValueError(f'Value must match exactly one schema, but matched {len(matches)} schemas')
     return v
 
-probe_oneOfObjects = TypeAdapter(Annotated[Any, BeforeValidator(_oneof_probeoneofobjects)])
+probe_oneOfObjects = TypeAdapter(Annotated[ProbeOneofobjectsOption0 | ProbeOneofobjectsOption1, BeforeValidator(_oneof_probeoneofobjects)])
 
 # not string
 def _not_probenotstring(v) -> Any:
@@ -158,7 +158,7 @@ class ProbeConditionalifthenelseElse(BaseModel):
     value: StrictFloat
 
 
-def _conditional_probeconditionalifthenelse(v) -> Any:
+def _conditional_probeconditionalifthenelse(v):
     # Check if 'if' schema matches
     if_validator = TypeAdapter(ProbeConditionalifthenelseIf)
     try:
@@ -183,10 +183,10 @@ def _conditional_probeconditionalifthenelse(v) -> Any:
     # Otherwise, value is valid as-is
     return v
 
-probe_conditionalIfThenElse = TypeAdapter(Annotated[Any, BeforeValidator(_conditional_probeconditionalifthenelse)])
+probe_conditionalIfThenElse = TypeAdapter(Annotated[ProbeConditionalifthenelseThen | ProbeConditionalifthenelseElse, BeforeValidator(_conditional_probeconditionalifthenelse)])
 
 # if/then only
-def _conditional_probeconditionalifthen(v) -> Any:
+def _conditional_probeconditionalifthen(v):
     # Check if 'if' schema matches
     if_validator = TypeAdapter(Annotated[str, StringConstraints(strict=True, min_length=1)])
     try:
@@ -397,22 +397,3 @@ def _make_enum_validator(allowed_values):
 
 probe_enumWithArrays = TypeAdapter(Annotated[Any, BeforeValidator(_make_enum_validator([[1, 2], [3, 4], None]))])
 
-
-# reveal_type calls for pyright type inspection
-reveal_type(probe_allOfMixed)
-reveal_type(probe_allOfObjectAndAdditional)
-reveal_type(probe_oneOfStringOrNumber)
-reveal_type(probe_oneOfObjects)
-reveal_type(probe_notString)
-reveal_type(probe_notBoolean)
-reveal_type(probe_conditionalIfThenElse)
-reveal_type(probe_conditionalIfThen)
-reveal_type(probe_typeGuardedObject)
-reveal_type(probe_typeGuardedArrayMinItems)
-reveal_type(probe_tupleStringNumber)
-reveal_type(probe_tupleStringNumberClosed)
-reveal_type(probe_tupleMixedWithRest)
-reveal_type(probe_constObject)
-reveal_type(probe_constArray)
-reveal_type(probe_enumWithObjects)
-reveal_type(probe_enumWithArrays)

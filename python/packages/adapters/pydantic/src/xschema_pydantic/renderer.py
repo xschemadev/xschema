@@ -2054,6 +2054,24 @@ def _intersection_base_type(schemas: tuple[SchemaNode, ...]) -> str:
     return base if base is not None else "Any"
 
 
+def _union_base_type(type_exprs: list[str]) -> str:
+    """Compute a union base type from rendered type expressions.
+
+    Used by oneOf and conditional to replace Any with a narrower union when
+    all branches produce representable types. If any branch uses Any, the
+    whole union collapses to Any (Union[str, Any] == Any in Python's type system).
+    """
+    import re
+
+    for expr in type_exprs:
+        if re.search(r"\bAny\b", expr):
+            return "Any"
+
+    if len(type_exprs) == 1:
+        return type_exprs[0]
+    return " | ".join(type_exprs)
+
+
 def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
     """Render IntersectionNode (JSON Schema 'allOf') to Pydantic type.
 
@@ -2297,27 +2315,33 @@ def render_oneof(node: OneOfNode, name: str) -> RenderResult:
 
     This requires trying ALL schemas even after finding a match, which is
     less efficient than Union but semantically correct.
+
+    TYPE NARROWING:
+    Instead of Annotated[Any, ...], we use Annotated[Union[T1, T2], ...] when
+    all sub-schemas produce representable types. This gives pyright useful type
+    info while the BeforeValidator still enforces exact-one-match at runtime.
     """
     imports: set[str] = {
-        "from typing import Annotated, Any",
+        "from typing import Annotated",
         "from pydantic import BeforeValidator, TypeAdapter",
     }
     code_parts: list[str] = []
+    rendered: list[RenderResult] = []
 
     # Render all schemas
     for i, schema in enumerate(node.schemas):
         schema_result = render(schema, f"{name}Option{i}")
+        rendered.append(schema_result)
         imports.update(schema_result.imports)
         if schema_result.code:
             code_parts.append(schema_result.code)
 
     # Create validator that checks exactly one schema matches
     validator_name = f"_oneof_{name.lower()}"
-    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines = [f"def {validator_name}(v):"]
     validator_lines.append("    matches = []")
 
-    for i, schema in enumerate(node.schemas):
-        schema_result = render(schema, f"{name}Option{i}")
+    for i, schema_result in enumerate(rendered):
         validator_lines.append(
             f"    validator_{i} = TypeAdapter({schema_result.type_expr})"
         )
@@ -2339,7 +2363,12 @@ def render_oneof(node: OneOfNode, name: str) -> RenderResult:
 
     code_parts.append("\n".join(validator_lines))
 
-    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    # narrow the static base type from sub-schema type expressions
+    base_type = _union_base_type([r.type_expr for r in rendered])
+    if base_type == "Any":
+        imports.add("from typing import Any")
+
+    type_expr = f"Annotated[{base_type}, BeforeValidator({validator_name})]"
     code = "\n\n\n".join(code_parts)
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
 
@@ -2397,10 +2426,14 @@ def render_conditional(node: ConditionalNode, name: str) -> RenderResult:
     - If 'if' doesn't match and 'else' exists, validate against 'else'
     - Otherwise, the original value is valid
 
-    We use a custom validator to implement this logic.
+    TYPE NARROWING:
+    When both then and else exist, the value must be one of the two branch
+    types, so we use Union[then_type, else_type] instead of Any. When only
+    one branch exists, the other path passes any value through unchanged,
+    so we fall back to Any.
     """
     imports: set[str] = {
-        "from typing import Annotated, Any",
+        "from typing import Annotated",
         "from pydantic import BeforeValidator, TypeAdapter",
     }
     code_parts: list[str] = []
@@ -2429,7 +2462,7 @@ def render_conditional(node: ConditionalNode, name: str) -> RenderResult:
 
     # Create validator with if/then/else logic
     validator_name = f"_conditional_{name.lower()}"
-    validator_lines = [f"def {validator_name}(v) -> Any:"]
+    validator_lines = [f"def {validator_name}(v):"]
     validator_lines.append(f"    # Check if 'if' schema matches")
     validator_lines.append(f"    if_validator = TypeAdapter({if_result.type_expr})")
     validator_lines.append("    try:")
@@ -2476,7 +2509,17 @@ def render_conditional(node: ConditionalNode, name: str) -> RenderResult:
 
     code_parts.append("\n".join(validator_lines))
 
-    type_expr = f"Annotated[Any, BeforeValidator({validator_name})]"
+    # narrow: if both then and else exist, value must be one or the other
+    if then_result is not None and else_result is not None:
+        base_type = _union_base_type([then_result.type_expr, else_result.type_expr])
+    else:
+        # only one branch — the other path accepts anything
+        base_type = "Any"
+
+    if base_type == "Any":
+        imports.add("from typing import Any")
+
+    type_expr = f"Annotated[{base_type}, BeforeValidator({validator_name})]"
     code = "\n\n\n".join(code_parts)
     return RenderResult(code=code, type_expr=type_expr, imports=imports)
 

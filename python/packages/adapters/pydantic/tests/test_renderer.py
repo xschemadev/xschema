@@ -544,7 +544,10 @@ def test_render_oneof():
         )
     )
     result = render(node, "Test")
-    assert "Annotated[Any, BeforeValidator(_oneof_test)]" in result.type_expr
+    assert (
+        "Annotated[StrictStr | StrictFloat, BeforeValidator(_oneof_test)]"
+        in result.type_expr
+    )
     assert "def _oneof_test" in result.code
     assert "exactly one schema" in result.code
 
@@ -875,3 +878,104 @@ def test_render_resolved_ref_delegates():
     node = RefNode(path="#/$defs/Name", resolved=inner)
     result = render(node, "Test")
     assert result.type_expr == "StrictStr"
+
+
+# =============================================================================
+# Combinator Type Narrowing
+# =============================================================================
+
+
+def test_render_oneof_narrows_primitives():
+    """oneOf with primitive schemas narrows to union instead of Any."""
+    node = OneOfNode(
+        schemas=(
+            StringNode(),
+            NumberNode(integer=True),
+            BooleanNode(),
+        )
+    )
+    result = render(node, "Test")
+    assert "StrictStr | StrictInt | StrictBool" in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "from typing import Any" not in result.imports
+
+
+def test_render_oneof_with_any_schema_falls_back():
+    """oneOf with an any-typed sub-schema falls back to Any."""
+    node = OneOfNode(
+        schemas=(
+            StringNode(),
+            AnyNode(),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_oneof_objects_narrows_to_union():
+    """oneOf with object schemas narrows to union of class names."""
+    obj1 = ObjectNode(
+        properties=(("name", PropertyDef(schema=StringNode(), required=True)),),
+    )
+    obj2 = ObjectNode(
+        properties=(
+            ("age", PropertyDef(schema=NumberNode(integer=True), required=True)),
+        ),
+    )
+    node = OneOfNode(schemas=(obj1, obj2))
+    result = render(node, "Test")
+    assert "TestOption0 | TestOption1" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_conditional_if_then_else_narrows():
+    """conditional with both then and else narrows to union of branch types."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=NumberNode(integer=True),
+        else_schema=BooleanNode(),
+    )
+    result = render(node, "Test")
+    assert "StrictInt | StrictBool" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_conditional_if_then_only_stays_any():
+    """conditional with only then (no else) stays Any since unmatched path is unconstrained."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=NumberNode(integer=True),
+        else_schema=None,
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_conditional_if_else_only_stays_any():
+    """conditional with only else (no then) stays Any since matched path is unconstrained."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=None,
+        else_schema=NumberNode(integer=True),
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_not_stays_any():
+    """not always uses Any since negation can't be statically narrowed."""
+    node = NotNode(schema=StringNode())
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_type_guarded_stays_any():
+    """typeGuarded with passthrough stays Any since unmatched types pass through."""
+    node = TypeGuardedNode(
+        guards=(
+            TypeGuard(check="string", schema=StringNode()),
+            TypeGuard(check="number", schema=NumberNode(integer=False)),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
