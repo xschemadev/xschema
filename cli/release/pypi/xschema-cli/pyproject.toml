@@ -1,6 +1,6 @@
 [project]
 name = "xschema-cli"
-version = "0.2.1"
+version = "0.3.0"
 description = "XSchema CLI - Bring your JSON Schemas to life"
 readme = "README.md"
 license = "MIT"
