@@ -275,52 +275,10 @@
     },
     {
       "keyword": "properties",
-      "passed": 23,
-      "failed": 5,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "__proto__ not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "constructor not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "propertyNames",
@@ -338,8 +296,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 58,
-      "failed": 21,
+      "passed": 66,
+      "failed": 13,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -358,22 +316,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "URN ref with nested pointer ref",
-          "test": "a non-string is invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref \"#/$defs/bar\": key \"bar\" not found"
-        },
-        {
-          "group": "URN ref with nested pointer ref",
-          "test": "a string is valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref \"#/$defs/bar\": key \"bar\" not found"
         },
         {
           "group": "order of evaluation: $id and $anchor and $ref",
@@ -397,54 +339,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
         },
         {
           "group": "remote ref, containing refs itself",
@@ -555,52 +449,10 @@
     },
     {
       "keyword": "required",
-      "passed": 11,
-      "failed": 5,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "all present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "type",
@@ -639,11 +491,11 @@
     }
   ],
   "summary": {
-    "passed": 1018,
-    "failed": 38,
+    "passed": 1036,
+    "failed": 20,
     "skipped": 0,
     "total": 1056,
-    "percentage": 96.40151515151516,
+    "percentage": 98.10606060606061,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

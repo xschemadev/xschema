@@ -21,7 +21,7 @@ import type {
 	NullableNode,
 	PropertyDef,
 } from "@xschemadev/core";
-import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
+import { escapeString, hasPrototypeProperties, isPrimitive, sortedStringify } from "@xschemadev/core";
 
 // JS identifier regex - keys matching this can use direct property syntax
 const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
@@ -218,6 +218,15 @@ const ARRAY_REJECTION_CHECK = `v.rawCheck((ctx) => { if (Array.isArray(ctx.datas
 
 function renderObject(node: ObjectNode): string {
 	const propKeys = Array.from(node.properties.keys());
+	const requiredKeys = propKeys.filter(
+		(k) => node.properties.get(k)!.required,
+	);
+
+	// prototype property names break valibot's internal object entry lookup
+	if (hasPrototypeProperties(propKeys) || hasPrototypeProperties(requiredKeys)) {
+		return renderObjectWithProtoProps(node);
+	}
+
 	const hasPatternProps = node.patternProperties.length > 0;
 	const needsPassthrough = hasPatternProps || node.propertyNames !== undefined;
 
@@ -363,6 +372,71 @@ function renderObject(node: ObjectNode): string {
 
 	// Always wrap with array rejection check BEFORE the object schema
 	const parts = ["v.unknown()", ARRAY_REJECTION_CHECK, result, ...postActions];
+	return `v.pipe(${parts.join(", ")})`;
+}
+
+function renderObjectWithProtoProps(node: ObjectNode): string {
+	const propKeys = Array.from(node.properties.keys());
+	const validators: string[] = [];
+
+	for (const key of propKeys) {
+		const prop = node.properties.get(key)!;
+		const propCode = render(prop.schema as SchemaNode);
+		const keyExpr = escapeString(key);
+
+		if (prop.required) {
+			validators.push(`
+      if (Object.hasOwn(val, ${keyExpr})) {
+        if (!v.safeParse(${propCode}, val[${keyExpr}]).success) return false;
+      } else {
+        return false;
+      }`);
+		} else {
+			validators.push(`
+      if (Object.hasOwn(val, ${keyExpr})) {
+        if (!v.safeParse(${propCode}, val[${keyExpr}]).success) return false;
+      }`);
+		}
+	}
+
+	// additional properties check
+	let additionalCheck = "";
+	if (node.additionalProperties === false) {
+		const definedPropsJson = JSON.stringify(propKeys);
+		additionalCheck = `
+      const definedProps = new Set(${definedPropsJson});
+      for (const key of Object.keys(val)) {
+        if (!definedProps.has(key)) return false;
+      }`;
+	} else if (
+		typeof node.additionalProperties === "object" &&
+		node.additionalProperties.kind !== "any"
+	) {
+		const additionalSchema = render(node.additionalProperties);
+		const definedPropsJson = JSON.stringify(propKeys);
+		additionalCheck = `
+      const definedProps = new Set(${definedPropsJson});
+      for (const [key, value] of Object.entries(val)) {
+        if (!definedProps.has(key)) {
+          if (!v.safeParse(${additionalSchema}, value).success) return false;
+        }
+      }`;
+	}
+
+	const postActions: string[] = [];
+	postActions.push(...renderObjectConstraintsActions(node));
+	postActions.push(...renderDependenciesActions(node));
+
+	const parts = [
+		"v.unknown()",
+		ARRAY_REJECTION_CHECK,
+		`v.check((val) => {
+      if (typeof val !== "object" || val === null || Array.isArray(val)) return false;${validators.join("")}${additionalCheck}
+      return true;
+    }, "Object validation failed")`,
+		...postActions,
+	];
+
 	return `v.pipe(${parts.join(", ")})`;
 }
 

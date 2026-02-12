@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1018 | 38 | 0 | 178 | 96.4% |
-| draft2020-12 | 1032 | 38 | 0 | 201 | 96.4% |
+| draft2019-09 | 1036 | 20 | 0 | 178 | 98.1% |
+| draft2020-12 | 1051 | 19 | 0 | 201 | 98.2% |
 | draft3 | 425 | 9 | 0 | 0 | 97.9% |
-| draft4 | 590 | 23 | 0 | 0 | 96.2% |
-| draft6 | 800 | 32 | 0 | 0 | 96.2% |
-| draft7 | 884 | 32 | 0 | 0 | 96.5% |
+| draft4 | 600 | 13 | 0 | 0 | 97.9% |
+| draft6 | 816 | 16 | 0 | 0 | 98.1% |
+| draft7 | 900 | 16 | 0 | 0 | 98.3% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-96.4%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-96.4%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.1%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.2%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-97.9%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-96.2%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-96.2%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-96.5%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-97.9%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.1%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.3%25-brightgreen)
 
 ## draft2019-09
 
@@ -59,12 +59,12 @@
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 23/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 58/79 |
+| ref | ⚠️ | 66/79 |
 | refRemote | ⚠️ | 27/31 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
 | unevaluatedProperties | ✅ | 25/25 |
@@ -361,28 +361,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 5 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
-<details>
-<summary>ref - 21 failures</summary>
+<summary>ref - 13 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -390,12 +369,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#" is not supported`
-- **URN ref with nested pointer ref**
-  - Test: a non-string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
-- **URN ref with nested pointer ref**
-  - Test: a string is valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
 - **order of evaluation: $id and $anchor and $ref**
   - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
@@ -405,24 +378,6 @@ These tests are intentionally excluded due to documented limitations.
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
@@ -468,27 +423,6 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: all present
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
 ## draft2020-12
 
 | Keyword | Status | Pass/Total |
@@ -529,11 +463,11 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
 | prefixItems | ✅ | 11/11 |
-| properties | ⚠️ | 23/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 58/79 |
+| ref | ⚠️ | 67/79 |
 | refRemote | ⚠️ | 27/31 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
 | unevaluatedProperties | ✅ | 27/27 |
@@ -901,28 +835,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 5 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
-<details>
-<summary>ref - 21 failures</summary>
+<summary>ref - 12 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -930,39 +843,12 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
-- **URN ref with nested pointer ref**
-  - Test: a non-string is invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
-- **URN ref with nested pointer ref**
-  - Test: a string is valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
@@ -1005,27 +891,6 @@ These tests are intentionally excluded due to documented limitations.
 - **fragment within remote ref**
   - Test: remote fragment valid
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__integer" is not supported`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: all present
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -1122,10 +987,10 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 23/23 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
-| properties | ⚠️ | 19/24 |
+| properties | ✅ | 24/24 |
 | ref | ⚠️ | 34/45 |
 | refRemote | ✅ | 17/17 |
-| required | ⚠️ | 10/15 |
+| required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -1140,27 +1005,6 @@ These tests are intentionally excluded due to documented limitations.
 - **validate definition against metaschema**
   - Test: valid definition schema
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
-
-</details>
-
-<details>
-<summary>properties - 5 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -1203,27 +1047,6 @@ These tests are intentionally excluded due to documented limitations.
 
 </details>
 
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: all present
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
 ## draft6
 
 | Keyword | Status | Pass/Total |
@@ -1257,11 +1080,11 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 23/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 51/70 |
+| ref | ⚠️ | 57/70 |
 | refRemote | ✅ | 23/23 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -1289,28 +1112,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 5 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
-<details>
-<summary>ref - 19 failures</summary>
+<summary>ref - 13 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1327,24 +1129,6 @@ These tests are intentionally excluded due to documented limitations.
 - **naive replacement of $ref with its destination is not correct**
   - Test: match the enum exactly
   - Expected: `valid`, Got: `false`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
@@ -1369,27 +1153,6 @@ These tests are intentionally excluded due to documented limitations.
 - **simple URN base URI with $ref via the URN**
   - Test: valid under the URN IDed schema
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref "#" is not supported`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: all present
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 
@@ -1427,11 +1190,11 @@ These tests are intentionally excluded due to documented limitations.
 | oneOf | ✅ | 27/27 |
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 23/23 |
-| properties | ⚠️ | 23/28 |
+| properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 59/78 |
+| ref | ⚠️ | 65/78 |
 | refRemote | ✅ | 23/23 |
-| required | ⚠️ | 11/16 |
+| required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
@@ -1459,28 +1222,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>properties - 5 failures</summary>
-
-- **properties whose names are Javascript object property names**
-  - Test: __proto__ not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: all present and valid
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: constructor not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **properties whose names are Javascript object property names**
-  - Test: toString not valid
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-
-</details>
-
-<details>
-<summary>ref - 19 failures</summary>
+<summary>ref - 13 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1490,31 +1232,13 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `false`
 - **Recursive references between schemas**
   - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#/$defs/node" is not supported`
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
 - **Recursive references between schemas**
   - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#/$defs/node" is not supported`
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
 - **naive replacement of $ref with its destination is not correct**
   - Test: match the enum exactly
   - Expected: `valid`, Got: `false`
-- **refs with relative uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **refs with relative uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on inner field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: invalid on outer field
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
-- **relative refs with absolute uris and defs**
-  - Test: valid on both fields
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
@@ -1539,27 +1263,6 @@ These tests are intentionally excluded due to documented limitations.
 - **simple URN base URI with $ref via the URN**
   - Test: valid under the URN IDed schema
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_21: recursive local $ref "#" is not supported`
-
-</details>
-
-<details>
-<summary>required - 5 failures</summary>
-
-- **required properties whose names are Javascript object property names**
-  - Test: __proto__ present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: all present
-  - Expected: `valid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: constructor present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: none of the properties mentioned
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
-- **required properties whose names are Javascript object property names**
-  - Test: toString present
-  - Expected: `invalid`, Got: `error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)`
 
 </details>
 

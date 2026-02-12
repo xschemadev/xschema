@@ -8,6 +8,7 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - `propertyMapKeywords` in `cli/processor/local_refs.go` tracks JSON Schema keywords whose values are property-name-keyed maps (not schema nodes), preventing false interpretation of keys like `$ref` as schema keywords
 - `resolveInternalRefs` in `cli/processor/local_refs.go` uses a scope stack for `$id`-aware ref resolution — `#/...` refs resolve against the nearest `$id`-bearing ancestor first, falling back to root. mirrors the approach in `bundler.validateInternalRefs`
 - `--dev-report` flag cannot be combined with `--keyword` or `--draft` in the compliance command. for keyword-specific runs, use `go run . compliance --lang <lang> --adapter-path <path> --keyword <kw>` directly
+- when object property names collide with Object.prototype (e.g. `__proto__`, `constructor`, `toString`), adapters must bypass the native object literal shape. use `hasPrototypeProperties()` from `@xschemadev/core` to detect, then generate manual `v.safeParse()` / `.safeParse()` per-property validation instead
 
 ---
 
@@ -33,3 +34,10 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **fix**: already resolved by issue-03's `$id`-based scope tracking in `cli/processor/local_refs.go`
 - **root cause**: identical to issue-03 — `#/$defs/inner` refs in sub-schemas with their own `$id` (using absolute URIs) were resolved against document root instead of the `$id`-bearing ancestor
 - **verified**: all 5 adapters × 4 drafts × ref keyword compliance — 0 baseline failures for "relative refs with absolute uris and defs"; all typechecks pass
+
+### issue-10: properties / properties whose names are Javascript object property names
+- **fix**: added `renderObjectWithProtoProps()` to valibot adapter in `typescript/packages/adapters/valibot/src/renderer.ts`
+- **root cause**: valibot's `v.looseObject({ __proto__: ..., constructor: ..., toString: ... })` stores entries as a plain JS object. looking up `this.entries["__proto__"]` hits Object.prototype instead of the schema entry, causing `_run is not a function` crash
+- **approach**: detect prototype property names via `hasPrototypeProperties()` from `@xschemadev/core`, bypass valibot's object shape, generate manual `v.check()` + `v.safeParse()` per-property validation using `Object.hasOwn()` for safe key access
+- **also fixes issue-11**: same root cause ("required properties whose names are Javascript object property names") — `required` keyword compliance now 100% across all drafts
+- **verified**: valibot properties keyword 100% across all 6 drafts; valibot required keyword 100% across all 6 drafts; full compliance re-run passes; typecheck passes

@@ -160,7 +160,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-10.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/valibot` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-11: required / required properties whose names are Javascript object property names",
