@@ -143,25 +143,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 22,
-      "failed": 3,
+      "passed": 24,
+      "failed": 1,
       "skipped": 0,
       "total": 25,
       "failures": [
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data does not validate",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref prevents a sibling id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "root pointer ref",
           "test": "recursive mismatch",
@@ -201,11 +187,11 @@
     }
   ],
   "summary": {
-    "passed": 429,
-    "failed": 3,
+    "passed": 431,
+    "failed": 1,
     "skipped": 0,
     "total": 432,
-    "percentage": 99.30555555555556,
+    "percentage": 99.76851851851852,
     "unsupportedFeatures": {
       "count": 2,
       "items": [

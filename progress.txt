@@ -12,6 +12,7 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - metaschema `$ref`s (pointing to `http://json-schema.org/draft-*` or `https://json-schema.org/draft/*`) are replaced with empty schema `{}` in the bundler — no adapter can generate a "validate this is a valid JSON Schema" check, so accept-anything is the correct approximation. additionally, root-level metaschema refs are detected by `checkMetaschemaRef` in the processor and classified as `UnsupportedKeywordError` so compliance reports show them under "Unsupported Features" rather than "Unexpected Failures"
 - `nonSchemaKeywords` (`enum`, `const`, `default`, `example`, `examples`) in both `cli/bundler/normalize.go` and `cli/bundler/bundler.go` mark keywords whose values are literal data, not subschemas. the bundler and normalizer skip these during traversal to avoid corrupting data values (e.g. rewriting `$ref` strings inside enum arrays)
 - pydantic forward refs for recursive `$ref: "#"`: only use `'ClassName'` forward reference when the root schema has explicit `type: "object"`. typeless object schemas must fall back to `Any` because non-object values need to pass validation at recursive positions. always call `ClassName.model_rebuild()` after class definition to resolve forward refs
+- in pre-2019-09 drafts, `$ref` consumes the entire object — sibling `$id`/`id` must NOT change the base URI for `$ref` resolution. the bundler's `processObject` checks for `$ref` presence before applying `$id` base URI changes via `refIgnoresSiblings` flag
 
 ---
 
@@ -116,3 +117,33 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
   4. converter emits `ClassName.model_rebuild()` after class definition to resolve forward refs at runtime
 - **also resolves TS adapter failures**: TS adapters (zod, effect, valibot, arktype) were already fixed by issue-01's `RefNode` + lazy/suspend mechanism
 - **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "Recursive references between schemas" failures in any report; all typechecks pass; Go build+vet+tests pass
+
+### issue-13: ref / URN ref with nested pointer ref
+- **fix**: already resolved by issue-03's `$id`-based scope tracking in `cli/processor/local_refs.go`
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters; marked passes: true
+
+### issue-18: ref / Recursive references between schemas (recursive $ref "#/$defs/node")
+- **fix**: already resolved by issue-01 (Go processor cycle detection) and issue-08 (pydantic forward refs)
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters; marked passes: true
+
+### issue-19: ref / $ref prevents a sibling $id from changing the base uri (got false)
+- **fix**: added `refIgnoresSiblings` guard in `cli/bundler/bundler.go` `processObject` — skips sibling `$id` base URI change when `$ref` is present and draft is pre-2019-09
+- **root cause**: bundler's `processObject` let sibling `$id` change `baseURI` before resolving `$ref`. in draft3/4/6/7, `$ref` consumes the entire object — sibling `$id` must be ignored for ref resolution
+- **approach**: check for `$ref` presence before applying `$id` base URI change; use `needsNormalization(b.draft)` to detect legacy drafts
+- **also fixes issue-20**: same test case, other assertion ("data does not validate", got `true` instead of `invalid`)
+- **also fixes issue-21**: same root cause with `id` instead of `$id` (draft3/draft4)
+- **also fixes issue-22**: same test case as issue-21, other assertion
+- **test added**: `TestBundle_RefPreventsSiblingIDFromChangingBase` in bundler tests — covers draft3/4/6/7 with both `id` and `$id`
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "prevents a sibling" failures; all Go tests pass; full dev-reports regenerated
+
+### issue-20: ref / $ref prevents a sibling $id from changing the base uri (got true)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-21: ref / $ref prevents a sibling id from changing the base uri (got false)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard (also handles `id` via `needsNormalization`)
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-22: ref / $ref prevents a sibling id from changing the base uri (got true)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters

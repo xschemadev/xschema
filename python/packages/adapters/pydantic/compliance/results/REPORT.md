@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1046 | 6 | 0 | 182 | 99.4% |
-| draft2020-12 | 1060 | 6 | 0 | 205 | 99.4% |
-| draft3 | 429 | 3 | 0 | 2 | 99.3% |
-| draft4 | 606 | 3 | 0 | 4 | 99.5% |
-| draft6 | 824 | 4 | 0 | 4 | 99.5% |
-| draft7 | 908 | 4 | 0 | 4 | 99.6% |
+| draft2019-09 | 1047 | 5 | 0 | 182 | 99.5% |
+| draft2020-12 | 1061 | 5 | 0 | 205 | 99.5% |
+| draft3 | 431 | 1 | 0 | 2 | 99.8% |
+| draft4 | 608 | 1 | 0 | 4 | 99.8% |
+| draft6 | 826 | 2 | 0 | 4 | 99.8% |
+| draft7 | 910 | 2 | 0 | 4 | 99.8% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.4%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.4%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-99.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.5%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-99.5%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-99.6%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.5%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.5%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-99.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-99.8%25-brightgreen)
 
 ## draft2019-09
 
@@ -62,7 +62,7 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 71/77 |
+| ref | ⚠️ | 72/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -350,11 +350,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 6 failures</summary>
+<summary>ref - 5 failures</summary>
 
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
@@ -415,7 +412,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 71/77 |
+| ref | ⚠️ | 72/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -774,11 +771,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 6 failures</summary>
+<summary>ref - 5 failures</summary>
 
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
@@ -821,7 +815,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 22/25 |
+| ref | ⚠️ | 24/25 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
@@ -842,14 +836,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 3 failures</summary>
+<summary>ref - 1 failure</summary>
 
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`
@@ -885,7 +873,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 40/43 |
+| ref | ⚠️ | 42/43 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -908,14 +896,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 3 failures</summary>
+<summary>ref - 1 failure</summary>
 
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`
@@ -957,7 +939,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 64/68 |
+| ref | ⚠️ | 66/68 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -980,14 +962,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 4 failures</summary>
+<summary>ref - 2 failures</summary>
 
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`
@@ -1033,7 +1009,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 72/76 |
+| ref | ⚠️ | 74/76 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1056,14 +1032,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 4 failures</summary>
+<summary>ref - 2 failures</summary>
 
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data does not validate
-  - Expected: `invalid`, Got: `true`
-- **$ref prevents a sibling $id from changing the base uri**
-  - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`

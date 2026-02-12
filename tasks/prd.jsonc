@@ -208,7 +208,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-13.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-14: ref / naive replacement of $ref with its destination is not correct",
@@ -288,7 +288,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-18.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-19: ref / $ref prevents a sibling $id from changing the base uri",
@@ -304,7 +304,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-19.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-20: ref / $ref prevents a sibling $id from changing the base uri",
@@ -320,7 +320,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-20.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-21: ref / $ref prevents a sibling id from changing the base uri",
@@ -336,7 +336,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-21.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-22: ref / $ref prevents a sibling id from changing the base uri",
@@ -352,7 +352,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-22.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-23: ref / order of evaluation: $id and $anchor and $ref",

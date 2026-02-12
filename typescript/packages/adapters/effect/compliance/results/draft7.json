@@ -227,26 +227,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 74,
-      "failed": 2,
+      "passed": 76,
+      "failed": 0,
       "skipped": 0,
-      "total": 76,
-      "failures": [
-        {
-          "group": "$ref prevents a sibling $id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data does not validate",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        },
-        {
-          "group": "$ref prevents a sibling $id from changing the base uri",
-          "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 76
     },
     {
       "keyword": "refRemote",
@@ -278,11 +262,11 @@
     }
   ],
   "summary": {
-    "passed": 910,
-    "failed": 2,
+    "passed": 912,
+    "failed": 0,
     "skipped": 0,
     "total": 912,
-    "percentage": 99.78070175438597,
+    "percentage": 100,
     "unsupportedFeatures": {
       "count": 4,
       "items": [

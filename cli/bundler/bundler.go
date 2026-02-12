@@ -311,12 +311,18 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 	// Track current path for scope tracking
 	currentScopePath := scopePath
 
+	// In pre-2019-09 drafts, $ref consumes the entire object — sibling $id/$anchor
+	// are ignored. When $ref and $id appear on the same node, the $id must NOT
+	// change the base URI used to resolve the $ref.
+	_, hasRef := obj["$ref"].(string)
+	refIgnoresSiblings := hasRef && needsNormalization(b.draft)
+
 	// Check for $id (draft6+) or id (draft4/draft3) and update baseURI for this scope
 	id, ok := obj["$id"].(string)
 	if !ok {
 		id, ok = obj["id"].(string)
 	}
-	if ok {
+	if ok && !refIgnoresSiblings {
 		newBase, err := fetcher.ResolveURI(id, baseURI)
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)

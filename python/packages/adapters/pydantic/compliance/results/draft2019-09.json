@@ -269,18 +269,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 71,
-      "failed": 6,
+      "passed": 72,
+      "failed": 5,
       "skipped": 0,
       "total": 77,
       "failures": [
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "order of evaluation: $id and $ref on nested schema",
           "test": "data is invalid against nested sibling",
@@ -371,11 +364,11 @@
     }
   ],
   "summary": {
-    "passed": 1046,
-    "failed": 6,
+    "passed": 1047,
+    "failed": 5,
     "skipped": 0,
     "total": 1052,
-    "percentage": 99.42965779467681,
+    "percentage": 99.52471482889734,
     "unsupportedFeatures": {
       "count": 182,
       "items": [

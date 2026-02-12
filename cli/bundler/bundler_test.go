@@ -2314,6 +2314,137 @@ func TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef(t *testing.T) {
 	}
 }
 
+// TestBundle_RefPreventsSiblingIDFromChangingBase verifies that in legacy drafts
+// (pre-2019-09), a sibling $id does NOT change the base URI for $ref resolution.
+// Per JSON Schema spec, $ref consumes the entire object in these drafts.
+func TestBundle_RefPreventsSiblingIDFromChangingBase(t *testing.T) {
+	// Schema based on JSON Schema Test Suite: "$ref prevents a sibling $id from changing the base uri"
+	// foo.json resolves to sibling_id/foo.json (type: string)
+	// base_foo ($id: foo.json) resolves to sibling_id/base/foo.json (type: number)
+	// The allOf[0] has sibling $id that tries to change base to sibling_id/,
+	// but $ref should resolve against parent base (sibling_id/base/) instead.
+	schema := json.RawMessage(`{
+		"$id": "http://localhost:1234/sibling_id/base/",
+		"definitions": {
+			"foo": {
+				"$id": "http://localhost:1234/sibling_id/foo.json",
+				"type": "string"
+			},
+			"base_foo": {
+				"$id": "foo.json",
+				"type": "number"
+			}
+		},
+		"allOf": [{
+			"$id": "http://localhost:1234/sibling_id/",
+			"$ref": "foo.json"
+		}]
+	}`)
+
+	for _, draft := range []string{"draft6", "draft7"} {
+		t.Run(draft, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			result, err := Bundle(ctx, BundleInput{
+				Schema: schema,
+				Draft:  draft,
+			})
+			if err != nil {
+				t.Fatalf("Bundle failed: %v", err)
+			}
+
+			var parsed map[string]any
+			if err := json.Unmarshal(result, &parsed); err != nil {
+				t.Fatalf("failed to parse bundled schema: %v", err)
+			}
+
+			// The allOf[0].$ref should point to base_foo (type: number), not foo (type: string)
+			allOf, ok := parsed["allOf"].([]any)
+			if !ok || len(allOf) == 0 {
+				t.Fatal("expected allOf array in bundled schema")
+			}
+
+			ref0, ok := allOf[0].(map[string]any)
+			if !ok {
+				t.Fatal("expected allOf[0] to be an object")
+			}
+
+			refValue, ok := ref0["$ref"].(string)
+			if !ok {
+				t.Fatal("expected allOf[0] to have $ref")
+			}
+
+			// $ref should resolve to base_foo (the number type at sibling_id/base/foo.json),
+			// NOT foo (the string type at sibling_id/foo.json)
+			if !strings.Contains(refValue, "base_foo") {
+				t.Errorf("expected $ref to resolve to base_foo definition, got %q", refValue)
+			}
+			if strings.Contains(refValue, "/$defs/foo") && !strings.Contains(refValue, "base_foo") {
+				t.Errorf("$ref incorrectly resolved to foo (string type) instead of base_foo (number type): %q", refValue)
+			}
+		})
+	}
+
+	// Also test draft3/draft4 with "id" instead of "$id"
+	schemaDraft4 := json.RawMessage(`{
+		"id": "http://localhost:1234/sibling_id/base/",
+		"definitions": {
+			"foo": {
+				"id": "http://localhost:1234/sibling_id/foo.json",
+				"type": "string"
+			},
+			"base_foo": {
+				"id": "foo.json",
+				"type": "number"
+			}
+		},
+		"allOf": [{
+			"id": "http://localhost:1234/sibling_id/",
+			"$ref": "foo.json"
+		}]
+	}`)
+
+	for _, draft := range []string{"draft3", "draft4"} {
+		t.Run(draft, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			result, err := Bundle(ctx, BundleInput{
+				Schema: schemaDraft4,
+				Draft:  draft,
+			})
+			if err != nil {
+				t.Fatalf("Bundle failed: %v", err)
+			}
+
+			var parsed map[string]any
+			if err := json.Unmarshal(result, &parsed); err != nil {
+				t.Fatalf("failed to parse bundled schema: %v", err)
+			}
+
+			allOf, ok := parsed["allOf"].([]any)
+			if !ok || len(allOf) == 0 {
+				t.Fatal("expected allOf array in bundled schema")
+			}
+
+			ref0, ok := allOf[0].(map[string]any)
+			if !ok {
+				t.Fatal("expected allOf[0] to be an object")
+			}
+
+			refValue, ok := ref0["$ref"].(string)
+			if !ok {
+				t.Fatal("expected allOf[0] to have $ref")
+			}
+
+			if !strings.Contains(refValue, "base_foo") {
+				t.Errorf("expected $ref to resolve to base_foo definition, got %q", refValue)
+			}
+		})
+	}
+}
+
 func getMapKeys(m map[string]any) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
