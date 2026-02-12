@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1037 | 15 | 0 | 182 | 98.6% |
-| draft2020-12 | 1051 | 15 | 0 | 205 | 98.6% |
-| draft3 | 426 | 6 | 0 | 2 | 98.6% |
-| draft4 | 601 | 8 | 0 | 4 | 98.7% |
-| draft6 | 818 | 10 | 0 | 4 | 98.8% |
-| draft7 | 902 | 10 | 0 | 4 | 98.9% |
+| draft2019-09 | 1050 | 2 | 0 | 182 | 99.8% |
+| draft2020-12 | 1063 | 3 | 0 | 205 | 99.7% |
+| draft3 | 430 | 2 | 0 | 2 | 99.5% |
+| draft4 | 607 | 2 | 0 | 4 | 99.7% |
+| draft6 | 826 | 2 | 0 | 4 | 99.8% |
+| draft7 | 910 | 2 | 0 | 4 | 99.8% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.6%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.6%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-98.6%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.7%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.8%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.7%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-99.5%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.7%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-99.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-99.8%25-brightgreen)
 
 ## draft2019-09
 
@@ -62,8 +62,8 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 66/77 |
-| refRemote | ⚠️ | 27/31 |
+| ref | ⚠️ | 75/77 |
+| refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -350,59 +350,14 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 2 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#" is not supported`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#" is not supported`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: invalid under the URN IDed schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: valid under the URN IDed schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref "#" is not supported`
-
-</details>
-
-<details>
-<summary>refRemote - 4 failures</summary>
-
-- **anchor within remote ref**
-  - Test: remote anchor invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A" is not supported`
-- **anchor within remote ref**
-  - Test: remote anchor valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A" is not supported`
-- **fragment within remote ref**
-  - Test: remote fragment invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer" is not supported`
-- **fragment within remote ref**
-  - Test: remote fragment valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer" is not supported`
 
 </details>
 
@@ -448,8 +403,8 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 66/77 |
-| refRemote | ⚠️ | 27/31 |
+| ref | ⚠️ | 74/77 |
+| refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -807,14 +762,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 3 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
 - **order of evaluation: $id and $anchor and $ref**
   - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
@@ -824,42 +773,6 @@ These tests are intentionally excluded due to documented limitations.
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: invalid under the URN IDed schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_21: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: valid under the URN IDed schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_21: recursive local $ref "#" is not supported`
-
-</details>
-
-<details>
-<summary>refRemote - 4 failures</summary>
-
-- **anchor within remote ref**
-  - Test: remote anchor invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__A" is not supported`
-- **anchor within remote ref**
-  - Test: remote anchor valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__A" is not supported`
-- **fragment within remote ref**
-  - Test: remote fragment invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__integer" is not supported`
-- **fragment within remote ref**
-  - Test: remote fragment valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__integer" is not supported`
 
 </details>
 
@@ -887,7 +800,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 19/25 |
+| ref | ⚠️ | 23/25 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
@@ -908,7 +821,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 6 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -916,18 +829,6 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -960,7 +861,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 35/43 |
+| ref | ⚠️ | 41/43 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -983,7 +884,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -991,24 +892,6 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#" is not supported`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -1047,7 +930,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 58/68 |
+| ref | ⚠️ | 66/68 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1070,7 +953,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1078,30 +961,6 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: invalid under the URN IDed schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: valid under the URN IDed schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -1141,7 +1000,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 66/76 |
+| ref | ⚠️ | 74/76 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1164,7 +1023,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1172,30 +1031,6 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: invalid tree
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive match
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
-- **root pointer ref**
-  - Test: recursive mismatch
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: invalid under the URN IDed schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_21: recursive local $ref "#" is not supported`
-- **simple URN base URI with $ref via the URN**
-  - Test: valid under the URN IDed schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_21: recursive local $ref "#" is not supported`
 
 </details>
 

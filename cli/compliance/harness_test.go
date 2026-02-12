@@ -134,10 +134,10 @@ func TestGenerateHarness_MergedImports(t *testing.T) {
 		{
 			GroupID: "group_0",
 			AdapterOutput: &adapter.ConvertResult{
-				VarName:         "group_0",
-				Schema:          `z.object({ name: z.string() })`,
-				Imports:         []string{`import { z } from "zod"`, `import { helper } from "helper"`},
-				Validate:        `(data) => schema.safeParse(data).success`,
+				VarName:           "group_0",
+				Schema:            `z.object({ name: z.string() })`,
+				Imports:           []string{`import { z } from "zod"`, `import { helper } from "helper"`},
+				Validate:          `(data) => schema.safeParse(data).success`,
 				ValidationImports: []string{`import { ZodError } from "zod"`, `import { helper } from "helper"`},
 			},
 			Tests: []TestCase{{Description: "valid", Data: map[string]any{"name": "test"}, Valid: true}},
@@ -355,9 +355,12 @@ func TestTSHarnessTemplate_RuntimeValidation(t *testing.T) {
 		t.Error("missing zod import")
 	}
 
-	// Should have schema in IIFE
-	if !strings.Contains(result, `const schema = z.object({ name: z.string() });`) {
+	// Should have schema in IIFE (named by groupID, aliased to schema)
+	if !strings.Contains(result, `const group_0 = z.object({ name: z.string() });`) {
 		t.Error("missing schema declaration")
+	}
+	if !strings.Contains(result, `const schema = group_0;`) {
+		t.Error("missing schema alias")
 	}
 
 	// Should have validate function

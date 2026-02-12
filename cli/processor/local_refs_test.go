@@ -175,6 +175,65 @@ func TestResolveInternalRefs_NestedScopeDoesNotBreakRootRef(t *testing.T) {
 	}
 }
 
+func TestResolveInternalRefs_RecursiveRootRef(t *testing.T) {
+	// $ref: "#" is always kept intact — it always cycles back to root
+	schema := `{
+		"properties": {
+			"foo": { "$ref": "#" }
+		},
+		"additionalProperties": false
+	}`
+
+	result, err := resolveInternalRefs(json.RawMessage(schema), "draft2020-12")
+	if err != nil {
+		t.Fatalf("resolveInternalRefs failed: %v", err)
+	}
+
+	var parsed map[string]any
+	if err := json.Unmarshal(result, &parsed); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	// foo should keep $ref: "#" directly (no inlining for root refs)
+	props := parsed["properties"].(map[string]any)
+	foo := props["foo"].(map[string]any)
+
+	ref, ok := foo["$ref"].(string)
+	if !ok || ref != "#" {
+		t.Errorf("expected foo to have $ref: \"#\", got %v", foo)
+	}
+}
+
+func TestResolveInternalRefs_RecursiveDefsRef(t *testing.T) {
+	// mutual recursion via $defs — $ref to a def that refs back
+	schema := `{
+		"type": "object",
+		"properties": {
+			"value": { "type": "number" },
+			"child": { "$ref": "#/$defs/node" }
+		},
+		"$defs": {
+			"node": {
+				"type": "object",
+				"properties": {
+					"value": { "type": "number" },
+					"child": { "$ref": "#/$defs/node" }
+				}
+			}
+		}
+	}`
+
+	result, err := resolveInternalRefs(json.RawMessage(schema), "draft2020-12")
+	if err != nil {
+		t.Fatalf("resolveInternalRefs failed: %v", err)
+	}
+
+	// The output should contain a $ref for the recursive cycle
+	if !strings.Contains(string(result), `"$ref"`) {
+		t.Errorf("expected output to contain $ref for recursive cycle, got %s", string(result))
+	}
+}
+
 func TestResolveInternalRefs_ScopeNotFoundFallsToRoot(t *testing.T) {
 	// If a ref can't be found in the nearest scope, fall back to root
 	schema := `{

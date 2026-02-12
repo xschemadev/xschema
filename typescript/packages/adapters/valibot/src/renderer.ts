@@ -50,10 +50,18 @@ function formatPropertyKey(key: string): string {
 	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
 }
 
+let _selfRef: string | undefined;
+
 /**
  * Render a SchemaNode to Valibot code
+ * @param selfRef - variable name for v.lazy() self-references (recursive schemas)
  */
-export function render(node: SchemaNode): string {
+export function render(node: SchemaNode, selfRef?: string): string {
+	if (selfRef !== undefined) _selfRef = selfRef;
+	return renderNode(node);
+}
+
+function renderNode(node: SchemaNode): string {
 	switch (node.kind) {
 		case "string":
 			return renderString(node);
@@ -85,6 +93,9 @@ export function render(node: SchemaNode): string {
 			return "v.any()";
 		case "never":
 			return "v.never()";
+		case "ref":
+			if (!_selfRef) throw new Error("Recursive $ref requires selfRef context");
+			return `v.lazy(() => ${_selfRef})`;
 
 		case "conditional":
 			return renderConditional(node);
@@ -267,7 +278,7 @@ function renderObject(node: ObjectNode): string {
 
 	// If using record-style (no properties, just additionalProperties/unevaluatedProperties schema)
 	if (propKeys.length === 0 && additionalSchema) {
-		const valueSchema = render(additionalSchema);
+		const valueSchema = renderNode(additionalSchema);
 		const record = `v.record(v.string(), ${valueSchema})`;
 		const actions = renderObjectConstraintsActions(node);
 		// Always wrap with array rejection check
@@ -277,7 +288,7 @@ function renderObject(node: ObjectNode): string {
 	// Build shape
 	const shape = propKeys.map((key) => {
 		const prop = node.properties.get(key)!;
-		let propCode = render(prop.schema as SchemaNode);
+		let propCode = renderNode(prop.schema as SchemaNode);
 		if (!prop.required) {
 			propCode = `v.optional(${propCode})`;
 		}
@@ -296,7 +307,7 @@ function renderObject(node: ObjectNode): string {
 				: "v.strictObject({})";
 	} else if (additionalSchema && !hasPatternProps) {
 		// Validate additional properties against schema (only when no pattern props)
-		const restSchema = render(additionalSchema);
+		const restSchema = renderNode(additionalSchema);
 		result =
 			shape.length > 0
 				? `v.objectWithRest({ ${shape.join(", ")} }, ${restSchema})`
@@ -327,7 +338,7 @@ function renderObject(node: ObjectNode): string {
 		typeof node.unevaluatedProperties === "object" &&
 		node.unevaluatedProperties.kind !== "any"
 	) {
-		const unevalSchema = render(node.unevaluatedProperties);
+		const unevalSchema = renderNode(node.unevaluatedProperties);
 		const definedPropsJson = JSON.stringify(propKeys);
 		postActions.push(`v.check((val) => {
       const definedProps = new Set(${definedPropsJson});
@@ -342,7 +353,7 @@ function renderObject(node: ObjectNode): string {
 
 	// Property names validation
 	if (node.propertyNames) {
-		const keySchema = render(node.propertyNames);
+		const keySchema = renderNode(node.propertyNames);
 		postActions.push(`v.check((val) => {
       for (const key of Object.keys(val)) {
         const result = v.safeParse(${keySchema}, key);
@@ -387,7 +398,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 
 	for (const key of propKeys) {
 		const prop = node.properties.get(key)!;
-		const propCode = render(prop.schema as SchemaNode);
+		const propCode = renderNode(prop.schema as SchemaNode);
 		const keyExpr = escapeString(key);
 
 		if (prop.required) {
@@ -418,7 +429,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		const definedPropsJson = JSON.stringify(propKeys);
 		additionalCheck = `
       const definedProps = new Set(${definedPropsJson});
@@ -461,7 +472,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 
 	// Validate pattern properties
 	patterns.forEach((p) => {
-		const patternCode = render(p.schema as SchemaNode);
+		const patternCode = renderNode(p.schema as SchemaNode);
 		const patternStr = escapeString(p.pattern);
 		checks.push(`
       for (const [key, value] of Object.entries(val)) {
@@ -486,7 +497,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		checks.push(`
       const definedProps = new Set(${definedProps});
       const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
@@ -506,7 +517,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 		// unevaluatedProperties schema applies when additionalProperties is not set
 		// This handles cases like { propertyNames: {...}, unevaluatedProperties: {...} }
 		// where propertyNames validates keys but unevaluatedProperties validates values
-		const unevalSchema = render(node.unevaluatedProperties);
+		const unevalSchema = renderNode(node.unevaluatedProperties);
 		checks.push(`
       const definedProps = new Set(${definedProps});
       const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
@@ -527,7 +538,7 @@ function renderObjectWithPatternProps(node: ObjectNode): string {
 
 	// Property names validation
 	if (node.propertyNames) {
-		const keySchema = render(node.propertyNames);
+		const keySchema = renderNode(node.propertyNames);
 		allActions.push(`v.check((val) => {
       for (const key of Object.keys(val)) {
         const result = v.safeParse(${keySchema}, key);
@@ -555,7 +566,7 @@ function renderPatternPropsActionsWithAdditional(
 
 	// Validate pattern properties
 	patterns.forEach((p) => {
-		const patternCode = render(p.schema as SchemaNode);
+		const patternCode = renderNode(p.schema as SchemaNode);
 		const patternStr = escapeString(p.pattern);
 		checks.push(`
       for (const [key, value] of Object.entries(val)) {
@@ -587,7 +598,7 @@ function renderPatternPropsActionsWithAdditional(
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		checks.push(`
       const definedProps = new Set(${definedProps});
       const patterns = [${patterns.map((p) => `new RegExp(${escapeString(p.pattern)})`).join(", ")}];
@@ -636,7 +647,7 @@ function renderDependenciesActions(node: ObjectNode): string[] {
         }, ${message})`);
 			}
 		} else {
-			const depCode = render(dep.schema as SchemaNode);
+			const depCode = renderNode(dep.schema as SchemaNode);
 			actions.push(`v.check((val) => {
         if (Object.hasOwn(val, ${escapeString(prop)})) {
           const result = v.safeParse(${depCode}, val);
@@ -666,7 +677,7 @@ function renderArray(node: ArrayNode): string {
 
 	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
 		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		const constraints = renderArrayConstraints(node.constraints);
 		if (constraints) {
 			return `v.pipe(v.array(${unevalSchema})${constraints})`;
@@ -675,7 +686,7 @@ function renderArray(node: ArrayNode): string {
 	}
 
 	// Normal array with items schema
-	const itemSchema = render(node.items);
+	const itemSchema = renderNode(node.items);
 	let result = `v.array(${itemSchema})`;
 
 	// If items is defined AND unevaluatedItems is also defined, we need both validations
@@ -687,7 +698,7 @@ function renderArray(node: ArrayNode): string {
 		node.unevaluatedItems !== false &&
 		node.unevaluatedItems.kind !== "any"
 	) {
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		result = `v.pipe(${result}, v.check((arr) => {
       const schema = ${unevalSchema};
       for (const item of arr) {
@@ -712,7 +723,7 @@ function renderTuple(node: TupleNode): string {
 	// JSON Schema semantics: prefixItems only validates items at positions IF they exist
 	// Empty arrays and incomplete arrays (fewer items than prefixItems) are valid
 	// valibot's v.tuple/v.tupleWithRest enforce minimum length, so we use v.array with custom validation
-	const tupleSchemas = node.prefixItems.map((item) => render(item));
+	const tupleSchemas = node.prefixItems.map((item) => renderNode(item));
 	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
 	// Determine if extra items are allowed and what schema to use
@@ -742,7 +753,7 @@ function renderTuple(node: TupleNode): string {
     }, "Tuple validation failed"))`;
 	} else if (extraItemsSchema) {
 		// Rest/unevaluated items must match schema
-		const restSchema = render(extraItemsSchema);
+		const restSchema = renderNode(extraItemsSchema);
 		result = `v.pipe(v.array(v.any()), v.check((val) => {
       const schemas = ${schemasArray};
       for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
@@ -801,7 +812,7 @@ function renderArrayConstraints(
 	}
 
 	if (constraints.contains) {
-		const containsSchema = render(constraints.contains.schema as SchemaNode);
+		const containsSchema = renderNode(constraints.contains.schema as SchemaNode);
 		const minContains = constraints.contains.minContains;
 		const maxContains = constraints.contains.maxContains;
 
@@ -837,18 +848,18 @@ function renderUnion(node: UnionNode): string {
 	// Filter out "never" variants since they can't match anything
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "v.never()";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
 	// Detect nullable pattern: union of [T, null] -> v.nullable(T)
 	if (filtered.length === 2) {
 		const nullIndex = filtered.findIndex((v) => v.kind === "null");
 		if (nullIndex !== -1) {
 			const otherIndex = nullIndex === 0 ? 1 : 0;
-			return `v.nullable(${render(filtered[otherIndex]!)})`;
+			return `v.nullable(${renderNode(filtered[otherIndex]!)})`;
 		}
 	}
 
-	const schemas = filtered.map((v) => render(v));
+	const schemas = filtered.map((v) => renderNode(v));
 	return `v.union([${schemas.join(", ")}])`;
 }
 
@@ -863,15 +874,15 @@ function renderIntersection(node: IntersectionNode): string {
 	// Filter out "any" schemas since they don't constrain the intersection
 	const filtered = node.schemas.filter((s) => s.kind !== "any");
 	if (filtered.length === 0) return "v.any()";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
-	const schemas = filtered.map((s) => render(s));
+	const schemas = filtered.map((s) => renderNode(s));
 	return `v.intersect([${schemas.join(", ")}])`;
 }
 
 function renderOneOf(node: OneOfNode): string {
 	if (node.schemas.length === 0) return "v.never()";
-	if (node.schemas.length === 1) return render(node.schemas[0]!);
+	if (node.schemas.length === 1) return renderNode(node.schemas[0]!);
 
 	// Filter out "never" schemas since they can never match
 	const filtered = node.schemas.filter((s) => s.kind !== "never");
@@ -880,7 +891,7 @@ function renderOneOf(node: OneOfNode): string {
 	if (filtered.length === 0) return "v.never()";
 
 	// If exactly one schema remains after filtering never, it must match
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
 	// Count how many "any" schemas there are - if > 1, always matches multiple
 	const anyCount = filtered.filter((s) => s.kind === "any").length;
@@ -889,7 +900,7 @@ function renderOneOf(node: OneOfNode): string {
 		return `v.pipe(v.any(), v.check(() => false, "oneOf has multiple 'true' schemas - impossible to match exactly one"))`;
 	}
 
-	const schemas = filtered.map((s) => render(s));
+	const schemas = filtered.map((s) => renderNode(s));
 	return `v.pipe(v.any(), v.check((val) => {
     const schemas = [${schemas.join(", ")}];
     const results = schemas.map(s => v.safeParse(s, val));
@@ -899,7 +910,7 @@ function renderOneOf(node: OneOfNode): string {
 }
 
 function renderNot(node: NotNode): string {
-	const schema = render(node.schema);
+	const schema = renderNode(node.schema);
 	return `v.pipe(v.any(), v.check((val) => !v.safeParse(${schema}, val).success, "Value must not match schema"))`;
 }
 
@@ -959,9 +970,9 @@ function renderEnum(node: EnumNode): string {
 
 
 function renderConditional(node: ConditionalNode): string {
-	const ifSchema = render(node.if);
-	const thenSchema = node.then ? render(node.then) : null;
-	const elseSchema = node.else ? render(node.else) : null;
+	const ifSchema = renderNode(node.if);
+	const thenSchema = node.then ? renderNode(node.then) : null;
+	const elseSchema = node.else ? renderNode(node.else) : null;
 
 	if (thenSchema && elseSchema) {
 		// Both then and else present: validate with then if condition matches, else otherwise
@@ -1007,7 +1018,7 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 	const checks: string[] = [];
 
 	for (const guard of node.guards) {
-		const schema = render(guard.schema);
+		const schema = renderNode(guard.schema);
 		switch (guard.check) {
 			case "object":
 				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
@@ -1043,5 +1054,5 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 }
 
 function renderNullable(node: NullableNode): string {
-	return `v.nullable(${render(node.inner)})`;
+	return `v.nullable(${renderNode(node.inner)})`;
 }

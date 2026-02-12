@@ -220,8 +220,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 58,
-      "failed": 10,
+      "passed": 64,
+      "failed": 4,
       "skipped": 0,
       "total": 68,
       "failures": [
@@ -241,67 +241,17 @@
         },
         {
           "group": "Recursive references between schemas",
-          "test": "invalid tree",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "Recursive references between schemas",
           "test": "valid tree",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref \"#\" is not supported"
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "root pointer ref",
           "test": "match",
           "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "simple URN base URI with $ref via the URN",
-          "test": "invalid under the URN IDed schema",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "simple URN base URI with $ref via the URN",
-          "test": "valid under the URN IDed schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref \"#\" is not supported"
+          "actual": "false",
+          "passed": false
         }
       ]
     },
@@ -335,11 +285,11 @@
     }
   ],
   "summary": {
-    "passed": 818,
-    "failed": 10,
+    "passed": 824,
+    "failed": 4,
     "skipped": 0,
     "total": 828,
-    "percentage": 98.79227053140096,
+    "percentage": 99.51690821256038,
     "unsupportedFeatures": {
       "count": 4,
       "items": [

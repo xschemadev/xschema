@@ -28,6 +28,7 @@ export type {
   EnumNode,
   AnyNode,
   NeverNode,
+  RefNode,
 
   ConditionalNode,
   TypeGuardedNode,

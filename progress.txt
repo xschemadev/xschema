@@ -81,6 +81,20 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **approach**: use the same `DEEP_SORTED_STRINGIFY_RUNTIME` IIFE that zod adapter already uses — recursively walks arrays and sorts object keys at every depth before stringifying
 - **verified**: effect + valibot × const keyword 100% across draft6, draft7, draft2019-09, draft2020-12; both typechecks pass
 
+### issue-01: ref / root pointer ref
+- **fix**: multi-layer change across Go processor, TS core IR, TS harness template, and all 5 adapters
+- **root cause**: `resolveInternalRefs` in `cli/processor/local_refs.go` used `resolving[ref]` cycle detection that errored on recursive `$ref "#"`, blocking all root pointer ref schemas from reaching adapters
+- **approach**:
+  1. Go processor: changed cycle detection to return `$ref` object unchanged instead of erroring; added `$ref: "#"` short-circuit to skip inlining entirely
+  2. TS core IR: added `RefNode` (kind: `"ref"`) to `SchemaNode` union; parser resolves `$ref` with cycle detection via `ctx.resolving: Set<string>`
+  3. TS harness template: fixed variable naming for lazy self-references (`const {{$s.GroupID}} = ...; const schema = {{$s.GroupID}};`)
+  4. Zod: `case "ref"` → `z.lazy(() => ${_selfRef})`
+  5. Effect: `case "ref"` → `S.suspend(() => ${_selfRef})`
+  6. Valibot: `case "ref"` → `v.lazy(() => ${_selfRef})`
+  7. ArkType: `case "ref"` → `type.unknown.narrow((val, ctx) => ${_selfRef}.allows(val) || ctx.mustBe("valid"))`
+  8. Pydantic: no adapter changes needed — Python parser already handled `$ref` cycles
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "root pointer ref" failures; all Go tests pass; all TS typechecks pass
+
 ### issue-05: ref / remote ref, containing refs itself
 - **fix**: already resolved by issue-09's metaschema `$ref` replacement in `cli/bundler/bundler.go` and `checkMetaschemaRef` in `cli/processor/processor.go`
 - **root cause**: identical to issue-09 — `$ref` pointing to metaschema URLs left unresolved non-local refs in bundled output. metaschema replacement with `{}` + `UnsupportedKeywordError` classification moves these to "Unsupported Features"

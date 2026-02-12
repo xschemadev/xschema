@@ -161,7 +161,7 @@ def _resolve_ref(ref: str, ctx: ParseContext) -> SchemaNode:
     if ref in ctx.resolving:
         return RefNode(path=ref, resolved=None)
 
-    # Root ref - recursive to root schema
+    # Root ref - recursive to root schema, always cycles
     if ref == "#":
         return RefNode(path=ref, resolved=None)
 

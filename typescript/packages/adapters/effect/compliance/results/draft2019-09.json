@@ -45,19 +45,10 @@
     },
     {
       "keyword": "const",
-      "passed": 53,
-      "failed": 1,
+      "passed": 54,
+      "failed": 0,
       "skipped": 0,
-      "total": 54,
-      "failures": [
-        {
-          "group": "const with array",
-          "test": "same array is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 54
     },
     {
       "keyword": "contains",
@@ -278,30 +269,14 @@
     },
     {
       "keyword": "ref",
-      "passed": 66,
-      "failed": 11,
+      "passed": 74,
+      "failed": 3,
       "skipped": 0,
       "total": 77,
       "failures": [
         {
           "group": "Recursive references between schemas",
-          "test": "invalid tree",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "Recursive references between schemas",
           "test": "valid tree",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -321,97 +296,15 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "simple URN base URI with $ref via the URN",
-          "test": "invalid under the URN IDed schema",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "simple URN base URI with $ref via the URN",
-          "test": "valid under the URN IDed schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref \"#\" is not supported"
         }
       ]
     },
     {
       "keyword": "refRemote",
-      "passed": 27,
-      "failed": 4,
+      "passed": 31,
+      "failed": 0,
       "skipped": 0,
-      "total": 31,
-      "failures": [
-        {
-          "group": "anchor within remote ref",
-          "test": "remote anchor invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A\" is not supported"
-        },
-        {
-          "group": "anchor within remote ref",
-          "test": "remote anchor valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref \"#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A\" is not supported"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer\" is not supported"
-        },
-        {
-          "group": "fragment within remote ref",
-          "test": "remote fragment valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref \"#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer\" is not supported"
-        }
-      ]
+      "total": 31
     },
     {
       "keyword": "required",
@@ -457,11 +350,11 @@
     }
   ],
   "summary": {
-    "passed": 1036,
-    "failed": 16,
+    "passed": 1049,
+    "failed": 3,
     "skipped": 0,
     "total": 1052,
-    "percentage": 98.47908745247148,
+    "percentage": 99.7148288973384,
     "unsupportedFeatures": {
       "count": 182,
       "items": [

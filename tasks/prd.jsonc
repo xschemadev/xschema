@@ -16,7 +16,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-01.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-02: ref / property named $ref, containing an actual $ref",

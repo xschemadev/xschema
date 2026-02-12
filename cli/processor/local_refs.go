@@ -139,7 +139,14 @@ func (r *localRefResolver) resolveRefObject(obj map[string]any, ref string) (any
 	}
 
 	if r.resolving[ref] {
-		return nil, fmt.Errorf("recursive local $ref %q is not supported", ref)
+		// recursive ref — keep $ref intact for the adapter to handle via lazy/suspend
+		return obj, nil
+	}
+
+	// $ref: "#" always creates a cycle (root references itself) — keep intact
+	// to avoid one level of useless inlining that confuses typeless-object detection
+	if ref == "#" {
+		return obj, nil
 	}
 
 	r.resolving[ref] = true

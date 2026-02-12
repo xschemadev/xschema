@@ -143,8 +143,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 19,
-      "failed": 6,
+      "passed": 23,
+      "failed": 2,
       "skipped": 0,
       "total": 25,
       "failures": [
@@ -161,38 +161,6 @@
           "expected": true,
           "actual": "false",
           "passed": false
-        },
-        {
-          "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive match",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "root pointer ref",
-          "test": "recursive mismatch",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref \"#\" is not supported"
         }
       ]
     },
@@ -226,11 +194,11 @@
     }
   ],
   "summary": {
-    "passed": 426,
-    "failed": 6,
+    "passed": 430,
+    "failed": 2,
     "skipped": 0,
     "total": 432,
-    "percentage": 98.61111111111111,
+    "percentage": 99.53703703703704,
     "unsupportedFeatures": {
       "count": 2,
       "items": [

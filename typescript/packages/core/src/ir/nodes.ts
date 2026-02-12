@@ -147,7 +147,12 @@ export interface NeverNode {
 	kind: "never";
 }
 
-/** Reference schema node */
+/** Reference schema node — recursive back-edge kept by the processor */
+export interface RefNode {
+	kind: "ref";
+	ref: string;
+}
+
 /** Conditional schema node (if/then/else) */
 export interface ConditionalNode {
 	kind: "conditional";
@@ -199,6 +204,7 @@ export type SchemaNode =
 	| EnumNode
 	| AnyNode
 	| NeverNode
+	| RefNode
 	| ConditionalNode
 	| TypeGuardedNode
 	| NullableNode;

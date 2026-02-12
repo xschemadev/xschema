@@ -220,12 +220,17 @@ func TestCrawlAndFetch_CircularRefs(t *testing.T) {
 		},
 	}
 
-	_, err := Process(ctx, schemas, Options{Fetcher: fetcher})
-	if err == nil {
-		t.Fatal("expected recursive local $ref error, got nil")
+	result, err := Process(ctx, schemas, Options{Fetcher: fetcher})
+	if err != nil {
+		t.Fatalf("expected circular refs to succeed, got: %v", err)
 	}
-	if !contains(err.Error(), "recursive local $ref") {
-		t.Fatalf("expected recursive local $ref error, got: %v", err)
+
+	// output schema should contain $ref for the recursive cycle
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+	if !contains(string(result[0].Schema), "$ref") {
+		t.Error("expected output schema to contain $ref for recursive cycle")
 	}
 
 	// Should only fetch b.json once, not enter infinite loop
