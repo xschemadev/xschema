@@ -82,8 +82,8 @@
     },
     {
       "keyword": "defs",
-      "passed": 0,
-      "failed": 2,
+      "passed": 1,
+      "failed": 1,
       "skipped": 0,
       "total": 2,
       "failures": [
@@ -91,17 +91,8 @@
           "group": "validate definition against metaschema",
           "test": "invalid definition schema",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref \"https://json-schema.org/draft/2019-09/schema\""
-        },
-        {
-          "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref \"https://json-schema.org/draft/2019-09/schema\""
+          "actual": "true",
+          "passed": false
         }
       ]
     },
@@ -296,8 +287,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 66,
-      "failed": 13,
+      "passed": 68,
+      "failed": 11,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -316,13 +307,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         },
         {
           "group": "order of evaluation: $id and $ref on nested schema",
@@ -344,17 +328,8 @@
           "group": "remote ref, containing refs itself",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref \"https://json-schema.org/draft/2019-09/schema\""
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref \"https://json-schema.org/draft/2019-09/schema\""
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -491,11 +466,11 @@
     }
   ],
   "summary": {
-    "passed": 1036,
-    "failed": 20,
+    "passed": 1039,
+    "failed": 17,
     "skipped": 0,
     "total": 1056,
-    "percentage": 98.10606060606061,
+    "percentage": 98.39015151515152,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

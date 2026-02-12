@@ -434,11 +434,13 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		return result, nil
 	}
 
-	// Check if this is a metaschema ref - don't try to fetch/bundle these
-	// They use $recursiveAnchor and other features that would fail
+	// Check if this is a metaschema ref - don't try to fetch/bundle these.
+	// They use $recursiveAnchor and other features that would fail.
+	// Replace with empty schema {} ("accept anything") since no adapter
+	// can generate a "validate this is a valid JSON Schema" check.
 	if isMetaschema(resolvedURI) {
-		ui.Verbosef("bundler: ref %q is a metaschema, skipping bundling", ref)
-		return obj, nil
+		ui.Verbosef("bundler: ref %q is a metaschema, replacing with unconstrained schema", ref)
+		return map[string]any{}, nil
 	}
 
 	ui.Verbosef("bundler: resolving external ref %q → %q", ref, resolvedURI)

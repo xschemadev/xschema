@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1036 | 20 | 0 | 178 | 98.1% |
-| draft2020-12 | 1051 | 19 | 0 | 201 | 98.2% |
-| draft3 | 425 | 9 | 0 | 0 | 97.9% |
-| draft4 | 600 | 13 | 0 | 0 | 97.9% |
-| draft6 | 816 | 16 | 0 | 0 | 98.1% |
-| draft7 | 900 | 16 | 0 | 0 | 98.3% |
+| draft2019-09 | 1039 | 17 | 0 | 178 | 98.4% |
+| draft2020-12 | 1053 | 17 | 0 | 201 | 98.4% |
+| draft3 | 426 | 8 | 0 | 0 | 98.2% |
+| draft4 | 602 | 11 | 0 | 0 | 98.2% |
+| draft6 | 818 | 14 | 0 | 0 | 98.3% |
+| draft7 | 902 | 14 | 0 | 0 | 98.5% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.1%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.2%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-97.9%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-97.9%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.1%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.3%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.4%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.4%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.2%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.2%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.3%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.5%25-brightgreen)
 
 ## draft2019-09
 
@@ -34,7 +34,7 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ❌ | 0/2 |
+| defs | ⚠️ | 1/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -62,7 +62,7 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 66/79 |
+| ref | ⚠️ | 68/79 |
 | refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -349,19 +349,16 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>defs - 2 failures</summary>
+<summary>defs - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>ref - 13 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -369,9 +366,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#" is not supported`
-- **order of evaluation: $id and $anchor and $ref**
-  - Test: data is valid against first definition
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
@@ -380,10 +374,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
@@ -436,7 +427,7 @@ These tests are intentionally excluded due to documented limitations.
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ❌ | 0/2 |
+| defs | ⚠️ | 1/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -465,7 +456,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 67/79 |
+| ref | ⚠️ | 68/79 |
 | refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -823,19 +814,16 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>defs - 2 failures</summary>
+<summary>defs - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -851,10 +839,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
@@ -918,7 +903,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 18/27 |
+| ref | ⚠️ | 19/27 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
@@ -927,7 +912,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 9 failures</summary>
+<summary>ref - 8 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -940,10 +925,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref "http://json-schema.org/draft-03/schema#"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref "http://json-schema.org/draft-03/schema#"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
@@ -968,7 +950,7 @@ These tests are intentionally excluded due to documented limitations.
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ❌ | 0/2 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -988,7 +970,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 34/45 |
+| ref | ⚠️ | 35/45 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -997,19 +979,16 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>definitions - 2 failures</summary>
+<summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1028,10 +1007,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
@@ -1059,7 +1035,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ⚠️ | 53/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ❌ | 0/2 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1082,7 +1058,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 57/70 |
+| ref | ⚠️ | 58/70 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1100,19 +1076,16 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>definitions - 2 failures</summary>
+<summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>ref - 13 failures</summary>
+<summary>ref - 12 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1131,10 +1104,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
@@ -1168,7 +1138,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ⚠️ | 53/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ❌ | 0/2 |
+| definitions | ⚠️ | 1/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1192,7 +1162,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 65/78 |
+| ref | ⚠️ | 66/78 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1210,19 +1180,16 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>definitions - 2 failures</summary>
+<summary>definitions - 1 failure</summary>
 
 - **validate definition against metaschema**
   - Test: invalid definition schema
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
-- **validate definition against metaschema**
-  - Test: valid definition schema
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
 <details>
-<summary>ref - 13 failures</summary>
+<summary>ref - 12 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1241,10 +1208,7 @@ These tests are intentionally excluded due to documented limitations.
   - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
-- **remote ref, containing refs itself**
-  - Test: remote ref valid
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
+  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`

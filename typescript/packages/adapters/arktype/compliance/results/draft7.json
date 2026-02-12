@@ -59,8 +59,8 @@
     },
     {
       "keyword": "definitions",
-      "passed": 0,
-      "failed": 2,
+      "passed": 1,
+      "failed": 1,
       "skipped": 0,
       "total": 2,
       "failures": [
@@ -68,17 +68,8 @@
           "group": "validate definition against metaschema",
           "test": "invalid definition schema",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref \"http://json-schema.org/draft-07/schema#\""
-        },
-        {
-          "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref \"http://json-schema.org/draft-07/schema#\""
+          "actual": "true",
+          "passed": false
         }
       ]
     },
@@ -245,8 +236,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 59,
-      "failed": 19,
+      "passed": 66,
+      "failed": 12,
       "skipped": 0,
       "total": 78,
       "failures": [
@@ -288,68 +279,11 @@
           "passed": false
         },
         {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "refs with relative uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on inner field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "invalid on outer field",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
-          "group": "relative refs with absolute uris and defs",
-          "test": "valid on both fields",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found"
-        },
-        {
           "group": "remote ref, containing refs itself",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref \"http://json-schema.org/draft-07/schema#\""
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref \"http://json-schema.org/draft-07/schema#\""
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -431,11 +365,11 @@
     }
   ],
   "summary": {
-    "passed": 895,
-    "failed": 21,
+    "passed": 903,
+    "failed": 13,
     "skipped": 0,
     "total": 916,
-    "percentage": 97.70742358078603,
+    "percentage": 98.58078602620087,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

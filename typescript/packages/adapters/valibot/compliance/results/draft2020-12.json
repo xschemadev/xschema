@@ -75,8 +75,8 @@
     },
     {
       "keyword": "defs",
-      "passed": 0,
-      "failed": 2,
+      "passed": 1,
+      "failed": 1,
       "skipped": 0,
       "total": 2,
       "failures": [
@@ -84,17 +84,8 @@
           "group": "validate definition against metaschema",
           "test": "invalid definition schema",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref \"https://json-schema.org/draft/2020-12/schema\""
-        },
-        {
-          "group": "validate definition against metaschema",
-          "test": "valid definition schema",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref \"https://json-schema.org/draft/2020-12/schema\""
+          "actual": "true",
+          "passed": false
         }
       ]
     },
@@ -296,8 +287,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 67,
-      "failed": 12,
+      "passed": 68,
+      "failed": 11,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -337,17 +328,8 @@
           "group": "remote ref, containing refs itself",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref \"https://json-schema.org/draft/2020-12/schema\""
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref \"https://json-schema.org/draft/2020-12/schema\""
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -484,11 +466,11 @@
     }
   ],
   "summary": {
-    "passed": 1051,
-    "failed": 19,
+    "passed": 1053,
+    "failed": 17,
     "skipped": 0,
     "total": 1070,
-    "percentage": 98.22429906542057,
+    "percentage": 98.41121495327103,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

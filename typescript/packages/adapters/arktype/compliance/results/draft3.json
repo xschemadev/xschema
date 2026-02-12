@@ -143,8 +143,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 18,
-      "failed": 9,
+      "passed": 19,
+      "failed": 8,
       "skipped": 0,
       "total": 27,
       "failures": [
@@ -173,17 +173,8 @@
           "group": "remote ref, containing refs itself",
           "test": "remote ref invalid",
           "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref \"http://json-schema.org/draft-03/schema#\""
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref \"http://json-schema.org/draft-03/schema#\""
+          "actual": "true",
+          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -249,11 +240,11 @@
     }
   ],
   "summary": {
-    "passed": 425,
-    "failed": 9,
+    "passed": 426,
+    "failed": 8,
     "skipped": 0,
     "total": 434,
-    "percentage": 97.92626728110599,
+    "percentage": 98.15668202764977,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

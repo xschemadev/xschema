@@ -9,6 +9,7 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - `resolveInternalRefs` in `cli/processor/local_refs.go` uses a scope stack for `$id`-aware ref resolution — `#/...` refs resolve against the nearest `$id`-bearing ancestor first, falling back to root. mirrors the approach in `bundler.validateInternalRefs`
 - `--dev-report` flag cannot be combined with `--keyword` or `--draft` in the compliance command. for keyword-specific runs, use `go run . compliance --lang <lang> --adapter-path <path> --keyword <kw>` directly
 - when object property names collide with Object.prototype (e.g. `__proto__`, `constructor`, `toString`), adapters must bypass the native object literal shape. use `hasPrototypeProperties()` from `@xschemadev/core` to detect, then generate manual `v.safeParse()` / `.safeParse()` per-property validation instead
+- metaschema `$ref`s (pointing to `http://json-schema.org/draft-*` or `https://json-schema.org/draft/*`) are replaced with empty schema `{}` in the bundler — no adapter can generate a "validate this is a valid JSON Schema" check, so accept-anything is the correct approximation
 
 ---
 
@@ -46,3 +47,11 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **fix**: already resolved by issue-02's `inPropertyMap` context tracking in `cli/processor/local_refs.go`
 - **root cause**: identical to issue-02 — `$ref` as a property name inside `properties` was treated as a JSON Schema reference, triggering `$ref value must be a string` error
 - **verified**: all 5 adapters × 5 drafts (draft4, draft6, draft7, draft2019-09, draft2020-12) × ref keyword compliance — 0 baseline failures for "property named $ref that is not a reference"; all typechecks pass
+
+### issue-09: definitions / validate definition against metaschema
+- **fix**: changed `processRef` in `cli/bundler/bundler.go` to replace metaschema `$ref` with empty schema `{}` instead of returning the ref object unchanged
+- **root cause**: bundler's `isMetaschema()` check correctly identified metaschema URLs but returned the `$ref` object as-is, leaving an external URL in the bundled output. `resolveInternalRefs` then rejected it as a non-local ref
+- **approach**: metaschema refs mean "validate this is a valid JSON Schema" — no adapter can generate that check. replacing with `{}` (accept anything) is the correct approximation for code generation. this eliminates the bundler crash and lets the schema through to adapters
+- **also fixes issue-05**: same root cause — `ref / remote ref, containing refs itself` uses `$ref` pointing to metaschema URLs (draft3-7 + draft2019-09/2020-12)
+- **also fixes issue-12**: same root cause — `defs / validate definition against metaschema` is the draft2019-09/2020-12 equivalent using `$defs` instead of `definitions`
+- **verified**: all 5 adapters × definitions keyword compliance across draft4/6/7 — 0 bundler errors remain; full dev-reports regenerated for all adapters; all Go tests pass; all TS typechecks pass; pydantic pyright passes
