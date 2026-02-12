@@ -245,8 +245,12 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, fullPath)
 		}
 
-		// Recurse into all values with updated base URI and paths
+		// Recurse into all values with updated base URI and paths,
+		// but skip data-only keywords (enum, const, default, etc.)
 		for key, val := range v {
+			if nonSchemaKeywords[key] {
+				continue
+			}
 			childPath := path + "/" + escapeJSONPointer(key)
 			b.collectIDsAndAnchors(val, baseURI, childPath, pathPrefix)
 		}
@@ -339,6 +343,12 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 
 	result := make(map[string]any, len(obj))
 	for _, k := range keys {
+		// Skip data-only keywords — their values are literal data, not subschemas.
+		// Processing them would incorrectly resolve $ref strings in enum values etc.
+		if nonSchemaKeywords[k] {
+			result[k] = obj[k]
+			continue
+		}
 		// Build the child path (for scope tracking)
 		var childScopePath string
 		if currentScopePath == "" {
@@ -781,6 +791,11 @@ func (b *bundleContext) rewriteRefs(node any, rewrites map[string]string, parent
 	case map[string]any:
 		result := make(map[string]any, len(v))
 		for k, val := range v {
+			// Skip data-only keywords — don't rewrite $ref inside literal data
+			if nonSchemaKeywords[k] {
+				result[k] = val
+				continue
+			}
 			if k == "$ref" {
 				if ref, ok := val.(string); ok {
 					if newRef := b.lookupRewrite(ref, rewrites, parentKey); newRef != "" {
@@ -941,7 +956,10 @@ func validateInternalRefsRecursive(node, root any, scopes []any) error {
 				return lastErr
 			}
 		}
-		for _, val := range v {
+		for key, val := range v {
+			if nonSchemaKeywords[key] {
+				continue
+			}
 			if err := validateInternalRefsRecursive(val, root, newScopes); err != nil {
 				return err
 			}

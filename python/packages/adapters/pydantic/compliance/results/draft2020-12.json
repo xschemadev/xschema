@@ -278,8 +278,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 67,
-      "failed": 12,
+      "passed": 66,
+      "failed": 13,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -298,6 +298,13 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref \"#\" is not supported"
+        },
+        {
+          "group": "order of evaluation: $id and $anchor and $ref",
+          "test": "data is valid against first definition",
+          "expected": true,
+          "actual": "false",
+          "passed": false
         },
         {
           "group": "order of evaluation: $id and $ref on nested schema",
@@ -464,11 +471,11 @@
     }
   ],
   "summary": {
-    "passed": 1053,
-    "failed": 17,
+    "passed": 1052,
+    "failed": 18,
     "skipped": 0,
     "total": 1070,
-    "percentage": 98.41121495327103,
+    "percentage": 98.3177570093458,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

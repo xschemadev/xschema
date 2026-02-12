@@ -238,8 +238,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 58,
-      "failed": 12,
+      "passed": 59,
+      "failed": 11,
       "skipped": 0,
       "total": 70,
       "failures": [
@@ -272,13 +272,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "match the enum exactly",
-          "expected": true,
-          "actual": "false",
-          "passed": false
         },
         {
           "group": "remote ref, containing refs itself",
@@ -367,11 +360,11 @@
     }
   ],
   "summary": {
-    "passed": 818,
-    "failed": 14,
+    "passed": 819,
+    "failed": 13,
     "skipped": 0,
     "total": 832,
-    "percentage": 98.3173076923077,
+    "percentage": 98.4375,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

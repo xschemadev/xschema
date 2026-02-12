@@ -5,6 +5,17 @@ import (
 	"strings"
 )
 
+// nonSchemaKeywords lists JSON Schema keywords whose values are literal data,
+// not subschemas. Normalization must not recurse into these — transforming
+// their contents would corrupt data (e.g. rewriting $ref strings inside enum).
+var nonSchemaKeywords = map[string]bool{
+	"const":    true,
+	"default":  true,
+	"enum":     true,
+	"example":  true,
+	"examples": true,
+}
+
 // normalizeLegacySyntax transforms legacy JSON Schema syntax to draft 2020-12 equivalents.
 // This enables compatibility with older drafts (3, 4, 6, 7) by converting deprecated
 // keywords to their modern counterparts before bundling.
@@ -332,8 +343,14 @@ func normalizeObject(obj map[string]any) map[string]any {
 		}
 	}
 
-	// Recursively normalize all nested schemas
+	// Recursively normalize all nested schemas, but skip data-only keywords
+	// whose values are literal data, not subschemas (e.g. enum, const, default).
+	// Normalizing inside these would corrupt data values — for instance, rewriting
+	// a literal {"$ref": "#/definitions/a_string"} inside an enum array.
 	for k, v := range result {
+		if nonSchemaKeywords[k] {
+			continue
+		}
 		result[k] = normalizeNode(v, result)
 	}
 

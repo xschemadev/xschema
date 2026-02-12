@@ -143,8 +143,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 19,
-      "failed": 8,
+      "passed": 20,
+      "failed": 7,
       "skipped": 0,
       "total": 27,
       "failures": [
@@ -158,13 +158,6 @@
         {
           "group": "$ref prevents a sibling id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "naive replacement of $ref with its destination is not correct",
-          "test": "match the enum exactly",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -240,11 +233,11 @@
     }
   ],
   "summary": {
-    "passed": 426,
-    "failed": 8,
+    "passed": 427,
+    "failed": 7,
     "skipped": 0,
     "total": 434,
-    "percentage": 98.15668202764977,
+    "percentage": 98.38709677419355,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

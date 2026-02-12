@@ -5,20 +5,20 @@
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
 | draft2019-09 | 1039 | 17 | 0 | 178 | 98.4% |
-| draft2020-12 | 1053 | 17 | 0 | 201 | 98.4% |
-| draft3 | 426 | 8 | 0 | 0 | 98.2% |
-| draft4 | 602 | 11 | 0 | 0 | 98.2% |
-| draft6 | 818 | 14 | 0 | 0 | 98.3% |
-| draft7 | 902 | 14 | 0 | 0 | 98.5% |
+| draft2020-12 | 1052 | 18 | 0 | 201 | 98.3% |
+| draft3 | 427 | 7 | 0 | 0 | 98.4% |
+| draft4 | 603 | 10 | 0 | 0 | 98.4% |
+| draft6 | 819 | 13 | 0 | 0 | 98.4% |
+| draft7 | 903 | 13 | 0 | 0 | 98.6% |
 
 ## Badges
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.4%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.4%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-98.2%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.2%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.3%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.5%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.3%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.4%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.4%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.4%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.6%25-brightgreen)
 
 ## draft2019-09
 
@@ -456,7 +456,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 68/79 |
+| ref | ⚠️ | 67/79 |
 | refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -823,7 +823,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 12 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -831,6 +831,9 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
+  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
@@ -903,7 +906,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 19/27 |
+| ref | ⚠️ | 20/27 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
@@ -912,16 +915,13 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 8 failures</summary>
+<summary>ref - 7 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
   - Expected: `invalid`, Got: `true`
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
   - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
@@ -970,7 +970,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 35/45 |
+| ref | ⚠️ | 36/45 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -988,7 +988,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 10 failures</summary>
+<summary>ref - 9 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1002,9 +1002,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#" is not supported`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `true`
@@ -1058,7 +1055,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 58/70 |
+| ref | ⚠️ | 59/70 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1085,7 +1082,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1099,9 +1096,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `true`
@@ -1162,7 +1156,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 66/78 |
+| ref | ⚠️ | 67/78 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1189,7 +1183,7 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1203,9 +1197,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
-- **naive replacement of $ref with its destination is not correct**
-  - Test: match the enum exactly
-  - Expected: `valid`, Got: `false`
 - **remote ref, containing refs itself**
   - Test: remote ref invalid
   - Expected: `invalid`, Got: `true`
