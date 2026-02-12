@@ -80,3 +80,8 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **root cause**: the runtime comparison only sorted top-level keys via `JSON.stringify`'s replacer array, while build-time `sortedStringify()` used recursive `deepSortKeys()`. for arrays containing objects (like `[{"foo": "bar"}]`), nested keys weren't sorted at runtime, causing mismatch
 - **approach**: use the same `DEEP_SORTED_STRINGIFY_RUNTIME` IIFE that zod adapter already uses — recursively walks arrays and sorts object keys at every depth before stringifying
 - **verified**: effect + valibot × const keyword 100% across draft6, draft7, draft2019-09, draft2020-12; both typechecks pass
+
+### issue-05: ref / remote ref, containing refs itself
+- **fix**: already resolved by issue-09's metaschema `$ref` replacement in `cli/bundler/bundler.go` and `checkMetaschemaRef` in `cli/processor/processor.go`
+- **root cause**: identical to issue-09 — `$ref` pointing to metaschema URLs left unresolved non-local refs in bundled output. metaschema replacement with `{}` + `UnsupportedKeywordError` classification moves these to "Unsupported Features"
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 baseline failures in "Unexpected Failures"; all typechecks pass
