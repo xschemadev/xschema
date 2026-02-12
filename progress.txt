@@ -74,3 +74,9 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **approach**: schemas whose root `$ref` is a metaschema URL are fundamentally "validate this is a valid JSON Schema" — unsupported for static code generation. returning `UnsupportedKeywordError` classifies both tests as "Unsupported Features" in compliance reports
 - **also improves issue-09**: the same `checkMetaschemaRef` applies to `definitions` keyword (draft4/6/7), removing "invalid definition schema" from unexpected failures there too
 - **verified**: all 5 adapters × defs keyword compliance (draft2019-09, draft2020-12) — 0 baseline failures in unexpected; all 5 adapters × definitions keyword — same; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-24: const / const with array
+- **fix**: replaced shallow `JSON.stringify(val, Object.keys(val as object).sort())` with `DEEP_SORTED_STRINGIFY_RUNTIME` from `@xschemadev/core` in both effect and valibot adapters' `renderLiteral`
+- **root cause**: the runtime comparison only sorted top-level keys via `JSON.stringify`'s replacer array, while build-time `sortedStringify()` used recursive `deepSortKeys()`. for arrays containing objects (like `[{"foo": "bar"}]`), nested keys weren't sorted at runtime, causing mismatch
+- **approach**: use the same `DEEP_SORTED_STRINGIFY_RUNTIME` IIFE that zod adapter already uses — recursively walks arrays and sorts object keys at every depth before stringifying
+- **verified**: effect + valibot × const keyword 100% across draft6, draft7, draft2019-09, draft2020-12; both typechecks pass

@@ -21,7 +21,13 @@ import type {
 	NullableNode,
 	PropertyDef,
 } from "@xschemadev/core";
-import { escapeString, hasPrototypeProperties, isPrimitive, sortedStringify } from "@xschemadev/core";
+import {
+	DEEP_SORTED_STRINGIFY_RUNTIME,
+	escapeString,
+	hasPrototypeProperties,
+	isPrimitive,
+	sortedStringify,
+} from "@xschemadev/core";
 
 // JS identifier regex - keys matching this can use direct property syntax
 const IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
@@ -907,7 +913,7 @@ function renderLiteral(node: LiteralNode): string {
 	const baseType = isArray ? "v.array(v.any())" : "v.looseObject({})";
 	const sorted = sortedStringify(node.value);
 
-	return `v.pipe(${baseType}, v.check((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, "Value must equal the const value"))`;
+	return `v.pipe(${baseType}, v.check((val) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)}, "Value must equal the const value"))`;
 }
 
 function renderEnum(node: EnumNode): string {

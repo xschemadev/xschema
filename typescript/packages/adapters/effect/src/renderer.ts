@@ -21,7 +21,12 @@ import type {
 	NullableNode,
 	PropertyDef,
 } from "@xschemadev/core";
-import { escapeString, isPrimitive, sortedStringify } from "@xschemadev/core";
+import {
+	DEEP_SORTED_STRINGIFY_RUNTIME,
+	escapeString,
+	isPrimitive,
+	sortedStringify,
+} from "@xschemadev/core";
 
 // JS reserved words that require computed property syntax
 const RESERVED_WORDS = new Set([
@@ -839,7 +844,7 @@ function renderLiteral(node: LiteralNode): string {
 	const baseType = isArray ? "S.Array(S.Unknown)" : "S.Struct({})";
 	const sorted = sortedStringify(node.value);
 
-	return `${baseType}.pipe(S.filter((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, { message: () => "Value must equal the const value" }))`;
+	return `${baseType}.pipe(S.filter((val) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)}, { message: () => "Value must equal the const value" }))`;
 }
 
 function renderEnum(node: EnumNode): string {
