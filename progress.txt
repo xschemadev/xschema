@@ -28,3 +28,8 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **also fixes issue-13**: same mechanism — URN refs with nested pointer refs that couldn't find `$defs/bar` in root scope
 - **tests added**: 5 new unit tests in `cli/processor/local_refs_test.go` covering scoped resolution, legacy id, fallback to root, nested scopes
 - **verified**: all 5 adapters × ref keyword compliance — 0 baseline failures remain for this signature; all Go tests pass
+
+### issue-04: ref / relative refs with absolute uris and defs
+- **fix**: already resolved by issue-03's `$id`-based scope tracking in `cli/processor/local_refs.go`
+- **root cause**: identical to issue-03 — `#/$defs/inner` refs in sub-schemas with their own `$id` (using absolute URIs) were resolved against document root instead of the `$id`-bearing ancestor
+- **verified**: all 5 adapters × 4 drafts × ref keyword compliance — 0 baseline failures for "relative refs with absolute uris and defs"; all typechecks pass
