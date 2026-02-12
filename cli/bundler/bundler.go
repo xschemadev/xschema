@@ -28,15 +28,45 @@ var keyInvalidChars = regexp.MustCompile(`[^a-zA-Z0-9_]`)
 
 // bundleContext holds state during bundling
 type bundleContext struct {
-	sourceURI  string            // base URI for resolving relative refs
-	fetcher    fetcher.Fetcher   // fetcher for external schemas (nil = no external refs allowed)
-	cache      map[string]any    // normalized URI → parsed schema (to avoid refetching)
-	defs       map[string]any    // key → embedded schema (collected $defs)
-	processing map[string]bool   // URIs currently being processed (circular ref detection)
-	localIDs   map[string]string // normalized $id URI → JSON pointer path
-	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
+	sourceURI  string                       // base URI for resolving relative refs
+	fetcher    fetcher.Fetcher              // fetcher for external schemas (nil = no external refs allowed)
+	cache      map[string]any               // normalized URI → parsed schema (to avoid refetching)
+	defs       map[string]any               // key → embedded schema (collected $defs)
+	processing map[string]bool              // URIs currently being processed (circular ref detection)
+	localIDs   map[string]string            // normalized $id URI → JSON pointer path
+	anchors    map[string]map[string]string // baseURI → anchor name → JSON pointer path
 	ctx        context.Context
 	draft      string // JSON Schema draft for normalizing fetched schemas
+}
+
+// storeAnchor records an anchor under its base URI scope
+func (b *bundleContext) storeAnchor(baseURI, anchor, path string) {
+	scope := b.anchors[baseURI]
+	if scope == nil {
+		scope = make(map[string]string)
+		b.anchors[baseURI] = scope
+	}
+	scope[anchor] = path
+}
+
+// lookupAnchor finds an anchor path scoped to the given base URI.
+// An anchor is only visible within the schema resource (base URI) that defines it.
+func (b *bundleContext) lookupAnchor(baseURI, anchor string) (string, bool) {
+	if scope, ok := b.anchors[baseURI]; ok {
+		if path, ok := scope[anchor]; ok {
+			return path, true
+		}
+	}
+	// Also try the normalized form of the base URI
+	normalizedBase := fetcher.NormalizeURI(baseURI)
+	if normalizedBase != baseURI {
+		if scope, ok := b.anchors[normalizedBase]; ok {
+			if path, ok := scope[anchor]; ok {
+				return path, true
+			}
+		}
+	}
+	return "", false
 }
 
 // draftToSchemaURI maps draft names to their canonical $schema URIs
@@ -92,7 +122,7 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		defs:       make(map[string]any),
 		processing: make(map[string]bool),
 		localIDs:   make(map[string]string),
-		anchors:    make(map[string]string),
+		anchors:    make(map[string]map[string]string),
 		ctx:        ctx,
 		draft:      draft,
 	}
@@ -218,8 +248,8 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 			if strings.HasPrefix(id, "#") && len(id) > 1 {
 				anchor := id[1:] // strip the #
 				fullPath := pathPrefix + path
-				b.anchors[anchor] = fullPath
-				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, fullPath)
+				b.storeAnchor(baseURI, anchor, fullPath)
+				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q (scope %s)", id, fullPath, baseURI)
 			} else {
 				// Resolve relative $id against base URI
 				resolved, err := fetcher.ResolveURI(id, baseURI)
@@ -241,8 +271,8 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 		// Check for $anchor (draft2019-09+)
 		if anchor, ok := v["$anchor"].(string); ok {
 			fullPath := pathPrefix + path
-			b.anchors[anchor] = fullPath
-			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, fullPath)
+			b.storeAnchor(baseURI, anchor, fullPath)
+			ui.Verbosef("bundler: found $anchor %q at path %q (scope %s)", anchor, fullPath, baseURI)
 		}
 
 		// Recurse into all values with updated base URI and paths,
@@ -430,11 +460,11 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		}
 
 		// Fragment is an anchor reference (e.g., "#foo")
-		// Look up the anchor and rewrite to its JSON pointer path
-		if path, ok := b.anchors[fragment]; ok {
+		// Look up the anchor scoped to the current base URI
+		if path, ok := b.lookupAnchor(baseURI, fragment); ok {
 			result := copyObject(obj)
 			result["$ref"] = "#" + path
-			ui.Verbosef("bundler: rewriting anchor ref #%s → #%s", fragment, path)
+			ui.Verbosef("bundler: rewriting anchor ref #%s → #%s (scope %s)", fragment, path, baseURI)
 			return result, nil
 		}
 
@@ -470,7 +500,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		if fragment != "" {
 			if strings.HasPrefix(fragment, "/") {
 				localRef += fragment
-			} else if anchorPath, found := b.anchors[fragment]; found {
+			} else if anchorPath, found := b.lookupAnchor(normalizedResolved, fragment); found {
 				localRef = "#" + anchorPath
 			} else {
 				localRef = "#" + fragment
@@ -573,8 +603,8 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			ui.Verbosef("bundler: rewriting def fragment %s → %s", fragment, localRef)
 		} else if !strings.HasPrefix(fragment, "/") {
 			// Fragment is an anchor reference (e.g., "myAnchor" from remote.json#myAnchor)
-			// Look up the anchor - it was collected relative to the remote schema root.
-			if anchorPath, ok := b.anchors[fragment]; ok {
+			// Look up the anchor scoped to the remote schema's base URI.
+			if anchorPath, ok := b.lookupAnchor(resolvedURI, fragment); ok {
 				// The anchor path is relative to the remote schema. We need to:
 				// 1. Apply the /$defs/key prefix since that's where the schema is embedded
 				// 2. Check if the location got flattened (/$defs/key/$defs/X → /$defs/key__X)

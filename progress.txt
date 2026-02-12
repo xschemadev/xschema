@@ -13,6 +13,7 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - `nonSchemaKeywords` (`enum`, `const`, `default`, `example`, `examples`) in both `cli/bundler/normalize.go` and `cli/bundler/bundler.go` mark keywords whose values are literal data, not subschemas. the bundler and normalizer skip these during traversal to avoid corrupting data values (e.g. rewriting `$ref` strings inside enum arrays)
 - pydantic forward refs for recursive `$ref: "#"`: only use `'ClassName'` forward reference when the root schema has explicit `type: "object"`. typeless object schemas must fall back to `Any` because non-object values need to pass validation at recursive positions. always call `ClassName.model_rebuild()` after class definition to resolve forward refs
 - in pre-2019-09 drafts, `$ref` consumes the entire object — sibling `$id`/`id` must NOT change the base URI for `$ref` resolution. the bundler's `processObject` checks for `$ref` presence before applying `$id` base URI changes via `refIgnoresSiblings` flag
+- `$anchor` values are scoped to their base URI in the bundler. `bundleContext.anchors` is `map[string]map[string]string` (baseURI → anchor name → JSON pointer path). `storeAnchor`/`lookupAnchor` helpers ensure anchors are stored and resolved within the correct `$id` scope
 
 ---
 
@@ -166,3 +167,11 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema at `localhost:1234/<draft>/subSchemas.json`, resolved `#/integer` fragment to flattened `$defs` key. `resolveRefObject` marked target as "resolving", then same target encountered in sibling `$defs` processing, triggering false recursion guard
 - **no code changes needed**: identical pattern to issue-16 — issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing
 - **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all TS typechecks pass; pydantic pyright passes
+
+### issue-23: ref / order of evaluation: $id and $anchor and $ref
+- **fix**: changed `bundleContext.anchors` from flat `map[string]string` to URI-scoped `map[string]map[string]string` in `cli/bundler/bundler.go`
+- **root cause**: `collectIDsAndAnchors` stored `$anchor` values in a flat map keyed only by anchor name, ignoring the `$id`-based scope. when two sub-schemas under different `$id`s defined the same `$anchor` name ("bigint"), the last one collected overwrote the first. `processRef` then resolved `$ref: "#bigint"` to `$defs/smallint` (maximum: 2) instead of `$defs/bigint` (maximum: 10)
+- **approach**: `storeAnchor(baseURI, anchor, path)` stores anchors under their base URI scope. `lookupAnchor(baseURI, anchor)` resolves by exact base URI match (with normalized URI fallback). all 5 anchor access sites updated: 2 stores in `collectIDsAndAnchors`, 3 lookups in `processRef` (local anchor, local $id anchor, external anchor)
+- **test added**: `TestBundle_AnchorScopedToBaseURI` in bundler tests — verifies `#bigint` resolves to `$defs/bigint` when `$defs/smallint` has a different `$id` but same `$anchor` name
+- **note**: PRD specified 9 failures across 5 adapters, but actual baseline was 7 — pydantic had no `$anchor` failures, and valibot only failed in draft2019-09
+- **verified**: all 4 TS adapters × 6 drafts × ref keyword compliance — 100% pass rate; pydantic ref compliance shows only pre-existing issue-25 failures; all TS typechecks pass; pydantic pyright passes; all Go tests pass

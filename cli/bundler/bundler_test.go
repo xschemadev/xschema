@@ -2510,6 +2510,56 @@ func TestBundle_RefWithNestedIDAndRef(t *testing.T) {
 	}
 }
 
+// TestBundle_AnchorScopedToBaseURI verifies that $anchor is scoped to the base URI
+// of the schema resource that defines it. When two sub-schemas under different $id
+// define the same $anchor name, $ref resolves to the anchor in the correct scope.
+// This is the "order of evaluation: $id and $anchor and $ref" test from JSON Schema Test Suite.
+func TestBundle_AnchorScopedToBaseURI(t *testing.T) {
+	schema := json.RawMessage(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$id": "https://example.com/ref-and-id2/base.json",
+		"$ref": "#bigint",
+		"$defs": {
+			"bigint": {
+				"$anchor": "bigint",
+				"maximum": 10
+			},
+			"smallint": {
+				"$id": "https://example.com/ref-and-id2/",
+				"$anchor": "bigint",
+				"maximum": 2
+			}
+		}
+	}`)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := Bundle(ctx, BundleInput{
+		Schema: schema,
+		Draft:  "draft2020-12",
+	})
+	if err != nil {
+		t.Fatalf("Bundle failed: %v", err)
+	}
+
+	var parsed map[string]any
+	if err := json.Unmarshal(result, &parsed); err != nil {
+		t.Fatalf("failed to parse bundled schema: %v", err)
+	}
+
+	// The root $ref: "#bigint" should resolve to $defs/bigint (maximum: 10),
+	// NOT $defs/smallint (maximum: 2), because the $anchor "bigint" on smallint
+	// is scoped to its own $id (https://example.com/ref-and-id2/), not the root's.
+	rootRef, ok := parsed["$ref"].(string)
+	if !ok {
+		t.Fatal("expected root $ref")
+	}
+	if rootRef != "#/$defs/bigint" {
+		t.Errorf("expected root $ref to be #/$defs/bigint, got %q", rootRef)
+	}
+}
+
 func getMapKeys(m map[string]any) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
