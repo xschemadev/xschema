@@ -147,3 +147,10 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 ### issue-22: ref / $ref prevents a sibling id from changing the base uri (got true)
 - **fix**: already resolved by issue-19's `refIgnoresSiblings` guard
 - **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-15: ref / order of evaluation: $id and $ref on nested schema
+- **fix**: modified `processObject` in `cli/bundler/bundler.go` to process sibling keys after `processRef` returns
+- **root cause**: `processObject` returned early when encountering `$ref`, calling `processRef` and returning its result. `processRef` returns a shallow copy with rewritten `$ref` but unprocessed siblings. for schemas with both `$ref` and `$defs` (valid in draft2019-09+), the `$defs` children containing their own `$ref` values were never processed through `processNode`, leaving relative refs like `./bar.json` unresolved
+- **approach**: after `processRef` returns a map result, iterate its keys (excluding `$ref` and non-schema keywords) and process each through `processNode` with the correct base URI
+- **test added**: `TestBundle_RefWithNestedIDAndRef` in bundler tests
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "order of evaluation: $id and $ref on nested schema" failures; all Go tests pass; all TS typechecks pass; pydantic pyright passes

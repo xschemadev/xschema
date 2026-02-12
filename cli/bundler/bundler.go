@@ -335,10 +335,42 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 
 	// Check for $ref - handle scoped refs
 	if ref, ok := obj["$ref"].(string); ok {
-		// If we have a fragment ref and we're inside a scope that was reset,
-		// we don't need to rewrite (the ref is relative to the current scope).
-		// But we DO need to mark refs that are scoped so validation can handle them.
-		return b.processRef(obj, ref, baseURI)
+		refResult, err := b.processRef(obj, ref, baseURI)
+		if err != nil {
+			return nil, err
+		}
+
+		// processRef returns a shallow copy with rewritten $ref but unprocessed siblings.
+		// For draft2019-09+, $ref doesn't consume the entire object — sibling keys
+		// (like $defs containing other schemas) must still be processed.
+		if refObj, ok := refResult.(map[string]any); ok {
+			keys := make([]string, 0, len(refObj))
+			for k := range refObj {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+
+			result := make(map[string]any, len(refObj))
+			for _, k := range keys {
+				if k == "$ref" || nonSchemaKeywords[k] {
+					result[k] = refObj[k]
+					continue
+				}
+				var childScopePath string
+				if currentScopePath == "" {
+					childScopePath = "/" + escapeJSONPointer(k)
+				} else {
+					childScopePath = currentScopePath + "/" + escapeJSONPointer(k)
+				}
+				processed, err := b.processNode(refObj[k], baseURI, childScopePath)
+				if err != nil {
+					return nil, err
+				}
+				result[k] = processed
+			}
+			return result, nil
+		}
+		return refResult, nil
 	}
 
 	// Recursively process all properties in sorted order for deterministic error messages

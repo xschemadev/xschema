@@ -2445,6 +2445,71 @@ func TestBundle_RefPreventsSiblingIDFromChangingBase(t *testing.T) {
 	}
 }
 
+// TestBundle_RefWithNestedIDAndRef verifies that when a schema has both $ref and $defs,
+// the $defs children are processed even though $ref is present.
+// This is the "order of evaluation: $id and $ref on nested schema" test from JSON Schema Test Suite.
+func TestBundle_RefWithNestedIDAndRef(t *testing.T) {
+	schema := json.RawMessage(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$id": "https://example.com/ref-and-id3/base.json",
+		"$ref": "nested/foo.json",
+		"$defs": {
+			"foo": {
+				"$id": "nested/foo.json",
+				"$ref": "./bar.json"
+			},
+			"bar": {
+				"$id": "nested/bar.json",
+				"type": "number"
+			}
+		}
+	}`)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := Bundle(ctx, BundleInput{
+		Schema: schema,
+		Draft:  "draft2020-12",
+	})
+	if err != nil {
+		t.Fatalf("Bundle failed: %v", err)
+	}
+
+	var parsed map[string]any
+	if err := json.Unmarshal(result, &parsed); err != nil {
+		t.Fatalf("failed to parse bundled schema: %v", err)
+	}
+
+	// The root $ref should resolve to the foo definition
+	rootRef, ok := parsed["$ref"].(string)
+	if !ok {
+		t.Fatal("expected root $ref")
+	}
+	if !strings.Contains(rootRef, "foo") {
+		t.Errorf("expected root $ref to point to foo, got %q", rootRef)
+	}
+
+	// The foo definition's $ref (./bar.json) should be rewritten to point to bar
+	defs, ok := parsed["$defs"].(map[string]any)
+	if !ok {
+		t.Fatal("expected $defs in bundled schema")
+	}
+	foo, ok := defs["foo"].(map[string]any)
+	if !ok {
+		t.Fatal("expected $defs/foo in bundled schema")
+	}
+	fooRef, ok := foo["$ref"].(string)
+	if !ok {
+		t.Fatal("expected $ref in $defs/foo")
+	}
+	// ./bar.json relative to foo's $id (nested/foo.json) resolves to nested/bar.json
+	// which matches $defs/bar's $id — should be rewritten to a local ref
+	if !strings.HasPrefix(fooRef, "#") {
+		t.Errorf("expected foo's $ref to be rewritten to a local ref, got %q", fooRef)
+	}
+}
+
 func getMapKeys(m map[string]any) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
