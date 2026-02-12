@@ -1,8 +1,8 @@
 {
-	"name": "@xschemadev/valibot",
+	"name": "@xschemadev/typebox",
 	"version": "0.1.1",
 	"type": "module",
-	"description": "XSchema Valibot Adapter",
+	"description": "XSchema TypeBox Adapter",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -10,7 +10,7 @@
 		}
 	},
 	"bin": {
-		"xschema-valibot": "./dist/cli.js"
+		"xschema-typebox": "./dist/cli.js"
 	},
 	"files": [
 		"dist"
@@ -24,9 +24,11 @@
 		"@xschemadev/core": "workspace:*"
 	},
 	"devDependencies": {
-		"valibot": "^0.42.0"
+		"@sinclair/typebox": "^0.34.0",
+		"ajv": "^8.17.1",
+		"ajv-formats": "^3.0.1"
 	},
 	"peerDependencies": {
-		"valibot": "^0.42.0"
+		"@sinclair/typebox": "^0.34.0"
 	}
 }

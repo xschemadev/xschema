@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.1](https://github.com/xschemadev/xschema/compare/effect-v0.1.0...effect-v0.1.1) (2026-01-11)
+## [0.1.1](https://github.com/xschemadev/xschema/compare/typescript-v0.1.0...typescript-v0.1.1) (2026-01-11)
 
 
 ### Features
@@ -13,4 +13,4 @@
 
 ### Features
 
-* initial effect/schema adapter implementation with 94.3% compliance on draft2020-12
+* initial typescript type-only adapter implementation - generates pure TypeScript types from JSON Schema with no runtime validation code
