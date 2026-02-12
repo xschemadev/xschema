@@ -1,0 +1,55 @@
+[project]
+name = "xschema-client"
+version = "0.1.0"
+description = "Runtime client for xschema-generated validators with type-safe schema lookup"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "xschemadev" }]
+maintainers = [{ name = "xschemadev" }]
+keywords = [
+    "json-schema",
+    "validation",
+    "pydantic",
+    "code-generation",
+    "runtime-client",
+    "schema",
+    "type-safety",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://xschema.dev"
+Documentation = "https://xschema.dev"
+Repository = "https://github.com/xschemadev/xschema"
+Issues = "https://github.com/xschemadev/xschema/issues"
+Changelog = "https://github.com/xschemadev/xschema/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/xschema_client"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

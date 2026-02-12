@@ -26,6 +26,7 @@ import {
 	escapeString,
 	isPrimitive,
 	sortedStringify,
+	DEEP_SORTED_STRINGIFY_RUNTIME,
 	hasPrototypeProperties,
 	buildIntersection,
 } from "@xschemadev/core";
@@ -51,10 +52,19 @@ function formatPropertyKey(key: string): string {
 	return canUseDirectSyntax(key) ? key : `[${escapeString(key)}]`;
 }
 
+// module-level self-reference variable name for z.lazy() in recursive schemas
+let _selfRef: string | undefined;
+
 /**
  * Render a SchemaNode to Zod code
+ * @param selfRef - variable name for z.lazy() self-references (recursive schemas)
  */
-export function render(node: SchemaNode): string {
+export function render(node: SchemaNode, selfRef?: string): string {
+	if (selfRef !== undefined) _selfRef = selfRef;
+	return renderNode(node);
+}
+
+function renderNode(node: SchemaNode): string {
 	switch (node.kind) {
 		case "string":
 			return renderString(node);
@@ -86,6 +96,9 @@ export function render(node: SchemaNode): string {
 			return "z.any()";
 		case "never":
 			return "z.never()";
+		case "ref":
+			if (!_selfRef) throw new Error("Recursive $ref requires selfRef context");
+			return `z.lazy(() => ${_selfRef})`;
 
 		case "conditional":
 			return renderConditional(node);
@@ -241,7 +254,7 @@ function renderObject(node: ObjectNode): string {
 		if (isStrict) {
 			result = "z.object({}).strict()";
 		} else if (additionalSchema) {
-			const valueSchema = render(additionalSchema);
+			const valueSchema = renderNode(additionalSchema);
 			result = `z.record(z.string(), ${valueSchema})`;
 		} else {
 			result = "z.object({}).passthrough()";
@@ -250,7 +263,7 @@ function renderObject(node: ObjectNode): string {
 		// Build shape
 		const shape = propKeys.map((key) => {
 			const prop = node.properties.get(key)!;
-			let propCode = render(prop.schema as SchemaNode);
+			let propCode = renderNode(prop.schema as SchemaNode);
 			if (!prop.required) {
 				propCode += ".optional()";
 			}
@@ -268,7 +281,7 @@ function renderObject(node: ObjectNode): string {
 		} else if (isStrict) {
 			result += ".strict()";
 		} else if (additionalSchema) {
-			const valueSchema = render(additionalSchema);
+			const valueSchema = renderNode(additionalSchema);
 			result += `.catchall(${valueSchema})`;
 		} else {
 			result += ".passthrough()";
@@ -282,7 +295,7 @@ function renderObject(node: ObjectNode): string {
 
 	// Property names validation
 	if (node.propertyNames) {
-		const keySchema = render(node.propertyNames);
+		const keySchema = renderNode(node.propertyNames);
 		result += `.superRefine((val, ctx) => {
       for (const key of Object.keys(val)) {
         const result = ${keySchema}.safeParse(key);
@@ -307,7 +320,7 @@ function renderObject(node: ObjectNode): string {
 		typeof node.unevaluatedProperties === "object" &&
 		node.unevaluatedProperties.kind !== "any"
 	) {
-		const unevalSchema = render(node.unevaluatedProperties);
+		const unevalSchema = renderNode(node.unevaluatedProperties);
 		const definedPropsJson = JSON.stringify(propKeys);
 		result += `.superRefine((val, ctx) => {
       const definedProps = new Set(${definedPropsJson});
@@ -357,7 +370,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 	// Property validators
 	for (const key of propKeys) {
 		const prop = node.properties.get(key)!;
-		const propCode = render(prop.schema as SchemaNode);
+		const propCode = renderNode(prop.schema as SchemaNode);
 		const keyExpr = escapeString(key);
 
 		if (prop.required) {
@@ -396,7 +409,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		const definedPropsJson = JSON.stringify(propKeys);
 		additionalCheck = `
         const definedProps = new Set(${definedPropsJson});
@@ -411,7 +424,10 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 	}
 
 	return `z.any().superRefine((val, ctx) => {
-      if (typeof val !== "object" || val === null || Array.isArray(val)) return;${validators.join("")}${additionalCheck}
+      if (typeof val !== "object" || val === null || Array.isArray(val)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Expected object" });
+        return;
+      }${validators.join("")}${additionalCheck}
     })`;
 }
 
@@ -429,7 +445,7 @@ function renderPatternPropsValidation(
 
 	// Validate pattern properties
 	patterns.forEach((p, i) => {
-		const patternCode = render(p.schema as SchemaNode);
+		const patternCode = renderNode(p.schema as SchemaNode);
 		body += `
       for (const [key, value] of Object.entries(val)) {
         if (patterns[${i}].test(key)) {
@@ -470,7 +486,7 @@ function renderPatternPropsValidation(
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		body += `
       for (const [key, value] of Object.entries(val)) {
         if (definedProps.has(key)) continue;
@@ -508,7 +524,7 @@ function renderDependencies(node: ObjectNode): string {
         }, { message: ${message} })`;
 			}
 		} else {
-			const depCode = render(dep.schema as SchemaNode);
+			const depCode = renderNode(dep.schema as SchemaNode);
 			result += `.superRefine((val, ctx) => {
         if (Object.hasOwn(val, ${escapeString(prop)})) {
           const result = ${depCode}.safeParse(val);
@@ -537,15 +553,18 @@ function renderArray(node: ArrayNode): string {
 
 	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
 		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		let result = `z.array(${unevalSchema})`;
 		result += renderArrayConstraints(node.constraints);
 		return result;
 	}
 
 	// Normal array with items schema
-	const itemSchema = render(node.items);
+	const itemSchema = renderNode(node.items);
 	let result = `z.array(${itemSchema})`;
+
+	// Size constraints (.min/.max) must go on ZodArray before any .superRefine
+	result += renderArraySizeConstraints(node.constraints);
 
 	// If items is defined AND unevaluatedItems is also defined, we need both validations
 	// But typically items covers all items, so unevaluatedItems wouldn't have effect
@@ -556,7 +575,7 @@ function renderArray(node: ArrayNode): string {
 		node.unevaluatedItems !== false &&
 		node.unevaluatedItems.kind !== "any"
 	) {
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		result += `.superRefine((arr, ctx) => {
       const schema = ${unevalSchema};
       for (let i = 0; i < arr.length; i++) {
@@ -568,15 +587,17 @@ function renderArray(node: ArrayNode): string {
     })`;
 	}
 
-	result += renderArrayConstraints(node.constraints);
+	// Refinement constraints (.refine for uniqueItems/contains) work on ZodEffects
+	result += renderArrayRefinementConstraints(node.constraints);
 	return result;
 }
 
 function renderTuple(node: TupleNode): string {
-	const tupleSchemas = node.prefixItems.map((item) => render(item));
+	const tupleSchemas = node.prefixItems.map((item) => renderNode(item));
 	const schemasArray = `[${tupleSchemas.join(", ")}]`;
 
-	let result = `z.array(z.any()).superRefine((val, ctx) => {
+	// Size constraints (.min/.max) must go on the ZodArray before any .superRefine/.refine
+	let result = `z.array(z.any())${renderArraySizeConstraints(node.constraints)}.superRefine((val, ctx) => {
       const schemas = ${schemasArray};
       for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
         const itemResult = schemas[i].safeParse(val[i]);
@@ -604,7 +625,7 @@ function renderTuple(node: TupleNode): string {
 	if (disallowExtraItems) {
 		result += `.refine((val) => val.length <= ${node.prefixItems.length}, { message: "Array must not have more than ${node.prefixItems.length} items" })`;
 	} else if (extraItemsSchema) {
-		const restSchema = render(extraItemsSchema);
+		const restSchema = renderNode(extraItemsSchema);
 		result += `.superRefine((val, ctx) => {
         const restSchema = ${restSchema};
         for (let i = ${node.prefixItems.length}; i < val.length; i++) {
@@ -618,21 +639,31 @@ function renderTuple(node: TupleNode): string {
       })`;
 	}
 
-	result += renderArrayConstraints(node.constraints);
+	// Refinement constraints (.refine for uniqueItems/contains) work on ZodEffects
+	result += renderArrayRefinementConstraints(node.constraints);
 	return result;
 }
 
-function renderArrayConstraints(
+// .min() and .max() are ZodArray methods — must be applied before any
+// .superRefine()/.refine() that converts the chain to ZodEffects.
+function renderArraySizeConstraints(
 	constraints: ArrayNode["constraints"],
 ): string {
 	let result = "";
-
 	if (constraints.minItems !== undefined) {
 		result += `.min(${constraints.minItems})`;
 	}
 	if (constraints.maxItems !== undefined) {
 		result += `.max(${constraints.maxItems})`;
 	}
+	return result;
+}
+
+// .refine() works on both ZodArray and ZodEffects, safe to append last.
+function renderArrayRefinementConstraints(
+	constraints: ArrayNode["constraints"],
+): string {
+	let result = "";
 
 	if (constraints.uniqueItems) {
 		result += `.refine((arr) => {
@@ -647,7 +678,7 @@ function renderArrayConstraints(
 	}
 
 	if (constraints.contains) {
-		const containsSchema = render(constraints.contains.schema as SchemaNode);
+		const containsSchema = renderNode(constraints.contains.schema as SchemaNode);
 		const minContains = constraints.contains.minContains;
 		const maxContains = constraints.contains.maxContains;
 
@@ -673,15 +704,22 @@ function renderArrayConstraints(
 	return result;
 }
 
+// Convenience: apply all constraints on a bare ZodArray (no prior effects).
+function renderArrayConstraints(
+	constraints: ArrayNode["constraints"],
+): string {
+	return renderArraySizeConstraints(constraints) + renderArrayRefinementConstraints(constraints);
+}
+
 function renderUnion(node: UnionNode): string {
 	if (node.variants.length === 0) return "z.never()";
 
 	// Filter out "never" variants since they can't match anything
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "z.never()";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
-	const schemas = filtered.map((v) => render(v));
+	const schemas = filtered.map((v) => renderNode(v));
 	return `z.union([${schemas.join(", ")}])`;
 }
 
@@ -696,15 +734,15 @@ function renderIntersection(node: IntersectionNode): string {
 	// Filter out "any" schemas since they don't constrain the intersection
 	const filtered = node.schemas.filter((s) => s.kind !== "any");
 	if (filtered.length === 0) return "z.any()";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
-	const schemas = filtered.map((s) => render(s));
+	const schemas = filtered.map((s) => renderNode(s));
 	return buildIntersection(schemas);
 }
 
 function renderOneOf(node: OneOfNode): string {
 	if (node.schemas.length === 0) return "z.never()";
-	if (node.schemas.length === 1) return render(node.schemas[0]!);
+	if (node.schemas.length === 1) return renderNode(node.schemas[0]!);
 
 	// Filter out "never" schemas since they can never match
 	const filtered = node.schemas.filter((s) => s.kind !== "never");
@@ -713,17 +751,17 @@ function renderOneOf(node: OneOfNode): string {
 	if (filtered.length === 0) return "z.never()";
 
 	// If exactly one schema remains after filtering never, it must match
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
 	// Count how many "any" schemas there are - if > 1, always matches multiple
 	const anyCount = filtered.filter((s) => s.kind === "any").length;
 	if (anyCount > 1) {
 		// Multiple "any" schemas means any value matches multiple
-		return `z.any().refine(() => false, { message: "oneOf has multiple 'true' schemas - impossible to match exactly one" })`;
+		return `z.unknown().refine(() => false, { message: "oneOf has multiple 'true' schemas - impossible to match exactly one" })`;
 	}
 
-	const schemas = filtered.map((s) => render(s));
-	return `z.any().superRefine((val, ctx) => {
+	const schemas = filtered.map((s) => renderNode(s));
+	return `z.unknown().superRefine((val, ctx) => {
     const schemas = [${schemas.join(", ")}];
     const results = schemas.map(s => s.safeParse(val));
     const validCount = results.filter(r => r.success).length;
@@ -742,8 +780,8 @@ function renderOneOf(node: OneOfNode): string {
 }
 
 function renderNot(node: NotNode): string {
-	const schema = render(node.schema);
-	return `z.any().refine((val) => !${schema}.safeParse(val).success, { message: "Value must not match schema" })`;
+	const schema = renderNode(node.schema);
+	return `z.unknown().refine((val) => !${schema}.safeParse(val).success, { message: "Value must not match schema" })`;
 }
 
 function renderLiteral(node: LiteralNode): string {
@@ -751,12 +789,12 @@ function renderLiteral(node: LiteralNode): string {
 		return `z.literal(${JSON.stringify(node.value)})`;
 	}
 
-	// Objects/arrays need deep equality
+	// Objects/arrays need deep equality with recursive key normalization
 	const isArray = Array.isArray(node.value);
 	const baseType = isArray ? "z.array(z.any())" : "z.object({}).passthrough()";
 	const sorted = sortedStringify(node.value);
 
-	return `${baseType}.refine((val) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)}, { message: "Value must equal the const value" })`;
+	return `${baseType}.refine((val) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)}, { message: "Value must equal the const value" })`;
 }
 
 function renderEnum(node: EnumNode): string {
@@ -777,20 +815,12 @@ function renderEnum(node: EnumNode): string {
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
-		const sortedValues = values.map((v) =>
-			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v).sort()
-					: undefined,
-			),
-		);
+		const sortedValues = values.map((v) => sortedStringify(v));
 		const valuesArrayCode = `[${sortedValues.map((v) => JSON.stringify(v)).join(", ")}]`;
 
 		return `z.any().refine((val) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
       const validValues = ${valuesArrayCode};
-      return validValues.includes(normalized);
+      return validValues.includes(${DEEP_SORTED_STRINGIFY_RUNTIME}(val));
     }, { message: "Value must be one of the enum values" })`;
 	}
 
@@ -802,14 +832,14 @@ function renderEnum(node: EnumNode): string {
 
 
 function renderConditional(node: ConditionalNode): string {
-	const ifSchema = render(node.if);
-	const thenSchema = node.then ? render(node.then) : null;
-	const elseSchema = node.else ? render(node.else) : null;
+	const ifSchema = renderNode(node.if);
+	const thenSchema = node.then ? renderNode(node.then) : null;
+	const elseSchema = node.else ? renderNode(node.else) : null;
 
 	if (thenSchema && elseSchema) {
 		// If then is never, matching if means invalid
 		// If else is never, not matching if means invalid
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (ifResult.success) {
           const thenResult = ${thenSchema}.safeParse(val);
@@ -824,7 +854,7 @@ function renderConditional(node: ConditionalNode): string {
         }
       })`;
 	} else if (thenSchema) {
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (ifResult.success) {
           const thenResult = ${thenSchema}.safeParse(val);
@@ -834,7 +864,7 @@ function renderConditional(node: ConditionalNode): string {
         }
       })`;
 	} else if (elseSchema) {
-		return `z.any().superRefine((val, ctx) => {
+		return `z.unknown().superRefine((val, ctx) => {
         const ifResult = ${ifSchema}.safeParse(val);
         if (!ifResult.success) {
           const elseResult = ${elseSchema}.safeParse(val);
@@ -846,16 +876,16 @@ function renderConditional(node: ConditionalNode): string {
 	}
 
 	// if without then/else has no effect
-	return "z.any()";
+	return "z.unknown()";
 }
 
 function renderTypeGuarded(node: TypeGuardedNode): string {
-	if (node.guards.length === 0) return "z.any()";
+	if (node.guards.length === 0) return "z.unknown()";
 
 	const checks: string[] = [];
 
 	for (const guard of node.guards) {
-		const schema = render(guard.schema);
+		const schema = renderNode(guard.schema);
 		switch (guard.check) {
 			case "object":
 				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
@@ -892,12 +922,12 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 		}
 	}
 
-	return `z.any().superRefine((val, ctx) => {
+	return `z.unknown().superRefine((val, ctx) => {
         ${checks.join("\n        ")}
       })`;
 }
 
 function renderNullable(node: NullableNode): string {
-	const inner = render(node.inner);
+	const inner = renderNode(node.inner);
 	return `${inner}.nullable()`;
 }

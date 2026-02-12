@@ -26,6 +26,7 @@ import {
 	isPrimitive,
 	sortedStringify,
 	hasPrototypeProperties,
+	DEEP_SORTED_STRINGIFY_RUNTIME,
 } from "@xschemadev/core";
 
 // JS identifier regex - keys matching this can use direct property syntax
@@ -52,10 +53,18 @@ function formatPropertyKey(key: string, optional: boolean): string {
 	return canUseDirectSyntax(key) ? key : escapeString(key);
 }
 
+let _selfRef: string | undefined;
+
 /**
  * Render a SchemaNode to ArkType code
+ * @param selfRef - variable name for self-references (recursive schemas)
  */
-export function render(node: SchemaNode): string {
+export function render(node: SchemaNode, selfRef?: string): string {
+	if (selfRef !== undefined) _selfRef = selfRef;
+	return renderNode(node);
+}
+
+function renderNode(node: SchemaNode): string {
 	switch (node.kind) {
 		case "string":
 			return renderString(node);
@@ -87,6 +96,9 @@ export function render(node: SchemaNode): string {
 			return "type.unknown";
 		case "never":
 			return "type.never";
+		case "ref":
+			if (!_selfRef) throw new Error("Recursive $ref requires selfRef context");
+			return `type.unknown.narrow((val, ctx) => ${_selfRef}.allows(val) || ctx.mustBe("valid"))`;
 
 		case "conditional":
 			return renderConditional(node);
@@ -277,7 +289,7 @@ function renderObject(node: ObjectNode): string {
 		if (isStrict) {
 			result = 'type({ "+": "reject" })';
 		} else if (additionalSchema) {
-			const valueSchema = render(additionalSchema);
+			const valueSchema = renderNode(additionalSchema);
 			result = `type({ "[string]": ${valueSchema} })`;
 		} else {
 			result = "type.object";
@@ -288,7 +300,7 @@ function renderObject(node: ObjectNode): string {
 
 		for (const key of propKeys) {
 			const prop = node.properties.get(key)!;
-			const propCode = render(prop.schema as SchemaNode);
+			const propCode = renderNode(prop.schema as SchemaNode);
 			const keyStr = formatPropertyKey(key, !prop.required);
 			shape.push(`${keyStr}: ${propCode}`);
 		}
@@ -305,7 +317,7 @@ function renderObject(node: ObjectNode): string {
 
 	// Handle additionalProperties/unevaluatedProperties with schema - validate only additional keys
 	if (additionalSchema && !hasPatternProps && propKeys.length > 0) {
-		const valueSchema = render(additionalSchema);
+		const valueSchema = renderNode(additionalSchema);
 		const definedPropsJson = JSON.stringify(propKeys);
 		result += `.narrow((obj, ctx) => {
       const definedProps = new Set(${definedPropsJson});
@@ -325,7 +337,7 @@ function renderObject(node: ObjectNode): string {
 
 	// Property names validation
 	if (node.propertyNames) {
-		const keySchema = render(node.propertyNames);
+		const keySchema = renderNode(node.propertyNames);
 		result += `.narrow((obj, ctx) => {
       for (const key of Object.keys(obj)) {
         if (!${keySchema}.allows(key)) {
@@ -361,7 +373,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 
 	for (const key of propKeys) {
 		const prop = node.properties.get(key)!;
-		const propCode = render(prop.schema as SchemaNode);
+		const propCode = renderNode(prop.schema as SchemaNode);
 		const keyExpr = escapeString(key);
 
 		if (prop.required) {
@@ -391,7 +403,7 @@ function renderObjectWithProtoProps(node: ObjectNode): string {
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		const definedPropsJson = JSON.stringify(propKeys);
 		validators.push(`
         const definedProps = new Set(${definedPropsJson});
@@ -429,7 +441,7 @@ function renderPatternPropsNarrow(
 
 	// Validate pattern properties
 	patterns.forEach((p, i) => {
-		const patternCode = render(p.schema as SchemaNode);
+		const patternCode = renderNode(p.schema as SchemaNode);
 		body += `
       for (const [key, value] of Object.entries(obj)) {
         if (patterns[${i}].test(key)) {
@@ -450,7 +462,7 @@ function renderPatternPropsNarrow(
 		typeof node.additionalProperties === "object" &&
 		node.additionalProperties.kind !== "any"
 	) {
-		const additionalSchema = render(node.additionalProperties);
+		const additionalSchema = renderNode(node.additionalProperties);
 		body += `
       for (const [key, value] of Object.entries(obj)) {
         if (definedProps.has(key)) continue;
@@ -485,7 +497,7 @@ function renderDependencies(node: ObjectNode): string {
         })`;
 			}
 		} else {
-			const depCode = render(dep.schema as SchemaNode);
+			const depCode = renderNode(dep.schema as SchemaNode);
 			result += `.narrow((obj, ctx) => {
         if (Object.hasOwn(obj, ${escapeString(prop)})) {
           return ${depCode}.allows(obj) || ctx.mustBe("valid for dependency schema");
@@ -512,14 +524,14 @@ function renderArray(node: ArrayNode): string {
 
 	if (!hasRealItems && node.unevaluatedItems !== undefined && node.unevaluatedItems !== false) {
 		// Schema like { "unevaluatedItems": { "type": "string" } } - all items must match schema
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		let result = `${unevalSchema}.array()`;
 		result += renderArrayConstraints(node.constraints);
 		return result;
 	}
 
 	// Normal array with items schema
-	const itemSchema = render(node.items);
+	const itemSchema = renderNode(node.items);
 	let result = `${itemSchema}.array()`;
 
 	// If items is defined AND unevaluatedItems is also defined, we need both validations
@@ -531,7 +543,7 @@ function renderArray(node: ArrayNode): string {
 		node.unevaluatedItems !== false &&
 		node.unevaluatedItems.kind !== "any"
 	) {
-		const unevalSchema = render(node.unevaluatedItems);
+		const unevalSchema = renderNode(node.unevaluatedItems);
 		result += `.narrow((arr, ctx) => {
       const schema = ${unevalSchema};
       for (let i = 0; i < arr.length; i++) {
@@ -546,7 +558,7 @@ function renderArray(node: ArrayNode): string {
 }
 
 function renderTuple(node: TupleNode): string {
-	const prefixSchemas = node.prefixItems.map((item) => render(item));
+	const prefixSchemas = node.prefixItems.map((item) => renderNode(item));
 
 	// Determine if extra items are allowed and what schema to use
 	// unevaluatedItems takes precedence for standalone schemas (no applicators)
@@ -590,7 +602,7 @@ function renderTuple(node: TupleNode): string {
 	}
 
 	// Tuple with typed rest/unevaluated items
-	const restSchema = render(extraItemsSchema);
+	const restSchema = renderNode(extraItemsSchema);
 	let result = `type.unknown.array().narrow((arr, ctx) => {
       const schemas = [${prefixSchemas.join(", ")}];
       for (let i = 0; i < Math.min(arr.length, schemas.length); i++) {
@@ -605,6 +617,7 @@ function renderTuple(node: TupleNode): string {
 	result += renderArrayConstraints(node.constraints);
 	return result;
 }
+
 
 function renderArrayConstraints(
 	constraints: ArrayNode["constraints"],
@@ -636,7 +649,7 @@ function renderArrayConstraints(
 	}
 
 	if (contains) {
-		const containsSchema = render(contains.schema as SchemaNode);
+		const containsSchema = renderNode(contains.schema as SchemaNode);
 		const minContains = contains.minContains;
 		const maxContains = contains.maxContains;
 
@@ -667,9 +680,9 @@ function renderUnion(node: UnionNode): string {
 
 	const filtered = node.variants.filter((v) => v.kind !== "never");
 	if (filtered.length === 0) return "type.never";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
-	const schemas = filtered.map((v) => render(v));
+	const schemas = filtered.map((v) => renderNode(v));
 	return schemas.reduce((acc: string, s: string) => `${acc}.or(${s})`);
 }
 
@@ -682,27 +695,33 @@ function renderIntersection(node: IntersectionNode): string {
 
 	const filtered = node.schemas.filter((s) => s.kind !== "any");
 	if (filtered.length === 0) return "type.unknown";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
-	const schemas = filtered.map((s) => render(s));
+	const schemas = filtered.map((s) => renderNode(s));
 	return schemas.reduce((acc: string, s: string) => `${acc}.and(${s})`);
 }
 
 function renderOneOf(node: OneOfNode): string {
 	if (node.schemas.length === 0) return "type.never";
-	if (node.schemas.length === 1) return render(node.schemas[0]!);
+	if (node.schemas.length === 1) return renderNode(node.schemas[0]!);
 
 	const filtered = node.schemas.filter((s) => s.kind !== "never");
 	if (filtered.length === 0) return "type.never";
-	if (filtered.length === 1) return render(filtered[0]!);
+	if (filtered.length === 1) return renderNode(filtered[0]!);
 
 	const anyCount = filtered.filter((s) => s.kind === "any").length;
 	if (anyCount > 1) {
 		return `type.unknown.narrow(() => false)`;
 	}
 
-	const schemas = filtered.map((s) => render(s));
-	return `type.unknown.narrow((val, ctx) => {
+	const schemas = filtered.map((s) => renderNode(s));
+
+	// build a typed union base so TS infers the union type instead of unknown
+	const base = schemas.length === 1
+		? schemas[0]!
+		: schemas.reduce((acc, s) => `${acc}.or(${s})`);
+
+	return `${base}.narrow((val, ctx) => {
     const schemas = [${schemas.join(", ")}];
     const validCount = schemas.filter(s => s.allows(val)).length;
     if (validCount === 0) return ctx.mustBe("matching exactly one schema (matched none)");
@@ -712,7 +731,7 @@ function renderOneOf(node: OneOfNode): string {
 }
 
 function renderNot(node: NotNode): string {
-	const schema = render(node.schema);
+	const schema = renderNode(node.schema);
 	return `type.unknown.narrow((val, ctx) => !${schema}.allows(val) || ctx.mustBe("not matching the excluded schema"))`;
 }
 
@@ -725,9 +744,72 @@ function renderLiteral(node: LiteralNode): string {
 		return `type.unit(${JSON.stringify(node.value)})`;
 	}
 
-	// Objects/arrays need deep equality
+	// Objects/arrays need deep equality with recursive key normalization
+	// use a typed base so TS infers object or T[] instead of unknown
 	const sorted = sortedStringify(node.value);
-	return `type.unknown.narrow((val, ctx) => JSON.stringify(val, Object.keys(val as object).sort()) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
+	const base = Array.isArray(node.value)
+		? `${jsonValueBaseType(node.value)}.array()`
+		: "type.object";
+	return `${base}.narrow((val, ctx) => ${DEEP_SORTED_STRINGIFY_RUNTIME}(val) === ${JSON.stringify(sorted)} || ctx.mustBe("equal to the const value"))`;
+}
+
+/**
+ * Compute a narrow ArkType base for a JSON array's element types.
+ * Inspects element values to build a union like `type.number.or(type.string)`.
+ * Falls back to `type.unknown` when heterogeneous or nested.
+ */
+function jsonValueBaseType(arr: unknown[]): string {
+	const kinds = new Set<string>();
+	for (const item of arr) {
+		if (item === null) kinds.add("null");
+		else if (typeof item === "string") kinds.add("string");
+		else if (typeof item === "number") kinds.add("number");
+		else if (typeof item === "boolean") kinds.add("boolean");
+		else {
+			// object/array — can't cheaply narrow further
+			return "type.unknown";
+		}
+	}
+	if (kinds.size === 0) return "type.unknown";
+	const map: Record<string, string> = {
+		string: "type.string",
+		number: "type.number",
+		boolean: "type.boolean",
+		null: "type.null",
+	};
+	const parts = [...kinds].map((k) => map[k]!);
+	if (parts.length === 1) return parts[0]!;
+	return parts.reduce((acc, s) => `${acc}.or(${s})`);
+}
+
+/**
+ * Compute a narrow ArkType base for complex enum values.
+ * Collects the JS types present across all values and builds a union.
+ * For array values, inspects elements to build a typed array base.
+ */
+function enumBaseType(values: unknown[]): string {
+	const parts: string[] = [];
+	const seen = new Set<string>();
+
+	const addOnce = (s: string) => {
+		if (!seen.has(s)) { seen.add(s); parts.push(s); }
+	};
+
+	for (const v of values) {
+		if (v === null) addOnce("type.null");
+		else if (typeof v === "string") addOnce("type.string");
+		else if (typeof v === "number") addOnce("type.number");
+		else if (typeof v === "boolean") addOnce("type.boolean");
+		else if (Array.isArray(v)) {
+			const elemBase = jsonValueBaseType(v);
+			addOnce(`${elemBase}.array()`);
+		}
+		else if (typeof v === "object") addOnce("type.object");
+	}
+
+	if (parts.length === 0) return "type.unknown";
+	if (parts.length === 1) return parts[0]!;
+	return parts.reduce((acc, s) => `${acc}.or(${s})`);
 }
 
 function renderEnum(node: EnumNode): string {
@@ -741,20 +823,14 @@ function renderEnum(node: EnumNode): string {
 	const hasComplexValues = values.some((v) => !isPrimitive(v));
 
 	if (hasComplexValues) {
-		const sortedValues = values.map((v) =>
-			JSON.stringify(
-				v,
-				v != null && typeof v === "object"
-					? Object.keys(v as object).sort()
-					: undefined,
-			),
-		);
+		const sortedValues = values.map((v) => sortedStringify(v));
 		const valuesArrayCode = `[${sortedValues.map((v) => JSON.stringify(v)).join(", ")}]`;
 
-		return `type.unknown.narrow((val, ctx) => {
-      const normalized = JSON.stringify(val, val != null && typeof val === 'object' ? Object.keys(val).sort() : undefined);
+		// build a narrower base type from the enum values
+		const base = enumBaseType(values);
+		return `${base}.narrow((val, ctx) => {
       const validValues = ${valuesArrayCode};
-      return validValues.includes(normalized) || ctx.mustBe("one of the enum values");
+      return validValues.includes(${DEEP_SORTED_STRINGIFY_RUNTIME}(val)) || ctx.mustBe("one of the enum values");
     })`;
 	}
 
@@ -764,12 +840,14 @@ function renderEnum(node: EnumNode): string {
 
 
 function renderConditional(node: ConditionalNode): string {
-	const ifSchema = render(node.if);
-	const thenSchema = node.then ? render(node.then) : null;
-	const elseSchema = node.else ? render(node.else) : null;
+	const ifSchema = renderNode(node.if);
+	const thenSchema = node.then ? renderNode(node.then) : null;
+	const elseSchema = node.else ? renderNode(node.else) : null;
 
 	if (thenSchema && elseSchema) {
-		return `type.unknown.narrow((val, ctx) => {
+		// union of then|else as base for narrower type inference
+		const base = `${thenSchema}.or(${elseSchema})`;
+		return `${base}.narrow((val, ctx) => {
       if (${ifSchema}.allows(val)) {
         return ${thenSchema}.allows(val) || ctx.mustBe("valid for then branch");
       } else {
@@ -777,6 +855,7 @@ function renderConditional(node: ConditionalNode): string {
       }
     })`;
 	} else if (thenSchema) {
+		// only then branch — passthrough when if doesn't match, domain is unbounded
 		return `type.unknown.narrow((val, ctx) => {
       if (${ifSchema}.allows(val)) {
         return ${thenSchema}.allows(val) || ctx.mustBe("valid for then branch");
@@ -784,6 +863,7 @@ function renderConditional(node: ConditionalNode): string {
       return true;
     })`;
 	} else if (elseSchema) {
+		// only else branch — passthrough when if matches, domain is unbounded
 		return `type.unknown.narrow((val, ctx) => {
       if (!${ifSchema}.allows(val)) {
         return ${elseSchema}.allows(val) || ctx.mustBe("valid for else branch");
@@ -802,7 +882,7 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 	const checks: string[] = [];
 
 	for (const guard of node.guards) {
-		const schema = render(guard.schema);
+		const schema = renderNode(guard.schema);
 		switch (guard.check) {
 			case "object":
 				checks.push(`if (typeof val === "object" && val !== null && !Array.isArray(val)) {
@@ -834,6 +914,6 @@ function renderTypeGuarded(node: TypeGuardedNode): string {
 }
 
 function renderNullable(node: NullableNode): string {
-	const inner = render(node.inner);
+	const inner = renderNode(node.inner);
 	return `${inner}.or(type.null)`;
 }

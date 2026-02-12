@@ -24,10 +24,10 @@
     },
     {
       "keyword": "anchor",
-      "passed": 0,
+      "passed": 8,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 8
     },
     {
       "keyword": "anyOf",
@@ -129,17 +129,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 0,
+      "passed": 2,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 2
     },
     {
       "keyword": "items",
-      "passed": 0,
+      "passed": 28,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 28
     },
     {
       "keyword": "maxContains",
@@ -269,17 +269,17 @@
     },
     {
       "keyword": "ref",
-      "passed": 0,
+      "passed": 77,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 77
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
+      "passed": 31,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 31
     },
     {
       "keyword": "required",
@@ -325,14 +325,22 @@
     }
   ],
   "summary": {
-    "passed": 906,
+    "passed": 1052,
     "failed": 0,
     "skipped": 0,
-    "total": 906,
+    "total": 1052,
     "percentage": 100,
     "unsupportedFeatures": {
-      "count": 178,
+      "count": 182,
       "items": [
+        {
+          "path": "draft2019-09/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2019-09/defs/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
         {
           "path": "draft2019-09/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not)"
@@ -484,6 +492,14 @@
         {
           "path": "draft2019-09/ref/$ref with $recursiveAnchor/extra items disallowed for root",
           "reason": "$recursiveAnchor is not supported: Recursive references ($recursiveRef/$recursiveAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2019-09/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
         },
         {
           "path": "draft2019-09/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location",

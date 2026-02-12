@@ -105,14 +105,30 @@ export function buildPropertyCheck(
 }
 
 /**
- * JSON stringify with sorted keys for deep equality
+ * Recursively normalize a JSON value so that object keys are sorted at every depth,
+ * then stringify. Produces deterministic output regardless of key insertion order.
  */
 export function sortedStringify(value: unknown): string {
+	return JSON.stringify(deepSortKeys(value));
+}
+
+/**
+ * Runtime code snippet for deep-sort-stringify.
+ * Adapters embed this in generated refine/narrow callbacks for complex const/enum comparison.
+ * Call as: `${DEEP_SORTED_STRINGIFY_RUNTIME}(val)` — returns a JSON string with recursively sorted keys.
+ */
+export const DEEP_SORTED_STRINGIFY_RUNTIME = `((v) => { const s = (v) => { if (v === null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(s); const o = {}; for (const k of Object.keys(v).sort()) o[k] = s(v[k]); return o; }; return JSON.stringify(s(v)); })`;
+
+function deepSortKeys(value: unknown): unknown {
 	if (value === null || typeof value !== "object") {
-		return JSON.stringify(value);
+		return value;
 	}
-	return JSON.stringify(
-		value,
-		Object.keys(value as object).sort(),
-	);
+	if (Array.isArray(value)) {
+		return value.map(deepSortKeys);
+	}
+	const sorted: Record<string, unknown> = {};
+	for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+		sorted[key] = deepSortKeys((value as Record<string, unknown>)[key]);
+	}
+	return sorted;
 }

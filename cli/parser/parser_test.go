@@ -304,8 +304,8 @@ func TestParseMultipleLanguagesError(t *testing.T) {
 		]
 	}`
 
-	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
-		t.Fatalf("failed to write ts config: %v", err)
+	if err := os.WriteFile(filepath.Join(tmpDir, "typescript.jsonc"), []byte(tsConfig), 0644); err != nil {
+		t.Fatalf("failed to write typescript config: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(tmpDir, "fake.jsonc"), []byte(fakeConfig), 0644); err != nil {
 		t.Fatalf("failed to write fake config: %v", err)
@@ -354,8 +354,8 @@ func TestParseWithLanguageFilter(t *testing.T) {
 		]
 	}`
 
-	if err := os.WriteFile(filepath.Join(tmpDir, "ts.jsonc"), []byte(tsConfig), 0644); err != nil {
-		t.Fatalf("failed to write ts config: %v", err)
+	if err := os.WriteFile(filepath.Join(tmpDir, "typescript.jsonc"), []byte(tsConfig), 0644); err != nil {
+		t.Fatalf("failed to write typescript config: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(tmpDir, "fake.jsonc"), []byte(fakeConfig), 0644); err != nil {
 		t.Fatalf("failed to write fake config: %v", err)

@@ -17,8 +17,10 @@
 	],
 	"scripts": {
 		"build": "tsc",
+		"test": "bun test",
 		"typecheck": "tsc --noEmit",
-		"compliance": "ADAPTER=$PWD && cd ../../../../cli && go run . compliance --dev-report --adapter-path $ADAPTER"
+		"compliance": "ADAPTER=$PWD && cd ../../../../cli && go run . compliance --dev-report --adapter-path $ADAPTER",
+		"type-fidelity": "bun type-probe/type-fidelity.ts"
 	},
 	"dependencies": {
 		"@xschemadev/core": "workspace:*"

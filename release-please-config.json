@@ -11,102 +11,141 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-darwin-arm64']"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-darwin-x64']"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-linux-arm64']"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-linux-x64']"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-win32-arm64']"
         },
         {
           "type": "json",
-          "path": "npm/cli/package.json",
+          "path": "release/npm/cli/package.json",
           "jsonpath": "$.optionalDependencies['@xschemadev/cli-win32-x64']"
         },
         {
           "type": "json",
-          "path": "npm/cli-darwin-arm64/package.json",
+          "path": "release/npm/cli-darwin-arm64/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli-darwin-x64/package.json",
+          "path": "release/npm/cli-darwin-x64/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli-linux-arm64/package.json",
+          "path": "release/npm/cli-linux-arm64/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli-linux-x64/package.json",
+          "path": "release/npm/cli-linux-x64/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli-win32-arm64/package.json",
+          "path": "release/npm/cli-win32-arm64/package.json",
           "jsonpath": "$.version"
         },
         {
           "type": "json",
-          "path": "npm/cli-win32-x64/package.json",
+          "path": "release/npm/cli-win32-x64/package.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-darwin-arm64/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-darwin-x64/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-linux-arm64/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-linux-x64/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-win32-arm64/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "toml",
+          "path": "release/pypi/xschema-cli-win32-x64/pyproject.toml",
+          "jsonpath": "$.project.version"
         }
       ]
     },
     "typescript/packages/core": {
       "release-type": "node",
-      "component": "core"
+      "component": "ts-core"
     },
     "typescript/packages/client": {
       "release-type": "node",
-      "component": "client"
+      "component": "ts-client"
     },
     "typescript/packages/adapters/zod": {
       "release-type": "node",
-      "component": "zod"
+      "component": "ts-zod"
     },
     "typescript/packages/adapters/arktype": {
       "release-type": "node",
-      "component": "arktype"
+      "component": "ts-arktype"
     },
     "typescript/packages/adapters/effect": {
       "release-type": "node",
-      "component": "effect"
-    },
-    "typescript/packages/adapters/typebox": {
-      "release-type": "node",
-      "component": "typebox"
+      "component": "ts-effect"
     },
     "typescript/packages/adapters/valibot": {
       "release-type": "node",
-      "component": "valibot"
+      "component": "ts-valibot"
     },
-    "typescript/packages/adapters/typescript": {
-      "release-type": "node",
-      "component": "typescript"
+    "python/packages/core": {
+      "release-type": "python",
+      "component": "py-core"
+    },
+    "python/packages/client": {
+      "release-type": "python",
+      "component": "py-client"
+    },
+    "python/packages/adapters/pydantic": {
+      "release-type": "python",
+      "component": "py-pydantic"
     }
   },
   "separate-pull-requests": true,

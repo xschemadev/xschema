@@ -149,7 +149,7 @@ For breaking changes, either:
 
 ### Before Submitting
 
-- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in ts/)
+- [ ] Tests pass (`go test ./...` in cli/, `bun run build` in typescript/)
 - [ ] Commits follow conventional commit format
 - [ ] PR description explains the changes
 

@@ -1,0 +1,1175 @@
+{
+  "draft": "draft2020-12",
+  "keywords": [
+    {
+      "keyword": "additionalProperties",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "total": 21
+    },
+    {
+      "keyword": "allOf",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "total": 30
+    },
+    {
+      "keyword": "anchor",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "total": 54
+    },
+    {
+      "keyword": "contains",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "total": 21
+    },
+    {
+      "keyword": "content",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "defs",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependentRequired",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "dependentSchemas",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "dynamicRef",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "enum",
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "total": 45
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "format",
+      "passed": 133,
+      "failed": 0,
+      "skipped": 0,
+      "total": 133
+    },
+    {
+      "keyword": "if-then-else",
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "total": 26
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "total": 29
+    },
+    {
+      "keyword": "maxContains",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "total": 12
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "maximum",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minContains",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "minItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "minLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minimum",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "total": 11
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "not",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "total": 38
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "total": 27
+    },
+    {
+      "keyword": "pattern",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "total": 23
+    },
+    {
+      "keyword": "prefixItems",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "total": 11
+    },
+    {
+      "keyword": "properties",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "ref",
+      "passed": 75,
+      "failed": 2,
+      "skipped": 0,
+      "total": 77,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "simple URN base URI with $ref via the URN",
+          "test": "invalid under the URN IDed schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "total": 31
+    },
+    {
+      "keyword": "required",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "type",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "total": 80
+    },
+    {
+      "keyword": "unevaluatedItems",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "total": 14
+    },
+    {
+      "keyword": "unevaluatedProperties",
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "total": 27
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 69,
+      "failed": 0,
+      "skipped": 0,
+      "total": 69
+    },
+    {
+      "keyword": "vocabulary",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "total": 5
+    }
+  ],
+  "summary": {
+    "passed": 1064,
+    "failed": 2,
+    "skipped": 0,
+    "total": 1066,
+    "percentage": 99.812382739212,
+    "unsupportedFeatures": {
+      "count": 205,
+      "items": [
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /properties/false)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /properties/false)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/integer property passes",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/content)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$dynamicRef skips over intermediate resources - direct reference/string property fails",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/content)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/correct extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $defs first/incorrect parent schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/correct extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /allOf/0/$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /allOf/0/$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref and $dynamicAnchor are independent of order - $ref first/incorrect parent schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /allOf/0/$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/non-number is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/detached)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/$ref to $dynamicRef finds detached $dynamicAnchor/number is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/detached)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated/An array containing non-strings is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated/An array of strings is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is not valid against the root",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope/The recursive part is valid against the root",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor/The recursive part doesn't need to validate against the root",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /items)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /items)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution/An array containing non-strings is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution/An array of strings is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef without a matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor/Any array is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of numbers is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $dynamicRef without anchor in fragment behaves identical to $ref/An array of strings is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array containing non-strings is invalid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor/An array of strings is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/foo)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/items)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/start)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/first_scope is not in dynamic scope for the $dynamicRef",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/start)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef/string matches /$defs/thingy, but the $dynamicRef does not stop here",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/start)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with number values",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/defaultItemType)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/number list with string values",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/defaultItemType)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with number values",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/defaultItemType)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/multiple dynamic paths to the $dynamicRef keyword/string list with string values",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/defaultItemType)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with correct field",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/strict-tree schema, guards against misspelled properties/instance with misspelled field",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/correct extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect extended schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/dynamicRef/tests for implementation dynamic anchor and reference link/incorrect parent schema",
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/elements)"
+        },
+        {
+          "path": "draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/annotations are still collected inside a 'not'",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not)"
+        },
+        {
+          "path": "draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/unevaluated property",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/no extra items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/item is evaluated in an uncle schema to unevaluatedItems/uncle keyword evaluation is not significant",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at /properties/foo)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/a's and b's are valid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/a's, b's and c's are valid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/empty array is valid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only a's and c's are invalid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only a's are valid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only b's and c's are invalid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only b's are invalid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems and contains interact to control item dependency relationship/only c's are invalid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems before $ref/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems before $ref/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/invalid in case if is evaluated",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems can see annotations from if without then and else/valid in case if is evaluated",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems can't see inside cousins/always fails",
+          "reason": "unevaluatedItems is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/contains fails, second item is not evaluated",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/contains passes, second item is not evaluated",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on adjacent contains/second item is evaluated by contains",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on multiple nested contains/5 not evaluated, passes unevaluatedItems",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems depends on multiple nested contains/7 not evaluated, fails unevaluatedItems",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with no unevaluated items",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $dynamicRef/with unevaluated items",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $ref/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with $ref/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when one schema matches and has unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with anyOf/when two schemas match and has unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with boolean schemas/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with boolean schemas/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if doesn't match and it has unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with if/then/else/when if matches and it has unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with items and prefixItems/unevaluatedItems doesn't apply",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with items/invalid under items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with items/valid under items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/all items evaluated by contains",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/empty array is valid",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/no items evaluated by contains",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with minContains = 0/some but not all items evaluated by contains",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with invalid additional item",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with no additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested items/with only (valid) additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested prefixItems and items/with additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested prefixItems and items/with no additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested tuple/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested tuple/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with nested unevaluatedItems/with no additional items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with not/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with oneOf/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with oneOf/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with tuple/with no unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with tuple/with unevaluated items",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedItems/unevaluatedItems with uniform items/unevaluatedItems doesn't apply",
+          "reason": "unevaluatedItems is not supported: requires annotation tracking when combined with applicators (prefixItems, contains, allOf, anyOf, oneOf, if) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, false with properties/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/cousin unevaluatedProperties, true and false, true with properties/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't consider dependentSchemas",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties doesn't see bar when foo2 is absent",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dependentSchemas with unevaluatedProperties/unevaluatedProperties sees bar when foo2 is present",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/Empty is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + b is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + c is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a + d is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/a is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all + a is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all + foo is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/all is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b + c is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b + d is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/b is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/c + d is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/c is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/d is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + a is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + b is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + c is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + d is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + foo is invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx + foox is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/dynamic evalation inside nested refs/xx is valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/base case: both properties present",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, bar is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, allOf has unevaluated/in place applicator siblings, foo is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/base case: both properties present",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, bar is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/in-place applicator siblings, anyOf has unevaluated/in place applicator siblings, foo is missing",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /anyOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties inside/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer false, inner true, properties outside/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties inside/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/nested unevaluatedProperties, outer true, inner false, properties outside/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/Empty is invalid (no x or y)",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x and y are invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and x are valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b and y are valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and b are invalid (no x or y)",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and x are valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/a and y are valid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + ref inside allOf / oneOf/x and y are invalid",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Deep nested is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Empty is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Nested is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Single is valid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 1st level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 2nd level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties + single cyclic ref/Unevaluated on 3rd level is invalid",
+          "reason": "unevaluatedProperties is not supported: cyclic $ref with unevaluatedProperties requires recursive annotation tracking (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties before $ref/with no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties before $ref/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/invalid in case if is evaluated",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can see annotations from if without then and else/valid in case if is evaluated",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins (reverse order)/always fails",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/0)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties can't see inside cousins/always fails",
+          "reason": "unevaluatedProperties is not supported: inside applicator subschema cannot see sibling annotations (cousins problem) (at /allOf/1)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with $dynamicRef/with no unevaluated properties",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with $dynamicRef/with unevaluated properties",
+          "reason": "$dynamicRef is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/baseSchema)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with $ref/with no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with $ref/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when one matches and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with anyOf/when two match and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with boolean schemas/with no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with boolean schemas/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with dependentSchemas/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is false and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, else not defined/when if is true and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is false and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else, then not defined/when if is true and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is false and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with if/then/else/when if is true and has unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested additionalProperties/with no additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested patternProperties/with no additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested properties/with additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested properties/with no additional properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with nested unevaluatedProperties/with no nested unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with not/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with no unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        },
+        {
+          "path": "draft2020-12/unevaluatedProperties/unevaluatedProperties with oneOf/with unevaluated properties",
+          "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at root)"
+        }
+      ]
+    }
+  }
+}

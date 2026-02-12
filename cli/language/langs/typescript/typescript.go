@@ -32,18 +32,19 @@ func Language() language.Language {
 		ImportPattern:        `(?m)^import\s+.*$`,
 		InjectSchemasKey:     injectSchemasKeyBrace,
 		ClientFactoryPattern: `createXSchemaClient\s*\(\s*(\{[^}]*\})\s*\)`,
+		OutputDir:            ".xschema",
 		OutputFiles: []language.OutputFileSpec{{
 			Path:     "xschema.gen.ts",
 			Template: outputTemplate,
 		}},
-		MergeImports:         MergeImports,
-		BuildVarName:         buildVarName,
-		IgnoreDirs:           []string{"node_modules", "dist", "build"},
-		DetectHarnessRunner:  detectHarnessRunner,
-		GetPackageName:       getPackageName,
-		AdapterCLIPath:       getAdapterCLIPath,
-		HarnessExtension:     ".ts",
-		HarnessTemplate:      harnessTemplate,
+		MergeImports:        MergeImports,
+		BuildVarName:        buildVarName,
+		IgnoreDirs:          []string{"node_modules", "dist", "build"},
+		DetectHarnessRunner: detectHarnessRunner,
+		GetPackageName:      getPackageName,
+		AdapterCLIPath:      getAdapterCLIPath,
+		HarnessExtension:    ".ts",
+		HarnessTemplate:     harnessTemplate,
 	}
 }
 

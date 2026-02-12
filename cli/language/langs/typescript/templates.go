@@ -63,7 +63,8 @@ const schemas: Record<string, { isTypeOnly: boolean; validate: (data: unknown) =
   })(),
 {{- else}}
   "{{$s.GroupID}}": (() => {
-    const schema = {{$s.Schema}};
+    const {{$s.GroupID}} = {{$s.Schema}};
+    const schema = {{$s.GroupID}};
     return { isTypeOnly: false, validate: {{$s.Validate}} };
   })(),
 {{- end}}

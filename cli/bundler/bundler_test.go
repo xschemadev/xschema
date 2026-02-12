@@ -2314,6 +2314,252 @@ func TestBundleExternalSchemaWithDeeplyNestedInternalAnchorRef(t *testing.T) {
 	}
 }
 
+// TestBundle_RefPreventsSiblingIDFromChangingBase verifies that in legacy drafts
+// (pre-2019-09), a sibling $id does NOT change the base URI for $ref resolution.
+// Per JSON Schema spec, $ref consumes the entire object in these drafts.
+func TestBundle_RefPreventsSiblingIDFromChangingBase(t *testing.T) {
+	// Schema based on JSON Schema Test Suite: "$ref prevents a sibling $id from changing the base uri"
+	// foo.json resolves to sibling_id/foo.json (type: string)
+	// base_foo ($id: foo.json) resolves to sibling_id/base/foo.json (type: number)
+	// The allOf[0] has sibling $id that tries to change base to sibling_id/,
+	// but $ref should resolve against parent base (sibling_id/base/) instead.
+	schema := json.RawMessage(`{
+		"$id": "http://localhost:1234/sibling_id/base/",
+		"definitions": {
+			"foo": {
+				"$id": "http://localhost:1234/sibling_id/foo.json",
+				"type": "string"
+			},
+			"base_foo": {
+				"$id": "foo.json",
+				"type": "number"
+			}
+		},
+		"allOf": [{
+			"$id": "http://localhost:1234/sibling_id/",
+			"$ref": "foo.json"
+		}]
+	}`)
+
+	for _, draft := range []string{"draft6", "draft7"} {
+		t.Run(draft, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			result, err := Bundle(ctx, BundleInput{
+				Schema: schema,
+				Draft:  draft,
+			})
+			if err != nil {
+				t.Fatalf("Bundle failed: %v", err)
+			}
+
+			var parsed map[string]any
+			if err := json.Unmarshal(result, &parsed); err != nil {
+				t.Fatalf("failed to parse bundled schema: %v", err)
+			}
+
+			// The allOf[0].$ref should point to base_foo (type: number), not foo (type: string)
+			allOf, ok := parsed["allOf"].([]any)
+			if !ok || len(allOf) == 0 {
+				t.Fatal("expected allOf array in bundled schema")
+			}
+
+			ref0, ok := allOf[0].(map[string]any)
+			if !ok {
+				t.Fatal("expected allOf[0] to be an object")
+			}
+
+			refValue, ok := ref0["$ref"].(string)
+			if !ok {
+				t.Fatal("expected allOf[0] to have $ref")
+			}
+
+			// $ref should resolve to base_foo (the number type at sibling_id/base/foo.json),
+			// NOT foo (the string type at sibling_id/foo.json)
+			if !strings.Contains(refValue, "base_foo") {
+				t.Errorf("expected $ref to resolve to base_foo definition, got %q", refValue)
+			}
+			if strings.Contains(refValue, "/$defs/foo") && !strings.Contains(refValue, "base_foo") {
+				t.Errorf("$ref incorrectly resolved to foo (string type) instead of base_foo (number type): %q", refValue)
+			}
+		})
+	}
+
+	// Also test draft3/draft4 with "id" instead of "$id"
+	schemaDraft4 := json.RawMessage(`{
+		"id": "http://localhost:1234/sibling_id/base/",
+		"definitions": {
+			"foo": {
+				"id": "http://localhost:1234/sibling_id/foo.json",
+				"type": "string"
+			},
+			"base_foo": {
+				"id": "foo.json",
+				"type": "number"
+			}
+		},
+		"allOf": [{
+			"id": "http://localhost:1234/sibling_id/",
+			"$ref": "foo.json"
+		}]
+	}`)
+
+	for _, draft := range []string{"draft3", "draft4"} {
+		t.Run(draft, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			result, err := Bundle(ctx, BundleInput{
+				Schema: schemaDraft4,
+				Draft:  draft,
+			})
+			if err != nil {
+				t.Fatalf("Bundle failed: %v", err)
+			}
+
+			var parsed map[string]any
+			if err := json.Unmarshal(result, &parsed); err != nil {
+				t.Fatalf("failed to parse bundled schema: %v", err)
+			}
+
+			allOf, ok := parsed["allOf"].([]any)
+			if !ok || len(allOf) == 0 {
+				t.Fatal("expected allOf array in bundled schema")
+			}
+
+			ref0, ok := allOf[0].(map[string]any)
+			if !ok {
+				t.Fatal("expected allOf[0] to be an object")
+			}
+
+			refValue, ok := ref0["$ref"].(string)
+			if !ok {
+				t.Fatal("expected allOf[0] to have $ref")
+			}
+
+			if !strings.Contains(refValue, "base_foo") {
+				t.Errorf("expected $ref to resolve to base_foo definition, got %q", refValue)
+			}
+		})
+	}
+}
+
+// TestBundle_RefWithNestedIDAndRef verifies that when a schema has both $ref and $defs,
+// the $defs children are processed even though $ref is present.
+// This is the "order of evaluation: $id and $ref on nested schema" test from JSON Schema Test Suite.
+func TestBundle_RefWithNestedIDAndRef(t *testing.T) {
+	schema := json.RawMessage(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$id": "https://example.com/ref-and-id3/base.json",
+		"$ref": "nested/foo.json",
+		"$defs": {
+			"foo": {
+				"$id": "nested/foo.json",
+				"$ref": "./bar.json"
+			},
+			"bar": {
+				"$id": "nested/bar.json",
+				"type": "number"
+			}
+		}
+	}`)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := Bundle(ctx, BundleInput{
+		Schema: schema,
+		Draft:  "draft2020-12",
+	})
+	if err != nil {
+		t.Fatalf("Bundle failed: %v", err)
+	}
+
+	var parsed map[string]any
+	if err := json.Unmarshal(result, &parsed); err != nil {
+		t.Fatalf("failed to parse bundled schema: %v", err)
+	}
+
+	// The root $ref should resolve to the foo definition
+	rootRef, ok := parsed["$ref"].(string)
+	if !ok {
+		t.Fatal("expected root $ref")
+	}
+	if !strings.Contains(rootRef, "foo") {
+		t.Errorf("expected root $ref to point to foo, got %q", rootRef)
+	}
+
+	// The foo definition's $ref (./bar.json) should be rewritten to point to bar
+	defs, ok := parsed["$defs"].(map[string]any)
+	if !ok {
+		t.Fatal("expected $defs in bundled schema")
+	}
+	foo, ok := defs["foo"].(map[string]any)
+	if !ok {
+		t.Fatal("expected $defs/foo in bundled schema")
+	}
+	fooRef, ok := foo["$ref"].(string)
+	if !ok {
+		t.Fatal("expected $ref in $defs/foo")
+	}
+	// ./bar.json relative to foo's $id (nested/foo.json) resolves to nested/bar.json
+	// which matches $defs/bar's $id — should be rewritten to a local ref
+	if !strings.HasPrefix(fooRef, "#") {
+		t.Errorf("expected foo's $ref to be rewritten to a local ref, got %q", fooRef)
+	}
+}
+
+// TestBundle_AnchorScopedToBaseURI verifies that $anchor is scoped to the base URI
+// of the schema resource that defines it. When two sub-schemas under different $id
+// define the same $anchor name, $ref resolves to the anchor in the correct scope.
+// This is the "order of evaluation: $id and $anchor and $ref" test from JSON Schema Test Suite.
+func TestBundle_AnchorScopedToBaseURI(t *testing.T) {
+	schema := json.RawMessage(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$id": "https://example.com/ref-and-id2/base.json",
+		"$ref": "#bigint",
+		"$defs": {
+			"bigint": {
+				"$anchor": "bigint",
+				"maximum": 10
+			},
+			"smallint": {
+				"$id": "https://example.com/ref-and-id2/",
+				"$anchor": "bigint",
+				"maximum": 2
+			}
+		}
+	}`)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := Bundle(ctx, BundleInput{
+		Schema: schema,
+		Draft:  "draft2020-12",
+	})
+	if err != nil {
+		t.Fatalf("Bundle failed: %v", err)
+	}
+
+	var parsed map[string]any
+	if err := json.Unmarshal(result, &parsed); err != nil {
+		t.Fatalf("failed to parse bundled schema: %v", err)
+	}
+
+	// The root $ref: "#bigint" should resolve to $defs/bigint (maximum: 10),
+	// NOT $defs/smallint (maximum: 2), because the $anchor "bigint" on smallint
+	// is scoped to its own $id (https://example.com/ref-and-id2/), not the root's.
+	rootRef, ok := parsed["$ref"].(string)
+	if !ok {
+		t.Fatal("expected root $ref")
+	}
+	if rootRef != "#/$defs/bigint" {
+		t.Errorf("expected root $ref to be #/$defs/bigint, got %q", rootRef)
+	}
+}
+
 func getMapKeys(m map[string]any) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {

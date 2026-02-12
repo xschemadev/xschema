@@ -1,0 +1,209 @@
+{
+  "draft": "draft3",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "total": 14
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "dependencies",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "disallow",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "divisibleBy",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "enum",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "extends",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "format",
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "total": 60
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "total": 5
+    },
+    {
+      "keyword": "maximum",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "total": 14
+    },
+    {
+      "keyword": "minItems",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "minLength",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "total": 5
+    },
+    {
+      "keyword": "minimum",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "total": 13
+    },
+    {
+      "keyword": "pattern",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "total": 17
+    },
+    {
+      "keyword": "properties",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "total": 15
+    },
+    {
+      "keyword": "ref",
+      "passed": 24,
+      "failed": 1,
+      "skipped": 0,
+      "total": 25,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "required",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "type",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "total": 80
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 62,
+      "failed": 0,
+      "skipped": 0,
+      "total": 62
+    }
+  ],
+  "summary": {
+    "passed": 431,
+    "failed": 1,
+    "skipped": 0,
+    "total": 432,
+    "percentage": 99.76851851851852,
+    "unsupportedFeatures": {
+      "count": 2,
+      "items": [
+        {
+          "path": "draft3/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft3/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        }
+      ]
+    }
+  }
+}

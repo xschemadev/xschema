@@ -4,12 +4,12 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 906 | 0 | 0 | 178 | 100.0% |
-| draft2020-12 | 919 | 0 | 0 | 201 | 100.0% |
-| draft3 | 397 | 0 | 0 | 0 | 100.0% |
-| draft4 | 526 | 0 | 0 | 0 | 100.0% |
-| draft6 | 707 | 0 | 0 | 0 | 100.0% |
-| draft7 | 783 | 0 | 0 | 0 | 100.0% |
+| draft2019-09 | 1052 | 0 | 0 | 182 | 100.0% |
+| draft2020-12 | 1066 | 0 | 0 | 205 | 100.0% |
+| draft3 | 432 | 0 | 0 | 2 | 100.0% |
+| draft4 | 609 | 0 | 0 | 4 | 100.0% |
+| draft6 | 828 | 0 | 0 | 4 | 100.0% |
+| draft7 | 912 | 0 | 0 | 4 | 100.0% |
 
 ## Badges
 
@@ -27,7 +27,7 @@
 | additionalItems | ✅ | 19/19 |
 | additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ✅ | 0/0 |
+| anchor | ✅ | 8/8 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -42,8 +42,8 @@
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 0/0 |
-| items | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
+| items | ✅ | 28/28 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -62,8 +62,8 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 77/77 |
+| refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -142,6 +142,16 @@ These tests are intentionally excluded due to documented limitations.
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/mismatch`
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive match`
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive mismatch`
+
+</details>
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft2019-09/defs/validate definition against metaschema/invalid definition schema`
+- `draft2019-09/defs/validate definition against metaschema/valid definition schema`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
@@ -343,7 +353,7 @@ These tests are intentionally excluded due to documented limitations.
 | ------- | ------ | ---------- |
 | additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ✅ | 0/0 |
+| anchor | ✅ | 8/8 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
@@ -359,8 +369,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 0/0 |
-| items | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
+| items | ✅ | 29/29 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -379,8 +389,8 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 77/77 |
+| refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -449,14 +459,14 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items) (1 test)</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/items) (1 test)</summary>
 
 - `draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid`
 
 </details>
 
 <details>
-<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length) (2 tests)</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length) (2 tests)</summary>
 
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length`
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length`
@@ -515,6 +525,16 @@ These tests are intentionally excluded due to documented limitations.
 
 - `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema`
 - `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema`
+
+</details>
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft2020-12/defs/validate definition against metaschema/invalid definition schema`
+- `draft2020-12/defs/validate definition against metaschema/valid definition schema`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
@@ -738,7 +758,7 @@ These tests are intentionally excluded due to documented limitations.
 | enum | ✅ | 16/16 |
 | extends | ✅ | 10/10 |
 | format | ✅ | 60/60 |
-| infinite-loop-detection | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
 | items | ✅ | 7/7 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
@@ -749,11 +769,23 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 25/25 |
+| refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
+
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (2 tests)</summary>
+
+- `draft3/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft3/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
 
 ## draft4
 
@@ -768,8 +800,8 @@ These tests are intentionally excluded due to documented limitations.
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
-| infinite-loop-detection | ✅ | 0/0 |
-| items | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -784,11 +816,25 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 43/43 |
+| refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
+
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft4/definitions/validate definition against metaschema/invalid definition schema`
+- `draft4/definitions/validate definition against metaschema/valid definition schema`
+- `draft4/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft4/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
 
 ## draft6
 
@@ -808,8 +854,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
-| infinite-loop-detection | ✅ | 0/0 |
-| items | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -825,11 +871,25 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 68/68 |
+| refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
+
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft6/definitions/validate definition against metaschema/invalid definition schema`
+- `draft6/definitions/validate definition against metaschema/valid definition schema`
+- `draft6/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft6/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
 
 ## draft7
 
@@ -850,8 +910,8 @@ These tests are intentionally excluded due to documented limitations.
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
-| infinite-loop-detection | ✅ | 0/0 |
-| items | ✅ | 0/0 |
+| infinite-loop-detection | ✅ | 2/2 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -867,9 +927,23 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ✅ | 76/76 |
+| refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
+
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft7/definitions/validate definition against metaschema/invalid definition schema`
+- `draft7/definitions/validate definition against metaschema/valid definition schema`
+- `draft7/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft7/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
 

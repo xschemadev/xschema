@@ -28,15 +28,45 @@ var keyInvalidChars = regexp.MustCompile(`[^a-zA-Z0-9_]`)
 
 // bundleContext holds state during bundling
 type bundleContext struct {
-	sourceURI  string            // base URI for resolving relative refs
-	fetcher    fetcher.Fetcher   // fetcher for external schemas (nil = no external refs allowed)
-	cache      map[string]any    // normalized URI → parsed schema (to avoid refetching)
-	defs       map[string]any    // key → embedded schema (collected $defs)
-	processing map[string]bool   // URIs currently being processed (circular ref detection)
-	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
-	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
+	sourceURI  string                       // base URI for resolving relative refs
+	fetcher    fetcher.Fetcher              // fetcher for external schemas (nil = no external refs allowed)
+	cache      map[string]any               // normalized URI → parsed schema (to avoid refetching)
+	defs       map[string]any               // key → embedded schema (collected $defs)
+	processing map[string]bool              // URIs currently being processed (circular ref detection)
+	localIDs   map[string]string            // normalized $id URI → JSON pointer path
+	anchors    map[string]map[string]string // baseURI → anchor name → JSON pointer path
 	ctx        context.Context
 	draft      string // JSON Schema draft for normalizing fetched schemas
+}
+
+// storeAnchor records an anchor under its base URI scope
+func (b *bundleContext) storeAnchor(baseURI, anchor, path string) {
+	scope := b.anchors[baseURI]
+	if scope == nil {
+		scope = make(map[string]string)
+		b.anchors[baseURI] = scope
+	}
+	scope[anchor] = path
+}
+
+// lookupAnchor finds an anchor path scoped to the given base URI.
+// An anchor is only visible within the schema resource (base URI) that defines it.
+func (b *bundleContext) lookupAnchor(baseURI, anchor string) (string, bool) {
+	if scope, ok := b.anchors[baseURI]; ok {
+		if path, ok := scope[anchor]; ok {
+			return path, true
+		}
+	}
+	// Also try the normalized form of the base URI
+	normalizedBase := fetcher.NormalizeURI(baseURI)
+	if normalizedBase != baseURI {
+		if scope, ok := b.anchors[normalizedBase]; ok {
+			if path, ok := scope[anchor]; ok {
+				return path, true
+			}
+		}
+	}
+	return "", false
 }
 
 // draftToSchemaURI maps draft names to their canonical $schema URIs
@@ -91,8 +121,8 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		cache:      make(map[string]any),
 		defs:       make(map[string]any),
 		processing: make(map[string]bool),
-		localIDs:   make(map[string]bool),
-		anchors:    make(map[string]string),
+		localIDs:   make(map[string]string),
+		anchors:    make(map[string]map[string]string),
 		ctx:        ctx,
 		draft:      draft,
 	}
@@ -218,8 +248,8 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 			if strings.HasPrefix(id, "#") && len(id) > 1 {
 				anchor := id[1:] // strip the #
 				fullPath := pathPrefix + path
-				b.anchors[anchor] = fullPath
-				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q", id, fullPath)
+				b.storeAnchor(baseURI, anchor, fullPath)
+				ui.Verbosef("bundler: found fragment $id %q as anchor at path %q (scope %s)", id, fullPath, baseURI)
 			} else {
 				// Resolve relative $id against base URI
 				resolved, err := fetcher.ResolveURI(id, baseURI)
@@ -227,10 +257,12 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 					// Store without fragment
 					resolvedBase, _ := splitFragment(resolved)
 					if resolvedBase != "" {
-						b.localIDs[resolvedBase] = true
-						ui.Verbosef("bundler: found local $id: %s (resolved from %s)", resolvedBase, id)
+						fullPath := pathPrefix + path
+						normalizedBase := fetcher.NormalizeURI(resolvedBase)
+						b.localIDs[normalizedBase] = fullPath
+						ui.Verbosef("bundler: found local $id: %s at path %s (resolved from %s)", normalizedBase, fullPath, id)
 						// Update base URI for children
-						baseURI = resolvedBase
+						baseURI = normalizedBase
 					}
 				}
 			}
@@ -239,12 +271,16 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 		// Check for $anchor (draft2019-09+)
 		if anchor, ok := v["$anchor"].(string); ok {
 			fullPath := pathPrefix + path
-			b.anchors[anchor] = fullPath
-			ui.Verbosef("bundler: found $anchor %q at path %q", anchor, fullPath)
+			b.storeAnchor(baseURI, anchor, fullPath)
+			ui.Verbosef("bundler: found $anchor %q at path %q (scope %s)", anchor, fullPath, baseURI)
 		}
 
-		// Recurse into all values with updated base URI and paths
+		// Recurse into all values with updated base URI and paths,
+		// but skip data-only keywords (enum, const, default, etc.)
 		for key, val := range v {
+			if nonSchemaKeywords[key] {
+				continue
+			}
 			childPath := path + "/" + escapeJSONPointer(key)
 			b.collectIDsAndAnchors(val, baseURI, childPath, pathPrefix)
 		}
@@ -279,9 +315,10 @@ func (b *bundleContext) processNode(node any, baseURI string, scopePath string) 
 }
 
 // isMetaschema checks if a URI is an official JSON Schema metaschema URL.
+// IsMetaschema checks if a URI is an official JSON Schema metaschema URL.
 // These should not be fetched/bundled - they reference complex recursive schemas
 // that use $recursiveAnchor and other features adapters can't handle.
-func isMetaschema(uri string) bool {
+func IsMetaschema(uri string) bool {
 	return strings.HasPrefix(uri, "http://json-schema.org/draft-") ||
 		strings.HasPrefix(uri, "https://json-schema.org/draft/")
 }
@@ -304,12 +341,18 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 	// Track current path for scope tracking
 	currentScopePath := scopePath
 
+	// In pre-2019-09 drafts, $ref consumes the entire object — sibling $id/$anchor
+	// are ignored. When $ref and $id appear on the same node, the $id must NOT
+	// change the base URI used to resolve the $ref.
+	_, hasRef := obj["$ref"].(string)
+	refIgnoresSiblings := hasRef && needsNormalization(b.draft)
+
 	// Check for $id (draft6+) or id (draft4/draft3) and update baseURI for this scope
 	id, ok := obj["$id"].(string)
 	if !ok {
 		id, ok = obj["id"].(string)
 	}
-	if ok {
+	if ok && !refIgnoresSiblings {
 		newBase, err := fetcher.ResolveURI(id, baseURI)
 		if err == nil && newBase != "" {
 			ui.Verbosef("bundler: $id changes base URI: %q → %q", baseURI, newBase)
@@ -322,10 +365,42 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 
 	// Check for $ref - handle scoped refs
 	if ref, ok := obj["$ref"].(string); ok {
-		// If we have a fragment ref and we're inside a scope that was reset,
-		// we don't need to rewrite (the ref is relative to the current scope).
-		// But we DO need to mark refs that are scoped so validation can handle them.
-		return b.processRef(obj, ref, baseURI)
+		refResult, err := b.processRef(obj, ref, baseURI)
+		if err != nil {
+			return nil, err
+		}
+
+		// processRef returns a shallow copy with rewritten $ref but unprocessed siblings.
+		// For draft2019-09+, $ref doesn't consume the entire object — sibling keys
+		// (like $defs containing other schemas) must still be processed.
+		if refObj, ok := refResult.(map[string]any); ok {
+			keys := make([]string, 0, len(refObj))
+			for k := range refObj {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+
+			result := make(map[string]any, len(refObj))
+			for _, k := range keys {
+				if k == "$ref" || nonSchemaKeywords[k] {
+					result[k] = refObj[k]
+					continue
+				}
+				var childScopePath string
+				if currentScopePath == "" {
+					childScopePath = "/" + escapeJSONPointer(k)
+				} else {
+					childScopePath = currentScopePath + "/" + escapeJSONPointer(k)
+				}
+				processed, err := b.processNode(refObj[k], baseURI, childScopePath)
+				if err != nil {
+					return nil, err
+				}
+				result[k] = processed
+			}
+			return result, nil
+		}
+		return refResult, nil
 	}
 
 	// Recursively process all properties in sorted order for deterministic error messages
@@ -337,6 +412,12 @@ func (b *bundleContext) processObject(obj map[string]any, baseURI string, scopeP
 
 	result := make(map[string]any, len(obj))
 	for _, k := range keys {
+		// Skip data-only keywords — their values are literal data, not subschemas.
+		// Processing them would incorrectly resolve $ref strings in enum values etc.
+		if nonSchemaKeywords[k] {
+			result[k] = obj[k]
+			continue
+		}
 		// Build the child path (for scope tracking)
 		var childScopePath string
 		if currentScopePath == "" {
@@ -379,11 +460,11 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		}
 
 		// Fragment is an anchor reference (e.g., "#foo")
-		// Look up the anchor and rewrite to its JSON pointer path
-		if path, ok := b.anchors[fragment]; ok {
+		// Look up the anchor scoped to the current base URI
+		if path, ok := b.lookupAnchor(baseURI, fragment); ok {
 			result := copyObject(obj)
 			result["$ref"] = "#" + path
-			ui.Verbosef("bundler: rewriting anchor ref #%s → #%s", fragment, path)
+			ui.Verbosef("bundler: rewriting anchor ref #%s → #%s (scope %s)", fragment, path, baseURI)
 			return result, nil
 		}
 
@@ -408,17 +489,37 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		return nil, fmt.Errorf("failed to resolve ref %q against base %q: %w", ref, baseURI, err)
 	}
 
-	// Check if this ref points to a local $id - if so, skip bundling
-	if b.localIDs[resolvedURI] {
-		ui.Verbosef("bundler: ref %q matches local $id, skipping", ref)
-		return obj, nil
+	// Check if this ref points to a local $id - rewrite to local JSON pointer
+	normalizedResolved := fetcher.NormalizeURI(resolvedURI)
+	if localPath, ok := b.localIDs[normalizedResolved]; ok {
+		localRef := "#"
+		if localPath != "" {
+			localRef += localPath
+		}
+
+		if fragment != "" {
+			if strings.HasPrefix(fragment, "/") {
+				localRef += fragment
+			} else if anchorPath, found := b.lookupAnchor(normalizedResolved, fragment); found {
+				localRef = "#" + anchorPath
+			} else {
+				localRef = "#" + fragment
+			}
+		}
+
+		result := copyObject(obj)
+		result["$ref"] = localRef
+		ui.Verbosef("bundler: ref %q matches local $id, rewriting to %s", ref, localRef)
+		return result, nil
 	}
 
-	// Check if this is a metaschema ref - don't try to fetch/bundle these
-	// They use $recursiveAnchor and other features that would fail
-	if isMetaschema(resolvedURI) {
-		ui.Verbosef("bundler: ref %q is a metaschema, skipping bundling", ref)
-		return obj, nil
+	// Check if this is a metaschema ref - don't try to fetch/bundle these.
+	// They use $recursiveAnchor and other features that would fail.
+	// Replace with empty schema {} ("accept anything") since no adapter
+	// can generate a "validate this is a valid JSON Schema" check.
+	if IsMetaschema(resolvedURI) {
+		ui.Verbosef("bundler: ref %q is a metaschema, replacing with unconstrained schema", ref)
+		return map[string]any{}, nil
 	}
 
 	ui.Verbosef("bundler: resolving external ref %q → %q", ref, resolvedURI)
@@ -502,8 +603,8 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 			ui.Verbosef("bundler: rewriting def fragment %s → %s", fragment, localRef)
 		} else if !strings.HasPrefix(fragment, "/") {
 			// Fragment is an anchor reference (e.g., "myAnchor" from remote.json#myAnchor)
-			// Look up the anchor - it was collected relative to the remote schema root.
-			if anchorPath, ok := b.anchors[fragment]; ok {
+			// Look up the anchor scoped to the remote schema's base URI.
+			if anchorPath, ok := b.lookupAnchor(resolvedURI, fragment); ok {
 				// The anchor path is relative to the remote schema. We need to:
 				// 1. Apply the /$defs/key prefix since that's where the schema is embedded
 				// 2. Check if the location got flattened (/$defs/key/$defs/X → /$defs/key__X)
@@ -759,6 +860,11 @@ func (b *bundleContext) rewriteRefs(node any, rewrites map[string]string, parent
 	case map[string]any:
 		result := make(map[string]any, len(v))
 		for k, val := range v {
+			// Skip data-only keywords — don't rewrite $ref inside literal data
+			if nonSchemaKeywords[k] {
+				result[k] = val
+				continue
+			}
 			if k == "$ref" {
 				if ref, ok := val.(string); ok {
 					if newRef := b.lookupRewrite(ref, rewrites, parentKey); newRef != "" {
@@ -919,7 +1025,10 @@ func validateInternalRefsRecursive(node, root any, scopes []any) error {
 				return lastErr
 			}
 		}
-		for _, val := range v {
+		for key, val := range v {
+			if nonSchemaKeywords[key] {
+				continue
+			}
 			if err := validateInternalRefsRecursive(val, root, newScopes); err != nil {
 				return err
 			}

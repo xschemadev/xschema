@@ -1,0 +1,183 @@
+# Ralph Progress Log
+Started: Thu Feb 12 01:13:31 AM CET 2026
+---
+
+## Codebase Patterns
+
+- `bun run compliance` npm scripts include `--dev-report` by default; to run with `--keyword`, use `go run . compliance --adapter-path <path> --keyword <kw>` directly from `cli/`
+- `propertyMapKeywords` in `cli/processor/local_refs.go` tracks JSON Schema keywords whose values are property-name-keyed maps (not schema nodes), preventing false interpretation of keys like `$ref` as schema keywords
+- `resolveInternalRefs` in `cli/processor/local_refs.go` uses a scope stack for `$id`-aware ref resolution — `#/...` refs resolve against the nearest `$id`-bearing ancestor first, falling back to root. mirrors the approach in `bundler.validateInternalRefs`
+- `--dev-report` flag cannot be combined with `--keyword` or `--draft` in the compliance command. for keyword-specific runs, use `go run . compliance --lang <lang> --adapter-path <path> --keyword <kw>` directly
+- when object property names collide with Object.prototype (e.g. `__proto__`, `constructor`, `toString`), adapters must bypass the native object literal shape. use `hasPrototypeProperties()` from `@xschemadev/core` to detect, then generate manual `v.safeParse()` / `.safeParse()` per-property validation instead
+- metaschema `$ref`s (pointing to `http://json-schema.org/draft-*` or `https://json-schema.org/draft/*`) are replaced with empty schema `{}` in the bundler — no adapter can generate a "validate this is a valid JSON Schema" check, so accept-anything is the correct approximation. additionally, root-level metaschema refs are detected by `checkMetaschemaRef` in the processor and classified as `UnsupportedKeywordError` so compliance reports show them under "Unsupported Features" rather than "Unexpected Failures"
+- `nonSchemaKeywords` (`enum`, `const`, `default`, `example`, `examples`) in both `cli/bundler/normalize.go` and `cli/bundler/bundler.go` mark keywords whose values are literal data, not subschemas. the bundler and normalizer skip these during traversal to avoid corrupting data values (e.g. rewriting `$ref` strings inside enum arrays)
+- pydantic forward refs for recursive `$ref: "#"`: only use `'ClassName'` forward reference when the root schema has explicit `type: "object"`. typeless object schemas must fall back to `Any` because non-object values need to pass validation at recursive positions. always call `ClassName.model_rebuild()` after class definition to resolve forward refs
+- in pre-2019-09 drafts, `$ref` consumes the entire object — sibling `$id`/`id` must NOT change the base URI for `$ref` resolution. the bundler's `processObject` checks for `$ref` presence before applying `$id` base URI changes via `refIgnoresSiblings` flag
+- `$anchor` values are scoped to their base URI in the bundler. `bundleContext.anchors` is `map[string]map[string]string` (baseURI → anchor name → JSON pointer path). `storeAnchor`/`lookupAnchor` helpers ensure anchors are stored and resolved within the correct `$id` scope
+
+---
+
+## Completed Tasks
+
+### issue-02: ref / property named $ref, containing an actual $ref
+- **fix**: added `inPropertyMap` context tracking to `resolveNode` in `cli/processor/local_refs.go`
+- **root cause**: the processor treated every `map[string]any` with a `$ref` key as a JSON Schema reference, even inside `properties` where `$ref` is just a property name
+- **approach**: new `propertyMapKeywords` set (`properties`, `patternProperties`, `$defs`, `definitions`, `dependentSchemas`, `dependencies`) marks children as property maps; `resolveNode` skips `$ref` keyword check when `inPropertyMap=true`
+- **also fixes issue-06**: same root cause ("property named $ref that is not a reference") — error signature `$ref value must be a string` completely eliminated from all adapter reports
+- **verified**: all 5 adapters (zod, arktype, effect, valibot, pydantic) × 6 drafts — 0 baseline failures remain; all typechecks pass; all Go tests pass
+
+### issue-03: ref / refs with relative uris and defs
+- **fix**: added `$id`-based scope tracking to `resolveInternalRefs` in `cli/processor/local_refs.go`
+- **root cause**: `resolveInternalRefs` always resolved `#/...` fragment refs against the document root, ignoring `$id`-based scope changes. when a sub-schema has its own `$id` and `$defs`, a `$ref: "#/$defs/inner"` inside that scope should resolve against the sub-schema, not root.
+- **approach**: added `scopes []any` field to `localRefResolver` — a stack of sub-schemas with `$id` (nearest first). `resolveNode` pushes objects with `$id` or `id` onto the stack. `resolveRefObject` tries each scope in order (nearest first, root last), matching the approach already used by `bundler.validateInternalRefs`.
+- **also fixes issue-04**: identical root cause ("relative refs with absolute uris and defs") — same `$defs not found` error signature with absolute URIs in nested `$id`
+- **also fixes issue-13**: same mechanism — URN refs with nested pointer refs that couldn't find `$defs/bar` in root scope
+- **tests added**: 5 new unit tests in `cli/processor/local_refs_test.go` covering scoped resolution, legacy id, fallback to root, nested scopes
+- **verified**: all 5 adapters × ref keyword compliance — 0 baseline failures remain for this signature; all Go tests pass
+
+### issue-04: ref / relative refs with absolute uris and defs
+- **fix**: already resolved by issue-03's `$id`-based scope tracking in `cli/processor/local_refs.go`
+- **root cause**: identical to issue-03 — `#/$defs/inner` refs in sub-schemas with their own `$id` (using absolute URIs) were resolved against document root instead of the `$id`-bearing ancestor
+- **verified**: all 5 adapters × 4 drafts × ref keyword compliance — 0 baseline failures for "relative refs with absolute uris and defs"; all typechecks pass
+
+### issue-10: properties / properties whose names are Javascript object property names
+- **fix**: added `renderObjectWithProtoProps()` to valibot adapter in `typescript/packages/adapters/valibot/src/renderer.ts`
+- **root cause**: valibot's `v.looseObject({ __proto__: ..., constructor: ..., toString: ... })` stores entries as a plain JS object. looking up `this.entries["__proto__"]` hits Object.prototype instead of the schema entry, causing `_run is not a function` crash
+- **approach**: detect prototype property names via `hasPrototypeProperties()` from `@xschemadev/core`, bypass valibot's object shape, generate manual `v.check()` + `v.safeParse()` per-property validation using `Object.hasOwn()` for safe key access
+- **also fixes issue-11**: same root cause ("required properties whose names are Javascript object property names") — `required` keyword compliance now 100% across all drafts
+- **verified**: valibot properties keyword 100% across all 6 drafts; valibot required keyword 100% across all 6 drafts; full compliance re-run passes; typecheck passes
+
+### issue-11: required / required properties whose names are Javascript object property names
+- **fix**: already resolved by issue-10's `renderObjectWithProtoProps()` in valibot adapter
+- **root cause**: identical to issue-10 — `required` keyword test exercises the same prototype-colliding property names (`__proto__`, `constructor`, `toString`) that crash valibot's `this.entries[key]._run()` lookup
+- **verified**: valibot required keyword 100% across all 6 drafts (83 total tests passed); typecheck passes
+
+### issue-06: ref / property named $ref that is not a reference
+- **fix**: already resolved by issue-02's `inPropertyMap` context tracking in `cli/processor/local_refs.go`
+- **root cause**: identical to issue-02 — `$ref` as a property name inside `properties` was treated as a JSON Schema reference, triggering `$ref value must be a string` error
+- **verified**: all 5 adapters × 5 drafts (draft4, draft6, draft7, draft2019-09, draft2020-12) × ref keyword compliance — 0 baseline failures for "property named $ref that is not a reference"; all typechecks pass
+
+### issue-09: definitions / validate definition against metaschema
+- **fix**: changed `processRef` in `cli/bundler/bundler.go` to replace metaschema `$ref` with empty schema `{}` instead of returning the ref object unchanged
+- **root cause**: bundler's `isMetaschema()` check correctly identified metaschema URLs but returned the `$ref` object as-is, leaving an external URL in the bundled output. `resolveInternalRefs` then rejected it as a non-local ref
+- **approach**: metaschema refs mean "validate this is a valid JSON Schema" — no adapter can generate that check. replacing with `{}` (accept anything) is the correct approximation for code generation. this eliminates the bundler crash and lets the schema through to adapters
+- **also fixes issue-05**: same root cause — `ref / remote ref, containing refs itself` uses `$ref` pointing to metaschema URLs (draft3-7 + draft2019-09/2020-12)
+- **also fixes issue-12**: same root cause — `defs / validate definition against metaschema` is the draft2019-09/2020-12 equivalent using `$defs` instead of `definitions`
+- **verified**: all 5 adapters × definitions keyword compliance across draft4/6/7 — 0 bundler errors remain; full dev-reports regenerated for all adapters; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-14: ref / naive replacement of $ref with its destination is not correct
+- **fix**: added `nonSchemaKeywords` map to both `cli/bundler/normalize.go` and `cli/bundler/bundler.go`, skipping normalization and bundling traversal for `enum`, `const`, `default`, `example`, `examples`
+- **root cause**: the bundler's `normalizeLegacySyntax` and `processObject`/`collectIDsAndAnchors`/`validateInternalRefs`/`rewriteRefs` all walked the entire schema tree without distinguishing data values from subschemas. when an enum contained a literal `{"$ref": "#/definitions/a_string"}`, normalization rewrote the `$ref` value and the bundler tried to resolve it as a schema reference
+- **approach**: define `nonSchemaKeywords` in both packages. normalizer skips recursion into these keywords; bundler's processObject skips processing, collectIDsAndAnchors skips collecting, validateInternalRefs skips validation, and rewriteRefs skips rewriting for data-only keyword values
+- **verified**: all 5 adapters × ref keyword compliance — 0 baseline failures for "naive replacement"; full dev-reports regenerated; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-12: defs / validate definition against metaschema
+- **fix**: added `checkMetaschemaRef` in `cli/processor/processor.go` — detects root-level metaschema `$ref` and returns `UnsupportedKeywordError` before bundling. also exported `bundler.IsMetaschema` for reuse
+- **root cause**: issue-09's metaschema replacement fix turned the bundler error into an accept-anything schema `{}`. the "valid definition schema" test passed but "invalid definition schema" still failed (got `true`, expected `false`) — appearing under "Unexpected Failures"
+- **approach**: schemas whose root `$ref` is a metaschema URL are fundamentally "validate this is a valid JSON Schema" — unsupported for static code generation. returning `UnsupportedKeywordError` classifies both tests as "Unsupported Features" in compliance reports
+- **also improves issue-09**: the same `checkMetaschemaRef` applies to `definitions` keyword (draft4/6/7), removing "invalid definition schema" from unexpected failures there too
+- **verified**: all 5 adapters × defs keyword compliance (draft2019-09, draft2020-12) — 0 baseline failures in unexpected; all 5 adapters × definitions keyword — same; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-24: const / const with array
+- **fix**: replaced shallow `JSON.stringify(val, Object.keys(val as object).sort())` with `DEEP_SORTED_STRINGIFY_RUNTIME` from `@xschemadev/core` in both effect and valibot adapters' `renderLiteral`
+- **root cause**: the runtime comparison only sorted top-level keys via `JSON.stringify`'s replacer array, while build-time `sortedStringify()` used recursive `deepSortKeys()`. for arrays containing objects (like `[{"foo": "bar"}]`), nested keys weren't sorted at runtime, causing mismatch
+- **approach**: use the same `DEEP_SORTED_STRINGIFY_RUNTIME` IIFE that zod adapter already uses — recursively walks arrays and sorts object keys at every depth before stringifying
+- **verified**: effect + valibot × const keyword 100% across draft6, draft7, draft2019-09, draft2020-12; both typechecks pass
+
+### issue-01: ref / root pointer ref
+- **fix**: multi-layer change across Go processor, TS core IR, TS harness template, and all 5 adapters
+- **root cause**: `resolveInternalRefs` in `cli/processor/local_refs.go` used `resolving[ref]` cycle detection that errored on recursive `$ref "#"`, blocking all root pointer ref schemas from reaching adapters
+- **approach**:
+  1. Go processor: changed cycle detection to return `$ref` object unchanged instead of erroring; added `$ref: "#"` short-circuit to skip inlining entirely
+  2. TS core IR: added `RefNode` (kind: `"ref"`) to `SchemaNode` union; parser resolves `$ref` with cycle detection via `ctx.resolving: Set<string>`
+  3. TS harness template: fixed variable naming for lazy self-references (`const {{$s.GroupID}} = ...; const schema = {{$s.GroupID}};`)
+  4. Zod: `case "ref"` → `z.lazy(() => ${_selfRef})`
+  5. Effect: `case "ref"` → `S.suspend(() => ${_selfRef})`
+  6. Valibot: `case "ref"` → `v.lazy(() => ${_selfRef})`
+  7. ArkType: `case "ref"` → `type.unknown.narrow((val, ctx) => ${_selfRef}.allows(val) || ctx.mustBe("valid"))`
+  8. Pydantic: no adapter changes needed — Python parser already handled `$ref` cycles
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "root pointer ref" failures; all Go tests pass; all TS typechecks pass
+
+### issue-05: ref / remote ref, containing refs itself
+- **fix**: already resolved by issue-09's metaschema `$ref` replacement in `cli/bundler/bundler.go` and `checkMetaschemaRef` in `cli/processor/processor.go`
+- **root cause**: identical to issue-09 — `$ref` pointing to metaschema URLs left unresolved non-local refs in bundled output. metaschema replacement with `{}` + `UnsupportedKeywordError` classification moves these to "Unsupported Features"
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 baseline failures in "Unexpected Failures"; all typechecks pass
+
+### issue-07: ref / simple URN base URI with $ref via the URN
+- **fix**: already resolved by issue-01's recursive `$ref "#"` handling in `cli/processor/local_refs.go`
+- **root cause**: bundler resolves `$ref: "urn:uuid:deadbeef-..."` against the schema's own `$id` (same URN), rewrites to `$ref: "#"`. the old cycle detection errored on this recursive ref. issue-01's fix returns the `$ref` object unchanged and short-circuits `$ref: "#"` for adapter-level lazy/suspend handling
+- **verified**: all 5 adapters × 4 drafts (draft6, draft7, draft2019-09, draft2020-12) × ref keyword compliance — 0 baseline failures for "simple URN base URI with $ref via the URN"; all typechecks pass
+
+### issue-08: ref / Recursive references between schemas
+- **fix**: pydantic adapter — changed `render_ref` to use Pydantic forward references instead of `Any` for recursive `$ref: "#"`
+- **root cause**: two-layer issue. Go processor's `$ref "#"` cycle error was already fixed by issue-01. but pydantic's `render_ref` emitted `Any` for recursive refs, so no validation occurred at recursive positions — "invalid tree" incorrectly passed
+- **approach**:
+  1. added `set_root_class_name(name, is_class)` to renderer — tracks root class name and whether it generates a BaseModel class
+  2. `render_ref` emits forward reference `'ClassName'` when root is a typed object class; falls back to `Any` for typeless schemas where non-objects must pass
+  3. converter sets `root_is_typed_object` by checking `ir_node.kind == "object"` AND `schema.get("type") == "object"`
+  4. converter emits `ClassName.model_rebuild()` after class definition to resolve forward refs at runtime
+- **also resolves TS adapter failures**: TS adapters (zod, effect, valibot, arktype) were already fixed by issue-01's `RefNode` + lazy/suspend mechanism
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "Recursive references between schemas" failures in any report; all typechecks pass; Go build+vet+tests pass
+
+### issue-13: ref / URN ref with nested pointer ref
+- **fix**: already resolved by issue-03's `$id`-based scope tracking in `cli/processor/local_refs.go`
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters; marked passes: true
+
+### issue-18: ref / Recursive references between schemas (recursive $ref "#/$defs/node")
+- **fix**: already resolved by issue-01 (Go processor cycle detection) and issue-08 (pydantic forward refs)
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters; marked passes: true
+
+### issue-19: ref / $ref prevents a sibling $id from changing the base uri (got false)
+- **fix**: added `refIgnoresSiblings` guard in `cli/bundler/bundler.go` `processObject` — skips sibling `$id` base URI change when `$ref` is present and draft is pre-2019-09
+- **root cause**: bundler's `processObject` let sibling `$id` change `baseURI` before resolving `$ref`. in draft3/4/6/7, `$ref` consumes the entire object — sibling `$id` must be ignored for ref resolution
+- **approach**: check for `$ref` presence before applying `$id` base URI change; use `needsNormalization(b.draft)` to detect legacy drafts
+- **also fixes issue-20**: same test case, other assertion ("data does not validate", got `true` instead of `invalid`)
+- **also fixes issue-21**: same root cause with `id` instead of `$id` (draft3/draft4)
+- **also fixes issue-22**: same test case as issue-21, other assertion
+- **test added**: `TestBundle_RefPreventsSiblingIDFromChangingBase` in bundler tests — covers draft3/4/6/7 with both `id` and `$id`
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "prevents a sibling" failures; all Go tests pass; full dev-reports regenerated
+
+### issue-20: ref / $ref prevents a sibling $id from changing the base uri (got true)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-21: ref / $ref prevents a sibling id from changing the base uri (got false)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard (also handles `id` via `needsNormalization`)
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-22: ref / $ref prevents a sibling id from changing the base uri (got true)
+- **fix**: already resolved by issue-19's `refIgnoresSiblings` guard
+- **verified**: 0 failures in fresh compliance reports across all 5 adapters
+
+### issue-15: ref / order of evaluation: $id and $ref on nested schema
+- **fix**: modified `processObject` in `cli/bundler/bundler.go` to process sibling keys after `processRef` returns
+- **root cause**: `processObject` returned early when encountering `$ref`, calling `processRef` and returning its result. `processRef` returns a shallow copy with rewritten `$ref` but unprocessed siblings. for schemas with both `$ref` and `$defs` (valid in draft2019-09+), the `$defs` children containing their own `$ref` values were never processed through `processNode`, leaving relative refs like `./bar.json` unresolved
+- **approach**: after `processRef` returns a map result, iterate its keys (excluding `$ref` and non-schema keywords) and process each through `processNode` with the correct base URI
+- **test added**: `TestBundle_RefWithNestedIDAndRef` in bundler tests
+- **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "order of evaluation: $id and $ref on nested schema" failures; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-16: refRemote / anchor within remote ref
+- **fix**: already resolved by prior fixes (issue-01 recursive ref pass-through + issue-15 sibling processing)
+- **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema, resolved `#foo` anchor to `$defs/A`, flattened defs. but `resolveRefObject` marked the target as "resolving", then processed sibling `$defs` (draft2019-09+). `refToInteger` inside `$defs` pointed to the same flattened target, triggering false recursion guard
+- **no code changes needed**: issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing so `$defs` children get fully resolved
+- **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-17: refRemote / fragment within remote ref
+- **fix**: already resolved by prior fixes (issue-01 recursive ref pass-through + issue-15 sibling processing)
+- **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema at `localhost:1234/<draft>/subSchemas.json`, resolved `#/integer` fragment to flattened `$defs` key. `resolveRefObject` marked target as "resolving", then same target encountered in sibling `$defs` processing, triggering false recursion guard
+- **no code changes needed**: identical pattern to issue-16 — issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing
+- **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all TS typechecks pass; pydantic pyright passes
+
+### issue-23: ref / order of evaluation: $id and $anchor and $ref
+- **fix**: changed `bundleContext.anchors` from flat `map[string]string` to URI-scoped `map[string]map[string]string` in `cli/bundler/bundler.go`
+- **root cause**: `collectIDsAndAnchors` stored `$anchor` values in a flat map keyed only by anchor name, ignoring the `$id`-based scope. when two sub-schemas under different `$id`s defined the same `$anchor` name ("bigint"), the last one collected overwrote the first. `processRef` then resolved `$ref: "#bigint"` to `$defs/smallint` (maximum: 2) instead of `$defs/bigint` (maximum: 10)
+- **approach**: `storeAnchor(baseURI, anchor, path)` stores anchors under their base URI scope. `lookupAnchor(baseURI, anchor)` resolves by exact base URI match (with normalized URI fallback). all 5 anchor access sites updated: 2 stores in `collectIDsAndAnchors`, 3 lookups in `processRef` (local anchor, local $id anchor, external anchor)
+- **test added**: `TestBundle_AnchorScopedToBaseURI` in bundler tests — verifies `#bigint` resolves to `$defs/bigint` when `$defs/smallint` has a different `$id` but same `$anchor` name
+- **note**: PRD specified 9 failures across 5 adapters, but actual baseline was 7 — pydantic had no `$anchor` failures, and valibot only failed in draft2019-09
+- **verified**: all 4 TS adapters × 6 drafts × ref keyword compliance — 100% pass rate; pydantic ref compliance shows only pre-existing issue-25 failures; all TS typechecks pass; pydantic pyright passes; all Go tests pass
+
+### issue-25: ref / ref creates new scope when adjacent to keywords
+- **fix**: added `unevaluated_properties` guard in `render_intersection` in `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+- **root cause**: `render_intersection` detected all-object allOf and called `_merge_object_schemas`, which merges properties from all sub-schemas into one BaseModel. but `_merge_object_schemas` completely ignores `unevaluated_properties` — the `unevaluated_properties=False` on allOf[0] (zero properties = reject everything) was silently dropped during merge
+- **approach**: detect when any allOf sub-schema has `unevaluated_properties is False` and skip static merge. route to runtime validation path (BeforeValidator + TypeAdapter) which validates each sub-schema independently, preserving per-schema evaluation scope isolation
+- **verified**: pydantic ref keyword compliance — 0 "ref creates new scope" failures in draft2019-09 or draft2020-12; pyright passes; full dev-report regenerated

@@ -15,22 +15,22 @@ type SchemaTypeKeys = Register extends { schemaTypes: infer T } ? keyof T & stri
 
 // Extract the ID part from "namespace:id" keys for a specific namespace
 // e.g., ExtractID<"user:Profile" | "user:Calendar", "user"> = "Profile" | "Calendar"
-type ExtractID<Keys extends string, NS extends string> = 
+type ExtractID<Keys extends string, NS extends string> =
   Keys extends `${NS}:${infer ID}` ? ID : never;
 
 // Valid keys when using a default namespace - includes full keys AND shorthand IDs
 // e.g., if defaultNamespace is "user" and schemas has "user:Profile", "another:TSConfig"
 // then valid keys are: "user:Profile" | "another:TSConfig" | "Profile"
-type ValidKeys<T, DefaultNS extends string | undefined> = 
+type ValidKeys<T, DefaultNS extends string | undefined> =
   DefaultNS extends string
     ? (keyof T & string) | ExtractID<keyof T & string, DefaultNS>
     : keyof T & string;
 
 // Resolve a shorthand key to its full "namespace:id" form
-type ResolveKey<K extends string, DefaultNS extends string | undefined> = 
-  K extends `${string}:${string}` 
+type ResolveKey<K extends string, DefaultNS extends string | undefined> =
+  K extends `${string}:${string}`
     ? K  // Already has namespace
-    : DefaultNS extends string 
+    : DefaultNS extends string
       ? `${DefaultNS}:${K}`  // Prepend default namespace
       : K;  // No default namespace
 
@@ -38,9 +38,9 @@ type ResolveKey<K extends string, DefaultNS extends string | undefined> =
 // Accepts all schemaTypes keys (including type-only entries)
 // Only accepts full "namespace:id" keys for explicitness
 // Use the xschema client for shorthand ID lookups
-export type XSchemaType<N extends SchemaTypeKeys> = 
+export type XSchemaType<N extends SchemaTypeKeys> =
   Register extends { schemaTypes: infer T }
-    ? N extends keyof T 
+    ? N extends keyof T
       ? T[N]
       : never
     : never;
@@ -53,23 +53,23 @@ export type XSchemaConfig<T extends Record<string, unknown> = RegisteredSchemas>
 
 /**
  * Creates an xschema client for looking up schemas by namespace:id
- * 
+ *
  * Provides full TypeScript autocompletion and compile-time errors for invalid keys.
- * 
+ *
  * @example
- * ```ts
+ * ```typescript
  * import { schemas } from "./.xschema/xschema.gen";
  * import { createXSchemaClient } from "@xschemadev/client";
- * 
+ *
  * const xschema = createXSchemaClient({ schemas, defaultNamespace: "user" });
- * 
+ *
  * // Full autocompletion for all schema keys
  * const userSchema = xschema("user:Profile");  // OK
  * const tsConfig = xschema("another:TSConfig"); // OK
- * 
+ *
  * // With defaultNamespace, can omit namespace for that namespace
  * const profile = xschema("Profile");  // OK - resolves to "user:Profile"
- * 
+ *
  * // TypeScript error for invalid keys
  * const invalid = xschema("nonexistent");  // Type error!
  * ```
@@ -92,16 +92,16 @@ export function createXSchemaClient<
     key: K
   ): T[ResolveKey<K, DefaultNS> & keyof T] {
     // If key includes ":", use as-is; otherwise prepend defaultNamespace
-    const resolvedKey = (key as string).includes(':') 
-      ? key 
-      : defaultNs 
-        ? `${defaultNs}:${key}` 
+    const resolvedKey = (key as string).includes(':')
+      ? key
+      : defaultNs
+        ? `${defaultNs}:${key}`
         : key;
-    
+
     if (!(resolvedKey in schemas)) {
       throw new Error(`Unknown schema: ${resolvedKey}. Run \`xschema generate\`.`);
     }
-    
+
     return schemas[resolvedKey as keyof T] as T[ResolveKey<K, DefaultNS> & keyof T];
   }
 

@@ -1,0 +1,1078 @@
+"""Unit tests for Pydantic renderer.
+
+Tests verify that IR nodes are correctly converted to Pydantic code.
+"""
+
+from dataclasses import dataclass
+
+import pytest
+
+from xschema_core import (
+    StringNode,
+    StringConstraints,
+    NumberNode,
+    NumberConstraints,
+    BooleanNode,
+    NullNode,
+    LiteralNode,
+    EnumNode,
+    AnyNode,
+    NeverNode,
+    ArrayNode,
+    ArrayConstraints,
+    ContainsConstraint,
+    TupleNode,
+    ObjectNode,
+    PropertyDef,
+    PatternPropertyDef,
+    UnionNode,
+    OneOfNode,
+    IntersectionNode,
+    NotNode,
+    ConditionalNode,
+    TypeGuardedNode,
+    TypeGuard,
+    NullableNode,
+    RefNode,
+)
+from xschema_pydantic.errors import ConversionError
+from xschema_pydantic.renderer import render
+
+
+# =============================================================================
+# Primitive Types
+# =============================================================================
+
+
+def test_render_string_unconstrained():
+    """Test rendering unconstrained string.
+
+    Uses StrictStr to prevent type coercion (JSON Schema semantics).
+    """
+    node = StringNode()
+    result = render(node, "Test")
+    assert result.type_expr == "StrictStr"
+    assert result.code == ""
+    assert "from pydantic import StrictStr" in result.imports
+
+
+def test_render_string_with_length():
+    """Test string with minLength/maxLength constraints.
+
+    Uses StringConstraints with strict=True to prevent coercion.
+    """
+    node = StringNode(constraints=StringConstraints(min_length=1, max_length=100))
+    result = render(node, "Test")
+    assert (
+        "Annotated[str, StringConstraints(strict=True, min_length=1, max_length=100)]"
+        in result.type_expr
+    )
+    assert "from typing import Annotated" in result.imports
+    assert "from pydantic import StringConstraints" in result.imports
+
+
+def test_render_string_with_pattern():
+    """Test string with regex pattern.
+
+    Uses StringConstraints with strict=True to prevent coercion.
+    """
+    node = StringNode(constraints=StringConstraints(pattern="^[A-Z]+$"))
+    result = render(node, "Test")
+    assert (
+        "Annotated[str, StringConstraints(strict=True, pattern=r'^[A-Z]+$')]"
+        in result.type_expr
+    )
+
+
+def test_render_string_format_email():
+    """Test string with email format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    Format values are preserved in the IR but don't affect validation.
+    """
+    node = StringNode(format="email")
+    result = render(node, "Test")
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
+
+
+def test_render_string_format_uuid():
+    """Test string with uuid format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
+    node = StringNode(format="uuid")
+    result = render(node, "Test")
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
+
+
+def test_render_string_format_date():
+    """Test string with date format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
+    node = StringNode(format="date")
+    result = render(node, "Test")
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
+
+
+def test_render_string_format_datetime():
+    """Test string with date-time format.
+
+    Format is treated as annotation-only per JSON Schema draft 2020-12.
+    """
+    node = StringNode(format="date-time")
+    result = render(node, "Test")
+    # Format is annotation-only - renders as StrictStr
+    assert result.type_expr == "StrictStr"
+    assert "from pydantic import StrictStr" in result.imports
+
+
+def test_render_number_unconstrained():
+    """Test rendering unconstrained number (float).
+
+    Uses StrictFloat to prevent coercion. StrictFloat accepts both int and float,
+    which matches JSON Schema 'number' semantics.
+    """
+    node = NumberNode(integer=False)
+    result = render(node, "Test")
+    assert result.type_expr == "StrictFloat"
+    assert result.code == ""
+    assert "from pydantic import StrictFloat" in result.imports
+
+
+def test_render_number_integer():
+    """Test rendering integer.
+
+    Uses StrictInt to prevent coercion.
+    """
+    node = NumberNode(integer=True)
+    result = render(node, "Test")
+    assert result.type_expr == "StrictInt"
+    assert "from pydantic import StrictInt" in result.imports
+
+
+def test_render_number_with_minimum():
+    """Test number with minimum constraint.
+
+    Uses StrictInt as base type.
+    """
+    node = NumberNode(
+        integer=True,
+        constraints=NumberConstraints(minimum=0),
+    )
+    result = render(node, "Test")
+    assert "Annotated[StrictInt, Ge(0)]" in result.type_expr
+    assert "from annotated_types import Ge" in result.imports
+
+
+def test_render_number_with_maximum():
+    """Test number with maximum constraint.
+
+    Uses StrictFloat for number type.
+    """
+    node = NumberNode(
+        integer=False,
+        constraints=NumberConstraints(maximum=100.5),
+    )
+    result = render(node, "Test")
+    assert "Annotated[StrictFloat, Le(100.5)]" in result.type_expr
+    assert "from annotated_types import Le" in result.imports
+
+
+def test_render_number_with_exclusive():
+    """Test number with exclusive minimum/maximum."""
+    node = NumberNode(
+        integer=False,
+        constraints=NumberConstraints(
+            exclusive_minimum=0,
+            exclusive_maximum=100,
+        ),
+    )
+    result = render(node, "Test")
+    assert "Gt(0)" in result.type_expr
+    assert "Lt(100)" in result.type_expr
+    assert "from annotated_types import Gt" in result.imports
+    assert "from annotated_types import Lt" in result.imports
+
+
+def test_render_number_with_multiple_of():
+    """Test number with multipleOf constraint."""
+    node = NumberNode(
+        integer=True,
+        constraints=NumberConstraints(multiple_of=5),
+    )
+    result = render(node, "Test")
+    assert "MultipleOf(5)" in result.type_expr
+    assert "from annotated_types import MultipleOf" in result.imports
+
+
+def test_render_boolean():
+    """Test rendering boolean.
+
+    Uses StrictBool to prevent coercion (integers 0/1 are not booleans).
+    """
+    node = BooleanNode()
+    result = render(node, "Test")
+    assert result.type_expr == "StrictBool"
+    assert result.code == ""
+    assert "from pydantic import StrictBool" in result.imports
+
+
+def test_render_null():
+    """Test rendering null."""
+    node = NullNode()
+    result = render(node, "Test")
+    assert result.type_expr == "None"
+    assert result.code == ""
+
+
+def test_render_literal_string():
+    """Test rendering literal string."""
+    node = LiteralNode(value="active")
+    result = render(node, "Test")
+    # json.dumps is used for strings, so double quotes
+    assert result.type_expr == 'Literal["active"]'
+    assert "from typing import Literal" in result.imports
+
+
+def test_render_literal_number():
+    """Test rendering literal number."""
+    node = LiteralNode(value=42)
+    result = render(node, "Test")
+    assert result.type_expr == "Literal[42]"
+
+
+def test_render_literal_boolean():
+    """Test rendering literal boolean.
+
+    Booleans use custom validator to prevent Python's True==1 and False==0 coercion.
+    """
+    node = LiteralNode(value=True)
+    result = render(node, "Test")
+    # booleans need strict type checking, so we use BeforeValidator
+    assert "_make_const_validator(True)" in result.type_expr
+    assert "from pydantic import BeforeValidator" in result.imports
+
+
+def test_render_enum():
+    """Test rendering enum (multiple literals)."""
+    node = EnumNode(values=("red", "green", "blue"))
+    result = render(node, "Test")
+    # json.dumps is used for strings, so double quotes
+    assert result.type_expr == 'Literal["red", "green", "blue"]'
+    assert "from typing import Literal" in result.imports
+
+
+def test_render_any():
+    """Test rendering Any type."""
+    node = AnyNode()
+    result = render(node, "Test")
+    assert result.type_expr == "Any"
+    assert "from typing import Any" in result.imports
+
+
+def test_render_never():
+    """Test rendering Never type (always fails validation)."""
+    node = NeverNode()
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_never_validator)]" in result.type_expr
+    assert "def _never_validator" in result.code
+    assert "from pydantic import BeforeValidator" in result.imports
+
+
+# =============================================================================
+# Array Types
+# =============================================================================
+
+
+def test_render_array_simple():
+    """Test rendering simple array without constraints.
+
+    Inner type uses StrictStr.
+    """
+    node = ArrayNode(
+        items=StringNode(),
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert result.type_expr == "list[StrictStr]"
+
+
+def test_render_array_with_length_constraints():
+    """Test array with minItems/maxItems.
+
+    Inner type uses StrictInt.
+    """
+    node = ArrayNode(
+        items=NumberNode(integer=True),
+        constraints=ArrayConstraints(min_items=1, max_items=10),
+    )
+    result = render(node, "Test")
+    assert (
+        "Annotated[list[StrictInt], Field(min_length=1, max_length=10)]"
+        in result.type_expr
+    )
+    assert "from pydantic import Field" in result.imports
+
+
+def test_render_array_with_unique_items():
+    """Test array with uniqueItems constraint."""
+    node = ArrayNode(
+        items=StringNode(),
+        constraints=ArrayConstraints(unique_items=True),
+    )
+    result = render(node, "Test")
+    assert "AfterValidator(_unique_test)" in result.type_expr
+    assert "def _unique_test" in result.code
+    assert "from pydantic import AfterValidator" in result.imports
+
+
+def test_render_array_with_contains():
+    """Test array with contains constraint."""
+    from xschema_pydantic.renderer import _reset_helper_registry, get_needed_helpers
+
+    # Reset helper registry before test
+    _reset_helper_registry()
+
+    node = ArrayNode(
+        items=AnyNode(),
+        constraints=ArrayConstraints(
+            contains=ContainsConstraint(
+                schema=StringNode(),
+                min_contains=1,
+            ),
+        ),
+    )
+    result = render(node, "Test")
+    assert "AfterValidator(_contains_test)" in result.type_expr
+    assert "def _contains_test" in result.code
+    # Check helper is registered and would be emitted at module level
+    assert "_validates_against(validator, item)" in result.code
+    helpers = get_needed_helpers()
+    assert "def _validates_against" in helpers
+
+
+# =============================================================================
+# Tuple Types
+# =============================================================================
+
+
+def test_render_tuple_fixed():
+    """Test rendering tuple with items:false (no additional items beyond prefix).
+
+    JSON Schema: prefixItems + items:false allows 0 to N items, not exactly N.
+    Each item that exists must match its corresponding prefixItem schema.
+    """
+    node = TupleNode(
+        prefix_items=(
+            StringNode(),
+            NumberNode(integer=True),
+            BooleanNode(),
+        ),
+        rest_items=False,
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    # closed tuple allows 0..N items, so uses union of prefix types
+    assert (
+        "Annotated[tuple[StrictStr | StrictInt | StrictBool, ...], BeforeValidator(_tuple_test)]"
+        in result.type_expr
+    )
+    # Validator enforces max items and validates each present item
+    assert "if len(v) > 3:" in result.code
+    assert "prefix_0_validator = TypeAdapter(StrictStr)" in result.code
+    assert "prefix_1_validator = TypeAdapter(StrictInt)" in result.code
+    assert "prefix_2_validator = TypeAdapter(StrictBool)" in result.code
+
+
+def test_render_tuple_with_rest():
+    """Test rendering tuple with rest items."""
+    node = TupleNode(
+        prefix_items=(
+            StringNode(),
+            NumberNode(integer=True),
+        ),
+        rest_items=BooleanNode(),
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    # variable-length with rest: union of prefix + rest types
+    assert (
+        "Annotated[tuple[StrictStr | StrictInt | StrictBool, ...], BeforeValidator(_tuple_test)]"
+        in result.type_expr
+    )
+    assert "def _tuple_test" in result.code
+
+
+def test_render_tuple_closed_no_any():
+    """Closed tuple emits narrower union type instead of Any."""
+    node = TupleNode(
+        prefix_items=(StringNode(), NumberNode(integer=True)),
+        rest_items=False,
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[StrictStr | StrictInt, ...]" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_tuple_rest_no_any():
+    """Tuple with rest emits union of prefix + rest types."""
+    node = TupleNode(
+        prefix_items=(StringNode(),),
+        rest_items=NumberNode(integer=True),
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[StrictStr | StrictInt, ...]" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_tuple_open_stays_any():
+    """Open tuple (rest_items=None) can't narrow — extras are untyped."""
+    node = TupleNode(
+        prefix_items=(StringNode(),),
+        rest_items=None,
+        constraints=ArrayConstraints(),
+    )
+    result = render(node, "Test")
+    assert "tuple[Any, ...]" in result.type_expr
+
+
+def test_render_tuple_with_constraints():
+    """Test tuple with minItems/maxItems."""
+    node = TupleNode(
+        prefix_items=(StringNode(),),
+        rest_items=False,
+        constraints=ArrayConstraints(min_items=1, max_items=1),
+    )
+    result = render(node, "Test")
+    assert "AfterValidator(_tuple_constraints_test)" in result.type_expr
+    assert "def _tuple_constraints_test" in result.code
+
+
+def test_render_const_object_narrows_to_dict():
+    """Complex const object uses dict instead of Any."""
+    node = LiteralNode(value={"name": "alice", "age": 30})
+    result = render(node, "Test")
+    assert "Annotated[dict," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_const_validator" in result.type_expr
+
+
+def test_render_const_array_narrows_to_list():
+    """Complex const array uses list instead of Any."""
+    node = LiteralNode(value=[1, 2, 3])
+    result = render(node, "Test")
+    assert "Annotated[list," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_const_validator" in result.type_expr
+
+
+def test_render_const_bool_narrows_to_bool():
+    """Bool const uses bool instead of Any (strict check still needed)."""
+    node = LiteralNode(value=False)
+    result = render(node, "Test")
+    assert "Annotated[bool," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_const_int_zero_narrows_to_int():
+    """Integer 0 const uses int instead of Any."""
+    node = LiteralNode(value=0)
+    result = render(node, "Test")
+    assert "Annotated[int," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_enum_with_objects_narrows():
+    """Enum with complex values uses narrower union type."""
+    node = EnumNode(values=({"a": 1}, {"b": 2}, "simple"))
+    result = render(node, "Test")
+    assert "Annotated[dict | str," in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "_make_enum_validator" in result.type_expr
+
+
+def test_render_enum_with_arrays_narrows():
+    """Enum with arrays and null uses narrower union type."""
+    node = EnumNode(values=([1, 2], [3, 4], None))
+    result = render(node, "Test")
+    assert "Annotated[list | None," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_enum_with_bools_narrows():
+    """Enum with booleans uses bool instead of Any."""
+    node = EnumNode(values=(True, False))
+    result = render(node, "Test")
+    assert "Annotated[bool," in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+# =============================================================================
+# Object Types
+# =============================================================================
+
+
+def test_render_object_simple():
+    """Test rendering simple object with properties.
+
+    Property types use strict types.
+    """
+    node = ObjectNode(
+        properties=(
+            ("name", PropertyDef(schema=StringNode(), required=True)),
+            ("age", PropertyDef(schema=NumberNode(integer=True), required=False)),
+        ),
+    )
+    result = render(node, "Test")
+    assert "class Test(BaseModel):" in result.code
+    assert "name: StrictStr" in result.code
+    assert "age: StrictInt | None = None" in result.code
+    assert "from pydantic import BaseModel" in result.imports
+
+
+def test_render_object_nested():
+    """Test rendering nested objects."""
+    inner = ObjectNode(
+        properties=(("city", PropertyDef(schema=StringNode(), required=True)),),
+    )
+    outer = ObjectNode(
+        properties=(("address", PropertyDef(schema=inner, required=True)),),
+    )
+    result = render(outer, "Test")
+    assert "class TestAddress(BaseModel):" in result.code
+    assert "class Test(BaseModel):" in result.code
+    assert "address: TestAddress" in result.code
+
+
+def test_render_object_additional_properties_false():
+    """Test object with additionalProperties: false."""
+    node = ObjectNode(
+        properties=(("name", PropertyDef(schema=StringNode(), required=True)),),
+        additional_properties=False,
+    )
+    result = render(node, "Test")
+    assert "model_config = ConfigDict(extra='forbid')" in result.code
+    assert "from pydantic import ConfigDict" in result.imports
+
+
+def test_render_object_with_pattern_properties():
+    """Test object with patternProperties."""
+    node = ObjectNode(
+        pattern_properties=(
+            PatternPropertyDef(pattern="^num_", schema=NumberNode(integer=True)),
+        ),
+    )
+    result = render(node, "Test")
+    assert "@model_validator(mode='after')" in result.code
+    assert "def _validate_advanced" in result.code
+    assert "re.compile" in result.code
+    assert "from pydantic import model_validator" in result.imports
+
+
+def test_render_object_with_min_max_properties():
+    """Test object with minProperties/maxProperties."""
+    node = ObjectNode(
+        min_properties=1,
+        max_properties=5,
+    )
+    result = render(node, "Test")
+    assert "@model_validator(mode='after')" in result.code
+    assert "prop_count = len(self.model_dump(exclude_unset=True))" in result.code
+    assert "if prop_count < 1:" in result.code
+    assert "if prop_count > 5:" in result.code
+
+
+# =============================================================================
+# Union & Composition Types
+# =============================================================================
+
+
+def test_render_union_simple():
+    """Test rendering simple union (anyOf).
+
+    Uses strict types.
+    """
+    node = UnionNode(
+        variants=(
+            StringNode(),
+            NumberNode(integer=False),
+        )
+    )
+    result = render(node, "Test")
+    assert result.type_expr == "StrictStr | StrictFloat"
+
+
+def test_render_union_discriminated():
+    """Test rendering discriminated union."""
+    cat = ObjectNode(
+        properties=(
+            ("type", PropertyDef(schema=LiteralNode(value="cat"), required=True)),
+            ("meow", PropertyDef(schema=BooleanNode(), required=True)),
+        ),
+    )
+    dog = ObjectNode(
+        properties=(
+            ("type", PropertyDef(schema=LiteralNode(value="dog"), required=True)),
+            ("bark", PropertyDef(schema=BooleanNode(), required=True)),
+        ),
+    )
+    node = UnionNode(variants=(cat, dog))
+    result = render(node, "Test")
+    assert "Annotated[Union[" in result.type_expr
+    assert "Field(discriminator='type')" in result.type_expr
+    assert "from pydantic import Field" in result.imports
+
+
+def test_render_oneof():
+    """Test rendering oneOf (exactly one match)."""
+    node = OneOfNode(
+        schemas=(
+            StringNode(),
+            NumberNode(integer=False),
+        )
+    )
+    result = render(node, "Test")
+    assert (
+        "Annotated[StrictStr | StrictFloat, BeforeValidator(_oneof_test)]"
+        in result.type_expr
+    )
+    assert "def _oneof_test" in result.code
+    assert "exactly one schema" in result.code
+
+
+def test_render_intersection_objects():
+    """Test rendering intersection of objects (allOf).
+
+    Property types use strict types.
+    """
+    obj1 = ObjectNode(
+        properties=(("name", PropertyDef(schema=StringNode(), required=True)),),
+    )
+    obj2 = ObjectNode(
+        properties=(
+            ("age", PropertyDef(schema=NumberNode(integer=True), required=True)),
+        ),
+    )
+    node = IntersectionNode(schemas=(obj1, obj2))
+    result = render(node, "Test")
+    assert "class Test(BaseModel):" in result.code
+    assert "name: StrictStr" in result.code
+    assert "age: StrictInt" in result.code
+
+
+def test_render_intersection_primitives():
+    """Test rendering intersection of primitives uses narrowed base type."""
+    node = IntersectionNode(
+        schemas=(
+            StringNode(),
+            StringNode(
+                constraints=StringConstraints(min_length=1),
+            ),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[str, BeforeValidator(_intersection_test)]" in result.type_expr
+    assert "def _intersection_test" in result.code
+    # should not need Any import when base type is narrowed
+    assert "from typing import Any" not in result.imports
+
+
+def test_render_intersection_mixed_kinds_falls_back_to_any():
+    """Intersection of different kinds falls back to Any."""
+    node = IntersectionNode(
+        schemas=(
+            StringNode(),
+            NumberNode(integer=True),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_intersection_test)]" in result.type_expr
+
+
+def test_render_intersection_numbers_preserves_int():
+    """Intersection of integer schemas preserves int base type."""
+    node = IntersectionNode(
+        schemas=(
+            NumberNode(integer=True),
+            NumberNode(
+                integer=True,
+                constraints=NumberConstraints(minimum=0),
+            ),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[int, BeforeValidator(_intersection_test)]" in result.type_expr
+
+
+def test_render_intersection_tsconfig_like_preserves_property_types():
+    """TSConfig-like allOf: object + property constraint refinement.
+
+    When two objects are merged and a property appears in both, the property-
+    level intersection should produce str (not Any) when both schemas agree
+    on the base type.
+    """
+    node = IntersectionNode(
+        schemas=(
+            ObjectNode(
+                properties=(
+                    (
+                        "compilerOptions",
+                        PropertyDef(schema=StringNode(), required=True),
+                    ),
+                    (
+                        "include",
+                        PropertyDef(
+                            schema=ArrayNode(items=StringNode()), required=False
+                        ),
+                    ),
+                ),
+            ),
+            ObjectNode(
+                properties=(
+                    (
+                        "compilerOptions",
+                        PropertyDef(
+                            schema=StringNode(
+                                constraints=StringConstraints(min_length=1),
+                            ),
+                            required=False,
+                        ),
+                    ),
+                ),
+            ),
+        )
+    )
+    result = render(node, "TsConfig")
+    # top-level should be a merged BaseModel, not Any
+    assert result.type_expr == "TsConfig"
+    # the compilerOptions property should use str, not Any
+    assert "Annotated[str, BeforeValidator(" in result.code
+    assert "Annotated[Any" not in result.code
+
+
+def test_render_not():
+    """Test rendering not (negation)."""
+    node = NotNode(schema=NullNode())
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_not_test)]" in result.type_expr
+    assert "def _not_test" in result.code
+
+
+# =============================================================================
+# Advanced Types
+# =============================================================================
+
+
+def test_render_conditional():
+    """Test rendering if/then/else conditional."""
+    node = ConditionalNode(
+        if_schema=ObjectNode(
+            properties=(
+                (
+                    "type",
+                    PropertyDef(schema=LiteralNode(value="premium"), required=True),
+                ),
+            ),
+        ),
+        then_schema=ObjectNode(
+            properties=(
+                (
+                    "discount",
+                    PropertyDef(
+                        schema=NumberNode(
+                            integer=False,
+                            constraints=NumberConstraints(minimum=0.1),
+                        ),
+                        required=True,
+                    ),
+                ),
+            ),
+        ),
+        else_schema=None,
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_conditional_test)]" in result.type_expr
+    assert "def _conditional_test" in result.code
+
+
+def test_render_type_guarded():
+    """Test rendering type-guarded schema (typeless with type-specific keywords)."""
+    node = TypeGuardedNode(
+        guards=(
+            TypeGuard(
+                check="string",
+                schema=StringNode(
+                    constraints=StringConstraints(min_length=1),
+                ),
+            ),
+            TypeGuard(
+                check="number",
+                schema=NumberNode(
+                    integer=False,
+                    constraints=NumberConstraints(minimum=0),
+                ),
+            ),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any, BeforeValidator(_type_guarded_test)]" in result.type_expr
+    assert "def _type_guarded_test" in result.code
+    assert "isinstance" in result.code
+
+
+def test_render_nullable():
+    """Test rendering nullable type (OpenAPI 3.0 nullable: true).
+
+    Inner type uses StrictStr.
+    """
+    inner = StringNode()
+    node = NullableNode(inner=inner)
+    result = render(node, "Test")
+    assert result.type_expr == "StrictStr | None"
+
+
+def test_render_nullable_already_nullable():
+    """Test rendering nullable when inner type is already nullable."""
+    inner = UnionNode(
+        variants=(
+            StringNode(),
+            NullNode(),
+        )
+    )
+    node = NullableNode(inner=inner)
+    result = render(node, "Test")
+    # Should not add duplicate | None
+    assert result.type_expr.count(" | None") == 1
+
+
+# =============================================================================
+# Property Name Sanitization
+# =============================================================================
+
+
+def test_render_object_with_builtin_property_name():
+    """Test that property names shadowing Python generic types are aliased.
+
+    When a property is named 'list', it would shadow Python's builtin list type,
+    causing 'list[int]' in type annotations to fail. The renderer must rename
+    such fields and use Field(alias=...) to preserve JSON serialization.
+
+    Only generic types used in annotations are affected (list, dict, set, tuple, type, frozenset).
+    """
+    node = ObjectNode(
+        properties=(
+            (
+                "list",
+                PropertyDef(
+                    schema=ArrayNode(
+                        items=NumberNode(integer=True), constraints=ArrayConstraints()
+                    ),
+                    required=False,
+                ),
+            ),
+            ("dict", PropertyDef(schema=StringNode(), required=False)),
+            ("set", PropertyDef(schema=StringNode(), required=False)),
+        ),
+    )
+    result = render(node, "Test")
+    # Field names should be sanitized (list_ instead of list)
+    assert "list_:" in result.code or "list_ :" in result.code
+    assert "dict_:" in result.code or "dict_ :" in result.code
+    assert "set_:" in result.code or "set_ :" in result.code
+    # Aliases should preserve original JSON property names
+    assert 'alias="list"' in result.code
+    assert 'alias="dict"' in result.code
+    assert 'alias="set"' in result.code
+    assert "from pydantic import Field" in result.imports
+
+
+def test_render_object_with_list_property_uses_list_type():
+    """Test that 'list' type annotation works when 'list' property is aliased.
+
+    This test ensures the generated code is syntactically valid and doesn't
+    shadow the list builtin, allowing list[T] type annotations to work.
+    """
+    # Create an object with a 'list' property whose type uses list[T]
+    node = ObjectNode(
+        properties=(
+            (
+                "list",
+                PropertyDef(
+                    schema=ArrayNode(
+                        items=NumberNode(integer=True), constraints=ArrayConstraints()
+                    ),
+                    required=True,
+                ),
+            ),
+        ),
+    )
+    result = render(node, "Test")
+    # The type annotation should use list[...] (the builtin, not the field)
+    assert "list[StrictInt]" in result.code
+    # The field name should be sanitized
+    assert "list_:" in result.code or "list_ :" in result.code
+    assert 'alias="list"' in result.code
+
+
+# =============================================================================
+# Fail-Open Guard Rails
+# =============================================================================
+
+
+def test_render_unknown_ir_kind_raises():
+    """Unknown IR node kinds must raise ConversionError, not silently degrade to Any."""
+
+    @dataclass(frozen=True)
+    class FakeNode:
+        kind: str = "imaginary"
+
+    with pytest.raises(ConversionError, match="Unknown IR node kind 'imaginary'"):
+        render(FakeNode(), "Test")  # type: ignore[arg-type]
+
+
+def test_render_recursive_ref_emits_any():
+    """Recursive refs (resolved=None, path starts with '#') produce Any.
+
+    This is a deliberate choice — recursive schemas cannot be expressed as
+    static types in generated code without forward-ref infrastructure.
+    """
+    node = RefNode(path="#", resolved=None)
+    result = render(node, "Test")
+    assert result.type_expr == "Any"
+    assert "from typing import Any" in result.imports
+
+
+def test_render_recursive_ref_with_defs_path_emits_any():
+    """Recursive refs to $defs also produce Any."""
+    node = RefNode(path="#/$defs/Person", resolved=None)
+    result = render(node, "Test")
+    assert result.type_expr == "Any"
+
+
+def test_render_unresolved_external_ref_raises():
+    """Truly unresolved external refs must raise ConversionError.
+
+    The parser should prevent these from ever reaching the renderer,
+    but if they do, fail loud instead of degrading to Any.
+    """
+    node = RefNode(path="https://example.com/schema.json", resolved=None)
+    with pytest.raises(ConversionError, match="Unresolved \\$ref"):
+        render(node, "Test")
+
+
+def test_render_resolved_ref_delegates():
+    """Resolved refs render their resolved schema, not Any."""
+    inner = StringNode()
+    node = RefNode(path="#/$defs/Name", resolved=inner)
+    result = render(node, "Test")
+    assert result.type_expr == "StrictStr"
+
+
+# =============================================================================
+# Combinator Type Narrowing
+# =============================================================================
+
+
+def test_render_oneof_narrows_primitives():
+    """oneOf with primitive schemas narrows to union instead of Any."""
+    node = OneOfNode(
+        schemas=(
+            StringNode(),
+            NumberNode(integer=True),
+            BooleanNode(),
+        )
+    )
+    result = render(node, "Test")
+    assert "StrictStr | StrictInt | StrictBool" in result.type_expr
+    assert "Any" not in result.type_expr
+    assert "from typing import Any" not in result.imports
+
+
+def test_render_oneof_with_any_schema_falls_back():
+    """oneOf with an any-typed sub-schema falls back to Any."""
+    node = OneOfNode(
+        schemas=(
+            StringNode(),
+            AnyNode(),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_oneof_objects_narrows_to_union():
+    """oneOf with object schemas narrows to union of class names."""
+    obj1 = ObjectNode(
+        properties=(("name", PropertyDef(schema=StringNode(), required=True)),),
+    )
+    obj2 = ObjectNode(
+        properties=(
+            ("age", PropertyDef(schema=NumberNode(integer=True), required=True)),
+        ),
+    )
+    node = OneOfNode(schemas=(obj1, obj2))
+    result = render(node, "Test")
+    assert "TestOption0 | TestOption1" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_conditional_if_then_else_narrows():
+    """conditional with both then and else narrows to union of branch types."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=NumberNode(integer=True),
+        else_schema=BooleanNode(),
+    )
+    result = render(node, "Test")
+    assert "StrictInt | StrictBool" in result.type_expr
+    assert "Any" not in result.type_expr
+
+
+def test_render_conditional_if_then_only_stays_any():
+    """conditional with only then (no else) stays Any since unmatched path is unconstrained."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=NumberNode(integer=True),
+        else_schema=None,
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_conditional_if_else_only_stays_any():
+    """conditional with only else (no then) stays Any since matched path is unconstrained."""
+    node = ConditionalNode(
+        if_schema=StringNode(),
+        then_schema=None,
+        else_schema=NumberNode(integer=True),
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_not_stays_any():
+    """not always uses Any since negation can't be statically narrowed."""
+    node = NotNode(schema=StringNode())
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr
+
+
+def test_render_type_guarded_stays_any():
+    """typeGuarded with passthrough stays Any since unmatched types pass through."""
+    node = TypeGuardedNode(
+        guards=(
+            TypeGuard(check="string", schema=StringNode()),
+            TypeGuard(check="number", schema=NumberNode(integer=False)),
+        )
+    )
+    result = render(node, "Test")
+    assert "Annotated[Any," in result.type_expr

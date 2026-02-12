@@ -1,0 +1,406 @@
+{
+  "project": "adapter-compliance-unexpected-failures",
+  "description": "eliminate every current unexpected failure (excluding intentionally unsupported features) in typescript adapters (zod, arktype, effect, valibot) and python adapter (pydantic), tracked as one file per unique error signature",
+  "tasks": [
+    {
+      "title": "issue-01: ref / root pointer ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-01.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `root pointer ref`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: recursive local $ref \"#\" is not supported``.",
+        "Baseline scope for this task is 120 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft3, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-01.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-01.md` exists and contains exactly 120 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-01.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-02: ref / property named $ref, containing an actual $ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-02.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `property named $ref, containing an actual $ref`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: $ref value must be a string``.",
+        "Baseline scope for this task is 60 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft3, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-02.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-02.md` exists and contains exactly 60 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-02.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-03: ref / refs with relative uris and defs",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-03.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `refs with relative uris and defs`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found``.",
+        "Baseline scope for this task is 60 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-03.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-03.md` exists and contains exactly 60 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-03.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-04: ref / relative refs with absolute uris and defs",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-04.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `relative refs with absolute uris and defs`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: failed to resolve local $ref \"#/$defs/inner\": key \"$defs\" not found``.",
+        "Baseline scope for this task is 60 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-04.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-04.md` exists and contains exactly 60 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-04.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-05: ref / remote ref, containing refs itself",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-05.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `remote ref, containing refs itself`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: encountered unresolved non-local $ref \"<metaschema-url>\"``.",
+        "Baseline scope for this task is 60 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft3, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-05.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-05.md` exists and contains exactly 60 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-05.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-06: ref / property named $ref that is not a reference",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-06.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `property named $ref that is not a reference`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: $ref value must be a string``.",
+        "Baseline scope for this task is 50 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-06.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-06.md` exists and contains exactly 50 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-06.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-07: ref / simple URN base URI with $ref via the URN",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-07.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `simple URN base URI with $ref via the URN`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: recursive local $ref \"#\" is not supported``.",
+        "Baseline scope for this task is 40 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-07.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-07.md` exists and contains exactly 40 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-07.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-08: ref / Recursive references between schemas",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-08.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `Recursive references between schemas`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: recursive local $ref \"#\" is not supported``.",
+        "Baseline scope for this task is 36 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-08.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-08.md` exists and contains exactly 36 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-08.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-09: definitions / validate definition against metaschema",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-09.md` and record the full baseline for this error signature from the compliance reports: keyword `definitions`, case `validate definition against metaschema`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/definitions/group_<n>: encountered unresolved non-local $ref \"<metaschema-url>\"``.",
+        "Baseline scope for this task is 30 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-09.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword definitions`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword definitions`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword definitions`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword definitions`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword definitions`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-09.md` exists and contains exactly 30 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword definitions`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword definitions`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword definitions`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword definitions`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword definitions`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-09.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-10: properties / properties whose names are Javascript object property names",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-10.md` and record the full baseline for this error signature from the compliance reports: keyword `properties`, case `properties whose names are Javascript object property names`, normalized got ``error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)``.",
+        "Baseline scope for this task is 25 failures across adapters (typescript valibot) and drafts (draft2019-09, draft2020-12, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-10.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword properties`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-10.md` exists and contains exactly 25 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword properties`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-10.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/valibot` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-11: required / required properties whose names are Javascript object property names",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-11.md` and record the full baseline for this error signature from the compliance reports: keyword `required`, case `required properties whose names are Javascript object property names`, normalized got ``error: this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)``.",
+        "Baseline scope for this task is 25 failures across adapters (typescript valibot) and drafts (draft2019-09, draft2020-12, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-11.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword required`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-11.md` exists and contains exactly 25 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword required`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-11.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/valibot` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-12: defs / validate definition against metaschema",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-12.md` and record the full baseline for this error signature from the compliance reports: keyword `defs`, case `validate definition against metaschema`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/defs/group_<n>: encountered unresolved non-local $ref \"<metaschema-url>\"``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-12.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword defs`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword defs`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword defs`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword defs`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword defs`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-12.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword defs`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword defs`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword defs`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword defs`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword defs`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-12.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-13: ref / URN ref with nested pointer ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-13.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `URN ref with nested pointer ref`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: failed to resolve local $ref \"#/$defs/bar\": key \"bar\" not found``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-13.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-13.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-13.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-14: ref / naive replacement of $ref with its destination is not correct",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-14.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `naive replacement of $ref with its destination is not correct`, normalized got ``false``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft3, draft4, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-14.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-14.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-14.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-15: ref / order of evaluation: $id and $ref on nested schema",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-15.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `order of evaluation: $id and $ref on nested schema`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: encountered unresolved non-local $ref \"./bar.json\"``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-15.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-15.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-15.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-16: refRemote / anchor within remote ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-16.md` and record the full baseline for this error signature from the compliance reports: keyword `refRemote`, case `anchor within remote ref`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/refRemote/group_<n>: recursive local $ref \"#/$defs/localhost_1234_<draft>_locationIndependentIdentifier_json__A\" is not supported``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-16.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword refRemote`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword refRemote`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword refRemote`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-16.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword refRemote`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword refRemote`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword refRemote`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-16.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-17: refRemote / fragment within remote ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-17.md` and record the full baseline for this error signature from the compliance reports: keyword `refRemote`, case `fragment within remote ref`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/refRemote/group_<n>: recursive local $ref \"#/$defs/localhost_1234_<draft>_subSchemas_json__integer\" is not supported``.",
+        "Baseline scope for this task is 20 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-17.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword refRemote`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword refRemote`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword refRemote`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-17.md` exists and contains exactly 20 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword refRemote`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword refRemote`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword refRemote`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword refRemote`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-17.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-18: ref / Recursive references between schemas",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-18.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `Recursive references between schemas`, normalized got ``error: bundling error: failed to resolve internal refs for compliance://<draft>/ref/group_<n>: recursive local $ref \"#/$defs/node\" is not supported``.",
+        "Baseline scope for this task is 14 failures across adapters (typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12, draft4, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-18.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-18.md` exists and contains exactly 14 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-18.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-19: ref / $ref prevents a sibling $id from changing the base uri",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-19.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `$ref prevents a sibling $id from changing the base uri`, normalized got ``false``.",
+        "Baseline scope for this task is 10 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-19.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-19.md` exists and contains exactly 10 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-19.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-20: ref / $ref prevents a sibling $id from changing the base uri",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-20.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `$ref prevents a sibling $id from changing the base uri`, normalized got ``true``.",
+        "Baseline scope for this task is 10 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-20.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-20.md` exists and contains exactly 10 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-20.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-21: ref / $ref prevents a sibling id from changing the base uri",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-21.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `$ref prevents a sibling id from changing the base uri`, normalized got ``false``.",
+        "Baseline scope for this task is 10 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft3, draft4); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-21.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-21.md` exists and contains exactly 10 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-21.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-22: ref / $ref prevents a sibling id from changing the base uri",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-22.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `$ref prevents a sibling id from changing the base uri`, normalized got ``true``.",
+        "Baseline scope for this task is 10 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft3, draft4); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-22.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-22.md` exists and contains exactly 10 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-22.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-23: ref / order of evaluation: $id and $anchor and $ref",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-23.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `order of evaluation: $id and $anchor and $ref`, normalized got ``false``.",
+        "Baseline scope for this task is 9 failures across adapters (typescript arktype, typescript effect, python pydantic, typescript valibot, typescript zod) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-23.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-23.md` exists and contains exactly 9 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/arktype` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword ref`; from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword ref`; from `typescript/packages/adapters/zod` run `bun run compliance -- --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-23.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/arktype` run `bun run typecheck`; from `typescript/packages/adapters/effect` run `bun run typecheck`; from `python/packages/adapters/pydantic` run `uv run pyright src/`; from `typescript/packages/adapters/valibot` run `bun run typecheck`; from `typescript/packages/adapters/zod` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-24: const / const with array",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-24.md` and record the full baseline for this error signature from the compliance reports: keyword `const`, case `const with array`, normalized got ``false``.",
+        "Baseline scope for this task is 8 failures across adapters (typescript effect, typescript valibot) and drafts (draft2019-09, draft2020-12, draft6, draft7); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-24.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword const`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword const`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-24.md` exists and contains exactly 8 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `typescript/packages/adapters/effect` run `bun run compliance -- --keyword const`; from `typescript/packages/adapters/valibot` run `bun run compliance -- --keyword const`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-24.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `typescript/packages/adapters/effect` run `bun run typecheck`; from `typescript/packages/adapters/valibot` run `bun run typecheck`."
+      ],
+      "passes": true
+    },
+    {
+      "title": "issue-25: ref / ref creates new scope when adjacent to keywords",
+      "steps": [
+        "Create `tasks/compliance-errors/issue-25.md` and record the full baseline for this error signature from the compliance reports: keyword `ref`, case `ref creates new scope when adjacent to keywords`, normalized got ``true``.",
+        "Baseline scope for this task is 2 failures across adapters (python pydantic) and drafts (draft2019-09, draft2020-12); include adapter, draft, test, expected, got, and report path for every baseline row.",
+        "Resolve every baseline failure listed in `tasks/compliance-errors/issue-25.md` until this exact signature no longer appears in any affected adapter report.",
+        "Regenerate keyword-focused compliance reports for this issue: from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`."
+      ],
+      "verify": [
+        "`tasks/compliance-errors/issue-25.md` exists and contains exactly 2 baseline rows with adapter, draft, test, expected, got, and report path fields.",
+        "Keyword compliance reruns complete for this issue: from `cli` run `go run . compliance --dev-report --lang python --adapter-path ../python/packages/adapters/pydantic --keyword ref`.",
+        "None of the baseline case/test rows from `tasks/compliance-errors/issue-25.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
+        "Typecheck passes for touched adapters: from `python/packages/adapters/pydantic` run `uv run pyright src/`."
+      ],
+      "passes": true
+    }
+  ]
+}

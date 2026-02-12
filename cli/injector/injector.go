@@ -311,6 +311,13 @@ func buildTemplateData(input InjectInput, lang *language.Language) (TemplateData
 		allImports = append(allImports, out.Imports...)
 	}
 
+	// Add template-required imports for Python
+	if lang.Name == "python" {
+		allImports = append(allImports,
+			"from typing import TYPE_CHECKING, Any, Dict",
+		)
+	}
+
 	mergedImports := lang.MergeImports(allImports)
 
 	// Build schema entries

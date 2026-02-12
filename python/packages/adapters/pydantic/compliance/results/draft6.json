@@ -1,0 +1,301 @@
+{
+  "draft": "draft6",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "total": 19
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "allOf",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "total": 30
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "boolean_schema",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "const",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "total": 54
+    },
+    {
+      "keyword": "contains",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "total": 19
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "definitions",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependencies",
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "total": 36
+    },
+    {
+      "keyword": "enum",
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "total": 45
+    },
+    {
+      "keyword": "exclusiveMaximum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "exclusiveMinimum",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "format",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "total": 54
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "maximum",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minItems",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "minLength",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "minimum",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "total": 11
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "not",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "total": 38
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "total": 27
+    },
+    {
+      "keyword": "pattern",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "total": 23
+    },
+    {
+      "keyword": "properties",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "total": 28
+    },
+    {
+      "keyword": "propertyNames",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "ref",
+      "passed": 66,
+      "failed": 2,
+      "skipped": 0,
+      "total": 68,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "simple URN base URI with $ref via the URN",
+          "test": "invalid under the URN IDed schema",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "total": 23
+    },
+    {
+      "keyword": "required",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "type",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "total": 80
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 69,
+      "failed": 0,
+      "skipped": 0,
+      "total": 69
+    }
+  ],
+  "summary": {
+    "passed": 826,
+    "failed": 2,
+    "skipped": 0,
+    "total": 828,
+    "percentage": 99.7584541062802,
+    "unsupportedFeatures": {
+      "count": 4,
+      "items": [
+        {
+          "path": "draft6/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft6/definitions/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft6/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft6/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        }
+      ]
+    }
+  }
+}

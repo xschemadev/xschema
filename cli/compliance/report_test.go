@@ -483,3 +483,179 @@ func TestGenerateMarkdownReport_SingleFailure(t *testing.T) {
 		t.Error("markdown should use singular 'failure' for count of 1")
 	}
 }
+
+func TestIsTypeOnlyAdapter(t *testing.T) {
+	tests := []struct {
+		name   string
+		report ComplianceReport
+		want   bool
+	}{
+		{
+			name: "all tests skipped across drafts",
+			report: ComplianceReport{
+				Adapter: "type-only",
+				Drafts: []DraftResult{
+					{Draft: "draft7", Summary: DraftSummary{Passed: 0, Skipped: 50, Total: 50}},
+					{Draft: "draft2020-12", Summary: DraftSummary{Passed: 0, Skipped: 60, Total: 60}},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "runtime adapter with passes",
+			report: ComplianceReport{
+				Adapter: "runtime",
+				Drafts: []DraftResult{
+					{Draft: "draft7", Summary: DraftSummary{Passed: 50, Skipped: 0, Total: 50}},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "mixed: some passed some skipped",
+			report: ComplianceReport{
+				Adapter: "partial",
+				Drafts: []DraftResult{
+					{Draft: "draft7", Summary: DraftSummary{Passed: 10, Skipped: 40, Total: 50}},
+				},
+			},
+			want: false,
+		},
+		{
+			name:   "empty drafts",
+			report: ComplianceReport{Adapter: "empty", Drafts: []DraftResult{}},
+			want:   false,
+		},
+		{
+			name: "no tests at all",
+			report: ComplianceReport{
+				Adapter: "nothing",
+				Drafts: []DraftResult{
+					{Draft: "draft7", Summary: DraftSummary{Passed: 0, Skipped: 0, Total: 0}},
+				},
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := isTypeOnlyAdapter(tt.report)
+			if got != tt.want {
+				t.Errorf("isTypeOnlyAdapter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateMarkdownReport_TypeOnly(t *testing.T) {
+	report := ComplianceReport{
+		Adapter: "type-only-adapter",
+		Drafts: []DraftResult{
+			{
+				Draft: "draft7",
+				Keywords: []KeywordResult{
+					{Keyword: "type", Passed: 0, Failed: 0, Skipped: 10, Total: 10},
+				},
+				Summary: DraftSummary{Passed: 0, Failed: 0, Skipped: 10, Total: 10, Percentage: 0},
+			},
+		},
+	}
+
+	md := GenerateMarkdownReport(report)
+
+	// type-only section present
+	if !strings.Contains(md, "## Type-Only Adapter") {
+		t.Error("markdown missing type-only section")
+	}
+
+	// language-agnostic wording (no hardcoded "TypeScript" or "tsc")
+	if strings.Contains(md, "TypeScript type-checking") {
+		t.Error("type-only section should not hardcode TypeScript")
+	}
+	if strings.Contains(md, "tsc --noEmit") {
+		t.Error("type-only section should not reference tsc --noEmit")
+	}
+
+	// coverage shows N/A
+	if !strings.Contains(md, "N/A (type-only)") {
+		t.Error("type-only draft should show N/A coverage")
+	}
+
+	// no badges section for type-only
+	if strings.Contains(md, "## Badges") {
+		t.Error("type-only report should not have badges section")
+	}
+}
+
+func TestGenerateMarkdownReport_SkippedAffectsPercentage(t *testing.T) {
+	// skipped tests are counted in Total, reducing the percentage
+	report := ComplianceReport{
+		Adapter: "test",
+		Drafts: []DraftResult{
+			{
+				Draft: "draft7",
+				Keywords: []KeywordResult{
+					{Keyword: "type", Passed: 8, Failed: 0, Skipped: 2, Total: 10},
+				},
+				Summary: DraftSummary{Passed: 8, Failed: 0, Skipped: 2, Total: 10, Percentage: 80.0},
+			},
+		},
+	}
+
+	md := GenerateMarkdownReport(report)
+
+	// percentage reflects skipped tests reducing coverage
+	if !strings.Contains(md, "80.0%") {
+		t.Error("markdown should show 80.0% when 8/10 passed with 2 skipped")
+	}
+
+	// skipped count visible in summary row
+	if !strings.Contains(md, "| draft7 | 8 | 0 | 2 | 0 | 80.0% |") {
+		t.Error("markdown summary row should include skipped count")
+	}
+}
+
+func TestGenerateMarkdownReport_UnsupportedExcludedFromTotal(t *testing.T) {
+	report := ComplianceReport{
+		Adapter: "test",
+		Drafts: []DraftResult{
+			{
+				Draft: "draft7",
+				Keywords: []KeywordResult{
+					{Keyword: "type", Passed: 10, Failed: 0, Skipped: 0, Total: 10},
+				},
+				Summary: DraftSummary{
+					Passed:     10,
+					Failed:     0,
+					Skipped:    0,
+					Total:      10,
+					Percentage: 100.0,
+					UnsupportedFeatures: UnsupportedFeaturesSummary{
+						Count: 5,
+						Items: []UnsupportedFeatureItem{
+							{Path: "draft7/dynamicRef/1", Reason: "dynamic references"},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	md := GenerateMarkdownReport(report)
+
+	// 100% despite unsupported — they don't count in Total
+	if !strings.Contains(md, "100.0%") {
+		t.Error("unsupported features should not affect percentage")
+	}
+
+	// unsupported count visible in summary
+	if !strings.Contains(md, "| draft7 | 10 | 0 | 0 | 5 | 100.0% |") {
+		t.Error("summary row should show unsupported count")
+	}
+
+	// unsupported section present
+	if !strings.Contains(md, "### Unsupported Features") {
+		t.Error("markdown missing unsupported features section")
+	}
+}

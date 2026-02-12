@@ -48,12 +48,22 @@ export function parseSchema(
 		return schema ? { kind: "any" } : { kind: "never" };
 	}
 
-	// Handle $ref - schemas must be bundled by Go CLI
+	// Handle $ref — recursive back-edges left by the processor
 	if (schema.$ref) {
-		throw new Error(
-			`Encountered $ref "${schema.$ref}" - schemas must be bundled by the Go CLI before processing. ` +
-			`Run the schema through xschema generate to bundle all references.`
-		);
+		const ref = schema.$ref;
+		if (ctx.resolving.has(ref)) {
+			return { kind: "ref", ref };
+		}
+		const target = resolveJsonPointerInSchema(ref, ctx.rootSchema);
+		if (target === undefined) {
+			throw new Error(
+				`Encountered unresolvable $ref "${ref}" - schemas must be bundled by the Go CLI before processing.`,
+			);
+		}
+		ctx.resolving.add(ref);
+		const result = parseSchema(target, ctx);
+		ctx.resolving.delete(ref);
+		return result;
 	}
 
 	// Handle not - check before composition since { not: {} } = never
@@ -191,6 +201,43 @@ export function parseSchema(
 }
 
 
+
+/**
+ * Resolve a JSON pointer ref against a schema root.
+ * Handles "#" (root) and "#/path/to/node" (JSON pointer).
+ */
+function resolveJsonPointerInSchema(
+	ref: string,
+	root: JSONSchema,
+): JSONSchema | boolean | undefined {
+	if (ref === "#") return root;
+	if (!ref.startsWith("#/")) return undefined;
+
+	const segments = ref
+		.slice(2)
+		.split("/")
+		.map((s) => s.replace(/~1/g, "/").replace(/~0/g, "~"));
+
+	let current: unknown = root;
+	for (const segment of segments) {
+		if (current === null || current === undefined) return undefined;
+		if (typeof current !== "object") return undefined;
+		if (Array.isArray(current)) {
+			const idx = Number(segment);
+			if (Number.isNaN(idx) || idx < 0 || idx >= current.length)
+				return undefined;
+			current = current[idx];
+		} else {
+			current = (current as Record<string, unknown>)[segment];
+		}
+	}
+
+	if (current === undefined) return undefined;
+	if (typeof current === "boolean") return current;
+	if (typeof current === "object" && current !== null)
+		return current as JSONSchema;
+	return undefined;
+}
 
 function parseComposition(
 	schema: JSONSchema,

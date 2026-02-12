@@ -1,8 +1,0 @@
-{
-  "name": "generator-test",
-  "type": "module",
-  "dependencies": {
-    "@xschemadev/client": "file:../../../../typescript/packages/client",
-    "@xschemadev/zod": "file:../../../../typescript/packages/adapters/zod"
-  }
-}

@@ -103,7 +103,7 @@ const another_TSConfigNative = type.object.narrow((val, ctx) => !Array.isArray(v
       return true;
     }).or(type.null), "libReplacement?": type.boolean.or(type.null), "listEmittedFiles?": type.boolean.or(type.null), "listFiles?": type.boolean.or(type.null), "listFilesOnly?": type.boolean.or(type.null), "mapRoot?": type.string.or(type.null), "maxNodeModuleJsDepth?": type.number.or(type.null), "module?": type.string.or(type.null).and(type.enumerated("commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve").or(type.unknown.narrow((val, ctx) => {
     if (typeof val === "string") {
-          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
+          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
         }
     return true;
   }))), "moduleDetection?": type.enumerated("auto", "legacy", "force"), "moduleResolution?": type.string.or(type.null).and(type.enumerated("classic", "node", "node10", "node16", "nodenext", "bundler").or(type.unknown.narrow((val, ctx) => {
@@ -326,7 +326,7 @@ const another_TSConfigNative = type.object.narrow((val, ctx) => !Array.isArray(v
       return true;
     }).or(type.null), "libReplacement?": type.boolean.or(type.null), "listEmittedFiles?": type.boolean.or(type.null), "listFiles?": type.boolean.or(type.null), "listFilesOnly?": type.boolean.or(type.null), "mapRoot?": type.string.or(type.null), "maxNodeModuleJsDepth?": type.number.or(type.null), "module?": type.string.or(type.null).and(type.enumerated("commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve").or(type.unknown.narrow((val, ctx) => {
     if (typeof val === "string") {
-          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
+          if (!type(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).allows(val)) return ctx.mustBe("a valid string");
         }
     return true;
   }))), "moduleDetection?": type.enumerated("auto", "legacy", "force"), "moduleResolution?": type.string.or(type.null).and(type.enumerated("classic", "node", "node10", "node16", "nodenext", "bundler").or(type.unknown.narrow((val, ctx) => {
@@ -454,7 +454,7 @@ type another_NativeType = typeof another_Native.infer;
 const user_User = type({ "age?": type("number >= 0").and(type("number % 1")), email: type("string.email"), id: type.string, "name?": type.string }).narrow((val, ctx) => !Array.isArray(val) || ctx.mustBe("an object, not an array"));
 type user_UserType = typeof user_User.infer;
 
-const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.any().superRefine((val, ctx) => {
+const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.intersection(z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ compilerOptions: z.union([z.object({ allowArbitraryExtensions: z.union([z.boolean(), z.null()]).optional(), allowImportingTsExtensions: z.union([z.boolean(), z.null()]).optional(), allowJs: z.union([z.boolean(), z.null()]).optional(), allowSyntheticDefaultImports: z.union([z.boolean(), z.null()]).optional(), allowUmdGlobalAccess: z.union([z.boolean(), z.null()]).optional(), allowUnreachableCode: z.union([z.boolean(), z.null()]).optional(), allowUnusedLabels: z.union([z.boolean(), z.null()]).optional(), alwaysStrict: z.union([z.boolean(), z.null()]).optional(), assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), baseUrl: z.union([z.string(), z.null()]).optional(), charset: z.union([z.string(), z.null()]).optional(), checkJs: z.union([z.boolean(), z.null()]).optional(), composite: z.union([z.boolean(), z.null()]).optional(), customConditions: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -464,112 +464,112 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$")).safeParse(val);
           if (!result.success) {
@@ -584,14 +584,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
-          const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
+          const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
+      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).safeParse(val);
           if (!result.success) {
@@ -606,7 +606,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(CRLF|LF|crlf|lf)$")).safeParse(val);
           if (!result.success) {
@@ -629,7 +629,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).safeParse(val);
           if (!result.success) {
@@ -657,14 +657,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ compileOnSave: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.any().superRefine((val, ctx) => {
+      })), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ typeAcquisition: z.union([z.object({ enable: z.union([z.boolean(), z.null()]).optional(), exclude: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -687,14 +687,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.any().superRefine((val, ctx) => {
+      })), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ allOf: z.any().optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.any().superRefine((val, ctx) => {
+      })), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ watchOptions: z.union([z.object({ excludeDirectories: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -717,9 +717,9 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.any().superRefine((val, ctx) => {
+      })), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-          const result = z.object({ buildOptions: z.any().superRefine((val, ctx) => {
+          const result = z.object({ buildOptions: z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), dry: z.union([z.boolean(), z.null()]).optional(), force: z.union([z.boolean(), z.null()]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), traceResolution: z.union([z.boolean(), z.null()]).optional(), verbose: z.union([z.boolean(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
@@ -731,7 +731,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.any().superRefine((val, ctx) => {
+      })), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ ["ts-node"]: z.union([z.object({ compiler: z.union([z.string(), z.null()]).optional(), compilerHost: z.union([z.boolean(), z.null()]).optional(), compilerOptions: z.intersection(z.union([z.object({}).passthrough(), z.null()]), z.union([z.object({ allowArbitraryExtensions: z.union([z.boolean(), z.null()]).optional(), allowImportingTsExtensions: z.union([z.boolean(), z.null()]).optional(), allowJs: z.union([z.boolean(), z.null()]).optional(), allowSyntheticDefaultImports: z.union([z.boolean(), z.null()]).optional(), allowUmdGlobalAccess: z.union([z.boolean(), z.null()]).optional(), allowUnreachableCode: z.union([z.boolean(), z.null()]).optional(), allowUnusedLabels: z.union([z.boolean(), z.null()]).optional(), alwaysStrict: z.union([z.boolean(), z.null()]).optional(), assumeChangesOnlyAffectDirectDependencies: z.union([z.boolean(), z.null()]).optional(), baseUrl: z.union([z.string(), z.null()]).optional(), charset: z.union([z.string(), z.null()]).optional(), checkJs: z.union([z.boolean(), z.null()]).optional(), composite: z.union([z.boolean(), z.null()]).optional(), customConditions: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -741,112 +741,112 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), declaration: z.union([z.boolean(), z.null()]).optional(), declarationDir: z.union([z.string(), z.null()]).optional(), declarationMap: z.union([z.boolean(), z.null()]).optional(), diagnostics: z.union([z.boolean(), z.null()]).optional(), disableReferencedProjectLoad: z.union([z.boolean(), z.null()]).optional(), disableSizeLimit: z.union([z.boolean(), z.null()]).optional(), disableSolutionSearching: z.union([z.boolean(), z.null()]).optional(), disableSourceOfProjectReferenceRedirect: z.union([z.boolean(), z.null()]).optional(), downlevelIteration: z.union([z.boolean(), z.null()]).optional(), emitBOM: z.union([z.boolean(), z.null()]).optional(), emitDeclarationOnly: z.union([z.boolean(), z.null()]).optional(), emitDecoratorMetadata: z.union([z.boolean(), z.null()]).optional(), erasableSyntaxOnly: z.union([z.boolean(), z.null()]).optional(), esModuleInterop: z.union([z.boolean(), z.null()]).optional(), exactOptionalPropertyTypes: z.union([z.boolean(), z.null()]).optional(), experimentalDecorators: z.union([z.boolean(), z.null()]).optional(), extendedDiagnostics: z.union([z.boolean(), z.null()]).optional(), fallbackPolling: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "fixedInterval", "priorityInterval", "dynamicPriority", "fixedChunkSize"]).optional(), forceConsistentCasingInFileNames: z.union([z.boolean(), z.null()]).optional(), generateCpuProfile: z.union([z.string(), z.null()]).optional(), importHelpers: z.union([z.boolean(), z.null()]).optional(), importsNotUsedAsValues: z.enum(["remove", "preserve", "error"]).optional(), incremental: z.union([z.boolean(), z.null()]).optional(), inlineSourceMap: z.union([z.boolean(), z.null()]).optional(), inlineSources: z.union([z.boolean(), z.null()]).optional(), isolatedDeclarations: z.union([z.boolean(), z.null()]).optional(), isolatedModules: z.union([z.boolean(), z.null()]).optional(), jsx: z.enum(["preserve", "react", "react-jsx", "react-jsxdev", "react-native"]).optional(), jsxFactory: z.union([z.string(), z.null()]).optional(), jsxFragmentFactory: z.union([z.string(), z.null()]).optional(), jsxImportSource: z.union([z.string(), z.null()]).optional(), keyofStringsOnly: z.union([z.boolean(), z.null()]).optional(), lib: z.union([z.array(z.intersection(z.string(), z.union([z.enum(["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$")).safeParse(val);
           if (!result.success) {
@@ -861,14 +861,14 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), libReplacement: z.union([z.boolean(), z.null()]).optional(), listEmittedFiles: z.union([z.boolean(), z.null()]).optional(), listFiles: z.union([z.boolean(), z.null()]).optional(), listFilesOnly: z.union([z.boolean(), z.null()]).optional(), mapRoot: z.union([z.string(), z.null()]).optional(), maxNodeModuleJsDepth: z.union([z.number(), z.null()]).optional(), module: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
-          const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee]1[68]|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
+          const result = z.string().regex(new RegExp("^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$")).safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.any().superRefine((val, ctx) => {
+      })])).optional(), moduleDetection: z.enum(["auto", "legacy", "force"]).optional(), moduleResolution: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["classic", "node", "node10", "node16", "nodenext", "bundler"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$")).safeParse(val);
           if (!result.success) {
@@ -883,7 +883,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), newLine: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["crlf", "lf"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^(CRLF|LF|crlf|lf)$")).safeParse(val);
           if (!result.success) {
@@ -906,7 +906,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.any().superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), skipDefaultLibCheck: z.union([z.boolean(), z.null()]).optional(), skipLibCheck: z.union([z.boolean(), z.null()]).optional(), sourceMap: z.union([z.boolean(), z.null()]).optional(), sourceRoot: z.union([z.string(), z.null()]).optional(), strict: z.union([z.boolean(), z.null()]).optional(), strictBindCallApply: z.union([z.boolean(), z.null()]).optional(), strictBuiltinIteratorReturn: z.union([z.boolean(), z.null()]).optional(), strictFunctionTypes: z.union([z.boolean(), z.null()]).optional(), strictNullChecks: z.union([z.boolean(), z.null()]).optional(), strictPropertyInitialization: z.union([z.boolean(), z.null()]).optional(), stripInternal: z.union([z.boolean(), z.null()]).optional(), suppressExcessPropertyErrors: z.union([z.boolean(), z.null()]).optional(), suppressImplicitAnyIndexErrors: z.union([z.boolean(), z.null()]).optional(), target: z.intersection(z.union([z.string(), z.null()]), z.union([z.enum(["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"]), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "string") {
           const result = z.string().regex(new RegExp("^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$")).safeParse(val);
           if (!result.success) {
@@ -929,7 +929,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
         seen.add(key);
       }
       return true;
-    }, { message: "Array items must be unique" }), z.null()]).optional(), useDefineForClassFields: z.union([z.boolean(), z.null()]).optional(), useUnknownInCatchVariables: z.union([z.boolean(), z.null()]).optional(), verbatimModuleSyntax: z.union([z.boolean(), z.null()]).optional(), watch: z.union([z.boolean(), z.null()]).optional(), watchDirectory: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), watchFile: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()])).optional(), emit: z.union([z.boolean(), z.null()]).optional(), esm: z.union([z.boolean(), z.null()]).optional(), experimentalReplAwait: z.union([z.boolean(), z.null()]).optional(), experimentalResolver: z.union([z.boolean(), z.null()]).optional(), experimentalSpecifierResolution: z.enum(["explicit", "node"]).optional(), files: z.union([z.boolean(), z.null()]).optional(), ignore: z.union([z.array(z.string()), z.null()]).optional(), ignoreDiagnostics: z.union([z.array(z.union([z.string(), z.number()])), z.null()]).optional(), logError: z.union([z.boolean(), z.null()]).optional(), moduleTypes: z.union([z.object({}).passthrough(), z.null()]).optional(), preferTsExts: z.union([z.boolean(), z.null()]).optional(), pretty: z.union([z.boolean(), z.null()]).optional(), require: z.union([z.array(z.string()), z.null()]).optional(), scope: z.union([z.boolean(), z.null()]).optional(), scopeDir: z.union([z.string(), z.null()]).optional(), skipIgnore: z.union([z.boolean(), z.null()]).optional(), swc: z.union([z.boolean(), z.null()]).optional(), transpileOnly: z.union([z.boolean(), z.null()]).optional(), transpiler: z.union([z.union([z.array(z.any()).superRefine((val, ctx) => {
+    }, { message: "Array items must be unique" }), z.null()]).optional(), useDefineForClassFields: z.union([z.boolean(), z.null()]).optional(), useUnknownInCatchVariables: z.union([z.boolean(), z.null()]).optional(), verbatimModuleSyntax: z.union([z.boolean(), z.null()]).optional(), watch: z.union([z.boolean(), z.null()]).optional(), watchDirectory: z.enum(["useFsEvents", "fixedPollingInterval", "dynamicPriorityPolling", "fixedChunkSizePolling"]).optional(), watchFile: z.enum(["fixedPollingInterval", "priorityPollingInterval", "dynamicPriorityPolling", "useFsEvents", "useFsEventsOnParentDirectory", "fixedChunkSizePolling"]).optional() }).passthrough(), z.null()])).optional(), emit: z.union([z.boolean(), z.null()]).optional(), esm: z.union([z.boolean(), z.null()]).optional(), experimentalReplAwait: z.union([z.boolean(), z.null()]).optional(), experimentalResolver: z.union([z.boolean(), z.null()]).optional(), experimentalSpecifierResolution: z.enum(["explicit", "node"]).optional(), files: z.union([z.boolean(), z.null()]).optional(), ignore: z.union([z.array(z.string()), z.null()]).optional(), ignoreDiagnostics: z.union([z.array(z.union([z.string(), z.number()])), z.null()]).optional(), logError: z.union([z.boolean(), z.null()]).optional(), moduleTypes: z.union([z.object({}).passthrough(), z.null()]).optional(), preferTsExts: z.union([z.boolean(), z.null()]).optional(), pretty: z.union([z.boolean(), z.null()]).optional(), require: z.union([z.array(z.string()), z.null()]).optional(), scope: z.union([z.boolean(), z.null()]).optional(), scopeDir: z.union([z.string(), z.null()]).optional(), skipIgnore: z.union([z.boolean(), z.null()]).optional(), swc: z.union([z.boolean(), z.null()]).optional(), transpileOnly: z.union([z.boolean(), z.null()]).optional(), transpiler: z.union([z.union([z.array(z.any()).min(2).max(2).superRefine((val, ctx) => {
       const schemas = [z.union([z.string(), z.null()]), z.union([z.object({}).passthrough(), z.null()])];
       for (let i = 0; i < Math.min(val.length, schemas.length); i++) {
         const itemResult = schemas[i].safeParse(val[i]);
@@ -939,12 +939,12 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
           });
         }
       }
-    }).min(2).max(2), z.null()]), z.union([z.string(), z.null()])]).optional(), typeCheck: z.union([z.boolean(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
+    }), z.null()]), z.union([z.string(), z.null()])]).optional(), typeCheck: z.union([z.boolean(), z.null()]).optional() }).passthrough(), z.null()]).optional() }).passthrough().safeParse(val);
           if (!result.success) {
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      })), z.union([z.any().superRefine((val, ctx) => {
+      })), z.union([z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ files: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -959,7 +959,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ exclude: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -974,7 +974,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ include: z.union([z.array(z.string()).refine((arr) => {
       const seen = new Set();
@@ -989,7 +989,7 @@ const another_TSConfig = z.intersection(z.object({}).passthrough(), z.intersecti
             result.error.issues.forEach(issue => ctx.addIssue(issue));
           }
         }
-      }), z.any().superRefine((val, ctx) => {
+      }), z.unknown().superRefine((val, ctx) => {
         if (typeof val === "object" && val !== null && !Array.isArray(val)) {
           const result = z.object({ references: z.array(z.object({ path: z.string().optional() }).passthrough()).refine((arr) => {
       const seen = new Set();

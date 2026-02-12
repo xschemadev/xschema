@@ -33,7 +33,7 @@ type Language struct {
 	Name             string
 	Extensions       []string // file extensions for source files (for injector)
 	SchemaURL        string   // e.g., "https://xschema.dev/schemas/typescript.jsonc"
-	SchemaExt        string   // e.g., "ts.jsonc" - extracted from SchemaURL
+	SchemaExt        string   // e.g., "typescript.jsonc" - extracted from SchemaURL
 	AdapterBinPrefix string   // e.g., "xschema-" - prefix for adapter binaries
 	DetectRunner     func() (cmd string, args []string, err error)
 	AdapterInvoker   AdapterInvoker // resolves adapter refs to a runnable command
@@ -45,9 +45,10 @@ type Language struct {
 	ClientFactoryPattern string                            // regex to find client factory calls e.g. createXSchemaClient({ ... })
 
 	// Output generation
-	OutputFile   string           // deprecated: use OutputFiles instead. e.g. "xschema.gen.ts", "__init__.py"
-	Template     string           // deprecated: use OutputFiles instead. Go text/template for output
-	OutputFiles  []OutputFileSpec // multiple output files with separate templates (preferred over OutputFile/Template)
+	OutputDir    string                                            // default output directory when --output not specified (e.g., ".xschema", "_xschema")
+	OutputFile   string                                            // deprecated: use OutputFiles instead. e.g. "xschema.gen.ts", "__init__.py"
+	Template     string                                            // deprecated: use OutputFiles instead. Go text/template for output
+	OutputFiles  []OutputFileSpec                                  // multiple output files with separate templates (preferred over OutputFile/Template)
 	MergeImports func(imports []string) string                     // dedupe/format imports
 	BuildHeader  func(outDir string, schemas []SchemaEntry) string // inserted at top
 	BuildFooter  func(outDir string, schemas []SchemaEntry) string // inserted at bottom

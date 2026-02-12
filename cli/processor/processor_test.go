@@ -68,10 +68,7 @@ func TestCrawlAndFetch_NoExternalRefs(t *testing.T) {
 		"type": "object",
 		"properties": {
 			"name": { "type": "string" },
-			"count": { "$ref": "#/$defs/Counter" }
-		},
-		"$defs": {
-			"Counter": { "type": "integer" }
+			"count": { "type": "integer" }
 		}
 	}`)
 
@@ -223,9 +220,17 @@ func TestCrawlAndFetch_CircularRefs(t *testing.T) {
 		},
 	}
 
-	_, err := Process(ctx, schemas, Options{Fetcher: fetcher})
+	result, err := Process(ctx, schemas, Options{Fetcher: fetcher})
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("expected circular refs to succeed, got: %v", err)
+	}
+
+	// output schema should contain $ref for the recursive cycle
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+	if !contains(string(result[0].Schema), "$ref") {
+		t.Error("expected output schema to contain $ref for recursive cycle")
 	}
 
 	// Should only fetch b.json once, not enter infinite loop
@@ -238,7 +243,7 @@ func TestCrawlAndFetch_CircularRefs(t *testing.T) {
 	}
 }
 
-func TestCrawlAndFetch_FragmentOnlyRefs(t *testing.T) {
+func TestCrawlAndFetch_FragmentOnlyRefs_AreResolved(t *testing.T) {
 	ctx := context.Background()
 	fetcher := newMockFetcher()
 
@@ -269,13 +274,26 @@ func TestCrawlAndFetch_FragmentOnlyRefs(t *testing.T) {
 		},
 	}
 
-	_, err := Process(ctx, schemas, Options{Fetcher: fetcher})
+	result, err := Process(ctx, schemas, Options{Fetcher: fetcher})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	if len(fetcher.fetchCalls) != 0 {
 		t.Errorf("fragment-only refs should not trigger fetches, got %d: %v", len(fetcher.fetchCalls), fetcher.fetchCalls)
+	}
+
+	if len(result) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(result))
+	}
+
+	var bundled map[string]any
+	if err := json.Unmarshal(result[0].Schema, &bundled); err != nil {
+		t.Fatalf("failed to parse bundled schema: %v", err)
+	}
+
+	if hasRefKeyword(bundled) {
+		t.Fatal("expected all local refs to be resolved")
 	}
 }
 
@@ -490,6 +508,28 @@ func containsHelper(s, substr string) bool {
 	return false
 }
 
+func hasRefKeyword(node any) bool {
+	switch v := node.(type) {
+	case map[string]any:
+		if _, ok := v["$ref"]; ok {
+			return true
+		}
+		for _, child := range v {
+			if hasRefKeyword(child) {
+				return true
+			}
+		}
+	case []any:
+		for _, child := range v {
+			if hasRefKeyword(child) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 // --- CacheFetcher Tests (US-010) ---
 
 func TestCacheFetcher_CacheHit(t *testing.T) {
@@ -692,32 +732,31 @@ func TestProcess_ExternalRefs_BundledWithRefsEmbedded(t *testing.T) {
 		t.Fatalf("expected 1 result, got %d", len(result))
 	}
 
-	// Bundled schema should have the external ref embedded in $defs
+	// Bundled schema should have all refs resolved for adapters
 	var bundled map[string]any
 	if err := json.Unmarshal(result[0].Schema, &bundled); err != nil {
 		t.Fatalf("failed to parse bundled schema: %v", err)
 	}
 
-	// Check that $defs was created with the embedded external schema
-	defs, hasDefs := bundled["$defs"].(map[string]any)
-	if !hasDefs {
-		t.Fatal("bundled schema should have $defs with embedded external schema")
+	if hasRefKeyword(bundled) {
+		t.Fatal("expected processor output to be fully resolved (no $ref)")
 	}
 
-	// There should be at least one embedded definition
-	if len(defs) == 0 {
-		t.Error("$defs should contain the embedded address schema")
-	}
-
-	// Check that the $ref was rewritten to point to $defs
+	// Address schema should be inlined under properties.address
 	props := bundled["properties"].(map[string]any)
 	addressProp := props["address"].(map[string]any)
-	ref, hasRef := addressProp["$ref"].(string)
-	if !hasRef {
-		t.Fatal("address property should have $ref")
+	if addressProp["type"] != "object" {
+		t.Fatalf("expected inlined address object schema, got: %#v", addressProp)
 	}
-	if !contains(ref, "#/$defs/") {
-		t.Errorf("$ref should be rewritten to local $defs path, got %q", ref)
+	addressProps, ok := addressProp["properties"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected inlined address properties, got: %#v", addressProp["properties"])
+	}
+	if _, ok := addressProps["street"]; !ok {
+		t.Error("inlined address schema should include street")
+	}
+	if _, ok := addressProps["city"]; !ok {
+		t.Error("inlined address schema should include city")
 	}
 
 	// Fetcher should have been called for address.json

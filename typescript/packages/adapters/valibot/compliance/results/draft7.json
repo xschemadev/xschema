@@ -108,17 +108,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 0,
+      "passed": 2,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 2
     },
     {
       "keyword": "items",
-      "passed": 0,
+      "passed": 28,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 28
     },
     {
       "keyword": "maxItems",
@@ -213,52 +213,10 @@
     },
     {
       "keyword": "properties",
-      "passed": 23,
-      "failed": 5,
+      "passed": 28,
+      "failed": 0,
       "skipped": 0,
-      "total": 28,
-      "failures": [
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "__proto__ not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "all present and valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "constructor not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "properties whose names are Javascript object property names",
-          "test": "toString not valid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 28
     },
     {
       "keyword": "propertyNames",
@@ -269,66 +227,24 @@
     },
     {
       "keyword": "ref",
-      "passed": 0,
+      "passed": 76,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 76
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
+      "passed": 23,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 23
     },
     {
       "keyword": "required",
-      "passed": 11,
-      "failed": 5,
+      "passed": 16,
+      "failed": 0,
       "skipped": 0,
-      "total": 16,
-      "failures": [
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "__proto__ present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "all present",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "constructor present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "none of the properties mentioned",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        },
-        {
-          "group": "required properties whose names are Javascript object property names",
-          "test": "toString present",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "this.entries[key]._run is not a function. (In 'this.entries[key]._run({ typed: !1, value: value2 }, config2)', 'this.entries[key]._run' is undefined)"
-        }
-      ]
+      "total": 16
     },
     {
       "keyword": "type",
@@ -346,14 +262,31 @@
     }
   ],
   "summary": {
-    "passed": 773,
-    "failed": 10,
+    "passed": 912,
+    "failed": 0,
     "skipped": 0,
-    "total": 783,
-    "percentage": 98.7228607918263,
+    "total": 912,
+    "percentage": 100,
     "unsupportedFeatures": {
-      "count": 0,
-      "items": null
+      "count": 4,
+      "items": [
+        {
+          "path": "draft7/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/definitions/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        }
+      ]
     }
   }
 }

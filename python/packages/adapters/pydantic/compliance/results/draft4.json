@@ -1,0 +1,252 @@
+{
+  "draft": "draft4",
+  "keywords": [
+    {
+      "keyword": "additionalItems",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "total": 17
+    },
+    {
+      "keyword": "additionalProperties",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    {
+      "keyword": "allOf",
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "total": 27
+    },
+    {
+      "keyword": "anyOf",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "total": 15
+    },
+    {
+      "keyword": "default",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    {
+      "keyword": "definitions",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "total": 0
+    },
+    {
+      "keyword": "dependencies",
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "total": 29
+    },
+    {
+      "keyword": "enum",
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0,
+      "total": 49
+    },
+    {
+      "keyword": "format",
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "total": 36
+    },
+    {
+      "keyword": "infinite-loop-detection",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "total": 2
+    },
+    {
+      "keyword": "items",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "total": 21
+    },
+    {
+      "keyword": "maxItems",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "maxLength",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "total": 5
+    },
+    {
+      "keyword": "maxProperties",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "total": 8
+    },
+    {
+      "keyword": "maximum",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "total": 14
+    },
+    {
+      "keyword": "minItems",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    {
+      "keyword": "minLength",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "total": 5
+    },
+    {
+      "keyword": "minProperties",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "total": 6
+    },
+    {
+      "keyword": "minimum",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "total": 17
+    },
+    {
+      "keyword": "multipleOf",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    {
+      "keyword": "not",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    {
+      "keyword": "oneOf",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "total": 23
+    },
+    {
+      "keyword": "pattern",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "total": 9
+    },
+    {
+      "keyword": "patternProperties",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "total": 18
+    },
+    {
+      "keyword": "properties",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "total": 24
+    },
+    {
+      "keyword": "ref",
+      "passed": 42,
+      "failed": 1,
+      "skipped": 0,
+      "total": 43,
+      "failures": [
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "keyword": "refRemote",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "total": 17
+    },
+    {
+      "keyword": "required",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "total": 15
+    },
+    {
+      "keyword": "type",
+      "passed": 79,
+      "failed": 0,
+      "skipped": 0,
+      "total": 79
+    },
+    {
+      "keyword": "uniqueItems",
+      "passed": 69,
+      "failed": 0,
+      "skipped": 0,
+      "total": 69
+    }
+  ],
+  "summary": {
+    "passed": 608,
+    "failed": 1,
+    "skipped": 0,
+    "total": 609,
+    "percentage": 99.83579638752053,
+    "unsupportedFeatures": {
+      "count": 4,
+      "items": [
+        {
+          "path": "draft4/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft4/definitions/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft4/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft4/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        }
+      ]
+    }
+  }
+}

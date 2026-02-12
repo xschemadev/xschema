@@ -17,10 +17,10 @@
     },
     {
       "keyword": "anchor",
-      "passed": 0,
+      "passed": 8,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 8
     },
     {
       "keyword": "anyOf",
@@ -129,17 +129,17 @@
     },
     {
       "keyword": "infinite-loop-detection",
-      "passed": 0,
+      "passed": 2,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 2
     },
     {
       "keyword": "items",
-      "passed": 0,
+      "passed": 29,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 29
     },
     {
       "keyword": "maxContains",
@@ -269,17 +269,17 @@
     },
     {
       "keyword": "ref",
-      "passed": 0,
+      "passed": 77,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 77
     },
     {
       "keyword": "refRemote",
-      "passed": 0,
+      "passed": 31,
       "failed": 0,
       "skipped": 0,
-      "total": 0
+      "total": 31
     },
     {
       "keyword": "required",
@@ -325,21 +325,29 @@
     }
   ],
   "summary": {
-    "passed": 919,
+    "passed": 1066,
     "failed": 0,
     "skipped": 0,
-    "total": 919,
+    "total": 1066,
     "percentage": 100,
     "unsupportedFeatures": {
-      "count": 201,
+      "count": 205,
       "items": [
         {
+          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
@@ -459,7 +467,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/items)"
         },
         {
           "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
@@ -516,6 +524,14 @@
         {
           "path": "draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/unevaluated property",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
         },
         {
           "path": "draft2020-12/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location",
