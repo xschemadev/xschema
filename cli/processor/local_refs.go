@@ -41,6 +41,7 @@ type localRefResolver struct {
 	root              any
 	resolving         map[string]bool
 	ignoreRefSiblings bool
+	scopes            []any // stack of sub-schemas with $id (nearest first, root last)
 }
 
 func resolveInternalRefs(schema json.RawMessage, draft string) (json.RawMessage, error) {
@@ -53,6 +54,7 @@ func resolveInternalRefs(schema json.RawMessage, draft string) (json.RawMessage,
 		root:              root,
 		resolving:         make(map[string]bool),
 		ignoreRefSiblings: shouldIgnoreRefSiblings(draft, root),
+		scopes:            []any{root},
 	}
 
 	resolved, err := resolver.resolveNode(root, false, false)
@@ -75,6 +77,21 @@ func (r *localRefResolver) resolveNode(node any, inNonSchemaContext bool, inProp
 
 	switch v := node.(type) {
 	case map[string]any:
+		// track $id scope changes — sub-schemas with $id create new resolution scopes
+		popScope := false
+		if !inPropertyMap {
+			if _, hasID := v["$id"].(string); hasID {
+				r.scopes = append([]any{v}, r.scopes...)
+				popScope = true
+			} else if _, hasLegacyID := v["id"].(string); hasLegacyID {
+				r.scopes = append([]any{v}, r.scopes...)
+				popScope = true
+			}
+		}
+		if popScope {
+			defer func() { r.scopes = r.scopes[1:] }()
+		}
+
 		// only check for $ref keyword when this object is a schema,
 		// not when it's a property map (e.g. the value of "properties")
 		// where keys are arbitrary names like "$ref"
@@ -128,9 +145,20 @@ func (r *localRefResolver) resolveRefObject(obj map[string]any, ref string) (any
 	r.resolving[ref] = true
 	defer delete(r.resolving, ref)
 
-	target, err := resolveJSONPointer(ref, r.root)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve local $ref %q: %w", ref, err)
+	// try each scope in order (nearest $id first, root last)
+	var target any
+	var lastErr error
+	for _, scope := range r.scopes {
+		t, err := resolveJSONPointer(ref, scope)
+		if err == nil {
+			target = t
+			lastErr = nil
+			break
+		}
+		lastErr = err
+	}
+	if lastErr != nil {
+		return nil, fmt.Errorf("failed to resolve local $ref %q: %w", ref, lastErr)
 	}
 
 	resolvedTarget, err := r.resolveNode(cloneNode(target), false, false)

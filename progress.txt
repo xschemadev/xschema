@@ -6,6 +6,8 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 
 - `bun run compliance` npm scripts include `--dev-report` by default; to run with `--keyword`, use `go run . compliance --adapter-path <path> --keyword <kw>` directly from `cli/`
 - `propertyMapKeywords` in `cli/processor/local_refs.go` tracks JSON Schema keywords whose values are property-name-keyed maps (not schema nodes), preventing false interpretation of keys like `$ref` as schema keywords
+- `resolveInternalRefs` in `cli/processor/local_refs.go` uses a scope stack for `$id`-aware ref resolution — `#/...` refs resolve against the nearest `$id`-bearing ancestor first, falling back to root. mirrors the approach in `bundler.validateInternalRefs`
+- `--dev-report` flag cannot be combined with `--keyword` or `--draft` in the compliance command. for keyword-specific runs, use `go run . compliance --lang <lang> --adapter-path <path> --keyword <kw>` directly
 
 ---
 
@@ -17,3 +19,12 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **approach**: new `propertyMapKeywords` set (`properties`, `patternProperties`, `$defs`, `definitions`, `dependentSchemas`, `dependencies`) marks children as property maps; `resolveNode` skips `$ref` keyword check when `inPropertyMap=true`
 - **also fixes issue-06**: same root cause ("property named $ref that is not a reference") — error signature `$ref value must be a string` completely eliminated from all adapter reports
 - **verified**: all 5 adapters (zod, arktype, effect, valibot, pydantic) × 6 drafts — 0 baseline failures remain; all typechecks pass; all Go tests pass
+
+### issue-03: ref / refs with relative uris and defs
+- **fix**: added `$id`-based scope tracking to `resolveInternalRefs` in `cli/processor/local_refs.go`
+- **root cause**: `resolveInternalRefs` always resolved `#/...` fragment refs against the document root, ignoring `$id`-based scope changes. when a sub-schema has its own `$id` and `$defs`, a `$ref: "#/$defs/inner"` inside that scope should resolve against the sub-schema, not root.
+- **approach**: added `scopes []any` field to `localRefResolver` — a stack of sub-schemas with `$id` (nearest first). `resolveNode` pushes objects with `$id` or `id` onto the stack. `resolveRefObject` tries each scope in order (nearest first, root last), matching the approach already used by `bundler.validateInternalRefs`.
+- **also fixes issue-04**: identical root cause ("relative refs with absolute uris and defs") — same `$defs not found` error signature with absolute URIs in nested `$id`
+- **also fixes issue-13**: same mechanism — URN refs with nested pointer refs that couldn't find `$defs/bar` in root scope
+- **tests added**: 5 new unit tests in `cli/processor/local_refs_test.go` covering scoped resolution, legacy id, fallback to root, nested scopes
+- **verified**: all 5 adapters × ref keyword compliance — 0 baseline failures remain for this signature; all Go tests pass
