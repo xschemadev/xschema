@@ -154,3 +154,9 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **approach**: after `processRef` returns a map result, iterate its keys (excluding `$ref` and non-schema keywords) and process each through `processNode` with the correct base URI
 - **test added**: `TestBundle_RefWithNestedIDAndRef` in bundler tests
 - **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 "order of evaluation: $id and $ref on nested schema" failures; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-16: refRemote / anchor within remote ref
+- **fix**: already resolved by prior fixes (issue-01 recursive ref pass-through + issue-15 sibling processing)
+- **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema, resolved `#foo` anchor to `$defs/A`, flattened defs. but `resolveRefObject` marked the target as "resolving", then processed sibling `$defs` (draft2019-09+). `refToInteger` inside `$defs` pointed to the same flattened target, triggering false recursion guard
+- **no code changes needed**: issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing so `$defs` children get fully resolved
+- **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all Go tests pass; all TS typechecks pass; pydantic pyright passes
