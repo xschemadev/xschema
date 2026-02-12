@@ -37,10 +37,11 @@ from typing import Any, Dict, Generic, Protocol, TypeVar
 __all__ = ["create_xschema_client", "XSchemaError"]
 
 T = TypeVar("T")
+T_co = TypeVar("T_co", covariant=True)
 
 
-class _SchemaLookup(Protocol[T]):
-    def __call__(self, key: str) -> T: ...
+class _SchemaLookup(Protocol[T_co]):
+    def __call__(self, key: str) -> T_co: ...
 
 
 class XSchemaError(Exception):

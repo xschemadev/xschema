@@ -25,14 +25,6 @@ uv run pytest
 uv run pyright src/
 ```
 
-### Type-fidelity harness
-
-```bash
-uv run python type-probe/type-fidelity.py
-```
-
-The type-fidelity harness generates probe fixtures via the adapter's `convert()`, inspects the rendered type expressions, and checks for `Any` regressions. It does NOT use pyright — it reads type expressions directly from converter output.
-
 ## Fallback Typing Guardrails
 
 ### Allowed `Any` fallbacks
@@ -49,7 +41,7 @@ These constructs produce `Annotated[Any, BeforeValidator(...)]` by design. The s
 
 ### Narrowed constructs (must NOT use `Any`)
 
-These constructs must produce a narrower type than `Any`. If a new code path introduces `Any` where it wasn't before, the type-fidelity harness will fail.
+These constructs must produce a narrower type than `Any`.
 
 | Construct | Expected type | How it narrows |
 |-----------|--------------|----------------|
@@ -77,19 +69,11 @@ These patterns are errors. The renderer must raise `ConversionError` instead:
 When adding or modifying a renderer function:
 
 1. **If the branch produces `Any`**: add a unit test proving it (e.g. `test_render_not_stays_any`) and document the reason in the "Allowed `Any` fallbacks" table above
-2. **If the branch produces a narrower type**: add a unit test proving the narrow type (e.g. `test_render_oneof_narrows_primitives`) and add a probe to the type-fidelity harness with `expectAny=False`
+2. **If the branch produces a narrower type**: add a unit test proving the narrow type (e.g. `test_render_oneof_narrows_primitives`)
 3. **If the branch raises `ConversionError`**: add a unit test proving the error (e.g. `test_render_unknown_ir_kind_raises`)
 4. **Compliance must not regress**: run full compliance after any renderer change
 
 ## Troubleshooting
-
-### pyright reports `TypeAdapter[Unknown]` for narrowed types
-
-This is expected when running pyright directly on generated probe fixtures. pyright renders `Annotated[T, BeforeValidator(...)]` as `TypeAdapter[Unknown]` regardless of the actual type parameter. The type-fidelity harness avoids this by reading type expressions from the converter output directly, not from pyright inference.
-
-### Type-fidelity harness shows "IMPROVED"
-
-This means a probe expected `Any` but the adapter now produces a narrower type. This is a good thing — update the probe's `expectAny` to `False` to lock in the improvement and prevent future regressions.
 
 ### pyright errors on `src/`
 
