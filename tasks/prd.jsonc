@@ -176,7 +176,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-11.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `typescript/packages/adapters/valibot` run `bun run typecheck`."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "title": "issue-12: defs / validate definition against metaschema",
