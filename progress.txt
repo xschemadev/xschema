@@ -99,3 +99,8 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **fix**: already resolved by issue-09's metaschema `$ref` replacement in `cli/bundler/bundler.go` and `checkMetaschemaRef` in `cli/processor/processor.go`
 - **root cause**: identical to issue-09 — `$ref` pointing to metaschema URLs left unresolved non-local refs in bundled output. metaschema replacement with `{}` + `UnsupportedKeywordError` classification moves these to "Unsupported Features"
 - **verified**: all 5 adapters × 6 drafts × ref keyword compliance — 0 baseline failures in "Unexpected Failures"; all typechecks pass
+
+### issue-07: ref / simple URN base URI with $ref via the URN
+- **fix**: already resolved by issue-01's recursive `$ref "#"` handling in `cli/processor/local_refs.go`
+- **root cause**: bundler resolves `$ref: "urn:uuid:deadbeef-..."` against the schema's own `$id` (same URN), rewrites to `$ref: "#"`. the old cycle detection errored on this recursive ref. issue-01's fix returns the `$ref` object unchanged and short-circuits `$ref: "#"` for adapter-level lazy/suspend handling
+- **verified**: all 5 adapters × 4 drafts (draft6, draft7, draft2019-09, draft2020-12) × ref keyword compliance — 0 baseline failures for "simple URN base URI with $ref via the URN"; all typechecks pass
