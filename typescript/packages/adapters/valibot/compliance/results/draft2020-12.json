@@ -269,25 +269,11 @@
     },
     {
       "keyword": "ref",
-      "passed": 73,
-      "failed": 4,
+      "passed": 75,
+      "failed": 2,
       "skipped": 0,
       "total": 77,
       "failures": [
-        {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
         {
           "group": "order of evaluation: $id and $ref on nested schema",
           "test": "data is invalid against nested sibling",
@@ -357,11 +343,11 @@
     }
   ],
   "summary": {
-    "passed": 1062,
-    "failed": 4,
+    "passed": 1064,
+    "failed": 2,
     "skipped": 0,
     "total": 1066,
-    "percentage": 99.62476547842401,
+    "percentage": 99.812382739212,
     "unsupportedFeatures": {
       "count": 205,
       "items": [

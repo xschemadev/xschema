@@ -275,8 +275,8 @@
       "total": 77,
       "failures": [
         {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
+          "group": "order of evaluation: $id and $anchor and $ref",
+          "test": "data is valid against first definition",
           "expected": true,
           "actual": "false",
           "passed": false

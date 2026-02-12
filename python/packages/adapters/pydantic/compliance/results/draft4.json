@@ -178,8 +178,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 39,
-      "failed": 4,
+      "passed": 40,
+      "failed": 3,
       "skipped": 0,
       "total": 43,
       "failures": [
@@ -198,17 +198,10 @@
           "passed": false
         },
         {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
           "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
           "passed": false
         }
       ]
@@ -243,11 +236,11 @@
     }
   ],
   "summary": {
-    "passed": 605,
-    "failed": 4,
+    "passed": 606,
+    "failed": 3,
     "skipped": 0,
     "total": 609,
-    "percentage": 99.3431855500821,
+    "percentage": 99.50738916256158,
     "unsupportedFeatures": {
       "count": 4,
       "items": [

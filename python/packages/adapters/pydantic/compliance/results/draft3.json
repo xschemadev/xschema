@@ -164,9 +164,9 @@
         },
         {
           "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
           "passed": false
         }
       ]

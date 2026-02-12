@@ -275,13 +275,6 @@
       "total": 77,
       "failures": [
         {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
           "group": "order of evaluation: $id and $anchor and $ref",
           "test": "data is valid against first definition",
           "expected": true,
@@ -313,9 +306,16 @@
         },
         {
           "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "simple URN base URI with $ref via the URN",
+          "test": "invalid under the URN IDed schema",
+          "expected": false,
+          "actual": "true",
           "passed": false
         }
       ]

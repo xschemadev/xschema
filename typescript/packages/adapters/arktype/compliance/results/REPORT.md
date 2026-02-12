@@ -4,7 +4,7 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1050 | 2 | 0 | 182 | 99.8% |
+| draft2019-09 | 1049 | 3 | 0 | 182 | 99.7% |
 | draft2020-12 | 1063 | 3 | 0 | 205 | 99.7% |
 | draft3 | 430 | 2 | 0 | 2 | 99.5% |
 | draft4 | 607 | 2 | 0 | 4 | 99.7% |
@@ -13,7 +13,7 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.8%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.7%25-brightgreen)
 ![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.7%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.5%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-99.7%25-brightgreen)
@@ -62,7 +62,7 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 75/77 |
+| ref | ⚠️ | 74/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -350,8 +350,11 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 2 failures</summary>
+<summary>ref - 3 failures</summary>
 
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
+  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
   - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`

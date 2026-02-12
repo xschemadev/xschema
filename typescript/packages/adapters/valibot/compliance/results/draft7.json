@@ -227,8 +227,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 73,
-      "failed": 3,
+      "passed": 74,
+      "failed": 2,
       "skipped": 0,
       "total": 76,
       "failures": [
@@ -242,13 +242,6 @@
         {
           "group": "$ref prevents a sibling $id from changing the base uri",
           "test": "$ref resolves to /definitions/base_foo, data validates",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
           "expected": true,
           "actual": "false",
           "passed": false
@@ -285,11 +278,11 @@
     }
   ],
   "summary": {
-    "passed": 909,
-    "failed": 3,
+    "passed": 910,
+    "failed": 2,
     "skipped": 0,
     "total": 912,
-    "percentage": 99.67105263157895,
+    "percentage": 99.78070175438597,
     "unsupportedFeatures": {
       "count": 4,
       "items": [

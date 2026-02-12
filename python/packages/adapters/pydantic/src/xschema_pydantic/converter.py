@@ -38,7 +38,13 @@ from xschema_core import parse
 
 from .errors import ConversionError, InvalidSchemaError
 from .import_collector import ImportCollector
-from .renderer import render, _reset_helper_registry, get_needed_helpers
+from .renderer import (
+    render,
+    _reset_helper_registry,
+    get_needed_helpers,
+    set_root_class_name,
+    needs_model_rebuild,
+)
 
 
 def _is_object_only_schema(ir_node: Any, original_schema: dict | bool) -> bool:
@@ -251,8 +257,18 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     # Generate class name from varName
     class_name = to_pascal_case(var_name)
 
-    # Reset helper registry before rendering
+    # Reset helper registry and set root class name for forward refs.
+    # Forward refs only work when the root produces a typed BaseModel class.
+    # Typeless object schemas (no explicit "type":"object") can accept non-objects
+    # at the recursive position, so forward refs would be too restrictive.
     _reset_helper_registry()
+    root_is_typed_object = (
+        hasattr(ir_node, "kind")
+        and ir_node.kind == "object"
+        and isinstance(schema, dict)
+        and schema.get("type") == "object"
+    )
+    set_root_class_name(class_name, root_is_typed_object)
 
     # Render the IR to Pydantic code
     try:
@@ -301,6 +317,9 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
     elif is_array_only:
         type_guard_wrapper = "isinstance(v, list)"
 
+    # Check if forward refs need resolving via model_rebuild()
+    _needs_rebuild = needs_model_rebuild()
+
     if is_simple_class:
         # For simple classes, create TypeAdapter for consistency
         # The template expects all schemas to have TypeAdapter assignments
@@ -312,6 +331,8 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
         if helpers:
             parts.append(helpers)
         parts.append(result.code)
+        if _needs_rebuild:
+            parts.append(f"{class_name}.model_rebuild()")
         parts.append(type_adapter_stmt)
         schema_code = "\n\n".join(parts)
 
@@ -332,6 +353,8 @@ def convert(input_data: dict[str, Any]) -> dict[str, Any]:
             parts.append(helpers)
         if result.code:
             parts.append(result.code)
+        if _needs_rebuild:
+            parts.append(f"{class_name}.model_rebuild()")
         parts.append(type_adapter_stmt)
         schema_code = "\n\n".join(parts)
 

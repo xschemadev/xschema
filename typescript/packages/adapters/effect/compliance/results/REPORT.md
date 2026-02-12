@@ -5,20 +5,20 @@
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
 | draft2019-09 | 1049 | 3 | 0 | 182 | 99.7% |
-| draft2020-12 | 1062 | 4 | 0 | 205 | 99.6% |
+| draft2020-12 | 1063 | 3 | 0 | 205 | 99.7% |
 | draft3 | 430 | 2 | 0 | 2 | 99.5% |
-| draft4 | 606 | 3 | 0 | 4 | 99.5% |
-| draft6 | 825 | 3 | 0 | 4 | 99.6% |
-| draft7 | 909 | 3 | 0 | 4 | 99.7% |
+| draft4 | 607 | 2 | 0 | 4 | 99.7% |
+| draft6 | 826 | 2 | 0 | 4 | 99.8% |
+| draft7 | 910 | 2 | 0 | 4 | 99.8% |
 
 ## Badges
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.7%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.6%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.7%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.5%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.5%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-99.6%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-99.7%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.7%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-99.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-99.8%25-brightgreen)
 
 ## draft2019-09
 
@@ -352,8 +352,8 @@ These tests are intentionally excluded due to documented limitations.
 <details>
 <summary>ref - 3 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: valid tree
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
@@ -406,7 +406,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 73/77 |
+| ref | ⚠️ | 74/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -765,11 +765,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 4 failures</summary>
+<summary>ref - 3 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $anchor and $ref**
   - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
@@ -867,7 +864,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 40/43 |
+| ref | ⚠️ | 41/43 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -890,16 +887,13 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 3 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
   - Expected: `invalid`, Got: `true`
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -939,7 +933,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 65/68 |
+| ref | ⚠️ | 66/68 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -962,16 +956,13 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 3 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
   - Expected: `invalid`, Got: `true`
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
   - Expected: `valid`, Got: `false`
 
 </details>
@@ -1012,7 +1003,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 73/76 |
+| ref | ⚠️ | 74/76 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -1035,16 +1026,13 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 3 failures</summary>
+<summary>ref - 2 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
   - Expected: `invalid`, Got: `true`
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
-  - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
   - Expected: `valid`, Got: `false`
 
 </details>

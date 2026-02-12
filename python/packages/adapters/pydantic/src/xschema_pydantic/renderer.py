@@ -250,12 +250,33 @@ def _sanitize_property_name(name: str, used_names: set[str] | None = None) -> st
 # Then get_needed_helpers() returns all helper code to emit at module top.
 
 _helper_registry: set[str] = set()
+_root_class_name: str = ""
+_root_is_class: bool = False
+_needs_model_rebuild: bool = False
 
 
 def _reset_helper_registry() -> None:
     """Reset the helper registry. Called before rendering each schema."""
     global _helper_registry
     _helper_registry = set()
+
+
+def set_root_class_name(name: str, is_class: bool) -> None:
+    """Set the root class name for forward reference resolution.
+
+    Called by the converter before rendering so that recursive $ref: "#"
+    can be rendered as a forward reference to the root class instead of Any.
+    Forward refs only work when the root schema generates a BaseModel class.
+    """
+    global _root_class_name, _root_is_class, _needs_model_rebuild
+    _root_class_name = name
+    _root_is_class = is_class
+    _needs_model_rebuild = False
+
+
+def needs_model_rebuild() -> bool:
+    """Check if the rendered schema uses forward references requiring model_rebuild()."""
+    return _needs_model_rebuild
 
 
 def _register_helper(helper_name: str) -> None:
@@ -2665,17 +2686,25 @@ def render_ref(node: RefNode, name: str) -> RenderResult:
     """Render RefNode to Pydantic type.
 
     Resolved refs are rendered inline. Recursive refs (resolved=None, path
-    starts with '#') emit Any because Python's type system cannot express
-    self-referencing types in generated code without forward-ref infrastructure.
+    starts with '#') use a forward reference string to the root class so
+    Pydantic validates the recursive structure correctly at runtime.
     Truly unresolvable refs (should never reach the renderer — the parser
     raises ValueError for those) produce a ConversionError.
     """
     if node.resolved is not None:
         return render(node.resolved, name)
 
-    # Recursive ref (cycle detected by the parser). Any is the only safe
-    # static type here; runtime validation still runs via the parent schema.
+    # Recursive ref (cycle detected by the parser). Use a forward reference
+    # to the root class so Pydantic validates recursively at runtime.
+    # Only works when the root schema generates a BaseModel class.
     if node.path.startswith("#"):
+        global _needs_model_rebuild
+        if _root_class_name and _root_is_class:
+            _needs_model_rebuild = True
+            return RenderResult(
+                code="", type_expr=f"'{_root_class_name}'", imports=set()
+            )
+        # Root is not a class (TypeGuarded, union, etc.) — can't use forward refs
         return RenderResult(
             code="", type_expr="Any", imports={"from typing import Any"}
         )

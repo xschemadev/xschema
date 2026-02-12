@@ -240,17 +240,17 @@
           "passed": false
         },
         {
-          "group": "Recursive references between schemas",
-          "test": "valid tree",
-          "expected": true,
-          "actual": "false",
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "true",
           "passed": false
         },
         {
-          "group": "root pointer ref",
-          "test": "match",
-          "expected": true,
-          "actual": "false",
+          "group": "simple URN base URI with $ref via the URN",
+          "test": "invalid under the URN IDed schema",
+          "expected": false,
+          "actual": "true",
           "passed": false
         }
       ]

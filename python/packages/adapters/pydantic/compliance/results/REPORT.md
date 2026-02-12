@@ -5,18 +5,18 @@
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
 | draft2019-09 | 1046 | 6 | 0 | 182 | 99.4% |
-| draft2020-12 | 1061 | 5 | 0 | 205 | 99.5% |
+| draft2020-12 | 1060 | 6 | 0 | 205 | 99.4% |
 | draft3 | 429 | 3 | 0 | 2 | 99.3% |
-| draft4 | 605 | 4 | 0 | 4 | 99.3% |
+| draft4 | 606 | 3 | 0 | 4 | 99.5% |
 | draft6 | 824 | 4 | 0 | 4 | 99.5% |
 | draft7 | 908 | 4 | 0 | 4 | 99.6% |
 
 ## Badges
 
 ![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.4%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.5%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.4%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.3%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-99.5%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-99.5%25-brightgreen)
 ![draft7](https://img.shields.io/badge/draft7%20compliance-99.6%25-brightgreen)
 
@@ -352,9 +352,6 @@ These tests are intentionally excluded due to documented limitations.
 <details>
 <summary>ref - 6 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $anchor and $ref**
   - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
@@ -368,8 +365,11 @@ These tests are intentionally excluded due to documented limitations.
   - Test: referenced subschema doesn't see annotations from properties
   - Expected: `invalid`, Got: `true`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -415,7 +415,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 72/77 |
+| ref | ⚠️ | 71/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -774,10 +774,10 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 5 failures</summary>
+<summary>ref - 6 failures</summary>
 
-- **Recursive references between schemas**
-  - Test: valid tree
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is invalid against nested sibling
@@ -789,8 +789,11 @@ These tests are intentionally excluded due to documented limitations.
   - Test: referenced subschema doesn't see annotations from properties
   - Expected: `invalid`, Got: `true`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -848,8 +851,8 @@ These tests are intentionally excluded due to documented limitations.
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -882,7 +885,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 39/43 |
+| ref | ⚠️ | 40/43 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -905,7 +908,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 4 failures</summary>
+<summary>ref - 3 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -913,12 +916,9 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -988,12 +988,12 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
@@ -1064,12 +1064,12 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **Recursive references between schemas**
-  - Test: valid tree
-  - Expected: `valid`, Got: `false`
 - **root pointer ref**
-  - Test: match
-  - Expected: `valid`, Got: `false`
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `true`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `true`
 
 </details>
 
