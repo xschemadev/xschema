@@ -41,3 +41,8 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **approach**: detect prototype property names via `hasPrototypeProperties()` from `@xschemadev/core`, bypass valibot's object shape, generate manual `v.check()` + `v.safeParse()` per-property validation using `Object.hasOwn()` for safe key access
 - **also fixes issue-11**: same root cause ("required properties whose names are Javascript object property names") — `required` keyword compliance now 100% across all drafts
 - **verified**: valibot properties keyword 100% across all 6 drafts; valibot required keyword 100% across all 6 drafts; full compliance re-run passes; typecheck passes
+
+### issue-06: ref / property named $ref that is not a reference
+- **fix**: already resolved by issue-02's `inPropertyMap` context tracking in `cli/processor/local_refs.go`
+- **root cause**: identical to issue-02 — `$ref` as a property name inside `properties` was treated as a JSON Schema reference, triggering `$ref value must be a string` error
+- **verified**: all 5 adapters × 5 drafts (draft4, draft6, draft7, draft2019-09, draft2020-12) × ref keyword compliance — 0 baseline failures for "property named $ref that is not a reference"; all typechecks pass
