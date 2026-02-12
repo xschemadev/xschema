@@ -269,35 +269,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 74,
-      "failed": 3,
+      "passed": 77,
+      "failed": 0,
       "skipped": 0,
-      "total": 77,
-      "failures": [
-        {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "order of evaluation: $id and $ref on nested schema",
-          "test": "data is invalid against nested sibling",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "order of evaluation: $id and $ref on nested schema",
-          "test": "data is valid against nested sibling",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        }
-      ]
+      "total": 77
     },
     {
       "keyword": "refRemote",
@@ -350,11 +325,11 @@
     }
   ],
   "summary": {
-    "passed": 1049,
-    "failed": 3,
+    "passed": 1052,
+    "failed": 0,
     "skipped": 0,
     "total": 1052,
-    "percentage": 99.7148288973384,
+    "percentage": 100,
     "unsupportedFeatures": {
       "count": 182,
       "items": [

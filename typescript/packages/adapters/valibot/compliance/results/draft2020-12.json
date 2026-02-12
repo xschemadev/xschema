@@ -269,28 +269,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 75,
-      "failed": 2,
+      "passed": 77,
+      "failed": 0,
       "skipped": 0,
-      "total": 77,
-      "failures": [
-        {
-          "group": "order of evaluation: $id and $ref on nested schema",
-          "test": "data is invalid against nested sibling",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "order of evaluation: $id and $ref on nested schema",
-          "test": "data is valid against nested sibling",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        }
-      ]
+      "total": 77
     },
     {
       "keyword": "refRemote",
@@ -343,11 +325,11 @@
     }
   ],
   "summary": {
-    "passed": 1064,
-    "failed": 2,
+    "passed": 1066,
+    "failed": 0,
     "skipped": 0,
     "total": 1066,
-    "percentage": 99.812382739212,
+    "percentage": 100,
     "unsupportedFeatures": {
       "count": 205,
       "items": [
@@ -361,11 +343,11 @@
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length)"
         },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema",
@@ -485,7 +467,7 @@
         },
         {
           "path": "draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid",
-          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items)"
+          "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/items)"
         },
         {
           "path": "draft2020-12/dynamicRef/after leaving a dynamic scope, it is not used by a $dynamicRef//then/$defs/thingy is the final stop for the $dynamicRef",
