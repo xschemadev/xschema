@@ -33,7 +33,7 @@ type bundleContext struct {
 	cache      map[string]any    // normalized URI → parsed schema (to avoid refetching)
 	defs       map[string]any    // key → embedded schema (collected $defs)
 	processing map[string]bool   // URIs currently being processed (circular ref detection)
-	localIDs   map[string]bool   // $id values declared in the schema (to skip local refs)
+	localIDs   map[string]string // normalized $id URI → JSON pointer path
 	anchors    map[string]string // anchor name → JSON pointer path (e.g., "foo" → "/$defs/A")
 	ctx        context.Context
 	draft      string // JSON Schema draft for normalizing fetched schemas
@@ -91,7 +91,7 @@ func Bundle(ctx context.Context, input BundleInput) (json.RawMessage, error) {
 		cache:      make(map[string]any),
 		defs:       make(map[string]any),
 		processing: make(map[string]bool),
-		localIDs:   make(map[string]bool),
+		localIDs:   make(map[string]string),
 		anchors:    make(map[string]string),
 		ctx:        ctx,
 		draft:      draft,
@@ -227,10 +227,12 @@ func (b *bundleContext) collectIDsAndAnchors(node any, baseURI string, path stri
 					// Store without fragment
 					resolvedBase, _ := splitFragment(resolved)
 					if resolvedBase != "" {
-						b.localIDs[resolvedBase] = true
-						ui.Verbosef("bundler: found local $id: %s (resolved from %s)", resolvedBase, id)
+						fullPath := pathPrefix + path
+						normalizedBase := fetcher.NormalizeURI(resolvedBase)
+						b.localIDs[normalizedBase] = fullPath
+						ui.Verbosef("bundler: found local $id: %s at path %s (resolved from %s)", normalizedBase, fullPath, id)
 						// Update base URI for children
-						baseURI = resolvedBase
+						baseURI = normalizedBase
 					}
 				}
 			}
@@ -408,10 +410,28 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 		return nil, fmt.Errorf("failed to resolve ref %q against base %q: %w", ref, baseURI, err)
 	}
 
-	// Check if this ref points to a local $id - if so, skip bundling
-	if b.localIDs[resolvedURI] {
-		ui.Verbosef("bundler: ref %q matches local $id, skipping", ref)
-		return obj, nil
+	// Check if this ref points to a local $id - rewrite to local JSON pointer
+	normalizedResolved := fetcher.NormalizeURI(resolvedURI)
+	if localPath, ok := b.localIDs[normalizedResolved]; ok {
+		localRef := "#"
+		if localPath != "" {
+			localRef += localPath
+		}
+
+		if fragment != "" {
+			if strings.HasPrefix(fragment, "/") {
+				localRef += fragment
+			} else if anchorPath, found := b.anchors[fragment]; found {
+				localRef = "#" + anchorPath
+			} else {
+				localRef = "#" + fragment
+			}
+		}
+
+		result := copyObject(obj)
+		result["$ref"] = localRef
+		ui.Verbosef("bundler: ref %q matches local $id, rewriting to %s", ref, localRef)
+		return result, nil
 	}
 
 	// Check if this is a metaschema ref - don't try to fetch/bundle these

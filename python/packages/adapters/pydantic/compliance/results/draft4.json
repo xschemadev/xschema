@@ -3,33 +3,10 @@
   "keywords": [
     {
       "keyword": "additionalItems",
-      "passed": 14,
-      "failed": 3,
+      "passed": 17,
+      "failed": 0,
       "skipped": 0,
-      "total": 17,
-      "failures": [
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "empty array",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (1)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
-          "group": "array of items with no additionalItems permitted",
-          "test": "fewer number of items present (2)",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 17
     },
     {
       "keyword": "additionalProperties",
@@ -62,9 +39,27 @@
     {
       "keyword": "definitions",
       "passed": 0,
-      "failed": 0,
+      "failed": 2,
       "skipped": 0,
-      "total": 0
+      "total": 2,
+      "failures": [
+        {
+          "group": "validate definition against metaschema",
+          "test": "invalid definition schema",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref \"http://json-schema.org/draft-04/schema#\""
+        },
+        {
+          "group": "validate definition against metaschema",
+          "test": "valid definition schema",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref \"http://json-schema.org/draft-04/schema#\""
+        }
+      ]
     },
     {
       "keyword": "dependencies",
@@ -96,19 +91,10 @@
     },
     {
       "keyword": "items",
-      "passed": 20,
-      "failed": 1,
+      "passed": 21,
+      "failed": 0,
       "skipped": 0,
-      "total": 21,
-      "failures": [
-        {
-          "group": "items and subitems",
-          "test": "fewer items is valid",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        }
-      ]
+      "total": 21
     },
     {
       "keyword": "maxItems",
@@ -210,10 +196,129 @@
     },
     {
       "keyword": "ref",
-      "passed": 0,
-      "failed": 0,
+      "passed": 30,
+      "failed": 15,
       "skipped": 0,
-      "total": 0
+      "total": 45,
+      "failures": [
+        {
+          "group": "$ref prevents a sibling id from changing the base uri",
+          "test": "$ref resolves to /definitions/base_foo, data does not validate",
+          "expected": false,
+          "actual": "true",
+          "passed": false
+        },
+        {
+          "group": "$ref prevents a sibling id from changing the base uri",
+          "test": "$ref resolves to /definitions/base_foo, data validates",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "Recursive references between schemas",
+          "test": "invalid tree",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#/$defs/node\" is not supported"
+        },
+        {
+          "group": "Recursive references between schemas",
+          "test": "valid tree",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#/$defs/node\" is not supported"
+        },
+        {
+          "group": "naive replacement of $ref with its destination is not correct",
+          "test": "match the enum exactly",
+          "expected": true,
+          "actual": "false",
+          "passed": false
+        },
+        {
+          "group": "property named $ref that is not a reference",
+          "test": "property named $ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string"
+        },
+        {
+          "group": "property named $ref that is not a reference",
+          "test": "property named $ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string"
+        },
+        {
+          "group": "property named $ref, containing an actual $ref",
+          "test": "property named $ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string"
+        },
+        {
+          "group": "property named $ref, containing an actual $ref",
+          "test": "property named $ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string"
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref invalid",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref \"http://json-schema.org/draft-04/schema#\""
+        },
+        {
+          "group": "remote ref, containing refs itself",
+          "test": "remote ref valid",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref \"http://json-schema.org/draft-04/schema#\""
+        },
+        {
+          "group": "root pointer ref",
+          "test": "match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref \"#\" is not supported"
+        },
+        {
+          "group": "root pointer ref",
+          "test": "mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref \"#\" is not supported"
+        },
+        {
+          "group": "root pointer ref",
+          "test": "recursive match",
+          "expected": true,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref \"#\" is not supported"
+        },
+        {
+          "group": "root pointer ref",
+          "test": "recursive mismatch",
+          "expected": false,
+          "actual": "error",
+          "passed": false,
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref \"#\" is not supported"
+        }
+      ]
     },
     {
       "keyword": "refRemote",
@@ -245,11 +350,11 @@
     }
   ],
   "summary": {
-    "passed": 562,
-    "failed": 4,
+    "passed": 596,
+    "failed": 17,
     "skipped": 0,
-    "total": 566,
-    "percentage": 99.29328621908127,
+    "total": 613,
+    "percentage": 97.22675367047309,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

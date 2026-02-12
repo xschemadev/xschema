@@ -228,6 +228,7 @@ func runDraftSequential(ctx context.Context, opts runDraftOptions, suite map[str
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return &result, err
 			}
+			markKeywordExecutionError(&keywordResult, &result.Summary, groups, err)
 		}
 
 		result.Keywords = append(result.Keywords, keywordResult)
@@ -315,6 +316,8 @@ func runDraftParallel(ctx context.Context, opts runDraftOptions, suite map[strin
 					mu.Unlock()
 					return
 				}
+
+				markKeywordExecutionError(&keywordResult, &localSummary, groups, err)
 			}
 
 			// Store result at the correct index for deterministic order
@@ -678,6 +681,13 @@ func markAllFailed(keywordResult *KeywordResult, summary *DraftSummary, group Te
 			Passed:   false,
 			Error:    errorMsg,
 		})
+	}
+}
+
+func markKeywordExecutionError(keywordResult *KeywordResult, summary *DraftSummary, groups []TestGroup, err error) {
+	msg := fmt.Sprintf("keyword processing error: %v", err)
+	for _, group := range groups {
+		markAllFailed(keywordResult, summary, group, msg)
 	}
 }
 

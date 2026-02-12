@@ -31,9 +31,7 @@ def _unique_anothertsconfigpart0compileroptionsvariant0customconditionsvariant0(
     return v
 
 
-def _intersection_anothertsconfigpart0compileroptionsvariant0libvariant0item(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart0compileroptionsvariant0libvariant0item(v):
     validator_0 = TypeAdapter(Literal["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$')])
     try:
         validator_0.validate_python(v)
@@ -55,9 +53,7 @@ def _unique_anothertsconfigpart0compileroptionsvariant0libvariant0(v: list) -> l
     return v
 
 
-def _intersection_anothertsconfigpart0compileroptionsvariant0module(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart0compileroptionsvariant0module(v):
     validator_0 = TypeAdapter(Literal["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"] | Annotated[str, StringConstraints(strict=True, pattern=r'^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$')])
     try:
         validator_0.validate_python(v)
@@ -71,9 +67,7 @@ def _intersection_anothertsconfigpart0compileroptionsvariant0module(v) -> Any:
     return v
 
 
-def _intersection_anothertsconfigpart0compileroptionsvariant0moduleresolution(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart0compileroptionsvariant0moduleresolution(v):
     validator_0 = TypeAdapter(Literal["classic", "node", "node10", "node16", "nodenext", "bundler"] | Annotated[str, StringConstraints(strict=True, pattern=r'^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$')])
     try:
         validator_0.validate_python(v)
@@ -95,9 +89,7 @@ def _unique_anothertsconfigpart0compileroptionsvariant0modulesuffixesvariant0(v:
     return v
 
 
-def _intersection_anothertsconfigpart0compileroptionsvariant0newline(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart0compileroptionsvariant0newline(v):
     validator_0 = TypeAdapter(Literal["crlf", "lf"] | Annotated[str, StringConstraints(strict=True, pattern=r'^(CRLF|LF|crlf|lf)$')])
     try:
         validator_0.validate_python(v)
@@ -152,9 +144,7 @@ def _unique_anothertsconfigpart0compileroptionsvariant0rootdirsvariant0(v: list)
     return v
 
 
-def _intersection_anothertsconfigpart0compileroptionsvariant0target(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart0compileroptionsvariant0target(v):
     validator_0 = TypeAdapter(Literal["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"] | Annotated[str, StringConstraints(strict=True, pattern=r'^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$')])
     try:
         validator_0.validate_python(v)
@@ -399,9 +389,7 @@ def _unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0custom
     return v
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0libvariant0item(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0libvariant0item(v):
     validator_0 = TypeAdapter(Literal["ES5", "ES6", "ES2015", "ES2015.Collection", "ES2015.Core", "ES2015.Generator", "ES2015.Iterable", "ES2015.Promise", "ES2015.Proxy", "ES2015.Reflect", "ES2015.Symbol.WellKnown", "ES2015.Symbol", "ES2016", "ES2016.Array.Include", "ES2017", "ES2017.Intl", "ES2017.Object", "ES2017.SharedMemory", "ES2017.String", "ES2017.TypedArrays", "ES2017.ArrayBuffer", "ES2018", "ES2018.AsyncGenerator", "ES2018.AsyncIterable", "ES2018.Intl", "ES2018.Promise", "ES2018.Regexp", "ES2019", "ES2019.Array", "ES2019.Intl", "ES2019.Object", "ES2019.String", "ES2019.Symbol", "ES2020", "ES2020.BigInt", "ES2020.Promise", "ES2020.String", "ES2020.Symbol.WellKnown", "ESNext", "ESNext.Array", "ESNext.AsyncIterable", "ESNext.BigInt", "ESNext.Collection", "ESNext.Intl", "ESNext.Iterator", "ESNext.Object", "ESNext.Promise", "ESNext.Regexp", "ESNext.String", "ESNext.Symbol", "DOM", "DOM.AsyncIterable", "DOM.Iterable", "ScriptHost", "WebWorker", "WebWorker.AsyncIterable", "WebWorker.ImportScripts", "Webworker.Iterable", "ES7", "ES2021", "ES2020.SharedMemory", "ES2020.Intl", "ES2020.Date", "ES2020.Number", "ES2021.Promise", "ES2021.String", "ES2021.WeakRef", "ESNext.WeakRef", "ES2021.Intl", "ES2022", "ES2022.Array", "ES2022.Error", "ES2022.Intl", "ES2022.Object", "ES2022.String", "ES2022.SharedMemory", "ES2022.RegExp", "ES2023", "ES2023.Array", "ES2024", "ES2024.ArrayBuffer", "ES2024.Collection", "ES2024.Object", "ES2024.Promise", "ES2024.Regexp", "ES2024.SharedMemory", "ES2024.String", "Decorators", "Decorators.Legacy", "ES2017.Date", "ES2023.Collection", "ESNext.Decorators", "ESNext.Disposable", "ESNext.Error", "ESNext.Sharedmemory"] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]5|[Ee][Ss]6|[Ee][Ss]7$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2015(\\.([Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Cc][Oo][Rr][Ee]|[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Pp][Rr][Oo][Xx][Yy]|[Rr][Ee][Ff][Ll][Ee][Cc][Tt]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2016(\\.[Aa][Rr][Rr][Aa][Yy]\\.[Ii][Nn][Cc][Ll][Uu][Dd][Ee])?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2017(\\.([Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Tt][Yy][Pp][Ee][Dd][Aa][Rr][Rr][Aa][Yy][Ss]|[Dd][Aa][Tt][Ee]|[Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2018(\\.([Aa][Ss][Yy][Nn][Cc][Gg][Ee][Nn][Ee][Rr][Aa][Tt][Oo][Rr]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2019(\\.([Aa][Rr][Rr][Aa][Yy]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2020(\\.([Bb][Ii][Gg][Ii][Nn][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]\\.[Ww][Ee][Ll][Ll][Kk][Nn][Oo][Ww][Nn]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ii][Nn][Tt][Ll]|[Dd][Aa][Tt][Ee]|[Nn][Uu][Mm][Bb][Ee][Rr]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2021(\\.([Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2022(\\.([Aa][Rr][Rr][Aa][Yy]|[Ee][Rr][Rr][Oo][Rr]|[Ii][Nn][Tt][Ll]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Rr][Ee][Gg][Ee][Xx][Pp]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2023(\\.([Aa][Rr][Rr][Aa][Yy]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss]2024(\\.([Aa][Rr][Rr][Aa][Yy][Bb][Uu][Ff][Ff][Ee][Rr]|[Cc][Oo][Ll][Ll][Ee][Cc][Tt][Ii][Oo][Nn]|[Oo][Bb][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Ss][Hh][Aa][Rr][Ee][Dd][Mm][Ee][Mm][Oo][Rr][Yy]|[Ss][Tt][Rr][Ii][Nn][Gg]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ee][Ss][Nn][Ee][Xx][Tt](\\.([Aa][Rr][Rr][Aa][Yy]|[Aa][Ss][Yy][Nn][Cc][Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ii][Nn][Tt][Ll]|[Pp][Rr][Oo][Mm][Ii][Ss][Ee]|[Ss][Tt][Rr][Ii][Nn][Gg]|[Ss][Yy][Mm][Bb][Oo][Ll]|[Ww][Ee][Aa][Kk][Rr][Ee][Ff]|[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss]|[Dd][Ii][Ss][Pp][Oo][Ss][Aa][Bb][Ll][Ee]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Dd][Oo][Mm](\\.([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee])?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ss][Cc][Rr][Ii][Pp][Tt][Hh][Oo][Ss][Tt]$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Ww][Ee][Bb][Ww][Oo][Rr][Kk][Ee][Rr](\\.([Ii][Mm][Pp][Oo][Rr][Tt][Ss][Cc][Rr][Ii][Pp][Tt][Ss]|([Aa][Ss][Yy][Nn][Cc])?[Ii][Tt][Ee][Rr][Aa][Bb][Ll][Ee]))?$')] | Annotated[str, StringConstraints(strict=True, pattern=r'^[Dd][Ee][Cc][Oo][Rr][Aa][Tt][Oo][Rr][Ss](\\.([Ll][Ee][Gg][Aa][Cc][Yy]))?$')])
     try:
         validator_0.validate_python(v)
@@ -423,9 +411,7 @@ def _unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0libvar
     return v
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0module(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0module(v):
     validator_0 = TypeAdapter(Literal["commonjs", "amd", "system", "umd", "es6", "es2015", "es2020", "esnext", "none", "es2022", "node16", "node18", "node20", "nodenext", "preserve"] | Annotated[str, StringConstraints(strict=True, pattern=r'^([Cc][Oo][Mm][Mm][Oo][Nn][Jj][Ss]|[AaUu][Mm][Dd]|[Ss][Yy][Ss][Tt][Ee][Mm]|[Ee][Ss]([356]|20(1[567]|2[02])|[Nn][Ee][Xx][Tt])|[Nn][Oo][dD][Ee](1[68]|20)|[Nn][Oo][Dd][Ee][Nn][Ee][Xx][Tt]|[Nn][Oo][Nn][Ee]|[Pp][Rr][Ee][Ss][Ee][Rr][Vv][Ee])$')])
     try:
         validator_0.validate_python(v)
@@ -439,9 +425,7 @@ def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0
     return v
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0moduleresolution(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0moduleresolution(v):
     validator_0 = TypeAdapter(Literal["classic", "node", "node10", "node16", "nodenext", "bundler"] | Annotated[str, StringConstraints(strict=True, pattern=r'^(([Nn]ode)|([Nn]ode1[06])|([Nn]ode[Nn]ext)|([Cc]lassic)|([Bb]undler))$')])
     try:
         validator_0.validate_python(v)
@@ -463,9 +447,7 @@ def _unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0module
     return v
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0newline(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0newline(v):
     validator_0 = TypeAdapter(Literal["crlf", "lf"] | Annotated[str, StringConstraints(strict=True, pattern=r'^(CRLF|LF|crlf|lf)$')])
     try:
         validator_0.validate_python(v)
@@ -520,9 +502,7 @@ def _unique_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0rootdi
     return v
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0target(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptionspart0variant0target(v):
     validator_0 = TypeAdapter(Literal["es3", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "es2022", "es2023", "es2024", "esnext"] | Annotated[str, StringConstraints(strict=True, pattern=r'^([Ee][Ss]([356]|(20(1[56789]|2[01234]))|[Nn][Ee][Xx][Tt]))$')])
     try:
         validator_0.validate_python(v)
@@ -678,9 +658,7 @@ class AnotherTsConfigPart6TsNodeVariant0CompileroptionsPart1Variant0(BaseModel):
     model_config = ConfigDict(extra='allow')
 
 
-def _intersection_anothertsconfigpart6tsnodevariant0compileroptions(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfigpart6tsnodevariant0compileroptions(v):
     validator_0 = TypeAdapter(AnotherTsConfigPart6TsNodeVariant0CompileroptionsPart0Variant0 | None)
     try:
         validator_0.validate_python(v)
@@ -817,9 +795,7 @@ class AnotherTsConfigPart8(BaseModel):
     pass
 
 
-def _intersection_anothertsconfig(v) -> Any:
-    # Validate against all schemas in intersection
-    # Keep original value - each validator checks independently
+def _intersection_anothertsconfig(v):
     validator_0 = TypeAdapter(AnotherTsConfigPart0)
     try:
         validator_0.validate_python(v)

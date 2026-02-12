@@ -273,6 +273,11 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *
 			return nil, fmt.Errorf("schema %s contains unsupported keyword: %w", s.SourceURI, ukErr)
 		}
 
+		bundled, err = resolveInternalRefs(bundled, draft)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve internal refs for %s: %w", s.SourceURI, err)
+		}
+
 		result[i] = ProcessedSchema{
 			Namespace: s.Namespace,
 			ID:        s.ID,

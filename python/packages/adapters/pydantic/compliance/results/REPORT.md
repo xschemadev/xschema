@@ -4,37 +4,37 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 932 | 4 | 0 | 178 | 99.6% |
-| draft2020-12 | 946 | 4 | 0 | 201 | 99.6% |
-| draft3 | 404 | 3 | 0 | 0 | 99.3% |
-| draft4 | 562 | 4 | 0 | 0 | 99.3% |
-| draft6 | 756 | 4 | 0 | 0 | 99.5% |
-| draft7 | 832 | 4 | 0 | 0 | 99.5% |
+| draft2019-09 | 1024 | 32 | 0 | 178 | 97.0% |
+| draft2020-12 | 1038 | 32 | 0 | 201 | 97.0% |
+| draft3 | 423 | 11 | 0 | 0 | 97.5% |
+| draft4 | 596 | 17 | 0 | 0 | 97.2% |
+| draft6 | 807 | 25 | 0 | 0 | 97.0% |
+| draft7 | 891 | 25 | 0 | 0 | 97.3% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.6%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.6%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-99.3%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-99.3%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-99.5%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-99.5%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-97.0%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-97.0%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-97.5%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-97.2%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-97.0%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-97.3%25-brightgreen)
 
 ## draft2019-09
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ✅ | 0/0 |
+| anchor | ✅ | 8/8 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -43,7 +43,7 @@
 | format | ✅ | 114/114 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -62,8 +62,8 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ⚠️ | 53/79 |
+| refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -340,26 +340,116 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>defs - 2 failures</summary>
 
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>ref - 26 failures</summary>
 
-- **items and subitems**
-  - Test: fewer items is valid
+- **Recursive references between schemas**
+  - Test: invalid tree
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#/$defs/node" is not supported`
+- **Recursive references between schemas**
+  - Test: valid tree
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref "#/$defs/node" is not supported`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
+- **order of evaluation: $id and $ref on nested schema**
+  - Test: data is invalid against nested sibling
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
+- **order of evaluation: $id and $ref on nested schema**
+  - Test: data is valid against nested sibling
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
+- **property named $ref that is not a reference**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_7: $ref value must be a string`
+- **property named $ref that is not a reference**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_7: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_8: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_8: $ref value must be a string`
+- **ref creates new scope when adjacent to keywords**
+  - Test: referenced subschema doesn't see annotations from properties
+  - Expected: `invalid`, Got: `true`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2019-09/schema"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: valid under the URN IDed schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_21: recursive local $ref "#" is not supported`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A" is not supported`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2019_09_locationIndependentIdentifier_json__A" is not supported`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer" is not supported`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2019_09_subSchemas_json__integer" is not supported`
 
 </details>
 
@@ -369,14 +459,14 @@ These tests are intentionally excluded due to documented limitations.
 | ------- | ------ | ---------- |
 | additionalProperties | ✅ | 21/21 |
 | allOf | ✅ | 30/30 |
-| anchor | ✅ | 0/0 |
+| anchor | ✅ | 8/8 |
 | anyOf | ✅ | 18/18 |
 | boolean_schema | ✅ | 18/18 |
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ✅ | 0/0 |
+| defs | ❌ | 0/2 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -386,7 +476,7 @@ These tests are intentionally excluded due to documented limitations.
 | format | ✅ | 133/133 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 25/29 |
+| items | ✅ | 29/29 |
 | maxContains | ✅ | 12/12 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
@@ -405,8 +495,8 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
-| refRemote | ✅ | 0/0 |
+| ref | ⚠️ | 53/79 |
+| refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | unevaluatedItems | ✅ | 14/14 |
@@ -754,20 +844,116 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>items - 4 failures</summary>
+<summary>defs - 2 failures</summary>
 
-- **items and subitems**
-  - Test: fewer items is valid
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/defs/group_0: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+
+</details>
+
+<details>
+<summary>ref - 26 failures</summary>
+
+- **Recursive references between schemas**
+  - Test: invalid tree
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
+- **Recursive references between schemas**
+  - Test: valid tree
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref "#" is not supported`
+- **URN ref with nested pointer ref**
+  - Test: a non-string is invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
+- **URN ref with nested pointer ref**
+  - Test: a string is valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_28: failed to resolve local $ref "#/$defs/bar": key "bar" not found`
+- **order of evaluation: $id and $anchor and $ref**
+  - Test: data is valid against first definition
   - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **prefixItems with no additional items allowed**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **order of evaluation: $id and $ref on nested schema**
+  - Test: data is invalid against nested sibling
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
+- **order of evaluation: $id and $ref on nested schema**
+  - Test: data is valid against nested sibling
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
+- **property named $ref that is not a reference**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string`
+- **property named $ref that is not a reference**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string`
+- **ref creates new scope when adjacent to keywords**
+  - Test: referenced subschema doesn't see annotations from properties
+  - Expected: `invalid`, Got: `true`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_15: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_16: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_6: encountered unresolved non-local $ref "https://json-schema.org/draft/2020-12/schema"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_21: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: valid under the URN IDed schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_21: recursive local $ref "#" is not supported`
+
+</details>
+
+<details>
+<summary>refRemote - 4 failures</summary>
+
+- **anchor within remote ref**
+  - Test: remote anchor invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__A" is not supported`
+- **anchor within remote ref**
+  - Test: remote anchor valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_2: recursive local $ref "#/$defs/localhost_1234_draft2020_12_locationIndependentIdentifier_json__A" is not supported`
+- **fragment within remote ref**
+  - Test: remote fragment invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__integer" is not supported`
+- **fragment within remote ref**
+  - Test: remote fragment valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/refRemote/group_1: recursive local $ref "#/$defs/localhost_1234_draft2020_12_subSchemas_json__integer" is not supported`
 
 </details>
 
@@ -775,7 +961,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 11/14 |
+| additionalItems | ✅ | 14/14 |
 | additionalProperties | ✅ | 16/16 |
 | default | ✅ | 7/7 |
 | dependencies | ✅ | 18/18 |
@@ -795,7 +981,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ✅ | 0/0 |
+| ref | ⚠️ | 16/27 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
@@ -804,17 +990,41 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>ref - 11 failures</summary>
 
-- **array of items with no additionalItems permitted**
-  - Test: empty array
+- **$ref prevents a sibling id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data does not validate
+  - Expected: `invalid`, Got: `true`
+- **$ref prevents a sibling id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
+- **naive replacement of $ref with its destination is not correct**
+  - Test: match the enum exactly
   - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_6: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_6: $ref value must be a string`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref "http://json-schema.org/draft-03/schema#"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_8: encountered unresolved non-local $ref "http://json-schema.org/draft-03/schema#"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -822,17 +1032,17 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 14/17 |
+| additionalItems | ✅ | 17/17 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 0/0 |
+| definitions | ❌ | 0/2 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 20/21 |
+| items | ✅ | 21/21 |
 | maxItems | ✅ | 4/4 |
 | maxLength | ✅ | 5/5 |
 | maxProperties | ✅ | 8/8 |
@@ -847,7 +1057,7 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ✅ | 0/0 |
+| ref | ⚠️ | 30/45 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
@@ -856,26 +1066,65 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>definitions - 2 failures</summary>
 
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>ref - 15 failures</summary>
 
-- **items and subitems**
-  - Test: fewer items is valid
+- **$ref prevents a sibling id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data does not validate
+  - Expected: `invalid`, Got: `true`
+- **$ref prevents a sibling id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
+- **Recursive references between schemas**
+  - Test: invalid tree
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#/$defs/node" is not supported`
+- **Recursive references between schemas**
+  - Test: valid tree
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#/$defs/node" is not supported`
+- **naive replacement of $ref with its destination is not correct**
+  - Test: match the enum exactly
+  - Expected: `valid`, Got: `false`
+- **property named $ref that is not a reference**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string`
+- **property named $ref that is not a reference**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-04/schema#"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -883,7 +1132,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
@@ -891,14 +1140,14 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 0/0 |
+| definitions | ❌ | 0/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
 | exclusiveMinimum | ✅ | 4/4 |
 | format | ✅ | 54/54 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -914,7 +1163,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
+| ref | ⚠️ | 47/70 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -923,26 +1172,89 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>definitions - 2 failures</summary>
 
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>ref - 23 failures</summary>
 
-- **items and subitems**
-  - Test: fewer items is valid
+- **$ref prevents a sibling $id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data does not validate
+  - Expected: `invalid`, Got: `true`
+- **$ref prevents a sibling $id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
+- **Recursive references between schemas**
+  - Test: invalid tree
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
+- **Recursive references between schemas**
+  - Test: valid tree
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
+- **naive replacement of $ref with its destination is not correct**
+  - Test: match the enum exactly
+  - Expected: `valid`, Got: `false`
+- **property named $ref that is not a reference**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_8: $ref value must be a string`
+- **property named $ref that is not a reference**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_8: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_9: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_9: $ref value must be a string`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-06/schema#"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: valid under the URN IDed schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_20: recursive local $ref "#" is not supported`
 
 </details>
 
@@ -950,7 +1262,7 @@ These tests are intentionally excluded due to documented limitations.
 
 | Keyword | Status | Pass/Total |
 | ------- | ------ | ---------- |
-| additionalItems | ⚠️ | 16/19 |
+| additionalItems | ✅ | 19/19 |
 | additionalProperties | ✅ | 16/16 |
 | allOf | ✅ | 30/30 |
 | anyOf | ✅ | 18/18 |
@@ -958,7 +1270,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ✅ | 0/0 |
+| definitions | ❌ | 0/2 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -966,7 +1278,7 @@ These tests are intentionally excluded due to documented limitations.
 | format | ✅ | 102/102 |
 | if-then-else | ✅ | 26/26 |
 | infinite-loop-detection | ✅ | 2/2 |
-| items | ⚠️ | 27/28 |
+| items | ✅ | 28/28 |
 | maxItems | ✅ | 6/6 |
 | maxLength | ✅ | 7/7 |
 | maxProperties | ✅ | 10/10 |
@@ -982,7 +1294,7 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ✅ | 0/0 |
+| ref | ⚠️ | 55/78 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -991,26 +1303,89 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>additionalItems - 3 failures</summary>
+<summary>definitions - 2 failures</summary>
 
-- **array of items with no additionalItems permitted**
-  - Test: empty array
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (1)
-  - Expected: `valid`, Got: `false`
-- **array of items with no additionalItems permitted**
-  - Test: fewer number of items present (2)
-  - Expected: `valid`, Got: `false`
+- **validate definition against metaschema**
+  - Test: invalid definition schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
+- **validate definition against metaschema**
+  - Test: valid definition schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/definitions/group_0: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
 
 </details>
 
 <details>
-<summary>items - 1 failure</summary>
+<summary>ref - 23 failures</summary>
 
-- **items and subitems**
-  - Test: fewer items is valid
+- **$ref prevents a sibling $id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data does not validate
+  - Expected: `invalid`, Got: `true`
+- **$ref prevents a sibling $id from changing the base uri**
+  - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
+- **Recursive references between schemas**
+  - Test: invalid tree
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
+- **Recursive references between schemas**
+  - Test: valid tree
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
+- **naive replacement of $ref with its destination is not correct**
+  - Test: match the enum exactly
+  - Expected: `valid`, Got: `false`
+- **property named $ref that is not a reference**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_8: $ref value must be a string`
+- **property named $ref that is not a reference**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_8: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_9: $ref value must be a string`
+- **property named $ref, containing an actual $ref**
+  - Test: property named $ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_9: $ref value must be a string`
+- **refs with relative uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **refs with relative uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_18: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on inner field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: invalid on outer field
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **relative refs with absolute uris and defs**
+  - Test: valid on both fields
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_19: failed to resolve local $ref "#/$defs/inner": key "$defs" not found`
+- **remote ref, containing refs itself**
+  - Test: remote ref invalid
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
+- **remote ref, containing refs itself**
+  - Test: remote ref valid
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_7: encountered unresolved non-local $ref "http://json-schema.org/draft-07/schema#"`
+- **root pointer ref**
+  - Test: match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive match
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
+- **root pointer ref**
+  - Test: recursive mismatch
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: invalid under the URN IDed schema
+  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_21: recursive local $ref "#" is not supported`
+- **simple URN base URI with $ref via the URN**
+  - Test: valid under the URN IDed schema
+  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_21: recursive local $ref "#" is not supported`
 
 </details>
 
