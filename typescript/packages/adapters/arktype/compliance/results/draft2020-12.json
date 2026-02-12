@@ -66,19 +66,10 @@
     },
     {
       "keyword": "defs",
-      "passed": 1,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "dependentRequired",
@@ -278,10 +269,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 67,
-      "failed": 12,
+      "passed": 66,
+      "failed": 11,
       "skipped": 0,
-      "total": 79,
+      "total": 77,
       "failures": [
         {
           "group": "Recursive references between schemas",
@@ -321,13 +312,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -464,14 +448,22 @@
     }
   ],
   "summary": {
-    "passed": 1053,
-    "failed": 17,
+    "passed": 1051,
+    "failed": 15,
     "skipped": 0,
-    "total": 1070,
-    "percentage": 98.41121495327103,
+    "total": 1066,
+    "percentage": 98.59287054409006,
     "unsupportedFeatures": {
-      "count": 201,
+      "count": 205,
       "items": [
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/defs/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
         {
           "path": "draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length",
           "reason": "$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length)"
@@ -655,6 +647,14 @@
         {
           "path": "draft2020-12/not/collect annotations inside a 'not', even if collection is disabled/unevaluated property",
           "reason": "unevaluatedProperties is not supported: requires annotation tracking when combined with applicators (allOf, anyOf, oneOf, if, $ref, dependentSchemas, not) (at /not)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft2020-12/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
         },
         {
           "path": "draft2020-12/unevaluatedItems/Evaluated items collection needs to consider instance location/with an unevaluated item that exists at another location",

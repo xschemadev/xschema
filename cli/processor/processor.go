@@ -239,6 +239,12 @@ func bundleAll(ctx context.Context, schemas []retriever.RetrievedSchema, cache *
 	for i, s := range schemas {
 		verbose(fmt.Sprintf("processor: bundling %s", s.SourceURI))
 
+		// Check if root schema is purely a metaschema ref — no adapter can validate
+		// "is this a valid JSON Schema" so these are unsupported
+		if err := checkMetaschemaRef(s.Schema); err != nil {
+			return nil, err
+		}
+
 		bundled, err := bundler.Bundle(ctx, bundler.BundleInput{
 			Schema:    s.Schema,
 			SourceURI: s.SourceURI,
@@ -328,6 +334,28 @@ func extractVocabulary(ctx context.Context, schema json.RawMessage, cache *fetch
 	}
 
 	return meta.Vocabulary, nil
+}
+
+// checkMetaschemaRef detects schemas whose root $ref points to a metaschema URL.
+// These schemas ask "validate this is a valid JSON Schema" — no adapter can generate
+// that check statically, so it's an unsupported feature.
+func checkMetaschemaRef(schema json.RawMessage) error {
+	var obj map[string]any
+	if err := json.Unmarshal(schema, &obj); err != nil {
+		return nil // not an object, skip
+	}
+	ref, ok := obj["$ref"].(string)
+	if !ok {
+		return nil
+	}
+	if !bundler.IsMetaschema(ref) {
+		return nil
+	}
+	return &unsupported.UnsupportedKeywordError{
+		Keyword: "$ref",
+		Reason:  "metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code",
+		Path:    "",
+	}
 }
 
 // crawlAndFetch iteratively discovers external $refs in schemas and fetches them.

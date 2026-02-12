@@ -68,19 +68,10 @@
     },
     {
       "keyword": "definitions",
-      "passed": 1,
-      "failed": 1,
+      "passed": 0,
+      "failed": 0,
       "skipped": 0,
-      "total": 2,
-      "failures": [
-        {
-          "group": "validate definition against metaschema",
-          "test": "invalid definition schema",
-          "expected": false,
-          "actual": "true",
-          "passed": false
-        }
-      ]
+      "total": 0
     },
     {
       "keyword": "dependencies",
@@ -245,10 +236,10 @@
     },
     {
       "keyword": "ref",
-      "passed": 67,
-      "failed": 11,
+      "passed": 66,
+      "failed": 10,
       "skipped": 0,
-      "total": 78,
+      "total": 76,
       "failures": [
         {
           "group": "$ref prevents a sibling $id from changing the base uri",
@@ -279,13 +270,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref \"#\" is not supported"
-        },
-        {
-          "group": "remote ref, containing refs itself",
-          "test": "remote ref invalid",
-          "expected": false,
-          "actual": "true",
-          "passed": false
         },
         {
           "group": "root pointer ref",
@@ -367,14 +351,31 @@
     }
   ],
   "summary": {
-    "passed": 903,
-    "failed": 13,
+    "passed": 901,
+    "failed": 11,
     "skipped": 0,
-    "total": 916,
-    "percentage": 98.58078602620087,
+    "total": 912,
+    "percentage": 98.79385964912281,
     "unsupportedFeatures": {
-      "count": 0,
-      "items": null
+      "count": 4,
+      "items": [
+        {
+          "path": "draft7/definitions/validate definition against metaschema/invalid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/definitions/validate definition against metaschema/valid definition schema",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/ref/remote ref, containing refs itself/remote ref invalid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        },
+        {
+          "path": "draft7/ref/remote ref, containing refs itself/remote ref valid",
+          "reason": "$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root)"
+        }
+      ]
     }
   }
 }

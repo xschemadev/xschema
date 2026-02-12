@@ -4,21 +4,21 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1039 | 17 | 0 | 178 | 98.4% |
-| draft2020-12 | 1053 | 17 | 0 | 201 | 98.4% |
-| draft3 | 427 | 7 | 0 | 0 | 98.4% |
-| draft4 | 603 | 10 | 0 | 0 | 98.4% |
-| draft6 | 820 | 12 | 0 | 0 | 98.6% |
-| draft7 | 904 | 12 | 0 | 0 | 98.7% |
+| draft2019-09 | 1037 | 15 | 0 | 182 | 98.6% |
+| draft2020-12 | 1051 | 15 | 0 | 205 | 98.6% |
+| draft3 | 426 | 6 | 0 | 2 | 98.6% |
+| draft4 | 601 | 8 | 0 | 4 | 98.7% |
+| draft6 | 818 | 10 | 0 | 4 | 98.8% |
+| draft7 | 902 | 10 | 0 | 4 | 98.9% |
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.4%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.4%25-brightgreen)
-![draft3](https://img.shields.io/badge/draft3%20compliance-98.4%25-brightgreen)
-![draft4](https://img.shields.io/badge/draft4%20compliance-98.4%25-brightgreen)
-![draft6](https://img.shields.io/badge/draft6%20compliance-98.6%25-brightgreen)
-![draft7](https://img.shields.io/badge/draft7%20compliance-98.7%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-98.6%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-98.6%25-brightgreen)
+![draft3](https://img.shields.io/badge/draft3%20compliance-98.6%25-brightgreen)
+![draft4](https://img.shields.io/badge/draft4%20compliance-98.7%25-brightgreen)
+![draft6](https://img.shields.io/badge/draft6%20compliance-98.8%25-brightgreen)
+![draft7](https://img.shields.io/badge/draft7%20compliance-98.9%25-brightgreen)
 
 ## draft2019-09
 
@@ -34,7 +34,7 @@
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ⚠️ | 1/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | enum | ✅ | 45/45 |
@@ -62,7 +62,7 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 67/79 |
+| ref | ⚠️ | 66/77 |
 | refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -142,6 +142,16 @@ These tests are intentionally excluded due to documented limitations.
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/mismatch`
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive match`
 - `draft2019-09/recursiveRef/$recursiveRef without $recursiveAnchor works like $ref/recursive mismatch`
+
+</details>
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft2019-09/defs/validate definition against metaschema/invalid definition schema`
+- `draft2019-09/defs/validate definition against metaschema/valid definition schema`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2019-09/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
@@ -340,16 +350,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>defs - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -366,9 +367,6 @@ These tests are intentionally excluded due to documented limitations.
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_0: recursive local $ref "#" is not supported`
@@ -421,7 +419,7 @@ These tests are intentionally excluded due to documented limitations.
 | contains | ✅ | 21/21 |
 | content | ✅ | 18/18 |
 | default | ✅ | 7/7 |
-| defs | ⚠️ | 1/2 |
+| defs | ✅ | 0/0 |
 | dependentRequired | ✅ | 20/20 |
 | dependentSchemas | ✅ | 20/20 |
 | dynamicRef | ✅ | 0/0 |
@@ -450,7 +448,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 67/79 |
+| ref | ⚠️ | 66/77 |
 | refRemote | ⚠️ | 27/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -586,6 +584,16 @@ These tests are intentionally excluded due to documented limitations.
 
 - `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a false schema`
 - `draft2020-12/dynamicRef/$dynamicRef points to a boolean schema/follow $dynamicRef to a true schema`
+
+</details>
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
+
+- `draft2020-12/defs/validate definition against metaschema/invalid definition schema`
+- `draft2020-12/defs/validate definition against metaschema/valid definition schema`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft2020-12/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
@@ -799,16 +807,7 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>defs - 1 failure</summary>
-
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
-
-</details>
-
-<details>
-<summary>ref - 12 failures</summary>
+<summary>ref - 11 failures</summary>
 
 - **Recursive references between schemas**
   - Test: invalid tree
@@ -825,9 +824,6 @@ These tests are intentionally excluded due to documented limitations.
 - **order of evaluation: $id and $ref on nested schema**
   - Test: data is valid against nested sibling
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_0: recursive local $ref "#" is not supported`
@@ -891,16 +887,28 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 17/17 |
 | properties | ✅ | 15/15 |
-| ref | ⚠️ | 20/27 |
+| ref | ⚠️ | 19/25 |
 | refRemote | ✅ | 8/8 |
 | required | ✅ | 4/4 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 62/62 |
 
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
+
+<details>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (2 tests)</summary>
+
+- `draft3/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft3/ref/remote ref, containing refs itself/remote ref valid`
+
+</details>
+
 ### Unexpected Failures
 
 <details>
-<summary>ref - 7 failures</summary>
+<summary>ref - 6 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -908,9 +916,6 @@ These tests are intentionally excluded due to documented limitations.
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data validates
   - Expected: `valid`, Got: `false`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft3/ref/group_0: recursive local $ref "#" is not supported`
@@ -935,7 +940,7 @@ These tests are intentionally excluded due to documented limitations.
 | allOf | ✅ | 27/27 |
 | anyOf | ✅ | 15/15 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 29/29 |
 | enum | ✅ | 49/49 |
 | format | ✅ | 36/36 |
@@ -955,25 +960,30 @@ These tests are intentionally excluded due to documented limitations.
 | pattern | ✅ | 9/9 |
 | patternProperties | ✅ | 18/18 |
 | properties | ✅ | 24/24 |
-| ref | ⚠️ | 36/45 |
+| ref | ⚠️ | 35/43 |
 | refRemote | ✅ | 17/17 |
 | required | ✅ | 15/15 |
 | type | ✅ | 79/79 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft4/definitions/validate definition against metaschema/invalid definition schema`
+- `draft4/definitions/validate definition against metaschema/valid definition schema`
+- `draft4/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft4/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
+### Unexpected Failures
+
 <details>
-<summary>ref - 9 failures</summary>
+<summary>ref - 8 failures</summary>
 
 - **$ref prevents a sibling id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -987,9 +997,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref "#" is not supported`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft4/ref/group_0: recursive local $ref "#" is not supported`
@@ -1017,7 +1024,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 19/19 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1040,25 +1047,30 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 59/70 |
+| ref | ⚠️ | 58/68 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft6/definitions/validate definition against metaschema/invalid definition schema`
+- `draft6/definitions/validate definition against metaschema/valid definition schema`
+- `draft6/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft6/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
+### Unexpected Failures
+
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1072,9 +1084,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_12: recursive local $ref "#" is not supported`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft6/ref/group_0: recursive local $ref "#" is not supported`
@@ -1108,7 +1117,7 @@ These tests are intentionally excluded due to documented limitations.
 | const | ✅ | 54/54 |
 | contains | ✅ | 21/21 |
 | default | ✅ | 7/7 |
-| definitions | ⚠️ | 1/2 |
+| definitions | ✅ | 0/0 |
 | dependencies | ✅ | 36/36 |
 | enum | ✅ | 45/45 |
 | exclusiveMaximum | ✅ | 4/4 |
@@ -1132,25 +1141,30 @@ These tests are intentionally excluded due to documented limitations.
 | patternProperties | ✅ | 23/23 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 67/78 |
+| ref | ⚠️ | 66/76 |
 | refRemote | ✅ | 23/23 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
 | uniqueItems | ✅ | 69/69 |
 
-### Unexpected Failures
+### Unsupported Features
+
+These tests are intentionally excluded due to documented limitations.
 
 <details>
-<summary>definitions - 1 failure</summary>
+<summary>$ref is not supported: metaschema validation ($ref to draft metaschema) cannot be compiled to static validator code (at root) (4 tests)</summary>
 
-- **validate definition against metaschema**
-  - Test: invalid definition schema
-  - Expected: `invalid`, Got: `true`
+- `draft7/definitions/validate definition against metaschema/invalid definition schema`
+- `draft7/definitions/validate definition against metaschema/valid definition schema`
+- `draft7/ref/remote ref, containing refs itself/remote ref invalid`
+- `draft7/ref/remote ref, containing refs itself/remote ref valid`
 
 </details>
 
+### Unexpected Failures
+
 <details>
-<summary>ref - 11 failures</summary>
+<summary>ref - 10 failures</summary>
 
 - **$ref prevents a sibling $id from changing the base uri**
   - Test: $ref resolves to /definitions/base_foo, data does not validate
@@ -1164,9 +1178,6 @@ These tests are intentionally excluded due to documented limitations.
 - **Recursive references between schemas**
   - Test: valid tree
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_12: recursive local $ref "#" is not supported`
-- **remote ref, containing refs itself**
-  - Test: remote ref invalid
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: match
   - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft7/ref/group_0: recursive local $ref "#" is not supported`

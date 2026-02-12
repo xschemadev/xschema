@@ -285,9 +285,10 @@ func (b *bundleContext) processNode(node any, baseURI string, scopePath string) 
 }
 
 // isMetaschema checks if a URI is an official JSON Schema metaschema URL.
+// IsMetaschema checks if a URI is an official JSON Schema metaschema URL.
 // These should not be fetched/bundled - they reference complex recursive schemas
 // that use $recursiveAnchor and other features adapters can't handle.
-func isMetaschema(uri string) bool {
+func IsMetaschema(uri string) bool {
 	return strings.HasPrefix(uri, "http://json-schema.org/draft-") ||
 		strings.HasPrefix(uri, "https://json-schema.org/draft/")
 }
@@ -448,7 +449,7 @@ func (b *bundleContext) processRef(obj map[string]any, ref string, baseURI strin
 	// They use $recursiveAnchor and other features that would fail.
 	// Replace with empty schema {} ("accept anything") since no adapter
 	// can generate a "validate this is a valid JSON Schema" check.
-	if isMetaschema(resolvedURI) {
+	if IsMetaschema(resolvedURI) {
 		ui.Verbosef("bundler: ref %q is a metaschema, replacing with unconstrained schema", ref)
 		return map[string]any{}, nil
 	}
