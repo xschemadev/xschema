@@ -131,17 +131,9 @@
       "release-type": "node",
       "component": "ts-effect"
     },
-    "typescript/packages/adapters/typebox": {
-      "release-type": "node",
-      "component": "ts-typebox"
-    },
     "typescript/packages/adapters/valibot": {
       "release-type": "node",
       "component": "ts-valibot"
-    },
-    "typescript/packages/adapters/typescript": {
-      "release-type": "node",
-      "component": "ts-typescript"
     },
     "python/packages/core": {
       "release-type": "python",

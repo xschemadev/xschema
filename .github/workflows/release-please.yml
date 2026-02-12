@@ -24,9 +24,7 @@ jobs:
       ts-zod--release_created: ${{ steps.release.outputs['typescript/packages/adapters/zod--release_created'] }}
       ts-arktype--release_created: ${{ steps.release.outputs['typescript/packages/adapters/arktype--release_created'] }}
       ts-effect--release_created: ${{ steps.release.outputs['typescript/packages/adapters/effect--release_created'] }}
-      ts-typebox--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typebox--release_created'] }}
       ts-valibot--release_created: ${{ steps.release.outputs['typescript/packages/adapters/valibot--release_created'] }}
-      ts-typescript--release_created: ${{ steps.release.outputs['typescript/packages/adapters/typescript--release_created'] }}
       py-core--release_created: ${{ steps.release.outputs['python/packages/core--release_created'] }}
       py-client--release_created: ${{ steps.release.outputs['python/packages/client--release_created'] }}
       py-pydantic--release_created: ${{ steps.release.outputs['python/packages/adapters/pydantic--release_created'] }}
@@ -187,9 +185,7 @@ jobs:
       needs.release-please.outputs.ts-zod--release_created == 'true' ||
       needs.release-please.outputs.ts-arktype--release_created == 'true' ||
       needs.release-please.outputs.ts-effect--release_created == 'true' ||
-      needs.release-please.outputs.ts-typebox--release_created == 'true' ||
-      needs.release-please.outputs.ts-valibot--release_created == 'true' ||
-      needs.release-please.outputs.ts-typescript--release_created == 'true'
+      needs.release-please.outputs.ts-valibot--release_created == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -236,13 +232,6 @@ jobs:
         if: needs.release-please.outputs.ts-effect--release_created == 'true'
         run: bun publish --access public
         working-directory: typescript/packages/adapters/effect
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish @xschemadev/typebox
-        if: needs.release-please.outputs.ts-typebox--release_created == 'true'
-        run: bun publish --access public
-        working-directory: typescript/packages/adapters/typebox
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
