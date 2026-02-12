@@ -160,3 +160,9 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema, resolved `#foo` anchor to `$defs/A`, flattened defs. but `resolveRefObject` marked the target as "resolving", then processed sibling `$defs` (draft2019-09+). `refToInteger` inside `$defs` pointed to the same flattened target, triggering false recursion guard
 - **no code changes needed**: issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing so `$defs` children get fully resolved
 - **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all Go tests pass; all TS typechecks pass; pydantic pyright passes
+
+### issue-17: refRemote / fragment within remote ref
+- **fix**: already resolved by prior fixes (issue-01 recursive ref pass-through + issue-15 sibling processing)
+- **root cause**: false positive recursion detection in `resolveInternalRefs`. bundler correctly fetched remote schema at `localhost:1234/<draft>/subSchemas.json`, resolved `#/integer` fragment to flattened `$defs` key. `resolveRefObject` marked target as "resolving", then same target encountered in sibling `$defs` processing, triggering false recursion guard
+- **no code changes needed**: identical pattern to issue-16 — issue-01 changed cycle detection from hard error to pass-through; issue-15 fixed sibling processing
+- **verified**: all 5 adapters × 6 drafts × refRemote keyword compliance — 100% pass rate; all TS typechecks pass; pydantic pyright passes
