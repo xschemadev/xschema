@@ -4,8 +4,8 @@
 
 | Draft | Passed | Failed | Skipped | Unsupported | Coverage |
 | ----- | ------ | ------ | ------- | ----------- | -------- |
-| draft2019-09 | 1047 | 5 | 0 | 182 | 99.5% |
-| draft2020-12 | 1061 | 5 | 0 | 205 | 99.5% |
+| draft2019-09 | 1050 | 2 | 0 | 182 | 99.8% |
+| draft2020-12 | 1064 | 2 | 0 | 205 | 99.8% |
 | draft3 | 431 | 1 | 0 | 2 | 99.8% |
 | draft4 | 608 | 1 | 0 | 4 | 99.8% |
 | draft6 | 826 | 2 | 0 | 4 | 99.8% |
@@ -13,8 +13,8 @@
 
 ## Badges
 
-![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.5%25-brightgreen)
-![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.5%25-brightgreen)
+![draft2019-09](https://img.shields.io/badge/draft2019-09%20compliance-99.8%25-brightgreen)
+![draft2020-12](https://img.shields.io/badge/draft2020-12%20compliance-99.8%25-brightgreen)
 ![draft3](https://img.shields.io/badge/draft3%20compliance-99.8%25-brightgreen)
 ![draft4](https://img.shields.io/badge/draft4%20compliance-99.8%25-brightgreen)
 ![draft6](https://img.shields.io/badge/draft6%20compliance-99.8%25-brightgreen)
@@ -62,7 +62,7 @@
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
 | recursiveRef | ✅ | 0/0 |
-| ref | ⚠️ | 72/77 |
+| ref | ⚠️ | 75/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -350,17 +350,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 5 failures</summary>
+<summary>ref - 2 failures</summary>
 
-- **order of evaluation: $id and $ref on nested schema**
-  - Test: data is invalid against nested sibling
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **order of evaluation: $id and $ref on nested schema**
-  - Test: data is valid against nested sibling
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **ref creates new scope when adjacent to keywords**
-  - Test: referenced subschema doesn't see annotations from properties
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`
@@ -412,7 +403,7 @@ These tests are intentionally excluded due to documented limitations.
 | prefixItems | ✅ | 11/11 |
 | properties | ✅ | 28/28 |
 | propertyNames | ✅ | 20/20 |
-| ref | ⚠️ | 72/77 |
+| ref | ⚠️ | 75/77 |
 | refRemote | ✅ | 31/31 |
 | required | ✅ | 16/16 |
 | type | ✅ | 80/80 |
@@ -482,14 +473,14 @@ These tests are intentionally excluded due to documented limitations.
 </details>
 
 <details>
-<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/list/$defs/items) (1 test)</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/items) (1 test)</summary>
 
 - `draft2020-12/dynamicRef/An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution/Any array is valid`
 
 </details>
 
 <details>
-<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/second/$defs/length) (2 tests)</summary>
+<summary>$dynamicAnchor is not supported: Dynamic references ($dynamicRef/$dynamicAnchor) require runtime scope tracking (at /$defs/length) (2 tests)</summary>
 
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is not sufficient for schema at second#/$defs/length`
 - `draft2020-12/dynamicRef/$dynamicRef avoids the root of each schema, but scopes are still registered/data is sufficient for schema at second#/$defs/length`
@@ -771,17 +762,8 @@ These tests are intentionally excluded due to documented limitations.
 ### Unexpected Failures
 
 <details>
-<summary>ref - 5 failures</summary>
+<summary>ref - 2 failures</summary>
 
-- **order of evaluation: $id and $ref on nested schema**
-  - Test: data is invalid against nested sibling
-  - Expected: `invalid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **order of evaluation: $id and $ref on nested schema**
-  - Test: data is valid against nested sibling
-  - Expected: `valid`, Got: `error: bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref "./bar.json"`
-- **ref creates new scope when adjacent to keywords**
-  - Test: referenced subschema doesn't see annotations from properties
-  - Expected: `invalid`, Got: `true`
 - **root pointer ref**
   - Test: recursive mismatch
   - Expected: `invalid`, Got: `true`

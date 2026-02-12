@@ -2186,13 +2186,19 @@ def render_intersection(node: IntersectionNode, name: str) -> RenderResult:
     object_schemas: list[ObjectNode] = [s for s in node.schemas if s.kind == "object"]
     non_object_schemas = [s for s in node.schemas if s.kind != "object"]
 
-    # If all are objects, merge them
-    if len(object_schemas) == len(node.schemas):
+    # unevaluatedProperties creates per-schema evaluation scopes — each sub-schema's
+    # unevaluatedProperties only sees properties evaluated within that sub-schema.
+    # static merging would lose this scope isolation, so fall through to runtime validation
+    has_unevaluated = any(
+        s.kind == "object" and s.unevaluated_properties is False for s in node.schemas
+    )
+
+    # If all are objects and none use unevaluatedProperties, merge them statically
+    if len(object_schemas) == len(node.schemas) and not has_unevaluated:
         return _merge_object_schemas(object_schemas, name)
 
-    # If mixed types, render each and combine
-    # For primitives, use custom validator checking all schemas
-    if non_object_schemas:
+    # Runtime validation: render each schema independently, validate all must pass
+    if non_object_schemas or has_unevaluated:
         imports.add("from typing import Annotated")
         imports.add("from pydantic import BeforeValidator, TypeAdapter")
 

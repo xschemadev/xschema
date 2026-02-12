@@ -175,3 +175,9 @@ Started: Thu Feb 12 01:13:31 AM CET 2026
 - **test added**: `TestBundle_AnchorScopedToBaseURI` in bundler tests — verifies `#bigint` resolves to `$defs/bigint` when `$defs/smallint` has a different `$id` but same `$anchor` name
 - **note**: PRD specified 9 failures across 5 adapters, but actual baseline was 7 — pydantic had no `$anchor` failures, and valibot only failed in draft2019-09
 - **verified**: all 4 TS adapters × 6 drafts × ref keyword compliance — 100% pass rate; pydantic ref compliance shows only pre-existing issue-25 failures; all TS typechecks pass; pydantic pyright passes; all Go tests pass
+
+### issue-25: ref / ref creates new scope when adjacent to keywords
+- **fix**: added `unevaluated_properties` guard in `render_intersection` in `python/packages/adapters/pydantic/src/xschema_pydantic/renderer.py`
+- **root cause**: `render_intersection` detected all-object allOf and called `_merge_object_schemas`, which merges properties from all sub-schemas into one BaseModel. but `_merge_object_schemas` completely ignores `unevaluated_properties` — the `unevaluated_properties=False` on allOf[0] (zero properties = reject everything) was silently dropped during merge
+- **approach**: detect when any allOf sub-schema has `unevaluated_properties is False` and skip static merge. route to runtime validation path (BeforeValidator + TypeAdapter) which validates each sub-schema independently, preserving per-schema evaluation scope isolation
+- **verified**: pydantic ref keyword compliance — 0 "ref creates new scope" failures in draft2019-09 or draft2020-12; pyright passes; full dev-report regenerated

@@ -400,7 +400,7 @@
         "None of the baseline case/test rows from `tasks/compliance-errors/issue-25.md` appear under `### Unexpected Failures` in the updated reports for this issue.",
         "Typecheck passes for touched adapters: from `python/packages/adapters/pydantic` run `uv run pyright src/`."
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
