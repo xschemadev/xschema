@@ -296,8 +296,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 54,
-      "failed": 25,
+      "passed": 59,
+      "failed": 20,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -307,7 +307,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref \"#/$defs/node\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref \"#\" is not supported"
         },
         {
           "group": "Recursive references between schemas",
@@ -315,7 +315,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref \"#/$defs/node\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_11: recursive local $ref \"#\" is not supported"
         },
         {
           "group": "URN ref with nested pointer ref",
@@ -334,13 +334,6 @@
           "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_28: failed to resolve local $ref \"#/$defs/bar\": key \"bar\" not found"
         },
         {
-          "group": "order of evaluation: $id and $anchor and $ref",
-          "test": "data is valid against first definition",
-          "expected": true,
-          "actual": "false",
-          "passed": false
-        },
-        {
           "group": "order of evaluation: $id and $ref on nested schema",
           "test": "data is invalid against nested sibling",
           "expected": false,
@@ -355,38 +348,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string"
         },
         {
           "group": "refs with relative uris and defs",
@@ -587,11 +548,11 @@
     }
   ],
   "summary": {
-    "passed": 1038,
-    "failed": 32,
+    "passed": 1043,
+    "failed": 27,
     "skipped": 0,
     "total": 1070,
-    "percentage": 97.00934579439252,
+    "percentage": 97.4766355140187,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

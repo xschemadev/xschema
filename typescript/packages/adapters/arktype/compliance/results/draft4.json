@@ -196,8 +196,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 30,
-      "failed": 15,
+      "passed": 34,
+      "failed": 11,
       "skipped": 0,
       "total": 45,
       "failures": [
@@ -221,7 +221,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#/$defs/node\" is not supported"
         },
         {
           "group": "Recursive references between schemas",
@@ -229,7 +229,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_10: recursive local $ref \"#/$defs/node\" is not supported"
         },
         {
           "group": "naive replacement of $ref with its destination is not correct",
@@ -237,38 +237,6 @@
           "expected": true,
           "actual": "false",
           "passed": false
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft4/ref/group_9: $ref value must be a string"
         },
         {
           "group": "remote ref, containing refs itself",
@@ -350,11 +318,11 @@
     }
   ],
   "summary": {
-    "passed": 596,
-    "failed": 17,
+    "passed": 600,
+    "failed": 13,
     "skipped": 0,
     "total": 613,
-    "percentage": 97.22675367047309,
+    "percentage": 97.87928221859707,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

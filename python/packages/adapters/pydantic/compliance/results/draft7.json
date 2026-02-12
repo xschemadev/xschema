@@ -245,8 +245,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 55,
-      "failed": 23,
+      "passed": 59,
+      "failed": 19,
       "skipped": 0,
       "total": 78,
       "failures": [
@@ -286,38 +286,6 @@
           "expected": true,
           "actual": "false",
           "passed": false
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_9: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft7/ref/group_9: $ref value must be a string"
         },
         {
           "group": "refs with relative uris and defs",
@@ -463,11 +431,11 @@
     }
   ],
   "summary": {
-    "passed": 891,
-    "failed": 25,
+    "passed": 895,
+    "failed": 21,
     "skipped": 0,
     "total": 916,
-    "percentage": 97.27074235807859,
+    "percentage": 97.70742358078603,
     "unsupportedFeatures": {
       "count": 0,
       "items": null

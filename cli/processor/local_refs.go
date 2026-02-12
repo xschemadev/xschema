@@ -16,6 +16,20 @@ var nonSchemaKeywords = map[string]bool{
 	"examples": true,
 }
 
+// propertyMapKeywords are keywords whose values are objects where
+// keys are arbitrary names (property names, definition names, etc.),
+// not JSON Schema keywords. The values under these keys ARE subschemas,
+// but the containing object itself is not a schema — so we must not
+// interpret its keys (like "$ref") as JSON Schema keywords.
+var propertyMapKeywords = map[string]bool{
+	"properties":        true,
+	"patternProperties": true,
+	"$defs":             true,
+	"definitions":       true,
+	"dependentSchemas":  true,
+	"dependencies":      true,
+}
+
 var legacyRefSiblingDrafts = map[string]bool{
 	"draft3": true,
 	"draft4": true,
@@ -41,7 +55,7 @@ func resolveInternalRefs(schema json.RawMessage, draft string) (json.RawMessage,
 		ignoreRefSiblings: shouldIgnoreRefSiblings(draft, root),
 	}
 
-	resolved, err := resolver.resolveNode(root, false)
+	resolved, err := resolver.resolveNode(root, false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -54,24 +68,31 @@ func resolveInternalRefs(schema json.RawMessage, draft string) (json.RawMessage,
 	return result, nil
 }
 
-func (r *localRefResolver) resolveNode(node any, inNonSchemaContext bool) (any, error) {
+func (r *localRefResolver) resolveNode(node any, inNonSchemaContext bool, inPropertyMap bool) (any, error) {
 	if inNonSchemaContext {
 		return cloneNode(node), nil
 	}
 
 	switch v := node.(type) {
 	case map[string]any:
-		if rawRef, ok := v["$ref"]; ok {
-			ref, isString := rawRef.(string)
-			if !isString {
-				return nil, fmt.Errorf("$ref value must be a string")
+		// only check for $ref keyword when this object is a schema,
+		// not when it's a property map (e.g. the value of "properties")
+		// where keys are arbitrary names like "$ref"
+		if !inPropertyMap {
+			if rawRef, ok := v["$ref"]; ok {
+				ref, isString := rawRef.(string)
+				if !isString {
+					return nil, fmt.Errorf("$ref value must be a string")
+				}
+				return r.resolveRefObject(v, ref)
 			}
-			return r.resolveRefObject(v, ref)
 		}
 
 		result := make(map[string]any, len(v))
 		for key, val := range v {
-			resolvedChild, err := r.resolveNode(val, nonSchemaKeywords[key])
+			childIsNonSchema := nonSchemaKeywords[key]
+			childIsPropertyMap := propertyMapKeywords[key]
+			resolvedChild, err := r.resolveNode(val, childIsNonSchema, childIsPropertyMap)
 			if err != nil {
 				return nil, err
 			}
@@ -82,7 +103,7 @@ func (r *localRefResolver) resolveNode(node any, inNonSchemaContext bool) (any, 
 	case []any:
 		result := make([]any, len(v))
 		for i, item := range v {
-			resolvedChild, err := r.resolveNode(item, false)
+			resolvedChild, err := r.resolveNode(item, false, false)
 			if err != nil {
 				return nil, err
 			}
@@ -112,7 +133,7 @@ func (r *localRefResolver) resolveRefObject(obj map[string]any, ref string) (any
 		return nil, fmt.Errorf("failed to resolve local $ref %q: %w", ref, err)
 	}
 
-	resolvedTarget, err := r.resolveNode(cloneNode(target), false)
+	resolvedTarget, err := r.resolveNode(cloneNode(target), false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +150,7 @@ func (r *localRefResolver) resolveRefObject(obj map[string]any, ref string) (any
 		return resolvedTarget, nil
 	}
 
-	resolvedSiblings, err := r.resolveNode(siblings, false)
+	resolvedSiblings, err := r.resolveNode(siblings, false, false)
 	if err != nil {
 		return nil, err
 	}

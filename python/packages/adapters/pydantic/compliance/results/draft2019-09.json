@@ -287,8 +287,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 53,
-      "failed": 26,
+      "passed": 57,
+      "failed": 22,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -298,7 +298,7 @@
           "expected": false,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#/$defs/node\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
         },
         {
           "group": "Recursive references between schemas",
@@ -306,7 +306,7 @@
           "expected": true,
           "actual": "error",
           "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#/$defs/node\" is not supported"
+          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_11: recursive local $ref \"#\" is not supported"
         },
         {
           "group": "URN ref with nested pointer ref",
@@ -346,38 +346,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2019-09/ref/group_8: $ref value must be a string"
         },
         {
           "group": "ref creates new scope when adjacent to keywords",
@@ -585,11 +553,11 @@
     }
   ],
   "summary": {
-    "passed": 1024,
-    "failed": 32,
+    "passed": 1028,
+    "failed": 28,
     "skipped": 0,
     "total": 1056,
-    "percentage": 96.96969696969697,
+    "percentage": 97.34848484848484,
     "unsupportedFeatures": {
       "count": 178,
       "items": [

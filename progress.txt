@@ -1,0 +1,19 @@
+# Ralph Progress Log
+Started: Thu Feb 12 01:13:31 AM CET 2026
+---
+
+## Codebase Patterns
+
+- `bun run compliance` npm scripts include `--dev-report` by default; to run with `--keyword`, use `go run . compliance --adapter-path <path> --keyword <kw>` directly from `cli/`
+- `propertyMapKeywords` in `cli/processor/local_refs.go` tracks JSON Schema keywords whose values are property-name-keyed maps (not schema nodes), preventing false interpretation of keys like `$ref` as schema keywords
+
+---
+
+## Completed Tasks
+
+### issue-02: ref / property named $ref, containing an actual $ref
+- **fix**: added `inPropertyMap` context tracking to `resolveNode` in `cli/processor/local_refs.go`
+- **root cause**: the processor treated every `map[string]any` with a `$ref` key as a JSON Schema reference, even inside `properties` where `$ref` is just a property name
+- **approach**: new `propertyMapKeywords` set (`properties`, `patternProperties`, `$defs`, `definitions`, `dependentSchemas`, `dependencies`) marks children as property maps; `resolveNode` skips `$ref` keyword check when `inPropertyMap=true`
+- **also fixes issue-06**: same root cause ("property named $ref that is not a reference") — error signature `$ref value must be a string` completely eliminated from all adapter reports
+- **verified**: all 5 adapters (zod, arktype, effect, valibot, pydantic) × 6 drafts — 0 baseline failures remain; all typechecks pass; all Go tests pass

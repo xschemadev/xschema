@@ -338,8 +338,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 54,
-      "failed": 25,
+      "passed": 58,
+      "failed": 21,
       "skipped": 0,
       "total": 79,
       "failures": [
@@ -397,38 +397,6 @@
           "actual": "error",
           "passed": false,
           "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_20: encountered unresolved non-local $ref \"./bar.json\""
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref that is not a reference",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_7: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft2020-12/ref/group_8: $ref value must be a string"
         },
         {
           "group": "refs with relative uris and defs",
@@ -671,11 +639,11 @@
     }
   ],
   "summary": {
-    "passed": 1028,
-    "failed": 42,
+    "passed": 1032,
+    "failed": 38,
     "skipped": 0,
     "total": 1070,
-    "percentage": 96.07476635514018,
+    "percentage": 96.44859813084112,
     "unsupportedFeatures": {
       "count": 201,
       "items": [

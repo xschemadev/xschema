@@ -143,8 +143,8 @@
     },
     {
       "keyword": "ref",
-      "passed": 16,
-      "failed": 11,
+      "passed": 18,
+      "failed": 9,
       "skipped": 0,
       "total": 27,
       "failures": [
@@ -168,22 +168,6 @@
           "expected": true,
           "actual": "false",
           "passed": false
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref invalid",
-          "expected": false,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_6: $ref value must be a string"
-        },
-        {
-          "group": "property named $ref, containing an actual $ref",
-          "test": "property named $ref valid",
-          "expected": true,
-          "actual": "error",
-          "passed": false,
-          "error": "bundling error: failed to resolve internal refs for compliance://draft3/ref/group_6: $ref value must be a string"
         },
         {
           "group": "remote ref, containing refs itself",
@@ -265,11 +249,11 @@
     }
   ],
   "summary": {
-    "passed": 423,
-    "failed": 11,
+    "passed": 425,
+    "failed": 9,
     "skipped": 0,
     "total": 434,
-    "percentage": 97.46543778801843,
+    "percentage": 97.92626728110599,
     "unsupportedFeatures": {
       "count": 0,
       "items": null
