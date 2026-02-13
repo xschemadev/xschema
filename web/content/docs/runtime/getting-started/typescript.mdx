@@ -1,131 +1,232 @@
 ---
 title: TypeScript
-description: Getting started with runtime mode in TypeScript (coming soon)
+description: Convert JSON Schema to validators at runtime with TypeScript
 icon: Code
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
-import { Rocket, Zap } from "lucide-react";
-
-<Callout type="info">
-Runtime mode for TypeScript is **coming soon**. This page shows the planned usage.
-</Callout>
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { BookOpen, Zap } from "lucide-react";
 
 ## Prerequisites
 
-- Node.js 18+
-- TypeScript 5.0+ (recommended)
-- A validation library: Zod, ArkType, Effect, or Valibot
+- **Node.js 18+**
 
-## Planned Installation
+## Installation
 
-```bash
-# Install runtime package
-bun add @xschemadev/runtime
+Install the CLI, runtime package, and an adapter:
 
-# Install your preferred adapter
-bun add zod
-```
+<Tabs groupId="pm" items={["bun", "npm", "pnpm", "yarn"]}>
+  <Tab value="bun">
+    ```bash
+    bun add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="npm">
+    ```bash
+    npm install @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @xschemadev/cli @xschemadev/runtime @xschemadev/zod zod
+    ```
+  </Tab>
+</Tabs>
 
-## Planned Usage
+The example uses Zod, but you can use any [adapter](/docs/adapters).
 
-### Basic Conversion
+## Basic Usage
+
+Import `convert` from the runtime package and `adapter` from your chosen adapter:
 
 ```typescript
 import { convert } from "@xschemadev/runtime";
-import type { z } from "zod";
+import { adapter } from "@xschemadev/zod";
 
-// Your JSON Schema (from API, file, or any source)
-const userSchema = {
-  type: "object",
-  properties: {
-    id: { type: "integer" },
-    name: { type: "string" },
-    email: { type: "string", format: "email" }
+const results = await convert(
+  {
+    namespace: "user",
+    id: "Profile",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        email: { type: "string", format: "email" },
+      },
+      required: ["id", "email"],
+    },
   },
-  required: ["id", "name", "email"]
-};
+  { adapter },
+);
 
-// Convert to Zod schema at runtime
-const User = convert<z.ZodType>(userSchema, { adapter: "zod" });
+console.log(results[0].schema);
+// z.object({ id: z.string(), name: z.string().optional(), email: z.string().email() }).passthrough()
 
-// Use it
-const result = User.safeParse({
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com"
-});
+console.log(results[0].type);
+// z.infer<typeof user_Profile>
 
-if (result.success) {
-  console.log(result.data); // { id: 1, name: "Alice", email: "alice@example.com" }
-}
+console.log(results[0].imports);
+// ['import { z } from "zod"']
 ```
 
-### With Schema Fetching
+`convert` returns code strings, not live validators. You get the same output as `xschema generate` but at runtime, ready to write to a file or evaluate.
+
+## Multiple Schemas
+
+Pass an array of `SchemaInput` objects to convert multiple schemas in a single call:
 
 ```typescript
 import { convert } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
 
-async function validateUser(data: unknown) {
-  // Fetch schema from registry
-  const schema = await fetch("https://api.example.com/schemas/user")
-    .then(r => r.json());
-  
-  // Convert and validate
-  const User = convert(schema, { adapter: "zod" });
-  return User.safeParse(data);
+const results = await convert(
+  [
+    {
+      namespace: "user",
+      id: "Profile",
+      schema: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          email: { type: "string", format: "email" },
+        },
+        required: ["id", "email"],
+      },
+    },
+    {
+      namespace: "app",
+      id: "Config",
+      schema: {
+        type: "object",
+        properties: {
+          theme: { type: "string", enum: ["light", "dark"] },
+          debug: { type: "boolean" },
+        },
+        required: ["theme"],
+      },
+    },
+  ],
+  { adapter },
+);
+
+// results[0] -> user:Profile
+// results[1] -> app:Config
+```
+
+## External `$ref` Resolution
+
+If your schemas reference external files or URLs via `$ref`, enable `allowFetch`:
+
+```typescript
+import { convert } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
+
+const results = await convert(
+  {
+    namespace: "order",
+    id: "Order",
+    schema: {
+      type: "object",
+      properties: {
+        user: { $ref: "https://api.example.com/schemas/user.json" },
+        items: {
+          type: "array",
+          items: { $ref: "./item.schema.json" },
+        },
+      },
+    },
+  },
+  { adapter, allowFetch: true },
+);
+```
+
+<Callout>
+Without `allowFetch`, any external `$ref` will cause an error. This is a safety default — enable it only when you trust the schema sources.
+</Callout>
+
+## Custom Binary Path
+
+By default, `convert` looks for `xschema` in your `PATH`. To use a specific binary:
+
+```typescript
+const results = await convert(schema, {
+  adapter,
+  executablePath: "./node_modules/.bin/xschema",
+});
+```
+
+You can also set `cwd` to control the working directory for `$ref` resolution:
+
+```typescript
+const results = await convert(schema, {
+  adapter,
+  cwd: "/path/to/project",
+});
+```
+
+## Error Handling
+
+When conversion fails, `convert` throws a `ConvertError` with the CLI's stderr output:
+
+```typescript
+import { convert, ConvertError } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
+
+try {
+  const results = await convert(schema, { adapter });
+  console.log(results);
+} catch (error) {
+  if (error instanceof ConvertError) {
+    console.error("Conversion failed:", error.message);
+    console.error("CLI output:", error.stderr);
+  }
 }
 ```
 
-### With Caching
+Common reasons for errors:
+- xschema CLI not installed (install `@xschemadev/cli` or set `executablePath`)
+- Invalid JSON Schema
+- External `$ref` without `allowFetch: true`
+- Adapter package not installed
 
-```typescript
-import { createRuntime } from "@xschemadev/runtime";
+## What You Get Back
 
-const runtime = createRuntime({
-  adapter: "zod",
-  cache: true
-});
+Each item in the results array is a `ConvertResult`:
 
-// First call converts and caches
-const User = runtime.convert(userSchema);
+| Field | Type | Description |
+|-------|------|-------------|
+| `namespace` | `string` | The namespace you provided |
+| `id` | `string` | The schema ID you provided |
+| `varName` | `string` | Generated variable name (e.g., `user_Profile`) |
+| `imports` | `string[]` | Import statements needed for the generated code |
+| `schema` | `string?` | The validator code (e.g., `z.object({...})`) |
+| `type` | `string?` | Type expression (e.g., `z.infer<typeof user_Profile>`) |
+| `validate` | `string?` | Validation function expression |
+| `validationImports` | `string[]?` | Additional imports for the validation function |
 
-// Second call returns cached version
-const UserAgain = runtime.convert(userSchema);
-```
-
-## Type Safety
-
-Runtime mode provides limited type inference compared to build-time generation:
-
-```typescript
-// Build-time (full types)
-import { schemas } from "./.xschema/xschema.gen";
-const User = schemas.user.User;
-type User = z.infer<typeof User>; // Full type
-
-// Runtime (generic types)
-const User = convert(schema, { adapter: "zod" });
-type User = z.infer<typeof User>; // unknown or generic
-```
-
-For full TypeScript inference, use [Framework mode](/docs/getting-started/typescript).
-
-## Current Status
-
-Runtime mode is in development. Use Framework mode for production applications.
+<Callout>
+`schema` and `type` are optional because some adapters may only generate one or the other. Most adapters (Zod, ArkType, Effect, Valibot) generate both.
+</Callout>
 
 <Cards>
   <Card
-    title="Framework Mode"
-    description="Full TypeScript types with build-time generation"
-    href="/docs/getting-started/typescript"
-    icon={<Rocket />}
+    title="API Reference"
+    description="Full API documentation for @xschemadev/runtime"
+    href="/docs/runtime/api-reference"
+    icon={<BookOpen />}
   />
   <Card
     title="Runtime Overview"
-    description="Learn more about runtime mode"
+    description="When and why to use runtime mode"
     href="/docs/runtime"
     icon={<Zap />}
   />

@@ -47,9 +47,9 @@ const LayoutDocsSplatRoute = LayoutDocsSplatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof LayoutIndexRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/api/search': typeof ApiSearchRoute
-  '/': typeof LayoutIndexRoute
   '/docs/$': typeof LayoutDocsSplatRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
@@ -72,9 +72,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/llms-full.txt'
     | '/api/search'
-    | '/'
     | '/docs/$'
     | '/llms.mdx/docs/$'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +108,7 @@ declare module '@tanstack/react-router' {
     '/_layout': {
       id: '/_layout'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof LayoutRouteRouteImport
       parentRoute: typeof rootRouteImport
     }

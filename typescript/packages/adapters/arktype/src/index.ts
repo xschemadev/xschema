@@ -1,6 +1,12 @@
-import { parse, type ConvertInput, type ConvertResult, type JSONSchema } from "@xschemadev/core";
+import { parse, type ConvertInput, type ConvertResult, type JSONSchema, type XSchemaAdapter } from "@xschemadev/core";
 
 import { render } from "./renderer.js";
+
+export const adapter = {
+	__xschema: true,
+	id: "@xschemadev/arktype",
+	name: "arktype",
+} as const satisfies XSchemaAdapter;
 
 export function convert(input: ConvertInput): ConvertResult {
 	const { namespace, id, varName, schema } = input;

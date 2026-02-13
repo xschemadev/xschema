@@ -1,212 +1,265 @@
 ---
 title: API Reference
-description: Runtime mode API documentation (coming soon)
+description: Full reference for @xschemadev/runtime — convert(), types, and error handling
 icon: Book
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
-import { Code, Zap } from "lucide-react";
+import { BookOpen, Zap } from "lucide-react";
 
-<Callout type="info">
-Runtime mode is **coming soon**. This page documents the planned API.
-</Callout>
+## `convert()`
 
-## convert
-
-Converts a JSON Schema to a validator schema.
+Converts JSON Schema inputs to adapter output by calling the xschema CLI as a subprocess.
 
 ```typescript
-function convert<T>(
-  schema: JsonSchema,
-  options: ConvertOptions
-): T;
+async function convert(
+  schemas: SchemaInput | SchemaInput[],
+  options: ConvertOptions,
+): Promise<ConvertResult[]>
 ```
 
 ### Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `schema` | `JsonSchema` | A valid JSON Schema object |
-| `options` | `ConvertOptions` | Conversion options |
-
-### ConvertOptions
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `adapter` | `string` | required | Adapter to use: `"zod"`, `"arktype"`, `"effect"`, `"valibot"` |
-| `strict` | `boolean` | `false` | Throw on unsupported features instead of warning |
+| `schemas` | `SchemaInput \| SchemaInput[]` | One or more schemas to convert |
+| `options` | `ConvertOptions` | Conversion options (adapter is required) |
 
 ### Returns
 
-The generated validator schema for the specified adapter.
+`Promise<ConvertResult[]>` — one result per input schema, in the same order.
+
+### Throws
+
+`ConvertError` when the CLI exits with a non-zero code or its output can't be parsed.
 
 ### Example
 
 ```typescript
 import { convert } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
 
-const schema = {
-  type: "object",
-  properties: {
-    name: { type: "string" }
-  }
-};
+const results = await convert(
+  {
+    namespace: "user",
+    id: "Profile",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        email: { type: "string", format: "email" },
+      },
+      required: ["id", "email"],
+    },
+  },
+  { adapter },
+);
 
-const zodSchema = convert(schema, { adapter: "zod" });
+console.log(results[0].schema);
+// "z.object({ id: z.string(), email: z.string().email() }).passthrough()"
 ```
 
 ---
 
-## createRuntime
+## `SchemaInput`
 
-Creates a runtime instance with caching and configuration.
+Describes a single schema to convert.
 
 ```typescript
-function createRuntime(options: RuntimeOptions): Runtime;
+interface SchemaInput {
+  namespace: string;
+  id: string;
+  schema: object | boolean;
+}
 ```
 
-### RuntimeOptions
+| Field | Type | Description |
+|-------|------|-------------|
+| `namespace` | `string` | Logical grouping for the schema (e.g., `"user"`, `"app"`) |
+| `id` | `string` | Unique identifier within the namespace (e.g., `"Profile"`) |
+| `schema` | `object \| boolean` | A JSON Schema object, or `true`/`false` for permissive/empty schemas |
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `adapter` | `string` | required | Default adapter for conversions |
-| `cache` | `boolean` | `false` | Enable schema caching |
-| `cacheSize` | `number` | `100` | Maximum cached schemas (LRU eviction) |
-| `strict` | `boolean` | `false` | Throw on unsupported features |
+The combination of `namespace` and `id` determines the generated variable name (`namespace_id`, e.g., `user_Profile`).
 
-### Runtime Instance
+---
 
-| Method | Description |
-|--------|-------------|
-| `convert(schema)` | Convert a schema using the configured adapter |
-| `convert(schema, options)` | Convert with override options |
-| `clearCache()` | Clear the schema cache |
-| `getCacheStats()` | Get cache hit/miss statistics |
+## `ConvertOptions`
 
-### Example
+Options passed to `convert()`.
 
 ```typescript
-import { createRuntime } from "@xschemadev/runtime";
+interface ConvertOptions {
+  adapter: XSchemaAdapter;
+  cwd?: string;
+  executablePath?: string;
+  allowFetch?: boolean;
+}
+```
 
-const runtime = createRuntime({
-  adapter: "zod",
-  cache: true,
-  cacheSize: 50
-});
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `adapter` | `XSchemaAdapter` | required | The adapter to use — import from an adapter package |
+| `cwd` | `string` | `process.cwd()` | Working directory for `$ref` resolution |
+| `executablePath` | `string` | `"xschema"` | Path to the xschema CLI binary |
+| `allowFetch` | `boolean` | `false` | Enable fetching external `$ref` targets (URLs, files) |
 
-// Convert schemas
-const User = runtime.convert(userSchema);
-const Order = runtime.convert(orderSchema);
+<Callout>
+`adapter` accepts an `XSchemaAdapter` object, not a string. Import it from the adapter package:
+```typescript
+import { adapter } from "@xschemadev/zod";
+```
+</Callout>
 
-// Check cache stats
-console.log(runtime.getCacheStats());
-// { hits: 5, misses: 2, size: 2 }
+---
+
+## `ConvertResult`
+
+The output for a single converted schema. Re-exported from `@xschemadev/core`.
+
+```typescript
+interface ConvertResult {
+  namespace: string;
+  id: string;
+  varName: string;
+  imports: string[];
+  schema?: string;
+  type?: string;
+  validate?: string;
+  validationImports?: string[];
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `namespace` | `string` | The namespace from the input |
+| `id` | `string` | The schema ID from the input |
+| `varName` | `string` | Generated variable name (e.g., `user_Profile`) |
+| `imports` | `string[]` | Import statements needed by the generated code |
+| `schema` | `string?` | Validator code string (e.g., `z.object({...})`) |
+| `type` | `string?` | Type expression (e.g., `z.infer<typeof user_Profile>`) |
+| `validate` | `string?` | Validation function expression |
+| `validationImports` | `string[]?` | Additional imports for the validation function |
+
+`schema` and `type` are optional because an adapter may only generate one or the other. All built-in adapters (Zod, ArkType, Effect, Valibot) generate both.
+
+### Usage with generated code
+
+The fields map directly to what you'd write in a generated file:
+
+```typescript
+const result = results[0];
+
+// result.imports    -> ['import { z } from "zod"']
+// result.schema     -> 'z.object({ id: z.string(), email: z.string().email() }).passthrough()'
+// result.type       -> 'z.infer<typeof user_Profile>'
+// result.varName    -> 'user_Profile'
+
+// You could write a file like:
+const code = [
+  ...result.imports,
+  "",
+  `export const ${result.varName} = ${result.schema}`,
+  `export type ${result.id} = ${result.type}`,
+].join("\n");
 ```
 
 ---
 
-## Types
+## `XSchemaAdapter`
 
-### JsonSchema
-
-A JSON Schema object. Supports all drafts from draft-03 to draft-2020-12.
+Identifies an adapter package. Re-exported from `@xschemadev/core`.
 
 ```typescript
-type JsonSchema = {
-  $schema?: string;
-  type?: string | string[];
-  properties?: Record<string, JsonSchema>;
-  // ... all JSON Schema keywords
-};
+interface XSchemaAdapter {
+  readonly __xschema: true;
+  readonly id: string;
+  readonly name: string;
+}
 ```
 
-### ConvertResult
+| Field | Type | Description |
+|-------|------|-------------|
+| `__xschema` | `true` | Brand field — ensures only valid adapter objects are passed |
+| `id` | `string` | Package identifier used to resolve the adapter CLI (e.g., `"@xschemadev/zod"`) |
+| `name` | `string` | Human-readable adapter name (e.g., `"zod"`) |
 
-The result type varies by adapter:
+You don't construct these manually. Each adapter package exports a pre-built `adapter` constant:
 
 ```typescript
-// Zod
-import type { z } from "zod";
-const schema: z.ZodType = convert(jsonSchema, { adapter: "zod" });
-
-// ArkType
-import type { Type } from "arktype";
-const schema: Type = convert(jsonSchema, { adapter: "arktype" });
-
-// Effect
-import type { Schema } from "effect";
-const schema: Schema.Schema<unknown> = convert(jsonSchema, { adapter: "effect" });
-
-// Valibot
-import type { BaseSchema } from "valibot";
-const schema: BaseSchema = convert(jsonSchema, { adapter: "valibot" });
+import { adapter } from "@xschemadev/zod";      // id: "@xschemadev/zod", name: "zod"
+import { adapter } from "@xschemadev/arktype";   // id: "@xschemadev/arktype", name: "arktype"
+import { adapter } from "@xschemadev/effect";    // id: "@xschemadev/effect", name: "effect"
+import { adapter } from "@xschemadev/valibot";   // id: "@xschemadev/valibot", name: "valibot"
 ```
 
 ---
 
-## Error Handling
-
-### ConvertError
+## `ConvertError`
 
 Thrown when conversion fails.
 
 ```typescript
-import { convert, ConvertError } from "@xschemadev/runtime";
+class ConvertError extends Error {
+  readonly stderr: string;
 
-try {
-  const schema = convert(invalidSchema, { adapter: "zod" });
-} catch (error) {
-  if (error instanceof ConvertError) {
-    console.log(error.message); // What went wrong
-    console.log(error.path);    // JSON pointer to problematic location
-    console.log(error.schema);  // The offending schema fragment
-  }
+  constructor(message: string, stderr: string);
 }
 ```
 
-### UnsupportedFeatureError
+| Property | Type | Description |
+|----------|------|-------------|
+| `message` | `string` | Error description — either parsed from stderr or a fallback |
+| `stderr` | `string` | Raw stderr output from the xschema CLI |
+| `name` | `string` | Always `"ConvertError"` |
 
-Thrown when `strict: true` and schema uses unsupported features.
+### When it's thrown
+
+- The xschema CLI exits with a non-zero code (invalid schema, missing adapter, external `$ref` without `--allow-fetch`)
+- The CLI binary can't be found or spawned
+- The CLI's stdout isn't valid JSON
+
+### Example
 
 ```typescript
-import { convert, UnsupportedFeatureError } from "@xschemadev/runtime";
+import { convert, ConvertError } from "@xschemadev/runtime";
+import { adapter } from "@xschemadev/zod";
 
 try {
-  const schema = convert(dynamicRefSchema, {
-    adapter: "zod",
-    strict: true
-  });
+  const results = await convert(schema, { adapter });
 } catch (error) {
-  if (error instanceof UnsupportedFeatureError) {
-    console.log(error.feature); // "$dynamicRef"
-    console.log(error.reason);  // Why it's unsupported
+  if (error instanceof ConvertError) {
+    console.error("Failed:", error.message);
+    console.error("CLI stderr:", error.stderr);
   }
 }
 ```
 
 ---
 
-## Comparison with Framework Mode
+## Exports Summary
 
-| Feature | Framework (Build-time) | Runtime |
-|---------|------------------------|---------|
-| API | `createXSchemaClient` | `convert` / `createRuntime` |
-| Types | Full inference | Generic types |
-| Config | `*.xschema.jsonc` files | Programmatic |
-| Output | Generated `.ts` files | In-memory schemas |
-| Performance | Zero runtime cost | Conversion cost |
+Everything exported from `@xschemadev/runtime`:
+
+| Export | Kind | Description |
+|--------|------|-------------|
+| `convert` | function | Main conversion function |
+| `ConvertError` | class | Error thrown on conversion failure |
+| `SchemaInput` | interface | Input schema descriptor |
+| `ConvertOptions` | interface | Options for `convert()` |
+| `ConvertResult` | type (re-export) | Output from conversion |
+| `XSchemaAdapter` | type (re-export) | Adapter identifier |
 
 <Cards>
   <Card
-    title="Framework Client API"
-    description="Build-time client API reference"
-    href="/docs/typescript/client"
-    icon={<Code />}
+    title="Getting Started"
+    description="Install and convert your first schema"
+    href="/docs/runtime/getting-started/typescript"
+    icon={<BookOpen />}
   />
   <Card
     title="Runtime Overview"
-    description="When to use runtime mode"
+    description="When and why to use runtime mode"
     href="/docs/runtime"
     icon={<Zap />}
   />
