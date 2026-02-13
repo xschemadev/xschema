@@ -8,5 +8,5 @@
   "typescript/packages/adapters/valibot": "0.2.0",
   "python/packages/core": "0.1.0",
   "python/packages/client": "0.1.0",
-  "python/packages/adapters/pydantic": "0.1.0"
+  "python/packages/adapters/pydantic": "0.1.1"
 }
